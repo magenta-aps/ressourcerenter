@@ -6,8 +6,15 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="{% static 'jquery/jquery-3.6.0.min.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.min.css' %}"/>
+    <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.bundle.js' %}"></script>
 
-    <title>{% trans 'Ressourcerenter' %}</title>
+    <title>
+        {% block title %}
+        {% trans 'Ressourcerenter' %}
+        {% endblock %}
+    </title>
 </head>
 <body>
 
