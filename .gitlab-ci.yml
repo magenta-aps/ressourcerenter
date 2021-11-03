@@ -74,6 +74,7 @@ Ressourcerenter Unittest:
   variables:
     DJANGO_SECRET_KEY: e$s6@0(hs5ja79-&!l7vt^onoe4h^*bv_e4hj&wt5^8*&x76-$
     DJANGO_TIMEZONE: Europe/Copenhagen
+    DJANGO_LANGUAGE_CODE: da-DK
     DJANGO_ADMIN_GROUP: admins
     POSTGRES_USER: ressourcerenter
     POSTGRES_PASSWORD: ressourcerenter
