@@ -1,0 +1,40 @@
+version: "3.4"
+services:
+  ressourcerenter-web:
+    container_name: ressourcerenter
+    image: ressourcerenter:latest
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    depends_on:
+      - postgres
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./dev-environment/ressourcerenter.env
+    volumes:
+      - ./ressourcerenter/:/app
+      - ./data/ressourcerenter:/srv/media
+    environment:
+      - MAKE_MIGRATIONS=true
+      - MIGRATE=true
+      # Set this to "DUMMYDATA=" in override file if you do not want dummy data
+      - DUMMYDATA=true
+      - CREATE_USERS=true
+      - CREATE_DUMMY_USERS=true
+      - TEST=true
+    command: gunicorn -b 0.0.0.0:8000 project.wsgi:application --reload -w 1 --access-logfile - --error-logfile - --capture-output # reload on code changes
+
+  postgres:
+    container_name: ressourcerenter-db
+    image: postgres:13
+    ports:
+      # expose to localhost for easier debugging
+      - "5432:5432"
+    env_file:
+      - ./dev-environment/ressourcerenter.env
+    volumes:
+      - ressourcerenter-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  ressourcerenter-postgres-data:

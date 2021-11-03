@@ -1,0 +1,4 @@
+gettext
+python3-distutils
+libaio1
+libaio-dev
