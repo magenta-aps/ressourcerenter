@@ -20,4 +20,5 @@ EXPOSE 8000
 VOLUME  /srv/media
 ENTRYPOINT ["/entrypoint.sh"]
 WORKDIR /app
-CMD ["gunicorn", "--bind=0.0.0.0:8000", "project.wsgi:application", "--workers=4", "--timeout 120", "--error-logfile -", "--capture-output"]
+# CMD ["gunicorn", "--bind=0.0.0.0:8000", "project.wsgi:application", "--workers=4", "--timeout 120", "--error-logfile -", "--capture-output"]
+CMD ["uvicorn", "--host 0.0.0.0", "--port 8000", "project.asgi:application", "--workers 4", "--access-log"]
