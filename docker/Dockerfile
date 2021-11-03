@@ -9,9 +9,9 @@ COPY docker/sys-requirements.txt /app/sys-requirements.txt
 RUN pip install --no-cache-dir -r /app/pip-requirements.txt
 ENV PYTHONUNBUFFERED=1
 # hadolint ignore=DL3008
-RUN apt-get update && \
-    grep -vE '^#' /app/sys-requirements.txt | xargs apt-get install -y --no-install-recommends && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt update && \
+    grep -vE '^#' /app/sys-requirements.txt | xargs apt install -y --no-install-recommends && \
+    apt clean && rm -rf /var/lib/apt/lists/*
 USER ressourcerenter
 COPY ./docker/entrypoint.sh /entrypoint.sh
 COPY ./ressourcerenter /app
