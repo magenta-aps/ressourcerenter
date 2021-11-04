@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    {% if title %}<h2>{{ title }}</h2>{% endif %}
+    <a href="{% url 'calc-create' %}" class="float-right"><button class="btn btn-primary">Opret ny</button></a>
+    <table class="table">
+    <tr>
+        <th>Navn</th>
+        <th>Beskrivelse</th>
+        <th colspan="3">Handlinger</th>
+    </tr>
+    {% for item in object_list %}
+        <tr>
+            <td>{{ item.navn }}</td>
+            <td>{{ item.beskrivelse }}</td>
+            <td><a class="button" href="{% url 'calc-edit' %}">Klon</a></td>
+            <td><a class="button" href="#">Afprøv</a></td>
+            <td><a class="button" href="#">Effektuér</a></td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock %}

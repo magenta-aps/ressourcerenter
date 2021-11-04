@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    {% if title %}<h2>{{ title }}</h2>{% endif %}
+    <table class="table">
+    <tr>
+        <th>ID</th>
+        <th>Justering</th>
+        <th>Afgift til betaling</th>
+        <th>Afstemt</th>
+        <th>Bogført</th>
+        <th>Sendt til Prisme</th>
+    </tr>
+    {% for item in object_list %}
+        <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.justering|yesno|capfirst }}</td>
+            <td>{{ item.afgift_til_betaling }}</td>
+            <td>{{ item.afstemt|yesno|capfirst }}</td>
+            <td>{{ item.bogfoert|yesno|capfirst }}</td>
+            <td>{{ item.sendt_til_prisme|yesno|capfirst }}</td>
+        </tr>
+        <tr>
+            <td colspan="6">
+                <a href="#" data-toggle="collapse" data-target="#sub1"><img src="{% static "resmockup/downarrow.png" %}"/></a>
+            </td>
+        </tr>
+        <tr id="sub1">
+            <td colspan="6" style="padding: 0 0 0 30px; border-top: 0;">
+                <table class="table">
+                    <tr>
+                        <th>Fartøj</th>
+                        <th>Levende vægt</th>
+                        <th>Salgsmængde</th>
+                        <th>Indhandlet vægt</th>
+                        <th>Salgspris</th>
+                        <th>Vederlag</th>
+                        <th>Status</th>
+                        <th>Inkl. transportpris</th>
+                        <th>Afgiftsgrundlag</th>
+                    </tr>
+                    {% for subitem in item.beregnetindberetning_set.all %}
+                        <tr>
+                            <td>{{ subitem.indberetning.fartoejets_navn }}</td>
+                            <td>{{ subitem.indberetning.levende_vaegt }}</td>
+                            <td>{{ subitem.indberetning.salgsmaengde_vaegt }}</td>
+                            <td>{{ subitem.indberetning.indhandlet_vaegt }}</td>
+                            <td>{{ subitem.indberetning.salgspris_dkk }}</td>
+                            <td>{{ subitem.indberetning.vederlag_dkk }}</td>
+                            <td>{{ subitem.status }}</td>
+                            <td>{{ subitem.transportpris_indgaar_i_salgspris|yesno|capfirst }}</td>
+                            <td>{{ subitem.afgiftsgrundlag }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock %}
+
+
+{#indberetter = models.ForeignKey(Indberetter, on_delete=models.PROTECT)#}
+{#afgiftsperiode = models.ForeignKey(Afgiftsperiode, null=True, on_delete=models.PROTECT)#}
+{##}
+{#indberetningstidspunkt = models.DateTimeField()#}
+{#afgiftsberegningstidspunkt = models.DateTimeField(null=True, default=None)#}
+{##}
+{#kategori = models.IntegerField(choices=kategorier, default=None)#}
+{##}
+{#cpr_cvr = models.CharField(max_length=20, blank=True, default="")#}
+{##}
+{#fartoejets_navn = models.CharField(max_length=2048, blank=True, null=True)#}
+{#fartoejets_hjemsted = models.CharField(max_length=2048, blank=True, null=True)#}
+{##}
+{#indhandlings_eller_produktionsanlaeg = models.CharField(max_length=20, blank=True, default="")#}
+{#indhandlers_cpr_cvr = models.CharField(max_length=20, blank=True, default="")#}
+{##}
+{#fiskeart = models.ForeignKey(FiskeArt, on_delete=models.PROTECT)#}
+{#levende_vaegt = models.IntegerField(blank=True, null=True)#}
+{#indhandlet_vaegt = models.IntegerField(blank=True, null=True)#}
+{##}
+{#vederlag_dkk = models.DecimalField(max_digits=100, decimal_places=2, default=0.00)#}
+{#salgspris_dkk = models.DecimalField(max_digits=100, decimal_places=2, default=0.00)#}
+{#salgsmaengde_vaegt = models.IntegerField(blank=True, null=True)#}
+{##}
+{#yderligere_dokumentation = models.TextField(blank=True, default="")#}

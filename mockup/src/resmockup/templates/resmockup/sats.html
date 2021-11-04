@@ -1,0 +1,493 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <h2>Redigér satser for Fjerde Kvartal 2019</h2>
+
+    <form id="myexampleform" method="post">
+        <table class="table">
+        <tr>
+            <th>
+                Kategori
+            </th>
+            <th>
+                Fiskeart
+            </th>
+            <th>
+                Værdi
+            </th>
+            <th>
+                Type
+            </th>
+        </tr>
+
+
+
+            <tr>
+                <td>
+                    Havgående fiskeri (eksport)
+                </td>
+                <td>
+                    Torsk
+                </td>
+                <td>
+                    <input type="text" value="6,0" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False" selected="">Procent</option>
+                        <option value="True">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Havgående fiskeri (eksport)
+                </td>
+                <td>
+                    Kuller
+                </td>
+                <td>
+                    <input type="text" value="5,0" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False" selected="">Procent</option>
+                        <option value="True">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Havgående fiskeri (eksport)
+                </td>
+                <td>
+                    Sej
+                </td>
+                <td>
+                    <input type="text" value="0,20" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False">Procent</option>
+                        <option value="True" selected="">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Havgående fiskeri (eksport)
+                </td>
+                <td>
+                    Hellefisk
+                </td>
+                <td>
+                    <input type="text" value="17,9" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False" selected="">Procent</option>
+                        <option value="True">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Havgående fiskeri (eksport)
+                </td>
+                <td>
+                    Rødfisk
+                </td>
+                <td>
+                    <input type="text" value="0,20" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False">Procent</option>
+                        <option value="True" selected="">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Havgående fiskeri (eksport)
+                </td>
+                <td>
+                    Rejer
+                </td>
+                <td>
+                    <input type="text" value="17,9" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False" selected="">Procent</option>
+                        <option value="True">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+{#            <tr>#}
+{#                <td>#}
+{#                    Havgående fiskeri (eksport)#}
+{#                </td>#}
+{#                <td>#}
+{#                    Kammuslinger#}
+{#                </td>#}
+{#                <td>#}
+{#                    <input type="text" value="" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>#}
+{#                </td>#}
+{#                <td>#}
+{#                    <select name="form-0-type" class="select form-control" id="id_form-0-type">#}
+{#                        <option value="">---------</option>#}
+{#                        <option value="False" selected="">Procent</option>#}
+{#                        <option value="True">Kr pr. kilo</option>#}
+{#                    </select>#}
+{#                </td>#}
+{#            </tr>#}
+
+
+
+
+
+
+
+
+            <tr>
+                <td>
+                    Havgående fiskeri (indhandling)
+                </td>
+                <td>
+                    Torsk
+                </td>
+                <td>
+                    <input type="text" value="6,0" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False" selected="">Procent</option>
+                        <option value="True">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Havgående fiskeri (indhandling)
+                </td>
+                <td>
+                    Kuller
+                </td>
+                <td>
+                    <input type="text" value="5,0" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False" selected="">Procent</option>
+                        <option value="True">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Havgående fiskeri (indhandling)
+                </td>
+                <td>
+                    Sej
+                </td>
+                <td>
+                    <input type="text" value="0,20" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False">Procent</option>
+                        <option value="True" selected="">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Havgående fiskeri (indhandling)
+                </td>
+                <td>
+                    Hellefisk
+                </td>
+                <td>
+                    <input type="text" value="17,9" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False" selected="">Procent</option>
+                        <option value="True">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Havgående fiskeri (indhandling)
+                </td>
+                <td>
+                    Rødfisk
+                </td>
+                <td>
+                    <input type="text" value="0,20" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False">Procent</option>
+                        <option value="True" selected="">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td>
+                    Kystnært fiskeri
+                </td>
+                <td>
+                    Rejer
+                </td>
+                <td>
+                    <input type="text" value="17,90" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False" selected="">Procent</option>
+                        <option value="True">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Kystnært fiskeri
+                </td>
+                <td>
+                    Hellefisk
+                </td>
+                <td>
+                    <input type="text" value="17,90" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False" selected="">Procent</option>
+                        <option value="True">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+
+
+
+
+
+
+            <tr>
+                <td>
+                    Pelagisk fiskeri (Grønlandsk fartøj)
+                </td>
+                <td>
+                    Makrel
+                </td>
+                <td>
+                    <input type="text" value="0,40" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False">Procent</option>
+                        <option value="True" selected="">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Pelagisk fiskeri (Grønlandsk fartøj)
+                </td>
+                <td>
+                    Sild
+                </td>
+                <td>
+                    <input type="text" value="0,25" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False">Procent</option>
+                        <option value="True" selected="">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Pelagisk fiskeri (Grønlandsk fartøj)
+                </td>
+                <td>
+                    Lodde
+                </td>
+                <td>
+                    <input type="text" value="0,15" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False">Procent</option>
+                        <option value="True" selected="">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Pelagisk fiskeri (Grønlandsk fartøj)
+                </td>
+                <td>
+                    Blåhvilling
+                </td>
+                <td>
+                    <input type="text" value="0,15" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False">Procent</option>
+                        <option value="True" selected="">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Pelagisk fiskeri (Grønlandsk fartøj)
+                </td>
+                <td>
+                    Guldlaks
+                </td>
+                <td>
+                    <input type="text" value="0,15" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False">Procent</option>
+                        <option value="True" selected="">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+
+
+
+
+
+            <tr>
+                <td>
+                    Pelagisk fiskeri (Ikke-Grønlandsk fartøj)
+                </td>
+                <td>
+                    Makrel
+                </td>
+                <td>
+                    <input type="text" value="1,00" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False">Procent</option>
+                        <option value="True" selected="">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Pelagisk fiskeri (Ikke-Grønlandsk fartøj)
+                </td>
+                <td>
+                    Sild
+                </td>
+                <td>
+                    <input type="text" value="0,80" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False">Procent</option>
+                        <option value="True" selected="">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Pelagisk fiskeri (Ikke-Grønlandsk fartøj)
+                </td>
+                <td>
+                    Lodde
+                </td>
+                <td>
+                    <input type="text" value="0,70" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False">Procent</option>
+                        <option value="True" selected="">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Pelagisk fiskeri (Ikke-Grønlandsk fartøj)
+                </td>
+                <td>
+                    Blåhvilling
+                </td>
+                <td>
+                    <input type="text" value="0,70" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False">Procent</option>
+                        <option value="True" selected="">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Pelagisk fiskeri (Ikke-Grønlandsk fartøj)
+                </td>
+                <td>
+                    Guldlaks
+                </td>
+                <td>
+                    <input type="text" value="0,70" name="form-0-vaerdi" step="any" class="numberinput form-control" id="id_form-0-vaerdi"/>
+                </td>
+                <td>
+                    <select name="form-0-type" class="select form-control" id="id_form-0-type">
+                        <option value="">---------</option>
+                        <option value="False">Procent</option>
+                        <option value="True" selected="">Kr pr. kilo</option>
+                    </select>
+                </td>
+            </tr>
+
+
+        </table>
+    </form>
+
+
+    <a href=" {% if form_button_url %}{{ form_button_url }}{% else %}#{% endif %}">
+        <button class="btn btn-primary float-right">
+            {% if form_button_text %}{{ form_button_text }}{% else %}
+                OK{% endif %}
+        </button>
+    </a>
+{% endblock %}
