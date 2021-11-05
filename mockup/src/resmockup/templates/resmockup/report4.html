@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <h2>Pelagisk fiskeri</h2>
+
+    <a href="#">Hent regneark til indbetretning af flere poster</a><br/>
+    <a href="#">Upload udfyldt regneark</a>
+
+    <hr/>
+
+    <form method="post">
+
+        <div id="div_id_fartoejets_navn" class="form-group">
+            <label for="id_fartoejets_navn" class="col-form-label">
+                Fartøjets navn
+            </label>
+            <div class="">
+                <input type="text" name="fartoejets_navn" maxlength="2048" class="textinput textInput form-control" id="id_fartoejets_navn" value="M/S Baljen">
+            </div>
+        </div>
+
+        <div id="div_id_fiskeart" class="form-group">
+            <label for="id_fiskeart" class="col-form-label  requiredField">
+                Fiskeart
+            </label>
+            <div class="">
+                <select name="fiskeart" class="select form-control" required="" id="id_fiskeart">
+                    <option value="">---------</option>
+                    <option value="1">Makrel</option>
+                    <option value="2">Sild</option>
+                    <option value="3">Lodde</option>
+                    <option value="4" selected="">Blåhvilling</option>
+                    <option value="5">Guldlaks</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="div_id_fartoejets_hjemsted" class="form-group">
+            <label for="id_fartoejets_hjemsted" class="col-form-label ">
+                Fartøjets hjemsted
+            </label>
+            <div class="">
+                <select name="fartoejets_hjemsted" class="select form-control" required="" id="id_fartoejets_hjemsted">
+                    <option value="">---------</option>
+                    <option value="1" selected="">Grønland</option>
+                    <option value="2">Udlandet (herunder Danmark og Færøerne)</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="div_id_levende_vaegt" class="form-group">
+            <label for="id_levende_vaegt" class="col-form-label ">
+                Levende vægt (kg)
+            </label>
+            <div class="">
+                <input type="text" name="levende_vaegt" class="numberinput form-control" id="id_levende_vaegt" value="6.531.529">
+            </div>
+        </div>
+
+        <div id="div_id_afgiftssats" class="form-group">
+            <label for="div_id_afgiftssats" class="col-form-label">
+                Afgiftssats
+            </label>
+            <div class="">
+                <span id="div_id_afgiftssats">0,15 DKK/kg</span>
+            </div>
+        </div>
+
+        <div id="div_id_afgift" class="form-group">
+            <label for="id_afgift" class="col-form-label">
+                Afgift til betaling
+            </label>
+            <div class="">
+                <span id="afgift">
+                    979.729,00
+                </span>
+            </div>
+        </div>
+
+        <div id="div_id_yderligere_dokumentation" class="form-group">
+            <label for="id_yderligere_dokumentation" class="col-form-label ">
+                Yderligere dokumentation
+            </label>
+            <div class="">
+                <input type="file" name="yderligere_dokumentation" id="id_yderligere_dokumentation"/>
+            </div>
+        </div>
+    </form>
+    <a href=" {% if form_button_url %}{{ form_button_url }}{% else %}#{% endif %}">
+        <button class="btn btn-primary float-right">Indsend indberetning</button>
+    </a>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    {% if title %}<h2>{{ title }}</h2>{% endif %}
+
+    <form method="post">
+        <div id="div_id_afgiftsperiode" class="form-group"><label
+                for="id_afgiftsperiode" class="col-form-label  requiredField">
+            Afgiftsperiode
+        </label>
+            <div class="">
+                <select name="afgiftsperiode" class="select form-control" required="" id="id_afgiftsperiode">
+                    <option value="" selected="">---------</option>
+                    <option value="1">2017</option>
+                    <option value="1">2018</option>
+                    <option value="1">2019</option>
+                </select>
+            </div>
+        </div>
+        <div id="div_id_kategori" class="form-group">
+            <label for="id_kategori" class="col-form-label  requiredField">
+                Kategori
+            </label>
+            <div class="">
+                <select name="kategori" class="select form-control" required="" id="id_kategori">
+                    <option value="" selected="">---------</option>
+                    <option value="1">Havgående fiskeri (eksport): torsk, kuller, sej, hellefisk, rødfisk, rejer, kammuslinger</option>
+                    <option value="2">Havgående fiskeri (indhandling): torsk, kuller, sej, hellefisk, rødfisk</option>
+                    <option value="3">Kystnært fisker: rejer, hellefisk</option>
+                    <option value="4">Pelagisk fiskeri: makrel, sild, lodde, blåhvilling, guldlaks</option>
+                </select>
+            </div>
+        </div>
+    </form>
+    <a href="#">
+        <button class="btn btn-primary float-right">Næste</button>
+    </a>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    {% if title %}<h2>{{ title }}</h2>{% endif %}
+    {% crispy form %}
+    <a href="{% if form_button_url %}{{ form_button_url }}{% else %}#{% endif %}">
+    <button class="btn btn-primary float-right">
+        {% if form_button_text %}{{ form_button_text }}{% else %}OK{% endif %}
+    </button>
+    </a>
+{% endblock %}

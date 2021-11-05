@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <h2>Havgående fiskeri (eksport)</h2>
+
+    <a href="#">Hent regneark til indbetretning af flere poster</a><br/>
+    <a href="#">Upload udfyldt regneark</a>
+
+    <hr/>
+
+    <form method="post">
+
+        <div id="div_id_fartoejets_navn" class="form-group">
+            <label for="id_fartoejets_navn" class="col-form-label">
+                Fartøjets navn
+            </label>
+            <div class="">
+                <input type="text" name="fartoejets_navn" maxlength="2048" class="textinput textInput form-control" id="id_fartoejets_navn" value="M/S Baljen">
+            </div>
+        </div>
+
+        <div id="div_id_fiskeart" class="form-group">
+            <label for="id_fiskeart" class="col-form-label  requiredField">
+                Fiskeart
+            </label>
+            <div class="">
+                <select name="fiskeart" class="select form-control" required="" id="id_fiskeart">
+                    <option value="">---------</option>
+                    <option value="1" selected="">Havgående torsk</option>
+                    <option value="2">Havgående kuller</option>
+                    <option value="3">Havgående sej</option>
+                    <option value="4">Havgående hellefisk</option>
+                    <option value="5">Havgående rødfisk</option>
+                    <option value="6">Havgående rejer</option>
+                    <option value="7">Havgående kammuslinger</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="div_id_salgsmaengde_vaegt" class="form-group">
+            <label for="id_salgsmaengde_vaegt" class="col-form-label">
+                Salgsmængde (kg)
+            </label>
+            <div class="">
+                <input type="text" name="salgsmaengde_vaegt" class="numberinput form-control" id="id_salgsmaengde_vaegt" value="40.843,0">
+            </div>
+        </div>
+
+        <div id="div_id_omregningsfaktor" class="form-group">
+            <label for="id_omregningsfaktor" class="col-form-label ">
+                Omregningsfaktor
+            </label>
+            <div class="">
+                <select name="omregningsfaktor" class="select form-control" required="" id="id_omregningsfaktor">
+                    <option value="">---------</option>
+                    <option value="1">Med hoved uden indvolde (1,18)</option>
+                    <option value="2">Uden hoved uden indvolde (1,50)</option>
+                    <option value="3">Flækket, uden hoved (1,70)</option>
+                    <option value="4">Uden hoved, uden indvolde - round cut off (1,50)</option>
+                    <option value="5">Uden hoven, uden indvolde - straight cut off (1,55)</option>
+                    <option value="6">Uden hoven, uden indvolde - straight cut off, uden collarbone (1,80)</option>
+                    <option value="7" selected="">Japan Cut, med hale (1,90)</option>
+                    <option value="8">Filet m/ skind, m/pinbone (2,60)</option>
+                    <option value="9">Filet u/ skind, u/pinbone (3,25)</option>
+                    <option value="10">Filet u/ skind, m/pinbone (2,90)</option>
+                    <option value="11">Flækket vådsaltet (2,70)</option>
+                    <option value="12">Flækket tørsaltet (3,30)</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="div_id_levende_vaegt" class="form-group">
+            <label for="id_levende_vaegt" class="col-form-label ">
+                Levende vægt (kg)
+            </label>
+            <div class="">
+                <input type="text" name="levende_vaegt" class="numberinput form-control" id="id_levende_vaegt" value="77.601,0">
+            </div>
+        </div>
+
+        <div id="div_id_salgspris_dkk" class="form-group">
+            <label for="id_salgspris_dkk" class="col-form-label requiredField">
+                Salgspris (DKK)
+            </label>
+            <div class="">
+                <input type="text" name="salgspris_dkk" class="numberinput form-control" required="" id="id_salgspris_dkk" value="866.023,00">
+            </div>
+        </div>
+
+        <div id="div_id_transport" class="form-group">
+            <label for="id_transport" class="col-form-label requiredField">
+                Indgår transportomkostninger fra Grønland til udlandet i salgsprisen?
+            </label>
+            <div class="">
+                <select name="transport" class="select form-control" required="" id="id_transport">
+                    <option value="1" selected="">Ja</option>
+                    <option value="0">Nej</option>
+                </select>
+            </div>
+        </div>
+
+
+        <div id="div_id_afgiftsgrundlag" class="form-group">
+            <label for="id_afgiftsgrundlag" class="col-form-label">
+                Afgiftssats
+            </label>
+            <div class="">
+                <span id="afgiftsgrundlag">5%</span>
+            </div>
+        </div>
+
+        <div id="div_id_afgift" class="form-group">
+            <label for="id_afgift" class="col-form-label">
+                Afgift til betaling (DKK)
+            </label>
+            <div class="">
+                <span id="afgift">
+                    43.301,00
+                </span>
+            </div>
+        </div>
+
+        <div id="div_id_yderligere_dokumentation" class="form-group">
+            <label for="id_yderligere_dokumentation" class="col-form-label ">
+                Yderligere dokumentation
+            </label>
+            <div class="">
+                <input type="file" name="yderligere_dokumentation" id="id_yderligere_dokumentation"/>
+            </div>
+        </div>
+    </form>
+    <a href="#">
+        <button class="btn btn-primary float-right">Indsend indberetning</button>
+    </a>
+{% endblock %}

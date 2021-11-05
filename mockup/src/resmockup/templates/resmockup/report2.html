@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <h2>Havgående fiskeri (indhandling)</h2>
+
+    <a href="#">Hent regneark til indbetretning af flere poster</a><br/>
+    <a href="#">Upload udfyldt regneark</a>
+
+    <hr/>
+
+    <form method="post">
+
+        <div id="div_id_indhandlers_cpr_cvr" class="form-group">
+            <label for="id_indhandlers_cpr_cvr" class="col-form-label ">
+                Indhandlers CPR/CVR
+            </label>
+            <div class="">
+                <input type="text" name="indhandlers_cpr_cvr" maxlength="20" class="textinput textInput form-control" id="id_indhandlers_cpr_cvr" value="12345678">
+            </div>
+        </div>
+
+        <div id="div_id_fiskeart" class="form-group">
+            <label for="id_fiskeart" class="col-form-label  requiredField">
+                Fiskeart
+            </label>
+            <div class="">
+                <select name="fiskeart" class="select form-control" required="" id="id_fiskeart">
+                    <option value="">---------</option>
+                    <option value="1">Havgående torsk</option>
+                    <option value="2" selected="">Havgående kuller</option>
+                    <option value="3">Havgående sej</option>
+                    <option value="4">Havgående hellefisk</option>
+                    <option value="5">Havgående rødfisk</option>
+                </select>
+            </div>
+        </div>
+
+
+        <div id="div_id_indhandlet_vaegt" class="form-group">
+            <label for="id_indhandlet_vaegt" class="col-form-label">
+                Indhandlet vægt (kg)
+            </label>
+            <div class="">
+                <input type="text" name="salgsmaengde_vaegt" class="numberinput form-control" id="id_indhandlet_vaegt" value="302.973,0">
+            </div>
+        </div>
+
+        <div id="div_id_vederlag_dkk" class="form-group">
+            <label for="id_vederlag_dkk" class="col-form-label requiredField">
+                Vederlag (DKK)
+            </label>
+            <div class="">
+                <input type="text" name="vederlag_dkk" class="numberinput form-control" required="" id="id_vederlag_dkk" value="2.404.112,00">
+            </div>
+        </div>
+
+        <div id="div_id_afgiftssats" class="form-group">
+            <label for="div_id_afgiftssats" class="col-form-label">
+                Afgiftssats
+            </label>
+            <div class="">
+                <span id="div_id_afgiftssats">5%</span>
+            </div>
+        </div>
+
+        <div id="div_id_afgift" class="form-group">
+            <label for="id_afgift" class="col-form-label">
+                Afgift til betaling (DKK)
+            </label>
+            <div class="">
+                <span id="afgift">
+                    15.148,65
+                </span>
+            </div>
+        </div>
+
+        <div id="div_id_yderligere_dokumentation" class="form-group">
+            <label for="id_yderligere_dokumentation" class="col-form-label ">
+                Yderligere dokumentation
+            </label>
+            <div class="">
+                <input type="file" name="yderligere_dokumentation" id="id_yderligere_dokumentation"/>
+            </div>
+        </div>
+    </form>
+    <a href=" {% if form_button_url %}{{ form_button_url }}{% else %}#{% endif %}">
+        <button class="btn btn-primary float-right">Indsend indberetning</button>
+    </a>
+{% endblock %}
