@@ -3,3 +3,4 @@ env/
 .idea/
 *.iml
 docker-compose.override.yml
+*.mo

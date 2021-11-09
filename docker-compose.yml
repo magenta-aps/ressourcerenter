@@ -2,7 +2,6 @@ version: "3.4"
 services:
   ressourcerenter-web:
     container_name: ressourcerenter
-    image: ressourcerenter:latest
     build:
       context: .
       dockerfile: docker/Dockerfile
@@ -14,17 +13,10 @@ services:
       - ./dev-environment/ressourcerenter.env
     volumes:
       - ./ressourcerenter/:/app
-      - ./data/ressourcerenter:/srv/media
     environment:
       - MAKE_MIGRATIONS=true
       - MIGRATE=true
-      # Set this to "DUMMYDATA=" in override file if you do not want dummy data
-      - DUMMYDATA=true
-      - CREATE_USERS=true
-      - CREATE_DUMMY_USERS=true
-      - TEST=true
-    # command: gunicorn --bind=0.0.0.0:8000 project.wsgi:application --reload --workers=1 --access-logfile - --error-logfile - --capture-output
-    command: uvicorn --host 0.0.0.0 --port 8000 project.asgi:application --reload --workers 1 --access-log
+    command: gunicorn --bind=0.0.0.0:8000 project.wsgi:application --reload --workers=1 --access-logfile - --error-logfile - --capture-output
 
   postgres:
     container_name: ressourcerenter-db

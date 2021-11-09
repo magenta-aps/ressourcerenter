@@ -3,11 +3,8 @@ set -e
 MAKE_MIGRATIONS=${MAKE_MIGRATIONS:=false}
 MIGRATE=${MIGRATE:=false}
 TEST=${TEST:=false}
-CREATE_USERS=${CREATE_USERS:=false}
-DUMMYDATA=${DUMMYDATA:=false}
-DJANGO_DEBUG=${DJANGO_DEBUG:=false}
 
-if [ "$MAKE_MIGRATIONS" = true ] || [ "$MIGRATE" = true ] || [ "$TEST" = true ] || [ "$CREATE_USERS" = true ] || [ "$CREATE_DUMMY_USERS" = true ] || [ "$DUMMYDATA" = true ]; then
+if [ "$MAKE_MIGRATIONS" = true ] || [ "$MIGRATE" = true ] || [ "$TEST" = true ]; then
   python manage.py wait_for_db
   if [ "$MAKE_MIGRATIONS" = true ]; then
     echo 'generating migrations'
@@ -21,10 +18,5 @@ if [ "$MAKE_MIGRATIONS" = true ] || [ "$MIGRATE" = true ] || [ "$TEST" = true ] 
     echo 'running tests!'
     python manage.py test
   fi
-fi
-
-if [ "$DJANGO_DEBUG" = false ]; then
-  echo 'collecting static files for whitenoise!'
-  ./manage.py collectstatic --no-input --clear
 fi
 exec "$@"
