@@ -4,13 +4,8 @@ stages:
   - test
 
 variables:
-  # Project variables
-  RELEASE_REGISTRY: docker.io
-  RELEASE_REGISTRY_IMAGE: index.docker.io/magentaaps/ressourcerenter
-
-  RESSOURCERENTER_IMAGE_SHA: ${CI_REGISTRY_IMAGE}/ressourcerenter:${CI_COMMIT_SHA}
-  RESSOURCERENTER_IMAGE_DEV: ${CI_REGISTRY_IMAGE}/ressourcerenter:dev
-  RESSOURCERENTER_IMAGE_TAG: magentaaps/ressourcerenter:${CI_COMMIT_TAG}-ressourcerenter
+  IMAGE_SHA: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
+  IMAGE_DEV: ${CI_REGISTRY_IMAGE}:dev
 
 
 # Lint stage
@@ -54,7 +49,7 @@ Build ressourcerenter image:
       --cache
       --context=$CI_PROJECT_DIR
       --dockerfile=$CI_PROJECT_DIR/docker/Dockerfile
-      --destination=${RESSOURCERENTER_IMAGE_SHA}
+      --destination=${IMAGE_SHA}
 
 # Test stage
 ############
@@ -67,20 +62,16 @@ Build ressourcerenter image:
 Ressourcerenter Unittest:
   <<: *test-default
   needs: ["Build ressourcerenter image"]
-  image: ${RESSOURCERENTER_IMAGE_SHA}
+  image: ${IMAGE_SHA}
   services:
    - name: postgres:13
      alias: ressourcerenter-db
   variables:
     DJANGO_SECRET_KEY: e$s6@0(hs5ja79-&!l7vt^onoe4h^*bv_e4hj&wt5^8*&x76-$
     DJANGO_TIMEZONE: Europe/Copenhagen
-    DJANGO_LANGUAGE_CODE: da-DK
-    DJANGO_ADMIN_GROUP: admins
     POSTGRES_USER: ressourcerenter
     POSTGRES_PASSWORD: ressourcerenter
     POSTGRES_DB: ressourcerenter
     POSTGRES_HOST: ressourcerenter-db
-    # Simulate development environment while running tests so we use mockup data
-    ENVIRONMENT: development
   script:
     - cd /app && python manage.py test
