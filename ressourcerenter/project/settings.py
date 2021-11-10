@@ -33,7 +33,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'ressourcerenter'
+    'ressourcerenter',
+    'indberetning'
 ]
 
 MIDDLEWARE = [
@@ -47,7 +48,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'ressourcerenter.urls'
+ROOT_URLCONF = 'project.urls'
 
 TEMPLATES = [
     {
