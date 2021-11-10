@@ -1,0 +1,19 @@
+{% extends "indberetning/base.html"%}
+{% block content %}
+<h1>Vælg virksomhed</h1>
+<form class="form-inline">
+    <select class="js-example-basic-single form-control mb-2 mr-sm-2" autocomplete="off">
+        <option value="AL">Virksomhed A</option>
+        <option value="WY">Virksomhed B</option>
+    </select>
+    <button type="submit" class="btn-sm btn-primary">Vælg</button>
+</form>
+
+<script>
+    $(document).ready(function() {
+        $('.js-example-basic-single').select2({
+            minimumResultsForSearch: Infinity
+        });
+    });
+</script>
+{% endblock %}

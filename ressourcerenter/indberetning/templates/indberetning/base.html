@@ -1,0 +1,30 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}">
+    <link rel="stylesheet" href="{% static "css/select2.min.css" %}">
+    <link rel="stylesheet" href="{% static "css/select2-bootstrap4.min.css" %}">
+    <script src="{% static "js/jquery.slim.min.js" %}"></script>
+    <script src="{% static "js/bootstrap.bundle.min.js"%}"></script>
+    <script src="{% static "js/select2.full.min.js"%}"></script>
+    {% block extra_head_content %}{% endblock %}
+    <title>{% block http_title %}Resurserenter Test Mockup{% endblock %}</title>
+</head>
+<body>
+<main role="main">
+    <nav class="nav d-flex p-2">
+        <span class="ml-auto">
+            <span class="p-2">Du er logget ind som Brian pedersen på CVR nr. <strong>12345678</strong></span>
+            <a class="btn btn-secondary btn-sm" href="">Tilbage til administration</a>
+        </span>
+    </nav>
+    <hr class="p-0 m-0">
+    <div class="container-fluid">
+        {% block content %}{% endblock %}
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,108 @@
+{% extends "indberetning/base.html"%}
+{% block content %}
+<h1>Indberetning af ressourcerenter</h1>
+<h2>Tidligere Indberetninger for 2. kvartal 2020</h2>
+<div class="table-responsive">
+    {% include 'indberetning/includes/indberetnings_list.html' %}
+</div>
+<hr />
+<h2>Nye indberetninger</h2>
+<div>
+    <div class="form-inline">
+        <strong class="mr-2">Kvartal / år:</strong> 2. kvartal 2020 (valgt på siden før)
+    </div>
+    <div class="form-inline">
+        <strong class="mr-2">Selskab / CVR:</strong> 12345678 (hente fra indberetters login)
+    </div>
+    <div class="form-inline">
+        <strong class="mr-2">Fartøjs navn:</strong>
+        <select class="form-control col-2" id="boat" autocomplete="off">
+            <option>M/S Unsinkable II</option>
+            <option value="M/S Baljen">M/S Baljen</option>
+        </select>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <hr />
+    <table class="table table-bordered table-sm">
+        <thead>
+        <tr>
+            <th class="product-cell-heading">Produkt</th>
+            <th>Mængde produktionvægt</th>
+            <th>Omregningsfaktor</th>
+            <th>Mængde levende vægt</th>
+            <th>Salgsværdi</th>
+            <th>Transporttillæg</th>
+            <th>Salgsværdi i alt / afgiftsgrundlag</th>
+            <th>Afgifssats</th>
+            <th>Afgift til betaling</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr id="templaterow" style="display: none;">
+            <td class="product-cell align-left">Produkt</td>
+            <td class="weight-cell">
+                <input type="text" name="product-weight" class="product-weight-input" value="0" />
+            </td>
+            <td class="conversion-factor-cell">1.00</td>
+            <td class="living-cell">
+                <span class="living-weight-value">0</span>
+            </td>
+            <td class="sale-value-cell">
+                <input type="text" name="sale-value" class="sale-value-input" value="0" />
+            </td>
+            <td class="transport-adjustment-cell">
+                <input type="text" name="transport-adjustment" class="transport-adjustment-input" value="0" />
+            </td>
+            <td class="total-sale-value-cell">0</td>
+            <td class="rate-cell">0</td>
+            <td class="calculated-tax">0</td>
+        </tr>
+        </tbody>
+    </table>
+    <hr />
+</div>
+<div class="form-inline">
+    <span>Tilføj nyt produkt:</span>
+    <select id="js-category-select" class="form-control">
+        <option value="">Vælg kategori</option>
+    </select>
+    <select id="js-fishtype-select" class="form-control">
+        <option value="">Vælg fisketype</option>
+    </select>
+    <select id='js-product-select' class="form-control">
+        <option value="">Vælg produkt</option>
+    </select>
+    <input type="button" class="btn btn-sm btn-primary" value="Tilføj produkt" id="js-add-product-button" />
+    <hr />
+</div>
+<div class="form-inline mt-2">
+    <label for="attachment">Vedhæft bilag:</label>
+    <input id="attachment" type="file" name="attachment" />
+</div>
+<div class="form-inline justify-content-end">
+    <input type="submit" class="btn btn-success" value="Indsend" />
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('select#boat').select2({
+            tags: true,
+            placeholder: "Vælg eller opret nyt fartøj",
+            allowClear: true
+        });
+        $('select#js-category-select').select2({
+            placeholder: "Vælg kategori",
+        });
+        $('select#js-fishtype-select').select2({
+            placeholder: "Vælg fisketype",
+        });
+        $('select#js-product-select').select2({
+            placeholder: "Vælg produkt",
+        });
+
+
+    });
+</script>
+{% endblock %}
