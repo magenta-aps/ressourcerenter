@@ -11,8 +11,15 @@ class NamedModel(models.Model):
         return f"{self.navn}"
 
 
-class FiskeArt(NamedModel):
-    pass
+class FiskeArt(models):
+    # en fiske art kan være, reje, Hellefisk, osv
+    navn = models.TextField()  # Rejer
+
+
+class Produkt(models):
+    #  et produkt kan være:   Råfrosne skalrejer
+    fisk = models.ForeignKey(FiskeArt, on_delete=models.PROTECT)
+    navn = models.TextField()  # Råfrosne skalrejer
 
 
 class Kategori(NamedModel):
@@ -50,12 +57,14 @@ class BeregningsModelKategori(models.Model):
     beregningsmodel_eksempel = models.ForeignKey(BeregningsModelEksempel, on_delete=models.CASCADE)
     afgiftstabel = models.ForeignKey(Afgiftstabel, on_delete=models.CASCADE)
     fisk = models.ManyToManyField(FiskeArt)
+    # Der er et eller andet mærkeligt for det må være produktet der styre afgiftsatsen og ikke fiske arten?
 
 
 class Afgiftsperiode(NamedModel):
     dato_fra = models.DateField()
     dato_til = models.DateField()
     beregningsmodel = models.ForeignKey(BeregningsModelEksempel, on_delete=models.PROTECT)
+    # TODO det skal nok være muligt at fjerne afgiftsperioden/indberetningsperioden fra selvbetjeningsløsningen
 
 
 class SatsTabelPost(TypePost):
@@ -84,15 +93,19 @@ class Indberetter(models.Model):
 
 
 class Indberetning(models.Model):
+    #TODO der mangler en model til at gemme fartøjets/indhandlingsstedets navn, så det kan genbruges.
     indberetter = models.ForeignKey(Indberetter, on_delete=models.PROTECT)
     afgiftsperiode = models.ForeignKey(Afgiftsperiode, null=True, on_delete=models.PROTECT)
     indberetningstidspunkt = models.DateTimeField(auto_now_add=True)
     afgiftsberegningstidspunkt = models.DateTimeField(null=True, default=None)
-    kategori = models.ForeignKey(Kategori, on_delete=models.CASCADE)
+    kategori = models.ForeignKey(Kategori, on_delete=models.CASCADE) #Antager at med kategori der menes IndberetningsType (Fartøj/Fabrik(indhandlingsted))
     cpr_cvr = models.CharField(max_length=20, blank=True, default="")
     fartoejets_navn = models.CharField(max_length=2048, blank=True, null=True, verbose_name='fartøjets navn')
     fartoejets_hjemsted = models.CharField(max_length=2048, blank=True, null=True, verbose_name='fartøjets hjemsted')
     indhandlings_eller_produktionsanlaeg = models.CharField(max_length=20, blank=True, default="", verbose_name='indhandlings- eller produktionsanlæg')
+    # TODO fartoejets_navn og indhandlings_eller_produktionsanlaeg kan slås sammen og det vil så være indberetningstypen der
+    # styre meningen, ved at overskrive: get_navn_display()
+    # det samme kan man gøre med salgspris(salgspris/indhandlingspris)
     indhandlers_cpr_cvr = models.CharField(max_length=20, blank=True, default="", verbose_name='indhandlers CPR/CVR')
     fiskeart = models.ForeignKey(FiskeArt, on_delete=models.PROTECT)
     levende_vaegt = models.IntegerField(blank=True, null=True, verbose_name='levende vægt')
