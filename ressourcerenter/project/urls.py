@@ -5,8 +5,8 @@ from django.conf import settings
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('ressourcerenter/', include('ressourcerenter.urls', namespace='ressourcerenter')),
+    path('djang-admin/', admin.site.urls),
+    path('administration/', include('administration.urls', namespace='administration')),
     path('indberetning/', include('indberetning.urls', namespace='indberetning'))
 ]
 if settings.DEBUG:
