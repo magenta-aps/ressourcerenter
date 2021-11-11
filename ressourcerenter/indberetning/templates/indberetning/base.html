@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -10,8 +11,7 @@
     <script src="{% static "js/jquery.slim.min.js" %}"></script>
     <script src="{% static "js/bootstrap.bundle.min.js"%}"></script>
     <script src="{% static "js/select2.full.min.js"%}"></script>
-    {% block extra_head_content %}{% endblock %}
-    <title>{% block http_title %}Resurserenter Test Mockup{% endblock %}</title>
+    <title>{% translate 'Indberetning af resurserenter' %}</title>
 </head>
 <body>
 <main role="main">
