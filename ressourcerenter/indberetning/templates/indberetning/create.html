@@ -1,84 +1,137 @@
 {% extends "indberetning/base.html"%}
+
+{% block title %}
+Indberetning af ressourcerenter
+{% endblock %}
+
 {% block content %}
-<h1>Indberetning af ressourcerenter</h1>
-<h2>Tidligere Indberetninger for 2. kvartal 2020</h2>
-<div class="table-responsive">
-    {% include 'indberetning/includes/indberetnings_list.html' %}
-</div>
-<hr />
-<h2>Nye indberetninger</h2>
-<div>
-    <div class="form-inline">
-        <strong class="mr-2">Kvartal / år:</strong> 2. kvartal 2020 (valgt på siden før)
-    </div>
-    <div class="form-inline">
-        <strong class="mr-2">Selskab / CVR:</strong> 12345678 (hente fra indberetters login)
-    </div>
-    <div class="form-inline">
-        {% if indberetnings_type == 'indhandling' %}
-        <strong class="mr-2">Indhandlingssted by/bygd</strong>
-        <select class="form-control col-2" id="js-select-indhandling" autocomplete="off">
-            <option>Nuuk</option>
-            <option>Bygd</option>
-        </select>
-        {% else %}
-        <strong class="mr-2">Fartøjs navn:</strong>
-        <select class="form-control col-2" id="js-boat-select" autocomplete="off">
-            <option>M/S Unsinkable II</option>
-            <option value="M/S Baljen">M/S Baljen</option>
-        </select>
-        {% endif %}
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="formContent">
+            <h2>Tidligere Indberetninger for 2. kvartal 2020</h2>
+            <div class="table-responsive">
+                {% include 'indberetning/includes/indberetnings_list.html' %}
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="table-responsive">
-    <hr />
-    <table class="table table-bordered table-sm">
-        <thead>
-        <tr>
-        {% if indberetnings_type == 'indhandling' %}
-            <th>Produkt</th>
-            <th>Mængde produktionvægt</th>
-            <th>Omregningsfaktor</th>
-            <th>Mængde levende vægt</th>
-            <th>Indhandlingsværdi</th>
-            <th>Afgifssats</th>
-            <th>Afgift til betaling</th>
-        {% else %}
-            <th>Produkt</th>
-            <th>Salgsværdi</th>
-            <th>Transporttillæg</th>
-            <th>Salgsværdi i alt / afgiftsgrundlag</th>
-            <th>Afgifssats</th>
-            <th>Afgift til betaling</th>
-        {% endif %}
-        </tr>
-        </thead>
-    </table>
-    <hr />
-</div>
-<div class="form-inline">
-    {# Det skal afklares om de tilgængelige produkter er afhængig af om der er tale om Fartøj/Fabrik(indhandlingsted) #}
-    <span>Tilføj nyt produkt:</span>
-    <select id="js-fishtype-select" class="form-control">
-        <option value="">Vælg fisketype</option>
-        <option value="rejer">Rejer</option>
-    </select>
-    <select id='js-product-select' class="form-control">
-        <option value="">Vælg produkt</option>
-        <option value="søkogte">Sø kogte</option>
-    </select>
-    <input type="button" class="btn btn-sm btn-primary" value="Tilføj produkt" id="js-add-product-button" />
-    <hr />
-</div>
-<div class="form-inline mt-2">
-    <label for="attachment">Vedhæft bilag:</label>
-    <input id="attachment" type="file" name="attachment" />
-</div>
-<div class="form-inline justify-content-end">
-    <input type="submit" class="btn btn-success" value="Indsend" />
+
+<div class="row justify-content-center">
+    <div class="col-xs-12 col-md-12">
+        <div class="formContent">
+            <form>
+                <div class="form-section">
+                    <h2>Nye indberetninger</h2>
+                    <div class="form-row row CustomExtended">
+                        <strong class="mr-2">Kvartal / år:</strong> 2. kvartal 2020 (valgt på siden før)
+                    </div>
+                    <div class="form-row row CustomExtended">
+                        <strong class="mr-2">Selskab / CVR:</strong> 12345678 (hente fra indberetters login)
+                    </div>
+                    <div class="form-row">
+                        {% if indberetnings_type == 'indhandling' %}
+                            <div class="form-cell col-xs-12 col-md-6">
+                                <div class="selectField">
+                                    <label for="js-select-indhandling">Indhandlingssted by/bygd</label>
+                                    <div class="input-container">
+                                        <select class="form-control col-2" data-error-message="*" id="js-select-indhandling" autocomplete="off">
+                                            <option>Nuuk</option>
+                                            <option>Bygd</option>
+                                        </select>
+                                        <span class="error-msg">*</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="form-cell col-xs-12 col-md-6">
+                                <div class="selectField">
+                                    <label for="js-boat-select">Fartøjs navn:</label>
+                                    <div class="input-container">
+                                        <select class="form-control col-2" data-error-message="*" id="js-boat-select" autocomplete="off">
+                                            <option>M/S Unsinkable II</option>
+                                            <option value="M/S Baljen">M/S Baljen</option>
+                                        </select>
+                                        <span class="error-msg">*</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="table-responsive">
+                    <hr />
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                        <tr>
+                            {% if indberetnings_type == 'indhandling' %}
+                            <th>Produkt</th>
+                            <th>Mængde produktionvægt</th>
+                            <th>Omregningsfaktor</th>
+                            <th>Mængde levende vægt</th>
+                            <th>Indhandlingsværdi</th>
+                            <th>Afgifssats</th>
+                            <th>Afgift til betaling</th>
+                            {% else %}
+                            <th>Produkt</th>
+                            <th>Salgsværdi</th>
+                            <th>Transporttillæg</th>
+                            <th>Salgsværdi i alt / afgiftsgrundlag</th>
+                            <th>Afgifssats</th>
+                            <th>Afgift til betaling</th>
+                            {% endif %}
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+
+                    <div class="form-inline">
+                        {# Det skal afklares om de tilgængelige produkter er afhængig af om der er tale om Fartøj/Fabrik(indhandlingsted) #}
+                        <div class="form-cell col-xs-12 col-md-6">
+                            <span>Tilføj nyt produkt:</span>
+                            <div class="selectField">
+                                <div class="input-container">
+                                    <select id="js-fishtype-select" class="form-control">
+                                        <option value="">Vælg fisketype</option>
+                                        <option value="rejer">Rejer</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="selectField">
+                                <div class="input-container">
+                                    <select id='js-product-select' class="form-control">
+                                        <option value="">Vælg produkt</option>
+                                        <option value="søkogte">Sø kogte</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <input type="button" class="button--highlight" value="Tilføj produkt" id="js-add-product-button" />
+                        </div>
+                    </div>
+
+                    <div class="form-inline">
+                        <div class="form-cell col-xs-12 col-md-6">
+                            <div class="fileField">
+                                <label for="attachment">Vedhæft bilag:</label>
+                                <div class="input-container">
+                                    <input id="attachment" type="file" name="attachment" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row justify-content-right">
+                    <div class="col-xs-12">
+                        <input type="submit" class="button--highlight" value="Opret ny indberetning" style="float: right"/>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
+<!--
 <script>
     $(document).ready(function() {
         $('select#js-select-indhandling').select2({
@@ -100,8 +153,8 @@
         $('select#js-product-select').select2({
             placeholder: "Vælg produkt",
         });
-
-
     });
 </script>
+
+-->
 {% endblock %}

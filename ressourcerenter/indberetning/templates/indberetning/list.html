@@ -1,18 +1,19 @@
 {% extends "indberetning/base.html"%}
-{% block alert %}
-<div class="alert alert-success" role="alert">
-    Ny indberetning for Fabrik med afgift 2015 kr registreret.
-</div>
-{% endblock %}
+
 {% block content %}
-<h1>Indberetning af ressourcerenter</h1>
-<h2>Indberetninger for 4. kvartal 2021</h2>
-<div class="table-responsive">
-    {% include 'indberetning/includes/indberetnings_list.html' %}
-</div>
-<div class="row justify-content-center">
-    <form class="form-inline">
-        <submit class="btn btn-sm btn-success">Opret ny indberetning</submit>
-    </form>
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="formContent">
+            <h2>Indberetninger for 4. kvartal 2021</h2>
+            <div class="table-responsive">
+                {% include 'indberetning/includes/indberetnings_list.html' %}
+            </div>
+            <div class="row justify-content-center">
+                <form class="form-inline">
+                    <input type="submit" class="button--highlight" value="Opret ny indberetning"/>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

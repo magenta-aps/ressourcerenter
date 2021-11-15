@@ -1,0 +1,54 @@
+{% load static %}
+{% load i18n %}
+<!doctype html>
+<html lang="da">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="{% static 'jquery/jquery.slim.min.js' %}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css" type="text/css">
+    <link rel="stylesheet" type="text/css" href="https://www.sullissivik.gl/build/css/styles.css"/>
+
+    <!--<link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.min.css' %}"/>-->
+    <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.bundle.js' %}"></script>
+
+    <title>
+        {% trans 'Indberetning af ressourcerenter' as default_title %}
+        {{ title|default:default_title }}
+    </title>
+</head>
+<body>
+{% include 'sullissivik/svg.html' %}
+<div class="site-wrapper">
+{% include 'sullissivik/header.html' %}
+<div class="main-content-container" aria-label="Indhold">
+    <div class="area_selector" aria-label="Område navigation">
+        <div class="area-selector-box">
+            <a href="/?sc_lang=da-DK&amp;mupid=Avannaata&amp;segment=citizen" class="area-link active" aria-label="Link til borgersektion">Borger</a>
+        </div>
+        <div class="area-selector-box">
+            <a href="https://www.sullissivik.gl:443/Forms/Fiskeri_Ansogningsskema_til_havgaende_fiskeri?sc_lang=da-DK&amp;mupid=Avannaata&amp;segment=business" class="area-link" aria-label="Link til erhvervssektion">Erhverv</a>
+        </div>
+    </div>
+    <div class="breadcrumb">
+        <div class="row">
+            <div class="col-xs-12">
+                <ol class="breadcrumb-list" aria-label="Brødkrummesti">
+                    <li class="breadcrumb-item">
+                        {% trans 'Indberetning af ressourcerenter' as default_title %}
+                        {{ title|default:default_title }}
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <a name="maincontent" id="maincontent"></a>
+    {% block page %}
+    {% endblock %}
+    </section>
+</div>
+{% include 'sullissivik/footer.html' %}
+</div>
+
+</body>
+</html>

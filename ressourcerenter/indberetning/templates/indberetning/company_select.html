@@ -1,21 +1,36 @@
 {% extends "indberetning/base.html"%}
+
+{% block title %}
+Vælg virksomhed
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <form>
-        <div class="form-group mt-2">
-            <label for="js-company-select">Tilknyttet virksomheder</label>
-            <select id="js-company-select" class="js-example-basic-single form-control mb-2 mr-sm-2" autocomplete="off">
-                <option value="AL">Virksomhed A</option>
-                <option value="WY">Virksomhed B</option>
-            </select>
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="formContent">
+            <form>
+                <div class="form-section">
+                    <div class="form-row row CustomExtended">
+                        <div class="form-cell col-xs-12 col-md-6">
+                            <div class="selectField">
+                                <label for="js-company-select">Tilknyttede virksomheder</label>
+                                <div class="input-container">
+                                    <select id="js-company-select" class="js-example-basic-single form-control mb-2 mr-sm-2" autocomplete="off">
+                                        <option value="AL">Virksomhed A</option>
+                                        <option value="WY">Virksomhed B</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <input type="submit" class="button--highlight" value="Indberet for virksomhed"/>
+                    </div>
+                </div>
+            </form>
         </div>
-        <div class="text-center">
-            <submit class="btn btn-sm btn-success">Indberet for virksomhed</submit>
-        </div>
-    </form>
+    </div>
 </div>
-
-
 
 <script>
     $(document).ready(function() {

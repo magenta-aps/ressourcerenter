@@ -1,25 +1,43 @@
 {% extends "indberetning/base.html"%}
 {% block content %}
 <div class="row justify-content-center">
-    <form>
-        <div class="form-group mt-2">
-            <label for="js-type-select">Type af indberetning</label>
-            <select id="js-type-select" class="form-control">
-                <option>Fartøj</option>
-                <option>Fabrik/indhandlingssted</option>
-            </select>
+    <div class="col-xs-12 col-md-12">
+        <div class="formContent">
+            <form>
+                <div class="form-section">
+                    <div class="form-row row CustomExtended">
+                        <div class="form-cell col-xs-12 col-md-6">
+                            <div class="selectField">
+                                <label for="js-type-select">Type af indberetning</label>
+                                <div class="input-container">
+                                    <select id="js-type-select" class="form-control">
+                                        <option>Fartøj</option>
+                                        <option>Fabrik/indhandlingssted</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row row CustomExtended">
+                        <div class="form-cell col-xs-12 col-md-6">
+                            <div class="selectField">
+                                <label for="js-periode-select">Indberetningsperiode</label>
+                                <div class="input-container">
+                                    <select id="js-periode-select" class="form-control">
+                                        <option> 4. kvartal 2021</option>
+                                        <option> 3. kvartal 2021</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <input type="submit" class="button--highlight" value="Opret ny indberetning"/>
+                </div>
+            </form>
         </div>
-        <div class="form-group">
-            <label for="js-periode-select">Indberetningsperiode</label>
-            <select id="js-periode-select" class="form-control">
-                <option> 4. kvartal 2021</option>
-                <option> 3. kvartal 2021</option>
-            </select>
-        </div>
-        <div class="text-center">
-            <submit class="btn btn-sm btn-success">Opret ny indberetning</submit>
-        </div>
-    </form>
+    </div>
 </div>
 
 <script>
