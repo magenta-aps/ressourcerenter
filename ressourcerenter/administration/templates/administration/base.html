@@ -1,0 +1,27 @@
+{% load static %}
+{% load i18n %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}">
+    <link rel="stylesheet" href="{% static "css/select2.min.css" %}">
+    <link rel="stylesheet" href="{% static "css/select2-bootstrap4.min.css" %}">
+    <script src="{% static "js/jquery.slim.min.js" %}"></script>
+    <script src="{% static "js/bootstrap.bundle.min.js"%}"></script>
+    <script src="{% static "js/select2.full.min.js"%}"></script>
+    <title>{% translate 'Administration af resurserenter' %}</title>
+</head>
+<body>
+<main role="main">
+    <hr class="p-0 m-0">
+    <div class="row justify-content-center mt-2">
+        {% block alert %}{% endblock %}
+    </div>
+    <div class="container-fluid">
+        {% block content %}{% endblock %}
+    </div>
+</main>
+</body>
+</html>

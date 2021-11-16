@@ -6,7 +6,7 @@ from time import sleep
 
 
 class Command(BaseCommand):
-    help = 'reverse geocode positions'
+    help = 'wait for database to come online'
 
     def handle(self, *args, **options):
         while True:

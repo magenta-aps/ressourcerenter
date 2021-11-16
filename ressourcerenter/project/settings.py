@@ -44,6 +44,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'project.middleware.permissions.PermissionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -115,6 +116,19 @@ LANGUAGES = [
     ('da', _('Danish')),
     ('kl', _('Greenlandic')),
 ]
+
+# URLS for django login/logout used by administrators.
+LOGIN_URL = 'administration:login'
+
+LOGOUT_REDIRECT_URL = 'administration:login'
+LOGIN_REDIRECT_URL = 'administration:frontpage'
+LOGIN_PROVIDER_CLASS = 'indberetning.login.openid.OpenId'
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+OPENID = {
+    'mock': strtobool(os.environ.get('OPENID_MOCK', 'False'))
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
