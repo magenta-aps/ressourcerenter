@@ -114,6 +114,10 @@ class Indberetning(models.Model):
     salgspris_dkk = models.DecimalField(max_digits=100, decimal_places=2, default=0.00, verbose_name='salgspris DKK')
     salgsmaengde_vaegt = models.IntegerField(blank=True, null=True, verbose_name='salgsmængde vægt')
     yderligere_dokumentation = models.TextField(blank=True, default="")
+    vessel_greenlandic = models.BooleanField(default=True)
+    for_export = models.BooleanField(default=True) # skal det exporteres ud af grønalnd.
+    transferred_to_third_party = models.BooleanField(default=False)  # ikke indhandling men overgivet til 3. part
+    transport_included_in_price = models.BooleanField(default=True)  # transport udgifter indregnet i salgspris.
 
 
 class SummeretBeregnetIndberetning(models.Model):
