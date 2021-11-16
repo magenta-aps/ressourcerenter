@@ -3,8 +3,9 @@ set -e
 MAKE_MIGRATIONS=${MAKE_MIGRATIONS:=false}
 MIGRATE=${MIGRATE:=false}
 TEST=${TEST:=false}
+SAMPLE_DATA=${SAMPLE_DATA:=false}
 
-if [ "$MAKE_MIGRATIONS" = true ] || [ "$MIGRATE" = true ] || [ "$TEST" = true ]; then
+if [ "$MAKE_MIGRATIONS" = true ] || [ "$MIGRATE" = true ] || [ "$TEST" = true ] || "$SAMPLE_DATA" = true; then
   python manage.py wait_for_db
   if [ "$MAKE_MIGRATIONS" = true ]; then
     echo 'generating migrations'
@@ -17,6 +18,10 @@ if [ "$MAKE_MIGRATIONS" = true ] || [ "$MIGRATE" = true ] || [ "$TEST" = true ];
   if [ "$TEST" = true ]; then
     echo 'running tests!'
     python manage.py test
+  fi
+  if [ "$SAMPLE_DATA" = true ]; then
+    echo "Generating sample data"
+    python manage.py create_sample_data
   fi
 fi
 exec "$@"
