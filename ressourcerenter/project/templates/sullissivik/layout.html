@@ -13,8 +13,7 @@
     <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.bundle.js' %}"></script>
 
     <title>
-        {% trans 'Indberetning af ressourcerenter' as default_title %}
-        {{ title|default:default_title }}
+        {% translate 'Indberetning af ressourcerenter' %}
     </title>
 </head>
 <body>
@@ -35,8 +34,7 @@
             <div class="col-xs-12">
                 <ol class="breadcrumb-list" aria-label="Brødkrummesti">
                     <li class="breadcrumb-item">
-                        {% trans 'Indberetning af ressourcerenter' as default_title %}
-                        {{ title|default:default_title }}
+                        {% translate 'Indberetning af ressourcerenter' %}
                     </li>
                 </ol>
             </div>

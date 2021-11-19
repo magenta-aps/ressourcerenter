@@ -26,14 +26,25 @@
     <div class="row">
         <div class="col-xs-12 col-md-7 col-md-offset-3 col-fluid">
 
-            {% include 'indberetning/includes/contact.html' %}
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="pdfHeader formHeader group" id="divHeader">
+                        <div class="pdfBorder">
+                            <h1>Departementet for Fiskeri og Fangst</h1>
+                            <div class="pdfContact" style="float:left; padding-right:50px; display:inline-block;">Telefon: <a href="tel:+299345000" style="cursor:text; text-decoration:none;">(+299) 34 50 00</a><br>
+                                E-mail: <a shape="rect" href="mailto:apn@nanoq.gl">apn@nanoq.gl</a></div>
+                            <div class="pdfContact" style="float:right; display:inline-block;">Adresse: Imaneq 1A, 701<br>
+                                By: Nuuk</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="row">
                 <div class="col-xs-12">
                     <div class="formHeader">
                         <h1>
-                            {% trans 'Indberetning af ressourcerenter' as default_title %}
-                            {{ title|default:default_title }}
+                            {% translate 'Indberetning af ressourcerenter' %}
                         </h1>
                     </div>
                 </div>
