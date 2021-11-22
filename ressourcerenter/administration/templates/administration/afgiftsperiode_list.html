@@ -1,0 +1,29 @@
+{% extends 'administration/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% translate 'Afgiftsperioder' %}</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>{% translate 'Kvartal' %}</th>
+            <th>{% translate 'Satstabel' %}</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for tabel in object_list %}
+        <tr>
+            <td>
+                {{ tabel.aarkvartal }}
+            </td>
+            <td>
+                <a class="btn btn-primary" href="{% url 'administration:afgiftsperiode-satstabel' pk=tabel.pk %}">{% translate 'Satstabel' %}</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<a class="btn btn-secondary" href="{% url 'administration:afgiftsperiode-create' %}">{% translate 'Opret ny' %}</a>
+
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'administration/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% translate 'Opret Afgiftsperiode' %}</h1>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+        <div class="col-2">
+        <label for="{{ form.aarkvartal.id_for_label }}">{% translate 'Kvartal:' %}</label>
+        </div>
+        <div class="col-4">
+        {{ form.aarkvartal }}
+        </div>
+    </div>
+
+    <a class="btn btn-secondary" href="{% url 'administration:afgiftsperiode-list' %}">{% translate 'Annullér' %}</a>
+    <button type="submit" class="btn btn-primary">{% translate 'Gem' %}</button>
+</form>
+
+{% endblock %}
