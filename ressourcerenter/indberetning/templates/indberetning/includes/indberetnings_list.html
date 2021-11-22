@@ -1,45 +1,27 @@
+{% load i18n %}
 <table class="table table-bordered table-hover text-center table-sm">
     <thead>
     <tr>
-        <th>Dato</th>
-        <th>Fartøjs navn/indhandlingssted</th>
-        <th>Produkt</th>
-        <th>Mængde produktionvægt</th>
-        <th>Omregningsfaktor</th>
-        <th>Mængde levende vægt</th>
-        <th>Salgsværdi</th>
-        <th>Transporttillæg</th>
-        <th>Salgsværdi i alt / afgiftsgrundlag</th>
-        <th>Afgifssats</th>
-        <th>Afgift til betaling</th>
+        <th>{% translate 'Dato'%}</th>
+        <th>{% translate 'Fartøjs navn/indhandlingssted '%}</th>
+        <th>{% translate 'Fiskeart'%}</th>
+        <th>{% translate 'Produkt'%}</th>
+        <th>{% translate 'Salgsvægt'%}</th>
+        <th>{% translate 'Mængde levende vægt'%}</th>
+        <th>{% translate 'Salgsværdi'%}</th>
     </tr>
     </thead>
     <tbody>
+    {% for object in indberetnings_liste %}
     <tr>
-        <td>10/11-24</td>
-        <td>MS Unsinkable II</td>
-        <td class="text-left">Eksport / Rejer - fisket ved Svalbard og i Barenshavet / Rå, isede</td>
-        <td class="table-dark">-</td>
-        <td class="table-dark">-</td>
-        <td class="table-dark">-</td>
-        <td>50000</td>
-        <td>10000</td>
-        <td>60000</td>
-        <td>8%</td>
-        <td class="font-weight-bold">4800</td>
+        <td>{{object.indberetning.indberetningstidspunkt|date:"SHORT_DATE_FORMAT"}}</td>
+        <td>{{ object.indberetning.navn }}</td>
+        <td>{{ object.fiskeart.navn }}</td>
+        <td>{{ object.kategori.navn|default_if_none:"-" }}</td>
+        <td>{{ object.salgsvægt }}</td>
+        <td>{{ object.levende_vægt }}</td>
+        <td>{{ object.salgs_pris }}</td>
     </tr>
-    <tr data-category="Indhandling">
-        <td>10/14-24</td>
-        <td>Fabrik </td>
-        <td class="text-left">Indhandling / Torsk - fra havgående / Uden hoved, uden involde - straight cut off</td>
-        <td>26000</td>
-        <td>1.55</td>
-        <td>40300</td>
-        <td class="table-dark">-</td>
-        <td class="table-dark">-</td>
-        <td class="table-dark">-</td>
-        <td class="rate-cell">0.05 kr./kg</td>
-        <td class="calculated-tax font-weight-bold">2015</td>
-    </tr>
+    {% endfor %}
     </tbody>
 </table>

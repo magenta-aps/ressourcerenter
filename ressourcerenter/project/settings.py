@@ -127,7 +127,11 @@ LOGIN_PROVIDER_CLASS = 'indberetning.login.openid.OpenId'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 OPENID = {
-    'mock': strtobool(os.environ.get('OPENID_MOCK', 'False'))
+    'mock': os.environ.get('LOGIN_MOCK')
+}
+
+DAFO = {
+    'mock': os.environ.get('LOGIN_MOCK')
 }
 
 # Static files (CSS, JavaScript, Images)
