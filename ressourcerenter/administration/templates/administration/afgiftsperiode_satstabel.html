@@ -1,0 +1,86 @@
+{% extends 'administration/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% blocktranslate with periode=tabel.aarkvartal %}Satstabel for Afgiftsperiode {{ periode }} {% endblocktranslate %}</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.management_form }}
+
+    <table id="satstabel" class="table">
+        <thead>
+            <tr>
+                <th>{% translate 'Fiskeart' %}</th>
+                <th>{% translate 'Fangsttype' %}</th>
+                <th>{% translate 'Satstype' %}</th>
+                <th>{% translate 'Indhandling, kr/kg' %}</th>
+                <th>{% translate 'Eksport, kr/kg' %}</th>
+                <th>{% translate 'Grønlandsk fartøj, kr/kg' %}</th>
+                <th>{% translate 'Udenlandsk fartøj, kr/kg' %}</th>
+                <th>{% translate 'Indhandling, procent af salgspris' %}</th>
+                <th>{% translate 'Eksport, procent af salgspris' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for subform in form %}
+            <tr>
+                <td>
+                    {{ subform.ressource_obj.fiskeart.navn }}
+                    {{ subform.id }}
+                    {{ subform.ressource }}
+                </td>
+                <td>{{ subform.ressource_obj.fangsttype.navn }}</td>
+                <td>
+                    <select class="form-control type_select">
+                        <option value="">{% translate 'Vælg en satstype...' %}</option>
+                        <option value="prkg_indhandling_export">{% translate 'Indhandling/eksport kr/kg' %}</option>
+                        <option value="prkg_groenland_udenlandsk">{% translate 'Grønlandsk/udenlandsk fartøj kr/kg' %}</option>
+                        <option value="pct_indhandling_export">{% translate 'Indhandling/eksport procent' %}</option>
+                    </select>
+                </td>
+                <td class="switchcolumn prkg_indhandling_export">{{ subform.rate_pr_kg_indhandling }}</td>
+                <td class="switchcolumn prkg_indhandling_export">{{ subform.rate_pr_kg_export }}</td>
+                <td class="switchcolumn prkg_groenland_udenlandsk">{{ subform.rate_prkg_groenland }}</td>
+                <td class="switchcolumn prkg_groenland_udenlandsk">{{ subform.rate_prkg_udenlandsk }}</td>
+                <td class="switchcolumn pct_indhandling_export">{{ subform.rate_procent_indhandling }}</td>
+                <td class="switchcolumn pct_indhandling_export">{{ subform.rate_procent_export }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <a class="btn btn-secondary" href="{% url 'administration:afgiftsperiode-list' %}">{% translate 'Annullér' %}</a>
+    <button class="btn btn-primary" type="submit">{% translate 'Gem' %}</button>
+</form>
+<script>
+    $('.type_select').change(function (){
+        const className = $(this).val();
+        const columns = $(this).parents("tr").find(".switchcolumn");
+        if (className) {
+            columns.filter("." + className).find("input").removeAttr("disabled");
+            columns.not("." + className).find("input").attr("disabled", "disabled");
+        } else {
+            columns.find("input").attr("disabled", "disabled");
+        }
+    });
+    $("#satstabel tbody tr").each(function(){
+        const tr = $(this);
+        const types = ['prkg_indhandling_export', 'prkg_groenland_udenlandsk', 'pct_indhandling_export'];
+        const select = tr.find(".type_select");
+        let found = false;
+        types.forEach(function(type){
+            tr.find("."+type+" input").each(function(){
+                if (this.value) {
+                    select.find("option[value='"+type+"']").prop("selected", true);
+                    select.change();
+                    found = true;
+                    return false;
+                }
+            });
+        });
+        if (!found) {
+            select.find("option[value='']").prop("selected", true);
+            select.change();
+        }
+    });
+</script>
+{% endblock %}

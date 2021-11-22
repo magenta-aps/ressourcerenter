@@ -119,6 +119,12 @@ class Indberetning(models.Model):
     transferred_to_third_party = models.BooleanField(default=False)  # ikke indhandling men overgivet til 3. part
     transport_included_in_price = models.BooleanField(default=True)  # transport udgifter indregnet i salgspris.
 
+fartoej_groenlandsk = models.BooleanField(default=True)
+til_export = models.BooleanField(default=True
+overfoert_til_tredje_part = models.BooleanField(default=False)
+export_inkluderet_i_pris = models.BooleanField(default=True)
+
+
 
 class SummeretBeregnetIndberetning(models.Model):
     justering = models.BooleanField(default=False)

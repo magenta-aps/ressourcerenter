@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from indberetning.models import Indberetning, Virksomhed, Kategori, IndberetningLinje
-from administration.models import Afgiftsperiode, FiskeArt
+from administration.models import Afgiftsperiode, FiskeArt, Kvartal
 
 
 class Command(BaseCommand):
@@ -18,9 +18,12 @@ class Command(BaseCommand):
         user.set_password('admin')
         user.save()
 
-        afgiftsperiode1, _ = Afgiftsperiode.objects.get_or_create(navn='4. kvartal 2021', vis_i_indberetning=True)
+        kvartal1, _ = Kvartal.objects.get_or_create(aar=2021, kvartal=4)
+        kvartal2, _ = Kvartal.objects.get_or_create(aar=2021, kvartal=3)
 
-        afgiftsperiode2, _ = Afgiftsperiode.objects.get_or_create(navn='3. kvartal 2021', vis_i_indberetning=True)
+        afgiftsperiode1, _ = Afgiftsperiode.objects.get_or_create(navn='4. kvartal 2021', vis_i_indberetning=True, aarkvartal=kvartal1)
+
+        afgiftsperiode2, _ = Afgiftsperiode.objects.get_or_create(navn='3. kvartal 2021', vis_i_indberetning=True, aarkvartal=kvartal2)
         reje, _ = FiskeArt.objects.get_or_create(navn='reje')
         torsk, _ = FiskeArt.objects.get_or_create(navn='Torsk')
         Kategori.objects.get_or_create(navn='Hel fisk')
