@@ -29,6 +29,11 @@ class PermissionMiddleware:
         if request.resolver_match.app_name == 'administration' and request.user.is_authenticated is False:
             # user not logged in, but trying to access a page from the administration app
             return redirect_to_login(request.get_full_path(), self._administrator_login_url, 'next')
-        elif request.resolver_match.app_name == 'indberetning' and self._login_provider.user_is_logged_in(request) is False:
-            # nemId user not logged in so redirect to login page
-            return HttpResponseRedirect(self._indberetning_login_url)
+        elif request.resolver_match.app_name == 'indberetning':
+            if self._login_provider.user_is_logged_in(request) is False:
+                # nemId user not logged in so redirect to login page
+                return HttpResponseRedirect(self._indberetning_login_url)
+            elif request.session.get('cvr') is None and request.path != reverse('indberetning:company-select'):
+                # if the session do not contain a cvr number,
+                # always redirect to the company select page
+                return HttpResponseRedirect(reverse('indberetning:company-select'))

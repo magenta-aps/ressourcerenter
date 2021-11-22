@@ -15,19 +15,11 @@
         <strong class="mr-2">Selskab / CVR:</strong> 12345678 (hente fra indberetters login)
     </div>
     <div class="form-inline">
-        {% if indberetnings_type == 'indhandling' %}
-        <strong class="mr-2">Indhandlingssted by/bygd</strong>
-        <select class="form-control col-2" id="js-select-indhandling" autocomplete="off">
-            <option>Nuuk</option>
-            <option>Bygd</option>
-        </select>
-        {% else %}
         <strong class="mr-2">Fartøjs navn:</strong>
         <select class="form-control col-2" id="js-boat-select" autocomplete="off">
             <option>M/S Unsinkable II</option>
             <option value="M/S Baljen">M/S Baljen</option>
         </select>
-        {% endif %}
     </div>
 </div>
 

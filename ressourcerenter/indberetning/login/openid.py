@@ -48,7 +48,9 @@ class OpenId:
 
     @staticmethod
     def clear_session(session):
-        for key in ['oid_state', 'oid_nonce', 'user_info', 'login_method', 'sid']:
+        for key in ['oid_state', 'oid_nonce', 'user_info',
+                    'login_method', 'sid', 'cvr', 'cpr',
+                    'company_information', 'companies']:
             if key in session:
                 del session[key]
         session.save()
@@ -147,9 +149,13 @@ class OpenId:
                  false if the session was not recognized or any problem occurs
         """
         if self._validate_session(request.session):
-            if self._mock:
-                request.session['cpr'] = '123456-1955'
+            if self._mock in ('cpr', 'cvr'):
                 self._clear_secrets(request.session)
+                if self._mock == 'cpr':
+                    request.session['cpr'] = '123456-1955'
+                elif self._mock == 'cvr':
+                    request.session['cpr'] = '123456-1955'
+                    request.session['cvr'] = '12345678'
                 return True
 
             self._oic_client.store_registration_info({'client_id': self._client_id,

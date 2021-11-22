@@ -8,11 +8,11 @@
 <h1>Indberetning af ressourcerenter</h1>
 <h2>Indberetninger for 4. kvartal 2021</h2>
 <div class="table-responsive">
-    {% include 'indberetning/includes/indberetnings_list.html' %}
+    {% include 'indberetning/includes/indberetnings_list.html' with indberetnings_liste=object_list only %}
 </div>
 <div class="row justify-content-center">
     <form class="form-inline">
-        <submit class="btn btn-sm btn-success">Opret ny indberetning</submit>
+        <a href="{% url 'indberetning:type-select'%}"><button class="btn btn-sm btn-success">Opret ny indberetning</button></a>
     </form>
 </div>
 {% endblock %}
