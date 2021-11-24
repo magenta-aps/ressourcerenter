@@ -131,7 +131,12 @@ OPENID = {
 }
 
 DAFO = {
-    'mock': os.environ.get('LOGIN_MOCK')
+    'pitu_certificate': os.environ.get('PITU_CERTIFICATE'),
+    'pitu_key': os.environ.get('PITU_KEY'),
+    'pitu_root_ca': os.environ.get('PITU_ROOT_CA'),
+    'pitu_uxp_service': os.environ.get('PITU_UXP_SERVICE'),
+    'pitu_uxp_client': os.environ.get('PITU_UXP_CLIENT'),
+    'pitu_url': os.environ.get('PITU_URL'),
 }
 
 # Static files (CSS, JavaScript, Images)
