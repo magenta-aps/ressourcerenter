@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
                 ('salgs_pris', models.DecimalField(blank=True, decimal_places=2, max_digits=20, null=True, validators=[django.core.validators.MinValueValidator(Decimal('0.00'))], verbose_name='Omsætning')),
                 ('fiskeart', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='administration.fiskeart')),
                 ('indberetning', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='indberetning.indberetning')),
-                ('kategori', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='administration.kategori')),
+                ('kategori', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='administration.produktkategori')),
             ],
         ),
         migrations.AddField(

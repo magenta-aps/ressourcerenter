@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from django.conf import settings
-from indberetning.models import Indberetning, Virksomhed, Kategori, IndberetningLinje
+from indberetning.models import Indberetning, Virksomhed, ProduktKategori, IndberetningLinje
 from administration.models import Afgiftsperiode, FiskeArt, Kvartal
 
 
@@ -26,9 +26,9 @@ class Command(BaseCommand):
         afgiftsperiode2, _ = Afgiftsperiode.objects.get_or_create(navn='3. kvartal 2021', vis_i_indberetning=True, aarkvartal=kvartal2)
         reje, _ = FiskeArt.objects.get_or_create(navn='reje')
         torsk, _ = FiskeArt.objects.get_or_create(navn='Torsk')
-        Kategori.objects.get_or_create(navn='Hel fisk')
-        Kategori.objects.get_or_create(navn='Filet')
-        Kategori.objects.get_or_create(navn='Bi produkt')
+        ProduktKategori.objects.get_or_create(navn='Hel fisk')
+        ProduktKategori.objects.get_or_create(navn='Filet')
+        ProduktKategori.objects.get_or_create(navn='Bi produkt')
         virksomhed, _ = Virksomhed.objects.get_or_create(cvr='12345678')
 
         if not Indberetning.objects.exists():

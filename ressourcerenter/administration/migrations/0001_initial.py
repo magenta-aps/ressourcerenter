@@ -69,11 +69,11 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Kategori',
+            name='ProduktKategori',
             fields=[
                 ('uuid', models.UUIDField(default=uuid.uuid4, primary_key=True, serialize=False)),
                 ('navn', models.TextField(unique=True)),
-                ('beskrivelse', models.TextField()),
+                ('beskrivelse', models.TextField(blank=True, null=True)),
             ],
         ),
         migrations.CreateModel(
