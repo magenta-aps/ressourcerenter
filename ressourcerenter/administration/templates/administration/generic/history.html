@@ -1,0 +1,46 @@
+{% extends 'administration/base.html' %}
+{% load i18n %}
+{% load administration_tags %}
+
+{% block content %}
+<h1>
+    {% blocktranslate with object=object %}Historik for {{ object }}{% endblocktranslate %}
+</h1>
+{% if back_url %}
+<div class="row">
+    <div class="col-1">
+        <a class="btn btn-secondary" href="{{ back_url }}">{% trans 'Tilbage' %}</a>
+    </div>
+</div>
+{% endif %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>{% translate 'Ændringstidspunkt' %}</th>
+            <th>{% translate 'Ændret af' %}</th>
+            {% for fieldname, field in fields %}
+            <th>
+                {{ field.verbose_name.title }}
+            </th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+    {% for history_item in object_list %}
+        <tr>
+            <td>
+                {{ history_item.history_date }}
+            </td>
+            <td>
+                {{ history_item.history_user.username }}
+            </td>
+            {% for fieldname, field in fields %}
+            <td>
+                {{ history_item|get:fieldname|default_if_none:''|janej }}
+            </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -6,7 +6,11 @@
 <form method="post">
     {% csrf_token %}
     {{ form.management_form }}
-
+    <div class="row">
+        <div class="col-1">
+            <a class="btn btn-secondary" href="{% url 'administration:afgiftsperiode-list' %}">{% trans 'Tilbage' %}</a>
+        </div>
+    </div>
     <table id="satstabel" class="table">
         <thead>
             <tr>
@@ -19,6 +23,7 @@
                 <th>{% translate 'Udenlandsk fartøj, kr/kg' %}</th>
                 <th>{% translate 'Indhandling, procent af salgspris' %}</th>
                 <th>{% translate 'Eksport, procent af salgspris' %}</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -44,6 +49,11 @@
                 <td class="switchcolumn prkg_groenland_udenlandsk">{{ subform.rate_prkg_udenlandsk }}</td>
                 <td class="switchcolumn pct_indhandling_export">{{ subform.rate_procent_indhandling }}</td>
                 <td class="switchcolumn pct_indhandling_export">{{ subform.rate_procent_export }}</td>
+                <td>
+                    {% if subform.id.value %}
+                    <a class="btn btn-primary" href="{% url 'administration:satstabelelement-history' subform.id.value %}">{% translate 'Historik' %}</a>
+                    {% endif %}
+                </td>
             </tr>
         {% endfor %}
         </tbody>

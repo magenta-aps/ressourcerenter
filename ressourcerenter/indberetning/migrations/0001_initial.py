@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('administration', '0002_fishtypes'),
+        ('administration', '0003_fishtypes'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
