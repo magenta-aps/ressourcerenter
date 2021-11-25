@@ -1,7 +1,11 @@
+import logging
+from urllib.parse import urljoin
 from requests import Session
 import requests
 from requests import RequestException
 from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 
 class DatafordelerClient(object):
@@ -41,7 +45,6 @@ class DatafordelerClient(object):
         """
         return {'12345678': {'not_implemented': 'not_implemented'}}
 
-
     def get(self, url, service_header):
         headers = {'Uxp-Service': service_header,
                    'Uxp-Client': settings.PITU.get('client_header')}
@@ -57,7 +60,6 @@ class DatafordelerClient(object):
             raise
         else:
             return r.json()
-
 
     def extract_address_and_name_from_cpr_response(self, data_dict):
         data_dict['country'] = self.get_country(data_dict.get('myndighedskode', None))

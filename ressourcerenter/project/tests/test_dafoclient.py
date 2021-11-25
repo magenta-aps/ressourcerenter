@@ -1,29 +1,24 @@
-from django.urls import reverse
-from django.contrib.auth import get_user_model
+
 from django.test import TestCase, override_settings
 from project.dafo import DatafordelerClient
 
 
-
 @override_settings(OPENID={'mock': 'cvr'})
-class TestStuff(TestCase):
+class TestDafoConnection(TestCase):
 
-    def test_administration_not_logged_in(self):
+    def test_lookup_company_name(self):
         pass
         """
-        Stuff
+        Call the dafo-client to get a companyname
         """
         dafo_client = DatafordelerClient.from_settings()
         result = dafo_client.get_company_information('1234')
-        # result{'name': 'test company_name'}
         self.assertEqual('test company_name', result.get('name'))
 
-
-
-    #def test_user_not_logged_in(self):
+    def test_lookup_company_other(self):
         """
-        Stuff
+        Call the dafo-client to get other
         """
-        #dafo_client = DatafordelerClient.from_settings()
-        #result = dafo_client.get_company_information('1234')
-        # print(result)
+        dafo_client = DatafordelerClient.from_settings()
+        result = dafo_client.get_company_information('1234')
+        self.assertEqual('test company_name', result.get('name'))
