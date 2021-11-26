@@ -1,0 +1,65 @@
+{% extends "indberetning/base.html"%}
+{% load i18n %}
+{% block alert %}
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert text-center {% if message.level == 20 %}alert-info
+                                  {% elif message.level == 25 %}alert-success
+                                  {% elif message.level == 30 %}alert-warning
+                                  {% elif message.level == 40 %}alert-danger
+                                  {% endif %}" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}
+{% block content %}
+<h1>Tidligere indberetninger</h1>
+<div class="table-responsive">
+    <table class="table table-borderless text-center table-sm">
+        <thead>
+        <tr>
+            <th>{% translate 'Dato'%}</th>
+            <th>{% translate 'Fartøjs navn/indhandlingssted '%}</th>
+            <th>{% translate 'Fiskeart'%}</th>
+            <th>{% translate 'Produkt'%}</th>
+            <th>{% translate 'Salgsvægt'%}</th>
+            <th>{% translate 'Levende vægt'%}</th>
+            <th>{% translate 'Salgspris'%}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for indberetning in object_list %}
+        <tr>
+            <td class="border-top border-dark">{{indberetning.indberetningstidspunkt|date:"SHORT_DATE_FORMAT"}}</td>
+            <td class="border-top border-dark">{{ indberetning.navn }}</td>
+            <td class="border-top border-dark"></td>
+            <td class="border-top border-dark"></td>
+            <td class="border-top border-dark"></td>
+            <td class="border-top border-dark"></td>
+            <td class="border-top border-dark">
+                <a href="{% url 'indberetning:indberetning-edit' indberetning.uuid %}" class="btn btn-sm btn-secondary">{% translate 'Justér indberetning'%}</a>
+            </td>
+        </tr>
+        {% for object in indberetning.linjer.all %}
+        <tr>
+            <td></td>
+            <td></td>
+            <td>{{ object.fiskeart }}</td>
+            <td>{{object.kategori|default_if_none:'-'}}</td>
+            <td>{{ object.salgsvægt }}</td>
+            <td>{{ object.levende_vægt }}</td>
+            <td>{{ object.salgspris }}</td>
+        </tr>
+        {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="row justify-content-center">
+    <form class="form-inline" method="POST" action="{% url 'indberetning:type-select'%}">
+        {% csrf_token %}
+        <input class="btn btn-sm btn-success" type="submit" value="{% translate 'Opret ny indberetning'%}">
+    </form>
+</div>
+{% endblock %}

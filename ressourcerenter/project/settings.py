@@ -117,6 +117,11 @@ LANGUAGES = [
     ('kl', _('Greenlandic')),
 ]
 
+UPLOAD_PATH = '/uploads'
+MEDIA_ROOT = "/srv/media/"
+MEDIA_URL = "/media/"
+
+USE_THOUSAND_SEPARATOR = True
 # URLS for django login/logout used by administrators.
 LOGIN_URL = 'administration:login'
 

@@ -1,12 +1,13 @@
+from decimal import Decimal, ROUND_HALF_EVEN
+from typing import Iterable
+from uuid import uuid4
+
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.forms.models import model_to_dict
 from django.utils.translation import gettext as _
-from django.core.validators import MinValueValidator, MaxValueValidator
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
-from uuid import uuid4
-from decimal import Decimal, ROUND_HALF_EVEN
-from typing import Iterable
 
 
 class ProduktKategori(models.Model):
