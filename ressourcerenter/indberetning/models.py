@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext as _
-from administration.models import Afgiftsperiode, FiskeArt, Kategori
+from administration.models import Afgiftsperiode, FiskeArt, ProduktKategori
 from uuid import uuid4
 from indberetning.validators import validate_cvr, validate_cpr
 from django.core.validators import MinValueValidator
@@ -63,7 +63,7 @@ class IndberetningLinje(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid4)
     indberetning = models.ForeignKey(Indberetning, on_delete=models.CASCADE)
     fiskeart = models.ForeignKey(FiskeArt, on_delete=models.PROTECT)
-    kategori = models.ForeignKey(Kategori, on_delete=models.PROTECT, null=True, blank=True)  # burges kun til eksport
+    kategori = models.ForeignKey(ProduktKategori, on_delete=models.PROTECT, null=True, blank=True)  # burges kun til eksport
     salgs_vægt = models.DecimalField(max_digits=20, decimal_places=2,
                                      verbose_name=_('Vægt/Mængde kg'),
                                      validators=[MinValueValidator(Decimal('0.00'))])

@@ -9,10 +9,21 @@ from decimal import Decimal, ROUND_HALF_EVEN
 from typing import Iterable
 
 
-class Kategori(models.Model):
-    uuid = models.UUIDField(primary_key=True, default=uuid4)
-    navn = models.TextField(unique=True)  # Hel fisk, filet, bi-produkt
-    beskrivelse = models.TextField()
+class ProduktKategori(models.Model):
+    uuid = models.UUIDField(
+        primary_key=True,
+        default=uuid4
+    )
+    navn = models.TextField(  # Hel fisk, filet, bi-produkt
+        unique=True
+    )
+    beskrivelse = models.TextField(
+        null=True,
+        blank=True,
+    )
+
+    def __str__(self):
+        return self.navn
 
 
 class Kvartal(models.Model):
