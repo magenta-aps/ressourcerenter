@@ -111,3 +111,11 @@ class DatafordelerClient(object):
             return self.get_address_and_name_for_cpr(number)
         elif number_type == 'cvr':
             return self.get_address_and_name_for_cvr(number)
+
+    def get_owned_companies(self, cpr):
+        """
+        Should return a list of companies there might need some definition
+        """
+        if self._mock:
+            return {'12345678': '12345678'}
+        pass
