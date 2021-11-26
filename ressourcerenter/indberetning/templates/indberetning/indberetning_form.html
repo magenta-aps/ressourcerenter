@@ -1,0 +1,127 @@
+{% extends "indberetning/base.html"%}
+{% load i18n %}
+{% block content %}
+{% if edit_mode %}
+<h2>{% blocktranslate with tidspunkt=object.indberetningstidspunkt|date:"SHORT_DATE_FORMAT" %}Tidligere Indberetninger fra {{tidspunkt}}{% endblocktranslate %}</h2>
+<div class="table-responsive">
+    {% include 'indberetning/includes/linje_list.html' with object_list=object.linjer.all %}
+</div>
+<hr />
+<h2>{% translate 'Justerer indberetning'%}</h2>
+{% else %}
+<hr />
+<h2>{% translate 'Nye indberetninger'%}</h2>
+{% endif %}
+<form method="POST" enctype="multipart/form-data" action="{{ form_url }}">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    {{ bilag_formset.management_form }}
+    {{ form.non_form_errors }}
+    <div>
+        <div class="form-inline">
+            <strong class="mr-2">{% translate 'Kvartal / år:' %}</strong>{{ afgiftsperiode }}
+        </div>
+        <div class="form-inline">
+            <strong class="mr-2">{% translate 'Selskab / CVR:' %}</strong> {{ request.session.cvr }}
+        </div>
+        <div class="form-inline">
+            <strong class="mr-2">{% translate 'Fartøjs navn:' %}</strong>
+            <select name="navn" class="form-control col-2" id="js-boat-select" autocomplete="off">
+                <option value="">--</option>
+                {% for object in fartøj %}
+                    <option {% if object.navn ==  form.navn.value%}selected{% endif %} value="{{ object.navn }}">{{ object.navn }}</option>
+                {% endfor %}
+            </select>
+            {% if form.errors.navn %}
+                <small class="error">{{form.errors.navn}}</small>
+            {% endif %}
+        </div>
+    </div>
+    <div class="table-responsive">
+        <hr />
+        <table class="table table-bordered text-center table-sm" id="js-product-table">
+            <thead>
+            <tr>
+                <th>{% translate 'Fiskeart'%}</th>
+                <th>{% translate 'Produkt'%}</th>
+                <th>{% translate 'Salgsvægt'%}</th>
+                <th>{% translate 'Levende vægt'%}</th>
+                <th>{% translate 'Salgspris'%}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for form in formset %}
+            {{ form.non_field_errors }}
+            <tr>
+                <td>{{form.fiskeart}}{% if form.errors.fiskeart %}<br/><small>{{form.errors.fiskeart}}</small>{% endif %}</td>
+                <td>{{form.kategori}}{% if form.errors.kategori %}<br/><small>{{form.errors.kategori}}</small>{% endif %}</td>
+                <td>{{form.salgsvægt}}{% if form.errors.salgsvægt %}<br/><small>{{form.errors.salgsvægt}}</small>{% endif %}</td>
+                <td>{{form.levende_vægt}}{% if form.errors.levende_vægt %}<br/><small>{{form.errors.levende_vægt}}</small>{% endif %}</td>
+                <td>{{form.salgspris}}{% if form.errors.salgspris %}<br/><small>{{form.errors.salgspris}}</small>{% endif %}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="text-right">
+        <input type="button" class="btn btn-sm btn-primary" id="js-add-product-button" value="{% translate 'Tilføj linje'%}">
+    </div>
+    <hr/>
+    <div class="form-inline">
+        <strong class="mr-2">{% translate 'Eksisterende bilag:'%}</strong>{% for bilag in object.bilag.all %}<a class="mr-2" href="{% url 'indberetning:bilag-download' pk=bilag.uuid%}">{{bilag.filename}}</a>{% endfor %}
+    </div>
+    {{ bilag_formset.non_form_errors }}
+    {{ form.non_field_errors }}
+    <div id="js-bilag-wrapper">
+        {% for form in bilag_formset %}
+        <div class="form-inline mt-2">
+            {{form}}
+        </div>
+        {% endfor %}
+    </div>
+    <div class="form-inline mt-2">
+        <input type="button" id="js-add-bilag-button" class="btn btn-primary btn-sm" value="{% translate 'Tilføj bilag' %}">
+    </div>
+    <div class="form-inline justify-content-end">
+        <input type="submit" class="btn btn-success" value="{% translate 'Indsend' %}" />
+    </div>
+</form>
+
+<div style="display: none">
+    <table>
+        <tbody id="js-initial-row">
+        <tr>
+            <td>{{formset.empty_form.fiskeart}}</td>
+            <td>{{formset.empty_form.kategori}}</td>
+            <td>{{formset.empty_form.salgsvægt}}</td>
+            <td>{{formset.empty_form.levende_vægt}}</td>
+            <td>{{formset.empty_form.salgspris}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div id="js-bilag-empty">
+        <div class="form-inline mt-2">
+            {{ bilag_formset.empty_form }}
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $('select#js-boat-select').select2({
+            tags: true,
+            placeholder: "Vælg eller opret nyt fartøj",
+            allowClear: true
+        });
+        $('input#js-add-product-button').on('click', function(){
+            let form_idx = $('input[name=linje-TOTAL_FORMS]').val();
+            $('table#js-product-table tbody').append($('tbody#js-initial-row').html().replace(/__prefix__/g, form_idx));
+            $('input[name=linje-TOTAL_FORMS]').val(parseInt(form_idx)+1);
+        });
+        $('input#js-add-bilag-button').on('click', function(){
+            let form_idx = $('input[name=bilag-TOTAL_FORMS]').val();
+            $('div#js-bilag-wrapper').append($('div#js-bilag-empty').html().replace(/__prefix__/g, form_idx))
+            $('input[name=bilag-TOTAL_FORMS]').val(parseInt(form_idx)+1);
+        });
+    });
+</script>
+{% endblock %}

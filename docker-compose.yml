@@ -13,6 +13,7 @@ services:
       - ./dev-environment/ressourcerenter.env
     volumes:
       - ./ressourcerenter/:/app
+      - ./data/:/srv/media
     environment:
       - MAKE_MIGRATIONS=true
       - MIGRATE=true
