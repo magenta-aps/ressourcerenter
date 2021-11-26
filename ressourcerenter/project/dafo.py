@@ -14,7 +14,14 @@ class DatafordelerClient(object):
     def __init__(self, mock=None, client_header=None, service_header_cvr=None, service_header_cpr=None, certificate=None, pitu_root_ca=None, private_key=None, pitu_url=None, verify=True, timeout=60):
 
         self._mock = mock
+        self._client_header = None
+        self._service_header_cvr = None
+        self._service_header_cpr = None
+        self._cert = None
+        self._pitu_root_ca = None
+        self._pitu_url = None
         self._enabled = False
+        self._timeout = False
 
         if self._mock is None:
             self._enabled = True
@@ -39,8 +46,8 @@ class DatafordelerClient(object):
     def from_settings(cls):
 
         return cls(settings.DAFO.get('pitu_mock'), settings.DAFO.get('pitu_uxp_client'), settings.DAFO.get('pitu_uxp_service_cvr'),
-            settings.DAFO.get('pitu_uxp_service_cpr'), settings.DAFO.get('pitu_certificate'), settings.DAFO.get('pitu_root_ca'),
-            settings.DAFO.get('pitu_key'), settings.DAFO.get('pitu_url'))
+                   settings.DAFO.get('pitu_uxp_service_cpr'), settings.DAFO.get('pitu_certificate'), settings.DAFO.get('pitu_root_ca'),
+                   settings.DAFO.get('pitu_key'), settings.DAFO.get('pitu_url'))
 
     def get_company_information(self, cvr):
         """
@@ -51,10 +58,11 @@ class DatafordelerClient(object):
         else:
             return self.get_address_and_name_for_cvr(cvr)
 
-    def get(self, url, service_header):
+    def get(self, number, service_header):
         headers = {'Uxp-Service': service_header,
                    'Uxp-Client': self._client_header}
         try:
+            url = urljoin(self._pitu_url, '{number}/'.format(number=number))
             r = requests.get(url, cert=self._cert, verify=self._pitu_root_ca, timeout=self._timeout,
                              headers=headers)
             # raises 404 if cpr is invalid
@@ -67,39 +75,36 @@ class DatafordelerClient(object):
         else:
             return r.json()
 
-    @staticmethod
-    def get_country(code):
-        if code > 900:
-            return 'GL'
-        elif code < 900:
-            return 'DK'
-
     def extract_address_and_name_from_cpr_response(self, data_dict):
-        data_dict['country'] = self.get_country(data_dict.get('myndighedskode', None))
-        for field in ('fornavn', 'efternavn', 'adresse', 'postnummer', 'bynavn'):
+        for field in ('fornavn', 'efternavn', 'adresse', 'postnummer', 'bynavn', 'landekode'):
             # avoid key errors by adding '' as default value since every field is optional
             if field not in data_dict:
                 data_dict[field] = ''
         return {'name': '{fornavn} {efternavn}'.format(**data_dict),
                 'address': '{adresse}\n{postnummer} {bynavn}'.format(**data_dict),
-                'country': '{country}'.format(**data_dict)}
+                'country': '{landekode}'.format(**data_dict)}
 
     def extract_address_and_company_from_cvr_response(self, data_dict):
-        data_dict['country'] = self.get_country(data_dict.get('myndighedskode', None))
-        for field in ('adresse', 'postnummer', 'bynavn'):
+        for field in ('adresse', 'postnummer', 'bynavn', 'landekode'):
             if field not in data_dict:
                 data_dict[field] = ''
         return {'name': data_dict.get('navn', ''),
                 'address': '{adresse}\n{postnummer} {bynavn}'.format(**data_dict),
-                'country': '{country}'.format(**data_dict)}
+                'country': '{landekode}'.format(**data_dict)}
 
     def get_address_and_name_for_cpr(self, number):
-        url = urljoin(self._pitu_url, '{number}/'.format(number=number))
-        return self.extract_address_and_name_from_cpr_response(self.get(url, self._service_header_cpr))
+        if self._enabled:
+            response = self.get(number, self._service_header_cpr)
+        else:
+            response = {"fornavn": "fornavn", "efternavn": "efternavn", "adresse": "adresse", "postnummer": "0000", "landekode": "GL"}
+        return self.extract_address_and_name_from_cpr_response(response)
 
     def get_address_and_name_for_cvr(self, number):
-        url = urljoin(self._pitu_url, '{number}/'.format(number=number))
-        return self.extract_address_and_company_from_cvr_response(self.get(url, self._service_header_cvr))
+        if self._enabled:
+            response = self.get(number, self._service_header_cvr)
+        else:
+            response = {"navn": "navn", "adresse": "adresse", "postnummer": "0000", "landekode": "GL"}
+        return self.extract_address_and_company_from_cvr_response(response)
 
     def get_address_and_name(self, number, number_type):
         if number_type == 'cpr':
