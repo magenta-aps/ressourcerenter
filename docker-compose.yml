@@ -13,10 +13,6 @@ services:
       - ./dev-environment/ressourcerenter.env
     volumes:
       - ./ressourcerenter/:/app
-      # TODO: REMOVE LATER
-      - ./dev-environment/certs/private/apache-selfsigned.key:/etc/ssl/pitu/key.pem
-      - ./dev-environment/certs/public/apache-selfsigned.crt:/etc/ssl/pitu/certificate.crt
-      - ./dev-environment/certs/remote/pitu_https_certificate.crt:/etc/ssl/proxy/knno_root_ca.cert
     environment:
       - MAKE_MIGRATIONS=true
       - MIGRATE=true
