@@ -11,16 +11,18 @@ logger = logging.getLogger(__name__)
 class DatafordelerClient(object):
     combined_service_page_size = 400
 
-    def __init__(self, mock=None, client_header=None, service_header=None, certificate=None, private_key=None, pitu_url=None, verify=True, timeout=60):
+    def __init__(self, mock=None, client_header=None, service_header_cvr=None, service_header_cpr=None, certificate=None, pitu_root_ca=None, private_key=None, pitu_url=None, verify=True, timeout=60):
 
         self._mock = mock
-        self._client_header = client_header
-        self._service_header = service_header
         self._enabled = False
 
         if self._mock is None:
             self._enabled = True
+            self._client_header = client_header
+            self._service_header_cvr = service_header_cvr
+            self._service_header_cpr = service_header_cpr
             self._cert = (certificate, private_key)
+            self._pitu_root_ca = pitu_root_ca
             self._private_key = private_key
             self._pitu_url = pitu_url
 
@@ -36,7 +38,8 @@ class DatafordelerClient(object):
     @classmethod
     def from_settings(cls):
 
-        return cls(settings.DAFO.get('pitu_mock'), settings.DAFO.get('pitu_uxp_client'), settings.DAFO.get('pitu_uxp_service'), settings.DAFO.get('pitu_certificate'),
+        return cls(settings.DAFO.get('pitu_mock'), settings.DAFO.get('pitu_uxp_client'), settings.DAFO.get('pitu_uxp_service_cvr'),
+            settings.DAFO.get('pitu_uxp_service_cpr'), settings.DAFO.get('pitu_certificate'), settings.DAFO.get('pitu_root_ca'),
             settings.DAFO.get('pitu_key'), settings.DAFO.get('pitu_url'))
 
     def get_company_information(self, cvr):
@@ -48,17 +51,11 @@ class DatafordelerClient(object):
         else:
             return self.get_address_and_name_for_cvr(cvr)
 
-    def get_owned_companies(self, cpr):
-        """
-        Should return a list of companies owned by cpr, it is still undefined if we need this functionality
-        """
-        return {'12345678': {'not_implemented': 'not_implemented'}}
-
     def get(self, url, service_header):
         headers = {'Uxp-Service': service_header,
                    'Uxp-Client': self._client_header}
         try:
-            r = requests.get(url, cert=self._cert, verify=self._private_key, timeout=self._timeout,
+            r = requests.get(url, cert=self._cert, verify=self._pitu_root_ca, timeout=self._timeout,
                              headers=headers)
             # raises 404 if cpr is invalid
             r.raise_for_status()
@@ -70,6 +67,13 @@ class DatafordelerClient(object):
         else:
             return r.json()
 
+    @staticmethod
+    def get_country(code):
+        if code > 900:
+            return 'GL'
+        elif code < 900:
+            return 'DK'
+
     def extract_address_and_name_from_cpr_response(self, data_dict):
         data_dict['country'] = self.get_country(data_dict.get('myndighedskode', None))
         for field in ('fornavn', 'efternavn', 'adresse', 'postnummer', 'bynavn'):
@@ -77,7 +81,8 @@ class DatafordelerClient(object):
             if field not in data_dict:
                 data_dict[field] = ''
         return {'name': '{fornavn} {efternavn}'.format(**data_dict),
-                'address': '{adresse}\n{postnummer} {bynavn}\n{country}'.format(**data_dict)}
+                'address': '{adresse}\n{postnummer} {bynavn}'.format(**data_dict),
+                'country': '{country}'.format(**data_dict)}
 
     def extract_address_and_company_from_cvr_response(self, data_dict):
         data_dict['country'] = self.get_country(data_dict.get('myndighedskode', None))
@@ -85,18 +90,16 @@ class DatafordelerClient(object):
             if field not in data_dict:
                 data_dict[field] = ''
         return {'name': data_dict.get('navn', ''),
-                'address': '{adresse}\n{postnummer} {bynavn}\n{country}'.format(**data_dict)}
+                'address': '{adresse}\n{postnummer} {bynavn}'.format(**data_dict),
+                'country': '{country}'.format(**data_dict)}
 
     def get_address_and_name_for_cpr(self, number):
         url = urljoin(self._pitu_url, '{number}/'.format(number=number))
-        return self.extract_address_and_name_from_cpr_response(self.get(url, self._service_header))
+        return self.extract_address_and_name_from_cpr_response(self.get(url, self._service_header_cpr))
 
     def get_address_and_name_for_cvr(self, number):
-        if not self._enabled:
-            return {}
-
         url = urljoin(self._pitu_url, '{number}/'.format(number=number))
-        return self.extract_address_and_company_from_cvr_response(self.get(url, self._service_header))
+        return self.extract_address_and_company_from_cvr_response(self.get(url, self._service_header_cvr))
 
     def get_address_and_name(self, number, number_type):
         if number_type == 'cpr':
