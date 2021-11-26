@@ -13,6 +13,9 @@ services:
       - ./dev-environment/ressourcerenter.env
     volumes:
       - ./ressourcerenter/:/app
+      # TODO: REMOVE LATER
+      - ./dev-environment/certs/private/apache-selfsigned.key:/etc/ssl/pitu/key.pem
+      - ./dev-environment/certs/public/apache-selfsigned.crt:/etc/ssl/pitu/certificate.crt
     environment:
       - MAKE_MIGRATIONS=true
       - MIGRATE=true
