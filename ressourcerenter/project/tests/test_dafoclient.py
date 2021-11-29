@@ -38,7 +38,8 @@ class TestDafoConnection(TestCase):
         result = dafo_client.get_person_information('1111111111')
         self.assertEqual({
             "cprNummer": "1111111111",
-            "civilstand": "U",
+            "fornavn": "Anders",
+            "efternavn": "And",
             "statsborgerskab": 5100,
             "køn": "K",
             "statuskode": 1,
@@ -47,7 +48,8 @@ class TestDafoConnection(TestCase):
             "myndighedskode": 957,
             "vejkode": 281,
             "kommune": "Qeqqata Kommunia",
-            "postnummer": 0,
-            "stedkode": 0,
+            "adresse": "Imaneq 32A, 3.",
+            "postnummer": 3900,
+            "stedkode": 600,
             "landekode": "GL"
         }, result)

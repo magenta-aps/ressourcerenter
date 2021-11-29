@@ -78,7 +78,8 @@ class DatafordelerClient(object):
         if self._mock:
             return {
                 "cprNummer": "1111111111",
-                "civilstand": "U",
+                "fornavn": "Anders",
+                "efternavn": "And",
                 "statsborgerskab": 5100,
                 "køn": "K",
                 "statuskode": 1,
@@ -87,8 +88,8 @@ class DatafordelerClient(object):
                 "myndighedskode": 957,
                 "vejkode": 281,
                 "kommune": "Qeqqata Kommunia",
-                "postnummer": 0,
-                "stedkode": 0,
+                "postnummer": 3900,
+                "stedkode": 600,
                 "landekode": "GL"
             }
         else:
