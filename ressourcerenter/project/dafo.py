@@ -88,6 +88,7 @@ class DatafordelerClient(object):
                 "myndighedskode": 957,
                 "vejkode": 281,
                 "kommune": "Qeqqata Kommunia",
+                "adresse": "Imaneq 32A, 3.",
                 "postnummer": 3900,
                 "stedkode": 600,
                 "landekode": "GL"
