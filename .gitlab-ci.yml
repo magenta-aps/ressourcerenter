@@ -73,6 +73,5 @@ Ressourcerenter Unittest:
     POSTGRES_PASSWORD: ressourcerenter
     POSTGRES_DB: ressourcerenter
     POSTGRES_HOST: ressourcerenter-db
-    PITU_MOCK: true
   script:
     - cd /app && python manage.py test
