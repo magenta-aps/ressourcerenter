@@ -131,7 +131,7 @@ OPENID = {
 }
 
 DAFO = {
-    'pitu_mock': os.environ.get('PITU_MOCK', 'false') == 'true',
+    'pitu_mock': strtobool(os.environ.get('PITU_MOCK', 'False')),
     'pitu_certificate': os.environ.get('PITU_CERTIFICATE'),
     'pitu_key': os.environ.get('PITU_KEY'),
     'pitu_root_ca': os.environ.get('PITU_ROOT_CA'),

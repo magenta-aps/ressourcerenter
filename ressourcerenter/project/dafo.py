@@ -20,11 +20,9 @@ class DatafordelerClient(object):
         self._cert = None
         self._pitu_root_ca = None
         self._pitu_url = None
-        self._client_has_mock_enabled = True
         self._timeout = False
 
         if not self._mock:
-            self._client_has_mock_enabled = False
             self._client_header = client_header
             self._service_header_cvr = service_header_cvr
             self._service_header_cpr = service_header_cpr
@@ -32,7 +30,6 @@ class DatafordelerClient(object):
             self._pitu_root_ca = pitu_root_ca
             self._private_key = private_key
             self._pitu_url = pitu_url
-
             self._verify = verify
             self._timeout = timeout
             self._session = Session()
@@ -53,7 +50,49 @@ class DatafordelerClient(object):
         """
         Lookup address information for cvr
         """
-        return self.get_address_and_name_for_cvr(cvr)
+        if self._mock:
+            return {
+                "source": "CVR",
+                "cvrNummer": 12950160,
+                "navn": "Magenta Grønland ApS",
+                "forretningsområde": "Computerprogrammering",
+                "statuskode": "NORMAL",
+                "statuskodedato": "2017-11-01",
+                "myndighedskode": 956,
+                "kommune": "SERMERSOOQ",
+                "vejkode": 102,
+                "stedkode": 600,
+                "adresse": "Imaneq 32A, 3.",
+                "postboks": 924,
+                "postnummer": 3900,
+                "bynavn": "Nuuk",
+                "landekode": "GL"
+            }
+        else:
+            return self.get(cvr)
+
+    def get_person_information(self, cpr):
+        """
+        Lookup address information for cpr
+        """
+        if self._mock:
+            return {
+                "cprNummer": "1111111111",
+                "civilstand": "U",
+                "statsborgerskab": 5100,
+                "køn": "K",
+                "statuskode": 1,
+                "statuskodedato": "2017-01-23",
+                "tilflytningsdato": "2020-10-27",
+                "myndighedskode": 957,
+                "vejkode": 281,
+                "kommune": "Qeqqata Kommunia",
+                "postnummer": 0,
+                "stedkode": 0,
+                "landekode": "GL"
+            }
+        else:
+            return self.get(cpr)
 
     def get(self, number, service_header):
         headers = {'Uxp-Service': service_header,
@@ -71,43 +110,6 @@ class DatafordelerClient(object):
             raise
         else:
             return r.json()
-
-    def extract_address_and_name_from_cpr_response(self, data_dict):
-        for field in ('fornavn', 'efternavn', 'adresse', 'postnummer', 'bynavn', 'landekode'):
-            # avoid key errors by adding '' as default value since every field is optional
-            if field not in data_dict:
-                data_dict[field] = ''
-        return {'name': '{fornavn} {efternavn}'.format(**data_dict),
-                'address': '{adresse}\n{postnummer} {bynavn}'.format(**data_dict),
-                'country': '{landekode}'.format(**data_dict)}
-
-    def extract_address_and_company_from_cvr_response(self, data_dict):
-        for field in ('adresse', 'postnummer', 'bynavn', 'landekode'):
-            if field not in data_dict:
-                data_dict[field] = ''
-        return {'name': data_dict.get('navn', ''),
-                'address': '{adresse}\n{postnummer} {bynavn}'.format(**data_dict),
-                'country': '{landekode}'.format(**data_dict)}
-
-    def get_address_and_name_for_cpr(self, number):
-        if not self._client_has_mock_enabled:
-            response = self.get(number, self._service_header_cpr)
-        else:
-            response = {"fornavn": "fornavn", "efternavn": "efternavn", "adresse": "adresse", "postnummer": "0000", "landekode": "GL"}
-        return self.extract_address_and_name_from_cpr_response(response)
-
-    def get_address_and_name_for_cvr(self, number):
-        if not self._client_has_mock_enabled:
-            response = self.get(number, self._service_header_cvr)
-        else:
-            response = {"navn": "navn", "adresse": "adresse", "postnummer": "0000", "landekode": "GL"}
-        return self.extract_address_and_company_from_cvr_response(response)
-
-    def get_address_and_name(self, number, number_type):
-        if number_type == 'cpr':
-            return self.get_address_and_name_for_cpr(number)
-        elif number_type == 'cvr':
-            return self.get_address_and_name_for_cvr(number)
 
     def get_owned_companies(self, cpr):
         """
