@@ -53,10 +53,7 @@ class DatafordelerClient(object):
         """
         Lookup address information for cvr
         """
-        if self._mock:
-            # TODO figure out what dafo returns
-            return {'address': 'test address'}
-        pass
+        self.get_address_and_name_for_cvr(cvr)
 
     def get(self, number, service_header):
         headers = {'Uxp-Service': service_header,
