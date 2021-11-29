@@ -20,11 +20,11 @@ class DatafordelerClient(object):
         self._cert = None
         self._pitu_root_ca = None
         self._pitu_url = None
-        self._enabled = False
+        self._enabled = True
         self._timeout = False
 
-        if self._mock is None:
-            self._enabled = True
+        if self._mock is not True:
+            self._enabled = False
             self._client_header = client_header
             self._service_header_cvr = service_header_cvr
             self._service_header_cpr = service_header_cpr
