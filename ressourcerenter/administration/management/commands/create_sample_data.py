@@ -22,18 +22,15 @@ class Command(BaseCommand):
         kvartal1, _ = Kvartal.objects.get_or_create(aar=2021, kvartal=4)
         kvartal2, _ = Kvartal.objects.get_or_create(aar=2021, kvartal=3)
 
-        afgiftsperiode1, _ = Afgiftsperiode.objects.get_or_create(navn='4. kvartal 2021',
-                                                                  vis_i_indberetning=True,
-                                                                  aarkvartal=kvartal1)
-        afgiftsperiode2, _ = Afgiftsperiode.objects.get_or_create(navn='3. kvartal 2021',
-                                                                  vis_i_indberetning=True,
-                                                                  aarkvartal=kvartal2)
+        afgiftsperiode1, _ = Afgiftsperiode.objects.get_or_create(navn='4. kvartal 2021', vis_i_indberetning=True, aarkvartal=kvartal1)
+
+        afgiftsperiode2, _ = Afgiftsperiode.objects.get_or_create(navn='3. kvartal 2021', vis_i_indberetning=True, aarkvartal=kvartal2)
         kategorier = []
         for kategori in ('Hel fisk', 'Filet', 'Biprodukt'):
             kat, _ = ProduktKategori.objects.get_or_create(navn=kategori)
             kategorier.append(kat)
 
-        reje, _ = FiskeArt.objects.get_or_create(navn='reje')
+        reje, _ = FiskeArt.objects.get_or_create(navn='Reje')
         torsk, _ = FiskeArt.objects.get_or_create(navn='Torsk')
         virksomhed, _ = Virksomhed.objects.get_or_create(cvr='12345678')
         if not Indberetning.objects.exists():
