@@ -20,11 +20,11 @@ class DatafordelerClient(object):
         self._cert = None
         self._pitu_root_ca = None
         self._pitu_url = None
-        self._enabled = True
+        self._client_has_mock_enabled = True
         self._timeout = False
 
-        if self._mock is not True:
-            self._enabled = False
+        if self._mock != 'True':
+            self._client_has_mock_enabled = False
             self._client_header = client_header
             self._service_header_cvr = service_header_cvr
             self._service_header_cpr = service_header_cpr
@@ -90,14 +90,14 @@ class DatafordelerClient(object):
                 'country': '{landekode}'.format(**data_dict)}
 
     def get_address_and_name_for_cpr(self, number):
-        if self._enabled:
+        if not self._client_has_mock_enabled:
             response = self.get(number, self._service_header_cpr)
         else:
             response = {"fornavn": "fornavn", "efternavn": "efternavn", "adresse": "adresse", "postnummer": "0000", "landekode": "GL"}
         return self.extract_address_and_name_from_cpr_response(response)
 
     def get_address_and_name_for_cvr(self, number):
-        if self._enabled:
+        if not self._client_has_mock_enabled:
             response = self.get(number, self._service_header_cvr)
         else:
             response = {"navn": "navn", "adresse": "adresse", "postnummer": "0000", "landekode": "GL"}
