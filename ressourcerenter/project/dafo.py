@@ -23,7 +23,7 @@ class DatafordelerClient(object):
         self._client_has_mock_enabled = True
         self._timeout = False
 
-        if self._mock != 'True':
+        if self._mock:
             self._client_has_mock_enabled = False
             self._client_header = client_header
             self._service_header_cvr = service_header_cvr
