@@ -131,14 +131,14 @@ OPENID = {
 }
 
 DAFO = {
-    'pitu_mock': strtobool(os.environ.get('PITU_MOCK', 'False')),
-    'pitu_certificate': os.environ.get('PITU_CERTIFICATE'),
-    'pitu_key': os.environ.get('PITU_KEY'),
-    'pitu_root_ca': os.environ.get('PITU_ROOT_CA'),
-    'pitu_uxp_service_cvr': os.environ.get('PITU_UXP_SERVICE_CVR'),
-    'pitu_uxp_service_cpr': os.environ.get('PITU_UXP_SERVICE_CPR'),
-    'pitu_uxp_client': os.environ.get('PITU_UXP_CLIENT'),
-    'pitu_url': os.environ.get('PITU_URL'),
+    'mock': strtobool(os.environ.get('PITU_MOCK', 'False')),
+    'certificate': os.environ.get('PITU_CERTIFICATE'),
+    'key': os.environ.get('PITU_KEY'),
+    'root_ca': os.environ.get('PITU_ROOT_CA'),
+    'uxp_service_cvr': os.environ.get('PITU_UXP_SERVICE_CVR'),
+    'uxp_service_cpr': os.environ.get('PITU_UXP_SERVICE_CPR'),
+    'uxp_client': os.environ.get('PITU_UXP_CLIENT'),
+    'url': os.environ.get('PITU_URL'),
 }
 
 # Static files (CSS, JavaScript, Images)

@@ -3,7 +3,7 @@ from django.test import TestCase, override_settings
 from project.dafo import DatafordelerClient
 
 
-@override_settings(DAFO={'pitu_mock': True})
+@override_settings(DAFO={'mock': True})
 class TestDafoConnection(TestCase):
 
     def test_lookup_company_info(self):
