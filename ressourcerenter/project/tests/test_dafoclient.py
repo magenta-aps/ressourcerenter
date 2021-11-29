@@ -1,8 +1,9 @@
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from project.dafo import DatafordelerClient
 
 
+@override_settings(DAFO={'pitu_mock': True})
 class TestDafoConnection(TestCase):
 
     # sudo apt install curl
