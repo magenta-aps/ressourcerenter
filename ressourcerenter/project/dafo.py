@@ -23,6 +23,9 @@ class DatafordelerClient(object):
         self._client_has_mock_enabled = True
         self._timeout = False
 
+        print("MOCK")
+        print(self._mock)
+
         if self._mock:
             self._client_has_mock_enabled = False
             self._client_header = client_header
@@ -45,9 +48,10 @@ class DatafordelerClient(object):
     @classmethod
     def from_settings(cls):
 
-        return cls(settings.DAFO.get('pitu_mock'), settings.DAFO.get('pitu_uxp_client'), settings.DAFO.get('pitu_uxp_service_cvr'),
-                   settings.DAFO.get('pitu_uxp_service_cpr'), settings.DAFO.get('pitu_certificate'), settings.DAFO.get('pitu_root_ca'),
-                   settings.DAFO.get('pitu_key'), settings.DAFO.get('pitu_url'))
+        return cls(mock=settings.DAFO.get('pitu_mock'), client_header=settings.DAFO.get('pitu_uxp_client'),
+                   service_header_cvr=settings.DAFO.get('pitu_uxp_service_cvr'), service_header_cpr=settings.DAFO.get('pitu_uxp_service_cpr'),
+                   certificate=settings.DAFO.get('pitu_certificate'), pitu_root_ca=settings.DAFO.get('pitu_root_ca'),
+                   private_key=settings.DAFO.get('pitu_key'), pitu_url=settings.DAFO.get('pitu_url'))
 
     def get_company_information(self, cvr):
         """
