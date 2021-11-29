@@ -11,6 +11,10 @@ from django.utils.translation import gettext as _
 
 
 class ProduktKategori(models.Model):
+
+    class Meta:
+        ordering = ['navn']
+
     uuid = models.UUIDField(
         primary_key=True,
         default=uuid4
@@ -19,8 +23,9 @@ class ProduktKategori(models.Model):
         unique=True
     )
     beskrivelse = models.TextField(
-        null=True,
+        null=False,
         blank=True,
+        default='',
     )
 
     def __str__(self):
@@ -83,6 +88,10 @@ class NamedModel(models.Model):
 
 
 class FiskeArt(models.Model):
+
+    class Meta:
+        ordering = ['navn']
+
     uuid = models.UUIDField(primary_key=True, default=uuid4)
     navn = models.TextField(unique=True)
     beskrivelse = models.TextField()

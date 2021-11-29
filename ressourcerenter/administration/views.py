@@ -3,8 +3,15 @@ from django.utils.functional import cached_property
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView
 from django.urls import reverse
+
 from administration.forms import AfgiftsperiodeForm, SatsTabelElementForm, SatsTabelElementFormSet
 from administration.models import Afgiftsperiode, Ressource, SatsTabelElement
+
+from administration.forms import FiskeArtForm
+from administration.models import FiskeArt
+
+from administration.forms import ProduktKategoriForm
+from administration.models import ProduktKategori
 
 
 class FrontpageView(TemplateView):
@@ -26,7 +33,7 @@ class AfgiftsperiodeListView(ListView):
     queryset = Afgiftsperiode.objects.all()
 
 
-class SatsTabelUpdateView(UpdateView):
+class AfgiftsperiodeSatsTabelUpdateView(UpdateView):
 
     model = Afgiftsperiode
     form_class = forms.inlineformset_factory(
@@ -74,3 +81,53 @@ class SatsTabelUpdateView(UpdateView):
             **kwargs,
             'tabel': self.object,
         })
+
+
+class FiskeArtCreateView(CreateView):
+
+    model = FiskeArt
+    form_class = FiskeArtForm
+
+    def get_success_url(self):
+        return reverse('administration:fiskeart-list')
+
+
+class FiskeArtUpdateView(UpdateView):
+
+    model = FiskeArt
+    form_class = FiskeArtForm
+
+    def get_success_url(self):
+        return reverse('administration:fiskeart-list')
+
+
+class FiskeArtListView(ListView):
+    model = FiskeArt
+
+
+class ProduktKategoriCreateView(CreateView):
+
+    model = ProduktKategori
+    form_class = ProduktKategoriForm
+
+    def get_success_url(self):
+        return reverse('administration:produktkategori-list')
+
+    def get_context_data(self, **kwargs):
+        return super(ProduktKategoriCreateView, self).get_context_data(**{
+            **kwargs,
+            'creating': True
+        })
+
+
+class ProduktKategoriUpdateView(UpdateView):
+
+    model = ProduktKategori
+    form_class = ProduktKategoriForm
+
+    def get_success_url(self):
+        return reverse('administration:produktkategori-list')
+
+
+class ProduktKategoriListView(ListView):
+    model = ProduktKategori

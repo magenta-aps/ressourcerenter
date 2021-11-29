@@ -2,14 +2,25 @@ from administration.apps import AdministrationConfig
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
 from administration.views import FrontpageView
-from administration.views import AfgiftsperiodeCreateView, AfgiftsperiodeListView, SatsTabelUpdateView
+from administration.views import AfgiftsperiodeCreateView, AfgiftsperiodeListView, AfgiftsperiodeSatsTabelUpdateView
+from administration.views import FiskeArtListView, FiskeArtCreateView, FiskeArtUpdateView
+from administration.views import ProduktKategoriListView, ProduktKategoriCreateView, ProduktKategoriUpdateView
 app_name = AdministrationConfig.name
 
 urlpatterns = [
     path('login/', LoginView.as_view(template_name='administration/login.html'), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('frontpage/', FrontpageView.as_view(), name='frontpage'),
-    path('afgiftsperiode/create', AfgiftsperiodeCreateView.as_view(), name='afgiftsperiode-create'),
+
     path('afgiftsperiode/', AfgiftsperiodeListView.as_view(), name='afgiftsperiode-list'),
-    path('afgiftsperiode/<uuid:pk>/satstabel', SatsTabelUpdateView.as_view(), name='afgiftsperiode-satstabel'),
+    path('afgiftsperiode/create', AfgiftsperiodeCreateView.as_view(), name='afgiftsperiode-create'),
+    path('afgiftsperiode/<uuid:pk>/satstabel', AfgiftsperiodeSatsTabelUpdateView.as_view(), name='afgiftsperiode-satstabel'),
+
+    path('fiskeart/', FiskeArtListView.as_view(), name='fiskeart-list'),
+    path('fiskeart/create', FiskeArtCreateView.as_view(), name='fiskeart-create'),
+    path('fiskeart/<uuid:pk>/update', FiskeArtUpdateView.as_view(), name='fiskeart-update'),
+
+    path('produktkategori/', ProduktKategoriListView.as_view(), name='produktkategori-list'),
+    path('produktkategori/create', ProduktKategoriCreateView.as_view(), name='produktkategori-create'),
+    path('produktkategori/<uuid:pk>/update', ProduktKategoriUpdateView.as_view(), name='produktkategori-update'),
 ]
