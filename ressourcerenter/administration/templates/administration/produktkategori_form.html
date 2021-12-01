@@ -1,0 +1,37 @@
+{% extends 'administration/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<h1>
+    {% if creating %}
+    {% translate 'Opret Produkt' %}
+    {% else %}
+    {% translate 'Redigér Produkt' %}
+    {% endif %}
+</h1>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="form-row">
+        <div class="col-2">
+            <label for="{{ form.navn.id_for_label }}">{% translate 'Navn:' %}</label>
+        </div>
+        <div class="col-4">
+            {{ form.navn }}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="col-2">
+            <label for="{{ form.beskrivelse.id_for_label }}">{% translate 'Beskrivelse:' %}</label>
+        </div>
+        <div class="col-4">
+            {{ form.beskrivelse }}
+        </div>
+    </div>
+
+    <a class="btn btn-secondary" href="{% url 'administration:produktkategori-list' %}">{% translate 'Annullér' %}</a>
+    <button type="submit" class="btn btn-primary">{% translate 'Gem' %}</button>
+</form>
+{% endblock %}

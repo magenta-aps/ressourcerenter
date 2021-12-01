@@ -1,6 +1,8 @@
 from django import forms
 from django.db.models import Count
 from administration.models import Afgiftsperiode, SatsTabelElement, Kvartal
+from administration.models import FiskeArt
+from administration.models import ProduktKategori
 from administration.forms_mixin import BootstrapForm
 
 
@@ -13,6 +15,30 @@ class AfgiftsperiodeForm(forms.ModelForm, BootstrapForm):
     aarkvartal = forms.ModelChoiceField(
         queryset=Kvartal.objects.annotate(count=Count('afgiftsperiode')).filter(count=0)
     )
+
+
+class FiskeArtForm(forms.ModelForm, BootstrapForm):
+
+    class Meta:
+        model = FiskeArt
+        fields = ('navn', 'beskrivelse',)
+
+        widgets = {
+            'navn': forms.TextInput(),
+            'beskrivelse': forms.TextInput(),
+        }
+
+
+class ProduktKategoriForm(forms.ModelForm, BootstrapForm):
+
+    class Meta:
+        model = ProduktKategori
+        fields = ('navn', 'beskrivelse',)
+
+        widgets = {
+            'navn': forms.TextInput(),
+            'beskrivelse': forms.TextInput(),
+        }
 
 
 class SatsTabelElementFormSet(forms.BaseInlineFormSet):

@@ -4,3 +4,5 @@ env/
 *.iml
 docker-compose.override.yml
 *.mo
+data/*
+!data/.gitkeep

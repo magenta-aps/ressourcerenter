@@ -1,18 +1,35 @@
+from decimal import Decimal, ROUND_HALF_EVEN
+from typing import Iterable
+from uuid import uuid4
+
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.forms.models import model_to_dict
 from django.utils.translation import gettext as _
-from django.core.validators import MinValueValidator, MaxValueValidator
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
-from uuid import uuid4
-from decimal import Decimal, ROUND_HALF_EVEN
-from typing import Iterable
 
 
-class Kategori(models.Model):
-    uuid = models.UUIDField(primary_key=True, default=uuid4)
-    navn = models.TextField(unique=True)  # Hel fisk, filet, bi-produkt
-    beskrivelse = models.TextField()
+class ProduktKategori(models.Model):
+
+    class Meta:
+        ordering = ['navn']
+
+    uuid = models.UUIDField(
+        primary_key=True,
+        default=uuid4
+    )
+    navn = models.TextField(  # Hel fisk, filet, bi-produkt
+        unique=True
+    )
+    beskrivelse = models.TextField(
+        null=False,
+        blank=True,
+        default='',
+    )
+
+    def __str__(self):
+        return self.navn
 
 
 class Kvartal(models.Model):
@@ -71,6 +88,10 @@ class NamedModel(models.Model):
 
 
 class FiskeArt(models.Model):
+
+    class Meta:
+        ordering = ['navn']
+
     uuid = models.UUIDField(primary_key=True, default=uuid4)
     navn = models.TextField(unique=True)
     beskrivelse = models.TextField()

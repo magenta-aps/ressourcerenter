@@ -16,6 +16,7 @@ COPY ./docker/entrypoint.sh /entrypoint.sh
 COPY ./ressourcerenter /app
 WORKDIR /app
 RUN django-admin compilemessages
+VOLUME  /srv/media
 EXPOSE 8000
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["gunicorn", "--bind=0.0.0.0:8000", "project.wsgi:application", "--workers=4", "--timeout 120", "--error-logfile -", "--capture-output"]

@@ -1,0 +1,23 @@
+{% load i18n %}
+<table class="table text-center table-sm">
+    <thead>
+    <tr>
+        <th>{% translate 'Fiskeart'%}</th>
+        <th>{% translate 'Produkt'%}</th>
+        <th>{% translate 'Salgsvægt'%}</th>
+        <th>{% translate 'Levende vægt'%}</th>
+        <th>{% translate 'Salgspris'%}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for linje in object_list %}
+    <tr>
+        <td>{{ linje.fiskeart }}</td>
+        <td>{{linje.kategori|default_if_none:'-'}}</td>
+        <td>{{ linje.salgsvægt }}</td>
+        <td>{{ linje.levende_vægt }}</td>
+        <td>{{ linje.salgspris }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
