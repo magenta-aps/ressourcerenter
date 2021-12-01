@@ -53,3 +53,13 @@ class TestDafoConnection(TestCase):
             "stedkode": 600,
             "landekode": "GL"
         }, result)
+
+    def test_lookup_person_ownerinfo(self):
+        """
+        Call the dafo-client to get a personinfo
+        """
+        dafo_client = DatafordelerClient.from_settings()
+        result = dafo_client.get_owner_information('1234567890')
+        self.assertEqual([
+            12345678
+        ], result)

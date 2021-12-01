@@ -137,6 +137,7 @@ DAFO = {
     'root_ca': os.environ.get('PITU_ROOT_CA'),
     'uxp_service_cvr': os.environ.get('PITU_UXP_SERVICE_CVR'),
     'uxp_service_cpr': os.environ.get('PITU_UXP_SERVICE_CPR'),
+    'uxp_service_owned_by': os.environ.get('PITU_UXP_SERVICE_OWNED_BY'),
     'uxp_client': os.environ.get('PITU_UXP_CLIENT'),
     'url': os.environ.get('PITU_URL'),
 }

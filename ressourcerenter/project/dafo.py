@@ -11,7 +11,8 @@ logger = logging.getLogger(__name__)
 class DatafordelerClient(object):
     combined_service_page_size = 400
 
-    def __init__(self, mock=None, client_header=None, service_header_cvr=None, service_header_cpr=None, certificate=None, root_ca=None, private_key=None, url=None, verify=True, timeout=60):
+    def __init__(self, mock=None, client_header=None, service_header_cvr=None, service_header_cpr=None, uxp_service_owned_by=None,
+                 certificate=None, root_ca=None, private_key=None, url=None, verify=True, timeout=60):
 
         self._mock = mock
         self._client_header = None
@@ -26,6 +27,7 @@ class DatafordelerClient(object):
             self._client_header = client_header
             self._service_header_cvr = service_header_cvr
             self._service_header_cpr = service_header_cpr
+            self._uxp_service_owned_by = uxp_service_owned_by
             self._cert = (certificate, private_key)
             self._root_ca = root_ca
             self._private_key = private_key
@@ -43,6 +45,7 @@ class DatafordelerClient(object):
     def from_settings(cls):
         return cls(mock=settings.DAFO['mock'], client_header=settings.DAFO.get('uxp_client'),
                    service_header_cvr=settings.DAFO.get('uxp_service_cvr'), service_header_cpr=settings.DAFO.get('uxp_service_cpr'),
+                   uxp_service_owned_by=settings.DAFO.get('uxp_service_owned_by'),
                    certificate=settings.DAFO.get('certificate'), root_ca=settings.DAFO.get('root_ca'),
                    private_key=settings.DAFO.get('key'), url=settings.DAFO.get('url'))
 
@@ -95,6 +98,17 @@ class DatafordelerClient(object):
             }
         else:
             return self.get(cpr, self._service_header_cpr)
+
+    def get_owner_information(self, cpr):
+        """
+        Lookup owner information for cpr
+        """
+        if self._mock:
+            return [
+                12345678
+            ]
+        else:
+            return self.get(cpr, self._uxp_service_owned_by)
 
     def get(self, number, service_header):
         headers = {'Uxp-Service': service_header,
