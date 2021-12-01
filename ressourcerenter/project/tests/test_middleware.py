@@ -58,7 +58,7 @@ class UserTestCase(TestCase):
             if key in self.client.session:
                 del self.client.session[key]
 
-    @override_settings(OPENID={'mock': 'cvr'})
+    @override_settings(OPENID={'mock': 'cvr'}, DAFO={'mock': True})
     def test_logged_in_frontpage(self):
         """
         user is "logged in" and can access the frontpage
@@ -67,7 +67,7 @@ class UserTestCase(TestCase):
         r = self.client.get(reverse('indberetning:frontpage'), follow=True)
         self.assertEqual(200, r.status_code)
 
-    @override_settings(OPENID={'mock': 'cpr'})
+    @override_settings(OPENID={'mock': 'cpr'}, DAFO={'mock': True})
     def test_logged_in_no_cvr_list(self):
         """
         User is logged in but have no active cvr number so it should redirect to company_select

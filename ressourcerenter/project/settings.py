@@ -139,12 +139,12 @@ OPENID = {
 DAFO = {
     'mock': strtobool(os.environ.get('PITU_MOCK', 'False')),
     'certificate': os.environ.get('PITU_CERTIFICATE'),
-    'key': os.environ.get('PITU_KEY'),
+    'private_key': os.environ.get('PITU_KEY'),
     'root_ca': os.environ.get('PITU_ROOT_CA'),
-    'uxp_service_cvr': os.environ.get('PITU_UXP_SERVICE_CVR'),
-    'uxp_service_cpr': os.environ.get('PITU_UXP_SERVICE_CPR'),
+    'service_header_cvr': os.environ.get('PITU_UXP_SERVICE_CVR'),
+    'service_header_cpr': os.environ.get('PITU_UXP_SERVICE_CPR'),
     'uxp_service_owned_by': os.environ.get('PITU_UXP_SERVICE_OWNED_BY'),
-    'uxp_client': os.environ.get('PITU_UXP_CLIENT'),
+    'client_header': os.environ.get('PITU_UXP_CLIENT'),
     'url': os.environ.get('PITU_URL'),
 }
 

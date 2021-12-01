@@ -1,18 +1,13 @@
-import logging
 from urllib.parse import urljoin
 from requests import Session
-import requests
-from requests import RequestException
 from django.conf import settings
-
-logger = logging.getLogger(__name__)
 
 
 class DatafordelerClient(object):
     combined_service_page_size = 400
 
     def __init__(self, mock=None, client_header=None, service_header_cvr=None, service_header_cpr=None, uxp_service_owned_by=None,
-                 certificate=None, root_ca=None, private_key=None, url=None, verify=True, timeout=60):
+                 certificate=None, private_key=None, url=None, root_ca=True, timeout=60):
 
         self._mock = mock
         self._client_header = None
@@ -30,9 +25,8 @@ class DatafordelerClient(object):
             self._uxp_service_owned_by = uxp_service_owned_by
             self._cert = (certificate, private_key)
             self._root_ca = root_ca
-            self._private_key = private_key
             self._url = url
-            self._verify = verify
+            self._root_ca = root_ca
             self._timeout = timeout
             self._session = Session()
             self._session.headers.update({'Uxp-Client': client_header})
@@ -43,11 +37,7 @@ class DatafordelerClient(object):
 
     @classmethod
     def from_settings(cls):
-        return cls(mock=settings.DAFO['mock'], client_header=settings.DAFO.get('uxp_client'),
-                   service_header_cvr=settings.DAFO.get('uxp_service_cvr'), service_header_cpr=settings.DAFO.get('uxp_service_cpr'),
-                   uxp_service_owned_by=settings.DAFO.get('uxp_service_owned_by'),
-                   certificate=settings.DAFO.get('certificate'), root_ca=settings.DAFO.get('root_ca'),
-                   private_key=settings.DAFO.get('key'), url=settings.DAFO.get('url'))
+        return cls(**settings.DAFO)
 
     def get_company_information(self, cvr):
         """
@@ -72,7 +62,7 @@ class DatafordelerClient(object):
                 "landekode": "GL"
             }
         else:
-            return self.get(cvr, self._service_header_cvr)
+            return self._get(cvr, self._service_header_cvr)
 
     def get_person_information(self, cpr):
         """
@@ -97,7 +87,7 @@ class DatafordelerClient(object):
                 "landekode": "GL"
             }
         else:
-            return self.get(cpr, self._service_header_cpr)
+            return self._get(cpr, self._service_header_cpr)
 
     def get_owner_information(self, cpr):
         """
@@ -108,29 +98,11 @@ class DatafordelerClient(object):
                 12345678
             ]
         else:
-            return self.get(cpr, self._uxp_service_owned_by)
+            return self._get(cpr, self._uxp_service_owned_by)
 
-    def get(self, number, service_header):
-        headers = {'Uxp-Service': service_header,
-                   'Uxp-Client': self._client_header}
-        try:
-            url = urljoin(self._url, number)
-            r = requests.get(url, cert=self._cert, verify=self._root_ca, timeout=self._timeout,
-                             headers=headers)
-            # raises 404 if cpr is invalid
-            r.raise_for_status()
-        except RequestException as e:
-            if not getattr(e, 'response', None) or e.response.status_code != 404:
-                #  Do not log 404s, invalid CPR numbers
-                logger.exception(e)
-            raise
-        else:
-            return r.json()
-
-    def get_owned_companies(self, cpr):
-        """
-        Should return a list of companies there might need some definition
-        """
-        if self._mock:
-            return {'12345678': '12345678'}
-        pass
+    def _get(self, number, service_header):
+        url = urljoin(self._url, number)
+        r = self._session.get(url, cert=self._cert, verify=self._root_ca, timeout=self._timeout,
+                              headers={'Uxp-Service': service_header})
+        r.raise_for_status()
+        return r.json()

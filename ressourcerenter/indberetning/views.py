@@ -59,7 +59,7 @@ class CompanySelectView(TemplateView):
         ctx = super(CompanySelectView, self).get_context_data(**kwargs)
         dafo_client = DatafordelerClient.from_settings()
         ctx.update({
-            'companies': dafo_client.get_owned_companies(self.request.session['cpr'])
+            'companies': dafo_client.get_owner_information(self.request.session['cpr'])
         })
         # TODO handle when there is no companies
         # Show a warning and logout the user?
