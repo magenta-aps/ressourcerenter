@@ -4,6 +4,7 @@ from django.utils.translation import gettext as _
 
 from administration.models import Afgiftsperiode, FiskeArt, ProduktKategori
 from indberetning.models import Bilag, indberetnings_type_choices, Virksomhed, Indberetning, IndberetningLinje
+from project.form_fields import LocalizedDecimalField
 
 
 class VirksomhedsAddressForm(ModelForm):
@@ -31,12 +32,16 @@ class IndberetningsTypeSelectForm(forms.Form):
 class IndberetningsLinjeForm(ModelForm):
     fiskeart = ModelChoiceField(queryset=FiskeArt.objects.order_by('navn'), required=True)
     kategori = ModelChoiceField(queryset=ProduktKategori.objects.order_by('navn'), required=True)
+    salgsvægt = LocalizedDecimalField()
+    levende_vægt = LocalizedDecimalField()
+    salgspris = LocalizedDecimalField()
 
     def clean(self):
         cleaned_data = super().clean()
-        numbers = (cleaned_data['salgsvægt'], cleaned_data['levende_vægt'], cleaned_data['salgspris'])
-        if not all(i > 0 for i in numbers) or not all(i < 0 for i in numbers):
-            raise ValidationError(_('Salgsvægt, levende vægt og salgspris skal alle være negative eller positive tal'))
+        if 'salgsvægt' and 'levende_vægt' and 'salgspris' in cleaned_data:
+            numbers = (cleaned_data['salgsvægt'], cleaned_data['levende_vægt'], cleaned_data['salgspris'])
+            if not (all(i > 0 for i in numbers) or all(i < 0 for i in numbers)):
+                raise ValidationError(_('Salgsvægt, levende vægt og salgspris skal alle være negative eller positive tal'))
 
     class Meta:
         model = IndberetningLinje

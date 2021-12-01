@@ -106,22 +106,23 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
-
-LANGUAGE_CODE = 'da-DK'
+USE_TZ = True
 TIME_ZONE = os.environ['DJANGO_TIMEZONE']
+LANGUAGE_CODE = 'da-DK'
 USE_I18N = True
 USE_L10N = True
-USE_TZ = True
 LANGUAGES = [
     ('da', _('Danish')),
     ('kl', _('Greenlandic')),
 ]
+DECIMAL_SEPARATOR = ","
+THOUSAND_SEPARATOR = '.'
+USE_THOUSAND_SEPARATOR = True
 
 UPLOAD_PATH = '/uploads'
 MEDIA_ROOT = "/srv/media/"
 MEDIA_URL = "/media/"
 
-USE_THOUSAND_SEPARATOR = True
 # URLS for django login/logout used by administrators.
 LOGIN_URL = 'administration:login'
 
