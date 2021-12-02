@@ -16,15 +16,8 @@ class TestDafoConnection(TestCase):
             "source": "CVR",
             "cvrNummer": 12950160,
             "navn": "Magenta Grønland ApS",
-            "forretningsområde": "Computerprogrammering",
-            "statuskode": "NORMAL",
-            "statuskodedato": "2017-11-01",
             "myndighedskode": 956,
-            "kommune": "SERMERSOOQ",
-            "vejkode": 102,
-            "stedkode": 600,
             "adresse": "Imaneq 32A, 3.",
-            "postboks": 924,
             "postnummer": 3900,
             "bynavn": "Nuuk",
             "landekode": "GL"
@@ -41,16 +34,9 @@ class TestDafoConnection(TestCase):
             "fornavn": "Anders",
             "efternavn": "And",
             "statsborgerskab": 5100,
-            "køn": "K",
-            "statuskode": 1,
-            "statuskodedato": "2017-01-23",
-            "tilflytningsdato": "2020-10-27",
             "myndighedskode": 957,
-            "vejkode": 281,
-            "kommune": "Qeqqata Kommunia",
             "adresse": "Imaneq 32A, 3.",
             "postnummer": 3900,
-            "stedkode": 600,
             "landekode": "GL"
         }, result)
 
