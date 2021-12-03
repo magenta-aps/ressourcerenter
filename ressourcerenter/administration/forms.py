@@ -1,19 +1,28 @@
 from django import forms
-from django.db.models import Count
-from administration.models import Afgiftsperiode, SatsTabelElement, Kvartal
+from administration.models import Afgiftsperiode, SatsTabelElement
 from administration.models import FiskeArt
 from administration.models import ProduktKategori
 from administration.forms_mixin import BootstrapForm
+from project.form_fields import DateInput
 
 
 class AfgiftsperiodeForm(forms.ModelForm, BootstrapForm):
 
     class Meta:
         model = Afgiftsperiode
-        fields = ('aarkvartal',)
+        fields = ('dato_fra', 'dato_til', 'navn')
 
-    aarkvartal = forms.ModelChoiceField(
-        queryset=Kvartal.objects.annotate(count=Count('afgiftsperiode')).filter(count=0)
+        widgets = {
+            'navn': forms.widgets.TextInput(),
+        }
+
+    dato_fra = forms.DateField(
+        widget=DateInput(format='%Y-%m-%d'),
+        input_formats=('%Y-%m-%d',)
+    )
+    dato_til = forms.DateField(
+        widget=DateInput(format='%Y-%m-%d'),
+        input_formats=('%Y-%m-%d',)
     )
 
 
@@ -54,28 +63,13 @@ class SatsTabelElementFormSet(forms.BaseInlineFormSet):
         kwargs['ressource'] = ressourcer[index]
         return kwargs
 
-    def save_new_objects(self, commit=True):
-        self.new_objects = []
-        for form in self.extra_forms:
-            if not form.has_changed():
-                # unchanged, save anyway
-                pass
-            # If someone has marked an add form for deletion, don't save the
-            # object.
-            if self.can_delete and self._should_delete_form(form):
-                continue
-            self.new_objects.append(self.save_new(form, commit=commit))
-            if not commit:
-                self.saved_forms.append(form)
-        return self.new_objects
-
 
 class SatsTabelElementForm(forms.ModelForm, BootstrapForm):
 
     class Meta:
         model = SatsTabelElement
         fields = (
-            'tabel', 'ressource', 'rate_pr_kg_indhandling', 'rate_pr_kg_export', 'rate_procent_indhandling',
+            'periode', 'ressource', 'rate_pr_kg_indhandling', 'rate_pr_kg_export', 'rate_procent_indhandling',
             'rate_procent_export', 'rate_prkg_groenland', 'rate_prkg_udenlandsk'
         )
         widgets = {

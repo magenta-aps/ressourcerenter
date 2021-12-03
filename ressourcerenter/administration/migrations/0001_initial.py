@@ -21,10 +21,10 @@ class Migration(migrations.Migration):
                 ('uuid', models.UUIDField(default=uuid.uuid4, primary_key=True, serialize=False)),
                 ('navn', models.TextField(default='')),
                 ('vis_i_indberetning', models.BooleanField(default=False)),
+                ('dato_fra', models.DateField()),
+                ('dato_til', models.DateField()),
             ],
-            options={
-                'ordering': ['aarkvartal__aar', 'aarkvartal__kvartal'],
-            },
+            options={'ordering': ['dato_fra', 'dato_til']},
         ),
         migrations.CreateModel(
             name='BeregningsModel2021',
@@ -36,18 +36,6 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-        ),
-        migrations.CreateModel(
-            name='Fangst',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('pris', models.DecimalField(decimal_places=2, default='0.0', max_digits=12)),
-                ('vaegt', models.DecimalField(decimal_places=2, default='0.0', max_digits=10)),
-                ('fartoej_groenlandsk', models.BooleanField(default=True)),
-                ('til_export', models.BooleanField(default=True)),
-                ('overfoert_til_tredje_part', models.BooleanField(default=False)),
-                ('export_inkluderet_i_pris', models.BooleanField(default=True)),
-            ],
         ),
         migrations.CreateModel(
             name='FangstType',
@@ -83,19 +71,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='Kvartal',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('aar', models.PositiveSmallIntegerField(db_index=True, help_text='År', verbose_name='År')),
-                ('kvartal', models.PositiveSmallIntegerField(db_index=True, help_text='Kvartal', validators=[django.core.validators.MinValueValidator(limit_value=1), django.core.validators.MaxValueValidator(limit_value=4)], verbose_name='Kvartal')),
-                ('dato_fra', models.DateField(null=True)),
-                ('dato_til', models.DateField(null=True)),
-            ],
-            options={
-                'ordering': ['aar', 'kvartal'],
-            },
-        ),
-        migrations.CreateModel(
             name='Ressource',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -114,7 +89,7 @@ class Migration(migrations.Migration):
                 ('rate_prkg_groenland', models.DecimalField(blank=True, decimal_places=2, max_digits=4, null=True)),
                 ('rate_prkg_udenlandsk', models.DecimalField(blank=True, decimal_places=2, max_digits=4, null=True)),
                 ('ressource', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='administration.ressource')),
-                ('tabel', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='entries', to='administration.afgiftsperiode')),
+                ('periode', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='entries', to='administration.afgiftsperiode')),
             ],
         ),
         migrations.CreateModel(
@@ -124,18 +99,15 @@ class Migration(migrations.Migration):
                 ('afgift', models.DecimalField(decimal_places=2, default='0.0', max_digits=12)),
                 ('beregnings_model_id', models.PositiveIntegerField(null=True)),
                 ('beregnings_model_indholds_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='contenttypes.contenttype')),
-                ('emne', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='administration.fangst')),
                 ('rate_element', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='administration.satstabelelement')),
             ],
         ),
-        migrations.AddField(
-            model_name='fangst',
+        migrations.AlterUniqueTogether(
             name='ressource',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='administration.ressource'),
+            unique_together={('fiskeart', 'fangsttype')},
         ),
-        migrations.AddField(
-            model_name='afgiftsperiode',
-            name='aarkvartal',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='administration.kvartal'),
+        migrations.AlterUniqueTogether(
+            name='satstabelelement',
+            unique_together={('periode', 'ressource')},
         ),
     ]

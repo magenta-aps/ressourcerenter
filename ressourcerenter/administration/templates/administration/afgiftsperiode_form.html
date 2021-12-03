@@ -5,12 +5,29 @@
 <h1>{% translate 'Opret Afgiftsperiode' %}</h1>
 <form method="post">
     {% csrf_token %}
+    {{form.errors}}
     <div class="form-row">
         <div class="col-2">
-        <label for="{{ form.aarkvartal.id_for_label }}">{% translate 'Kvartal:' %}</label>
+            <label for="{{ form.navn.id_for_label }}">{% translate 'Periodenavn:' %}</label>
         </div>
         <div class="col-4">
-        {{ form.aarkvartal }}
+            {{ form.navn }}
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="col-2">
+            <label for="{{ form.dato_fra.id_for_label }}">{% translate 'Startdato:' %}</label>
+        </div>
+        <div class="col-4">
+            {{ form.dato_fra }}
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="col-2">
+            <label for="{{ form.dato_til.id_for_label }}">{% translate 'Slutdato:' %}</label>
+        </div>
+        <div class="col-4">
+            {{ form.dato_til }}
         </div>
     </div>
 
