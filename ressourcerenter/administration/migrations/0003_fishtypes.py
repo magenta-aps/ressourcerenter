@@ -3,7 +3,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('administration', '0001_initial'),
+        ('administration', '0002_historical_models'),
     ]
 
     def create_resources(apps, schema_editor):

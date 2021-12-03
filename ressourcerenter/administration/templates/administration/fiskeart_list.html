@@ -23,6 +23,7 @@
             </td>
             <td>
                 <a class="btn btn-primary" href="{% url 'administration:fiskeart-update' pk=object.pk %}">{% translate 'Redigér' %}</a>
+                <a class="btn btn-primary" href="{% url 'administration:fiskeart-history' pk=object.pk %}">{% translate 'Historik' %}</a>
             </td>
         </tr>
     {% endfor %}

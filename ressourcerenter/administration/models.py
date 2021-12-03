@@ -9,6 +9,8 @@ from django.db import models
 from django.forms.models import model_to_dict
 from django.utils.translation import gettext as _
 
+from simple_history.models import HistoricalRecords
+
 
 class ProduktKategori(models.Model):
 
@@ -27,6 +29,7 @@ class ProduktKategori(models.Model):
         blank=True,
         default='',
     )
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.navn
@@ -76,11 +79,13 @@ class NamedModel(models.Model):
         default=uuid4
     )
     navn = models.TextField(
-        max_length=2048
+        max_length=2048,
+        verbose_name=_('Navn'),
     )
     beskrivelse = models.TextField(
         blank=True,
-        default=""
+        default="",
+        verbose_name=_('Beskrivelse'),
     )
 
     def __str__(self):
@@ -95,6 +100,7 @@ class FiskeArt(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid4)
     navn = models.TextField(unique=True)
     beskrivelse = models.TextField()
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.navn
@@ -117,6 +123,9 @@ class Ressource(models.Model):
         on_delete=models.CASCADE,
         null=False
     )
+
+    def __str__(self):
+        return f"{self.fiskeart.navn} | {self.fangsttype.navn}"
 
 
 class Afgiftsperiode(models.Model):
@@ -142,6 +151,8 @@ class Afgiftsperiode(models.Model):
         on_delete=models.CASCADE
     )
 
+    history = HistoricalRecords()
+
     def entry_for_resource(self, ressource):
         try:
             return self.entries.get(ressource=ressource)
@@ -165,11 +176,15 @@ class SatsTabelElement(models.Model):
         on_delete=models.CASCADE
     )
 
+    def __str__(self):
+        return f"{self.ressource} | {self.tabel.navn}"
+
     rate_pr_kg_indhandling = models.DecimalField(
         max_digits=4,
         decimal_places=2,
         null=True,
         blank=True,
+        verbose_name=_('Indhandling, kr/kg'),
     )
 
     rate_pr_kg_export = models.DecimalField(
@@ -177,6 +192,7 @@ class SatsTabelElement(models.Model):
         decimal_places=2,
         null=True,
         blank=True,
+        verbose_name=_('Eksport, kr/kg'),
     )
 
     rate_procent_indhandling = models.DecimalField(
@@ -184,6 +200,7 @@ class SatsTabelElement(models.Model):
         decimal_places=2,
         null=True,
         blank=True,
+        verbose_name=_('Indhandling, procent af salgspris'),
     )
 
     rate_procent_export = models.DecimalField(
@@ -191,6 +208,7 @@ class SatsTabelElement(models.Model):
         decimal_places=2,
         null=True,
         blank=True,
+        verbose_name=_('Eksport, procent af salgspris'),
     )
 
     rate_prkg_groenland = models.DecimalField(
@@ -198,6 +216,7 @@ class SatsTabelElement(models.Model):
         decimal_places=2,
         null=True,
         blank=True,
+        verbose_name=_('Grønlandsk fartøj, kr/kg'),
     )
 
     rate_prkg_udenlandsk = models.DecimalField(
@@ -205,7 +224,10 @@ class SatsTabelElement(models.Model):
         decimal_places=2,
         null=True,
         blank=True,
+        verbose_name=_('Udenlandsk fartøj, kr/kg'),
     )
+
+    history = HistoricalRecords()
 
 
 # Midlertidig
