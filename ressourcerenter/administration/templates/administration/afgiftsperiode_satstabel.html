@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block content %}
-<h1>{% blocktranslate with periode=tabel.aarkvartal %}Satstabel for Afgiftsperiode {{ periode }} {% endblocktranslate %}</h1>
+<h1>{% blocktranslate with periode=periode %}Satstabel for Afgiftsperiode {{ periode }} {% endblocktranslate %}</h1>
 <form method="post">
     {% csrf_token %}
     {{ form.management_form }}

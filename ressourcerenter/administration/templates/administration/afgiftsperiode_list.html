@@ -7,19 +7,19 @@
 <table class="table">
     <thead>
         <tr>
-            <th>{% translate 'Kvartal' %}</th>
+            <th>{% translate 'Periodenavn' %}</th>
             <th>{% translate 'Handlinger' %}</th>
         </tr>
     </thead>
     <tbody>
-    {% for tabel in object_list %}
+    {% for periode in object_list %}
         <tr>
             <td>
-                {{ tabel.aarkvartal }}
+                {{ periode.navn }}
             </td>
             <td>
-                <a class="btn btn-primary" href="{% url 'administration:afgiftsperiode-satstabel' pk=tabel.pk %}">{% translate 'Satstabel' %}</a>
-                <a class="btn btn-primary" href="{% url 'administration:afgiftsperiode-history' pk=tabel.pk %}">{% translate 'Historik' %}</a>
+                <a class="btn btn-primary" href="{% url 'administration:afgiftsperiode-satstabel' pk=periode.pk %}">{% translate 'Satstabel' %}</a>
+                <a class="btn btn-primary" href="{% url 'administration:afgiftsperiode-history' pk=periode.pk %}">{% translate 'Historik' %}</a>
             </td>
         </tr>
     {% endfor %}

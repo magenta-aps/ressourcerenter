@@ -1,9 +1,11 @@
-from django.test import TestCase
-from administration.models import Kvartal, Afgiftsperiode, SatsTabelElement, Ressource, Fangst, BeregningsModel2021
+from django.test import TransactionTestCase
+from administration.models import Afgiftsperiode, SatsTabelElement, Ressource, BeregningsModel2021, FiskeArt, FangstType
+from indberetning.models import Virksomhed, Indberetning, IndberetningLinje
 from decimal import Decimal
+from datetime import date
 
 
-class AfgiftTestCase(TestCase):
+class AfgiftTestCase(TransactionTestCase):
 
     '''
     §4
@@ -14,15 +16,14 @@ class AfgiftTestCase(TestCase):
     beskattes iht. §§4-7
     '''
 
-    @classmethod
-    def setUpClass(cls):
+    def setUp(self):
         super().setUpClass()
 
-        kvartal, created = Kvartal.objects.get_or_create(aar=2021, kvartal=3)
-        kvartal, created = Kvartal.objects.get_or_create(aar=2021, kvartal=4)
-        tabel, created = Afgiftsperiode.objects.get_or_create(aarkvartal=kvartal)
-
-        cls.tabel = Afgiftsperiode.objects.get(aarkvartal=kvartal)
+        self.periode, created = Afgiftsperiode.objects.get_or_create(
+            navn='4. Kvartal 2021',
+            dato_fra=date(year=2021, month=10, day=1),
+            dato_til=date(year=2021, month=12, day=31)
+        )
 
         for navn, sted, rate_procent_indhandling, rate_procent_export in [
             ('Reje', 'Havgående', 5, 5),
@@ -36,11 +37,16 @@ class AfgiftTestCase(TestCase):
             ('Reje', 'Kystnært', 5, 5),
             ('Hellefisk', 'Kystnært', 5, 5),
         ]:
-            SatsTabelElement.objects.create(
-                tabel=tabel,
-                ressource=Ressource.objects.get(fiskeart__navn=navn, fangsttype__navn=sted),
-                rate_procent_indhandling=rate_procent_indhandling,
-                rate_procent_export=rate_procent_export,
+            fiskeart, _ = FiskeArt.objects.get_or_create(navn=navn)
+            fangsttype, _ = FangstType.objects.get_or_create(navn=sted)
+            ressource, _ = Ressource.objects.get_or_create(fiskeart=fiskeart, fangsttype=fangsttype)
+            SatsTabelElement.objects.get_or_create(
+                periode=self.periode,
+                ressource=ressource,
+                defaults={
+                    'rate_procent_indhandling': rate_procent_indhandling,
+                    'rate_procent_export': rate_procent_export,
+                }
             )
 
         for navn, sted, rate_prkg_groenland, rate_prkg_udenlandsk in [
@@ -50,12 +56,36 @@ class AfgiftTestCase(TestCase):
             ('Blåhvilling', 'Kystnært', 0.15, 0.70),
             ('Guldlaks', 'Kystnært', 0.15, 0.70),
         ]:
-            SatsTabelElement.objects.create(
-                tabel=tabel,
-                ressource=Ressource.objects.get(fiskeart__navn=navn, fangsttype__navn=sted),
-                rate_prkg_groenland=rate_prkg_groenland,
-                rate_prkg_udenlandsk=rate_prkg_udenlandsk,
+            fiskeart, _ = FiskeArt.objects.get_or_create(navn=navn)
+            fangsttype, _ = FangstType.objects.get_or_create(navn=sted)
+            ressource, _ = Ressource.objects.get_or_create(fiskeart=fiskeart, fangsttype=fangsttype)
+            SatsTabelElement.objects.get_or_create(
+                periode=self.periode,
+                ressource=ressource,
+                defaults={
+                    'rate_prkg_groenland': rate_prkg_groenland,
+                    'rate_prkg_udenlandsk': rate_prkg_udenlandsk,
+                }
             )
+
+        self.virksomhed = Virksomhed.objects.create(cvr=1234)
+
+    def _calculate(self, indberetnings_type='havgående', fiskeart=None, salgspris=0, levende_vaegt=0, salgsvaegt=0, til_export=False, overfoert_til_tredje_part=False, export_inkluderet_i_pris=False, fartoej_groenlandsk=True):
+        indberetning = Indberetning.objects.create(
+            afgiftsperiode=self.periode,
+            virksomhed=self.virksomhed,
+            indberetnings_type=indberetnings_type
+        )
+        IndberetningLinje.objects.create(
+            indberetning=indberetning,
+            fiskeart=FiskeArt.objects.get(navn=fiskeart),
+            salgspris=Decimal(salgspris),
+            levende_vægt=Decimal(levende_vaegt),
+            salgsvægt=Decimal(salgsvaegt),
+        )
+        model = BeregningsModel2021.objects.create()
+        result = model.calculate(self.periode, indberetning, til_export=til_export, overfoert_til_tredje_part=overfoert_til_tredje_part, export_inkluderet_i_pris=export_inkluderet_i_pris, fartoej_groenlandsk=fartoej_groenlandsk)
+        return result[0]
 
     def test_transport_addition_forminput(self):
         '''
@@ -71,18 +101,8 @@ class AfgiftTestCase(TestCase):
         Test at den forøgede salgspris passer med oprindelig salgspris + 1*vægt
         Gælder for samme type fiskeri som ovenfor
         '''
-        items = [
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Reje', fangsttype__navn='Havgående'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=True,
-                export_inkluderet_i_pris=False
-            )
-        ]
-        model = BeregningsModel2021.objects.create()
-        result = model.calculate(self.tabel, items)
-        self.assertEquals(result[0].afgift, Decimal(55))
+        result = self._calculate(fiskeart='Reje', salgspris=1000, levende_vaegt=100, salgsvaegt=100, til_export=True, export_inkluderet_i_pris=False)
+        self.assertEquals(result.afgift, Decimal(55))
 
     def test_admin_update_price(self):
         '''
@@ -107,7 +127,7 @@ class AfgiftTestCase(TestCase):
         er grundafgift 0.20 kr.pr.kg
         '''
         rate_element = SatsTabelElement.objects.get(
-            tabel=self.tabel,
+            periode=self.periode,
             ressource=Ressource.objects.get(fiskeart__navn='Reje', fangsttype__navn='Havgående'),
         )
         rate_element.rate_procent_export = 0
@@ -115,28 +135,12 @@ class AfgiftTestCase(TestCase):
         rate_element.rate_pr_kg_export = Decimal(0.2)
         rate_element.rate_pr_kg_indhandling = Decimal(0.05)
         rate_element.save()
-        items = [
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Reje', fangsttype__navn='Havgående'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=True,
-                overfoert_til_tredje_part=False,
-                export_inkluderet_i_pris=False
-            ),
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Reje', fangsttype__navn='Havgående'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=False,
-                overfoert_til_tredje_part=True,
-                export_inkluderet_i_pris=False
-            )
-        ]
-        model = BeregningsModel2021.objects.create()
-        result = model.calculate(self.tabel, items)
-        self.assertEquals(result[0].afgift, Decimal(20))
-        self.assertEquals(result[1].afgift, Decimal(20))
+
+        result = self._calculate(fiskeart='Reje', salgspris=1000, levende_vaegt=100, salgsvaegt=100, til_export=True, export_inkluderet_i_pris=False)
+        self.assertEquals(result.afgift, Decimal(20))
+
+        result = self._calculate(fiskeart='Reje', salgspris=1000, levende_vaegt=100, salgsvaegt=100, overfoert_til_tredje_part=True)
+        self.assertEquals(result.afgift, Decimal(20))
 
     def test_landed_calculation_2(self):
         '''
@@ -146,7 +150,7 @@ class AfgiftTestCase(TestCase):
         er grundafgift 0.05 kr.pr.kg
         '''
         rate_element = SatsTabelElement.objects.get(
-            tabel=self.tabel,
+            periode=self.periode,
             ressource=Ressource.objects.get(fiskeart__navn='Reje', fangsttype__navn='Havgående'),
         )
         rate_element.rate_procent_export = 0
@@ -154,19 +158,9 @@ class AfgiftTestCase(TestCase):
         rate_element.rate_pr_kg_export = Decimal(0.2)
         rate_element.rate_pr_kg_indhandling = Decimal(0.05)
         rate_element.save()
-        items = [
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Reje', fangsttype__navn='Havgående'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=False,
-                overfoert_til_tredje_part=False,
-                export_inkluderet_i_pris=False
-            )
-        ]
-        model = BeregningsModel2021.objects.create()
-        result = model.calculate(self.tabel, items)
-        self.assertEquals(result[0].afgift, Decimal(5))
+
+        result = self._calculate(fiskeart='Reje', salgspris=1000, levende_vaegt=100, salgsvaegt=100, til_export=False, overfoert_til_tredje_part=False, export_inkluderet_i_pris=False)
+        self.assertEquals(result.afgift, Decimal(5))
 
     def test_transferred_calculation_2(self):
         '''
@@ -179,32 +173,14 @@ class AfgiftTestCase(TestCase):
         og gnsn. salgspris for fiskearten i kvartal(nuv.kvartal - 6 mdr) >= 8 kr/kg
         er ressourcerenteafgift 5% af prisen
         '''
-        items = [
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Reje', fangsttype__navn='Havgående'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=False,
-            ),
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Torsk', fangsttype__navn='Havgående'),
-                pris=Decimal('500.0'),
-                vaegt=Decimal('100.0'),
-                til_export=False,
-            ),
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Hellefisk', fangsttype__navn='Kystnært'),
-                pris=Decimal('300.0'),
-                vaegt=Decimal('150.0'),
-                til_export=True,
-            )
-        ]
-        model = BeregningsModel2021.objects.create()
-        result = model.calculate(self.tabel, items)
-        self.assertEquals(3, len(result))
-        self.assertEquals(Decimal(50), result[0].afgift)
-        self.assertEquals(Decimal(25), result[1].afgift)
-        self.assertEquals(Decimal(15), result[2].afgift)
+        result = self._calculate(fiskeart='Reje', salgspris=1000, levende_vaegt=100, salgsvaegt=100, til_export=False)
+        self.assertEquals(Decimal(50), result.afgift)
+
+        result = self._calculate(fiskeart='Torsk', salgspris=500, levende_vaegt=100, salgsvaegt=100, til_export=False)
+        self.assertEquals(Decimal(25), result.afgift)
+
+        result = self._calculate(fiskeart='Hellefisk', indberetnings_type='indhandling', salgspris=300, levende_vaegt=150, salgsvaegt=150, til_export=True, export_inkluderet_i_pris=True)
+        self.assertEquals(Decimal(15), result.afgift)
 
     def test_transferred_calculation_3(self):
         '''
@@ -214,41 +190,20 @@ class AfgiftTestCase(TestCase):
         Dog max 17,5%
         '''
         rate_element = SatsTabelElement.objects.get(
-            tabel=self.tabel,
+            periode=self.periode,
             ressource=Ressource.objects.get(fiskeart__navn='Reje', fangsttype__navn='Havgående'),
         )
         rate_element.rate_procent_export = Decimal(7)
         rate_element.save()
-        items = [
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Reje', fangsttype__navn='Havgående'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=True,
-                export_inkluderet_i_pris=False
-            ),
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Reje', fangsttype__navn='Havgående'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=False,
-                overfoert_til_tredje_part=True,
-                export_inkluderet_i_pris=False
-            ),
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Reje', fangsttype__navn='Havgående'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=False,
-                overfoert_til_tredje_part=False,
-                export_inkluderet_i_pris=False
-            )
-        ]
-        model = BeregningsModel2021.objects.create()
-        result = model.calculate(self.tabel, items)
-        self.assertEquals(result[0].afgift, Decimal(77))
-        self.assertEquals(result[1].afgift, Decimal(70))
-        self.assertEquals(result[2].afgift, Decimal(50))
+
+        result = self._calculate(fiskeart='Reje', salgspris=1000, levende_vaegt=100, salgsvaegt=100, til_export=True, export_inkluderet_i_pris=False)
+        self.assertEquals(result.afgift, Decimal(77))
+
+        result = self._calculate(fiskeart='Reje', salgspris=1000, levende_vaegt=100, salgsvaegt=100, overfoert_til_tredje_part=True)
+        self.assertEquals(result.afgift, Decimal(70))
+
+        result = self._calculate(fiskeart='Reje', salgspris=1000, levende_vaegt=100, salgsvaegt=100)
+        self.assertEquals(result.afgift, Decimal(50))
 
     def test_transferred_calculation_4(self):
         '''
@@ -258,40 +213,20 @@ class AfgiftTestCase(TestCase):
         er ressourcerenteafgift 5%
         '''
         rate_element = SatsTabelElement.objects.get(
-            tabel=self.tabel,
+            periode=self.periode,
             ressource=Ressource.objects.get(fiskeart__navn='Kammusling', fangsttype__navn='Havgående'),
         )
         rate_element.rate_procent_export = Decimal(5)
         rate_element.save()
-        items = [
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Kammusling', fangsttype__navn='Havgående'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=True,
-                export_inkluderet_i_pris=False
-            ),
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Kammusling', fangsttype__navn='Havgående'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=True,
-                export_inkluderet_i_pris=True
-            ),
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Kammusling', fangsttype__navn='Havgående'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=False,
-                overfoert_til_tredje_part=True,
-                export_inkluderet_i_pris=False
-            ),
-        ]
-        model = BeregningsModel2021.objects.create()
-        result = model.calculate(self.tabel, items)
-        self.assertEquals(result[0].afgift, Decimal(55))
-        self.assertEquals(result[1].afgift, Decimal(50))
-        self.assertEquals(result[2].afgift, Decimal(50))
+
+        result = self._calculate(fiskeart='Kammusling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, til_export=True, export_inkluderet_i_pris=False)
+        self.assertEquals(result.afgift, Decimal(55))
+
+        result = self._calculate(fiskeart='Kammusling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, til_export=True, export_inkluderet_i_pris=True)
+        self.assertEquals(result.afgift, Decimal(50))
+
+        result = self._calculate(fiskeart='Kammusling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, til_export=False, export_inkluderet_i_pris=False, overfoert_til_tredje_part=True)
+        self.assertEquals(result.afgift, Decimal(50))
 
     def test_pelagic(self):
         '''
@@ -305,165 +240,32 @@ class AfgiftTestCase(TestCase):
         Guldlaks    0,15 | 0,70
         kr.pr.kg levende vægt
         '''
-        items = [
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Sild', fangsttype__navn='Kystnært'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=True,
-                export_inkluderet_i_pris=True,
-                overfoert_til_tredje_part=True,
-                fartoej_groenlandsk=True,
-            ),
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Sild', fangsttype__navn='Kystnært'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=True,
-                export_inkluderet_i_pris=True,
-                overfoert_til_tredje_part=True,
-                fartoej_groenlandsk=False,
-            ),
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Lodde', fangsttype__navn='Kystnært'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=True,
-                export_inkluderet_i_pris=True,
-                overfoert_til_tredje_part=True,
-                fartoej_groenlandsk=True,
-            ),
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Lodde', fangsttype__navn='Kystnært'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=True,
-                export_inkluderet_i_pris=True,
-                overfoert_til_tredje_part=True,
-                fartoej_groenlandsk=False,
-            ),
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Makrel', fangsttype__navn='Kystnært'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=True,
-                export_inkluderet_i_pris=True,
-                overfoert_til_tredje_part=True,
-                fartoej_groenlandsk=True,
-            ),
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Makrel', fangsttype__navn='Kystnært'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=True,
-                export_inkluderet_i_pris=True,
-                overfoert_til_tredje_part=True,
-                fartoej_groenlandsk=False,
-            ),
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Blåhvilling', fangsttype__navn='Kystnært'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=True,
-                export_inkluderet_i_pris=True,
-                overfoert_til_tredje_part=True,
-                fartoej_groenlandsk=True,
-            ),
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Blåhvilling', fangsttype__navn='Kystnært'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=True,
-                export_inkluderet_i_pris=True,
-                overfoert_til_tredje_part=True,
-                fartoej_groenlandsk=False,
-            ),
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Guldlaks', fangsttype__navn='Kystnært'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=True,
-                export_inkluderet_i_pris=True,
-                overfoert_til_tredje_part=True,
-                fartoej_groenlandsk=True,
-            ),
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Guldlaks', fangsttype__navn='Kystnært'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=True,
-                export_inkluderet_i_pris=True,
-                overfoert_til_tredje_part=True,
-                fartoej_groenlandsk=False,
-            ),
-        ]
+        result = self._calculate(fiskeart='Sild', indberetnings_type='indhandling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, til_export=True, export_inkluderet_i_pris=True, overfoert_til_tredje_part=True)
+        self.assertEquals(result.afgift, Decimal(25))
 
-        model = BeregningsModel2021.objects.create()
-        result = model.calculate(self.tabel, items)
-        self.assertEquals(result[0].afgift, Decimal(25))
-        self.assertEquals(result[1].afgift, Decimal(80))
-        self.assertEquals(result[2].afgift, Decimal(15))
-        self.assertEquals(result[3].afgift, Decimal(70))
-        self.assertEquals(result[4].afgift, Decimal(40))
-        self.assertEquals(result[5].afgift, Decimal(100))
-        self.assertEquals(result[6].afgift, Decimal(15))
-        self.assertEquals(result[7].afgift, Decimal(70))
-        self.assertEquals(result[8].afgift, Decimal(15))
-        self.assertEquals(result[9].afgift, Decimal(70))
+        result = self._calculate(fiskeart='Sild', indberetnings_type='indhandling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, til_export=True, export_inkluderet_i_pris=True, overfoert_til_tredje_part=True, fartoej_groenlandsk=False)
+        self.assertEquals(result.afgift, Decimal(80))
 
-    def test_invalid_catch(self):
-        items = [
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Sild', fangsttype__navn='Havgående'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=True,
-                export_inkluderet_i_pris=True,
-                overfoert_til_tredje_part=True,
-                fartoej_groenlandsk=True,
-            ),
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Lodde', fangsttype__navn='Havgående'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=True,
-                export_inkluderet_i_pris=True,
-                overfoert_til_tredje_part=True,
-                fartoej_groenlandsk=True,
-            ),
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Makrel', fangsttype__navn='Havgående'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=True,
-                export_inkluderet_i_pris=True,
-                overfoert_til_tredje_part=True,
-                fartoej_groenlandsk=True,
-            ),
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Blåhvilling', fangsttype__navn='Havgående'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=True,
-                export_inkluderet_i_pris=True,
-                overfoert_til_tredje_part=True,
-                fartoej_groenlandsk=True,
-            ),
-            Fangst.objects.create(
-                ressource=Ressource.objects.get(fiskeart__navn='Guldlaks', fangsttype__navn='Havgående'),
-                pris=Decimal('1000.0'),
-                vaegt=Decimal('100.0'),
-                til_export=True,
-                export_inkluderet_i_pris=True,
-                overfoert_til_tredje_part=True,
-                fartoej_groenlandsk=True,
-            ),
-        ]
+        result = self._calculate(fiskeart='Lodde', indberetnings_type='indhandling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, til_export=True, export_inkluderet_i_pris=True, overfoert_til_tredje_part=True)
+        self.assertEquals(result.afgift, Decimal(15))
 
-        model = BeregningsModel2021.objects.create()
-        result = model.calculate(self.tabel, items)
-        self.assertEquals(result[0].rate_element, None)
-        self.assertEquals(result[1].rate_element, None)
-        self.assertEquals(result[2].rate_element, None)
-        self.assertEquals(result[3].rate_element, None)
-        self.assertEquals(result[4].rate_element, None)
+        result = self._calculate(fiskeart='Lodde', indberetnings_type='indhandling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, til_export=True, export_inkluderet_i_pris=True, overfoert_til_tredje_part=True, fartoej_groenlandsk=False)
+        self.assertEquals(result.afgift, Decimal(70))
+
+        result = self._calculate(fiskeart='Makrel', indberetnings_type='indhandling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, til_export=True, export_inkluderet_i_pris=True, overfoert_til_tredje_part=True)
+        self.assertEquals(result.afgift, Decimal(40))
+
+        result = self._calculate(fiskeart='Makrel', indberetnings_type='indhandling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, til_export=True, export_inkluderet_i_pris=True, overfoert_til_tredje_part=True, fartoej_groenlandsk=False)
+        self.assertEquals(result.afgift, Decimal(100))
+
+        result = self._calculate(fiskeart='Blåhvilling', indberetnings_type='indhandling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, til_export=True, export_inkluderet_i_pris=True, overfoert_til_tredje_part=True)
+        self.assertEquals(result.afgift, Decimal(15))
+
+        result = self._calculate(fiskeart='Blåhvilling', indberetnings_type='indhandling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, til_export=True, export_inkluderet_i_pris=True, overfoert_til_tredje_part=True, fartoej_groenlandsk=False)
+        self.assertEquals(result.afgift, Decimal(70))
+
+        result = self._calculate(fiskeart='Guldlaks', indberetnings_type='indhandling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, til_export=True, export_inkluderet_i_pris=True, overfoert_til_tredje_part=True, fartoej_groenlandsk=True)
+        self.assertEquals(result.afgift, Decimal(15))
+
+        result = self._calculate(fiskeart='Guldlaks', indberetnings_type='indhandling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, til_export=True, export_inkluderet_i_pris=True, overfoert_til_tredje_part=True, fartoej_groenlandsk=False)
+        self.assertEquals(result.afgift, Decimal(70))

@@ -75,16 +75,9 @@ class AfgiftsperiodeSatsTabelUpdateView(UpdateView):
                 'ressourcer': list(self.resources)
             },
             'queryset': self.object.entries.order_by('ressource__fiskeart__navn', 'ressource__fangsttype__navn'),
-            'min_num': len(self.resources),
             'instance': self.object,
         })
         return kwargs
-
-    def get_initial(self):
-        return [
-            {'ressource': ressource}
-            for ressource in self.resources
-        ]
 
     def get_success_url(self):
         return reverse('administration:afgiftsperiode-list')
@@ -92,7 +85,7 @@ class AfgiftsperiodeSatsTabelUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         return super().get_context_data(**{
             **kwargs,
-            'tabel': self.object,
+            'periode': self.object,
         })
 
 
@@ -111,7 +104,7 @@ class SatsTabelElementHistoryView(HistoryMixin, DetailView):
         )
 
     def get_back_url(self):
-        return reverse('administration:afgiftsperiode-satstabel', kwargs={'pk': self.object.tabel.pk})
+        return reverse('administration:afgiftsperiode-satstabel', kwargs={'pk': self.object.periode.pk})
 
 # endregion
 

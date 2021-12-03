@@ -1,9 +1,11 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
+from django.db.utils import IntegrityError
 
-from administration.models import Afgiftsperiode, FiskeArt, Kvartal
-from indberetning.models import Indberetning, Virksomhed, ProduktKategori, IndberetningLinje
+from administration.models import Afgiftsperiode, FiskeArt, FangstType, Ressource, ProduktKategori
+from indberetning.models import Indberetning, Virksomhed, IndberetningLinje
+from datetime import date
 
 
 class Command(BaseCommand):
@@ -19,20 +21,61 @@ class Command(BaseCommand):
         user.set_password('admin')
         user.save()
 
-        kvartal1, _ = Kvartal.objects.get_or_create(aar=2021, kvartal=4)
-        kvartal2, _ = Kvartal.objects.get_or_create(aar=2021, kvartal=3)
+        for fish, place in [
+            ('Reje', 'Havgående'),
+            ('Reje', 'Kystnært'),
+            ('Hellefisk', 'Havgående'),
+            ('Hellefisk', 'Kystnært'),
+            ('Torsk', 'Havgående'),
+            ('Krabbe', 'Havgående'),
+            ('Kuller', 'Havgående'),
+            ('Sej', 'Havgående'),
+            ('Rødfisk', 'Havgående'),
+            ('Kammusling', 'Havgående'),
+            ('Makrel', 'Havgående'),
+            ('Makrel', 'Kystnært'),
+            ('Sild', 'Havgående'),
+            ('Sild', 'Kystnært'),
+            ('Lodde', 'Havgående'),
+            ('Lodde', 'Kystnært'),
+            ('Blåhvilling', 'Havgående'),
+            ('Blåhvilling', 'Kystnært'),
+            ('Guldlaks', 'Havgående'),
+            ('Guldlaks', 'Kystnært'),
+        ]:
 
-        afgiftsperiode1, _ = Afgiftsperiode.objects.get_or_create(navn='4. kvartal 2021', vis_i_indberetning=True, aarkvartal=kvartal1)
+            try:
+                fiskeart = FiskeArt.objects.create(navn=fish)
+            except IntegrityError:
+                fiskeart = FiskeArt.objects.get(navn=fish)
+            try:
+                fangsttype = FangstType.objects.create(navn=place)
+            except IntegrityError:
+                fangsttype = FangstType.objects.get(navn=place)
+            try:
+                Ressource.objects.create(
+                    fiskeart=fiskeart,
+                    fangsttype=fangsttype,
+                )
+            except IntegrityError:
+                pass
 
-        afgiftsperiode2, _ = Afgiftsperiode.objects.get_or_create(navn='3. kvartal 2021', vis_i_indberetning=True, aarkvartal=kvartal2)
         kategorier = []
         for kategori in ('Hel fisk', 'Filet', 'Biprodukt'):
             kat, _ = ProduktKategori.objects.get_or_create(navn=kategori)
             kategorier.append(kat)
 
-        reje, _ = FiskeArt.objects.get_or_create(navn='Reje')
-        torsk, _ = FiskeArt.objects.get_or_create(navn='Torsk')
+        afgiftsperiode1, _ = Afgiftsperiode.objects.get_or_create(navn='4. kvartal 2021', vis_i_indberetning=True, dato_fra=date(2021, 10, 1), dato_til=date(2021, 12, 31))
+
+        afgiftsperiode2, _ = Afgiftsperiode.objects.get_or_create(navn='3. kvartal 2021', vis_i_indberetning=True, dato_fra=date(2021, 7, 1), dato_til=date(2021, 9, 30))
+
+        kategorier = []
+        for kategori in ('Hel fisk', 'Filet', 'Biprodukt'):
+            kat, _ = ProduktKategori.objects.get_or_create(navn=kategori)
+            kategorier.append(kat)
+
         virksomhed, _ = Virksomhed.objects.get_or_create(cvr='12345678')
+
         if not Indberetning.objects.exists():
             for periode in (afgiftsperiode1, afgiftsperiode2):
                 for i, indberetnings_type in enumerate(('indhandling', 'pelagisk', 'fartøj')):
