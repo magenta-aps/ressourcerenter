@@ -50,7 +50,7 @@ Build ressourcerenter image:
       --cache
       --context=$CI_PROJECT_DIR
       --dockerfile=$CI_PROJECT_DIR/docker/Dockerfile
-      --destination=${IMAGE_SHA}
+      --destination=${AALISAKKAT_IMAGE_SHA}
 
 # Test stage
 ############
@@ -63,7 +63,7 @@ Build ressourcerenter image:
 Ressourcerenter Unittest:
   <<: *test-default
   needs: ["Build ressourcerenter image"]
-  image: ${IMAGE_SHA}
+  image: ${AALISAKKAT_IMAGE_SHA}
   services:
    - name: postgres:13
      alias: ressourcerenter-db
