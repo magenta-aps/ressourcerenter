@@ -2,7 +2,13 @@
 {% load i18n %}
 
 {% block content %}
-<h1>{% translate 'Opret Afgiftsperiode' %}</h1>
+<h1>
+    {% if object.pk %}
+    {% translate 'Redigér Afgiftsperiode' %}
+    {% else %}
+    {% translate 'Opret Afgiftsperiode' %}
+    {% endif %}
+</h1>
 <form method="post">
     {% csrf_token %}
     {{form.errors}}
@@ -28,6 +34,14 @@
         </div>
         <div class="col-4">
             {{ form.dato_til }}
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="col-2">
+            <label for="{{ form.beregningsmodel.id_for_label }}">{% translate 'Beregningsmodel:' %}</label>
+        </div>
+        <div class="col-4">
+            {{ form.beregningsmodel }}
         </div>
     </div>
 

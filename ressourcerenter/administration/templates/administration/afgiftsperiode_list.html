@@ -18,6 +18,7 @@
                 {{ periode.navn }}
             </td>
             <td>
+                <a class="btn btn-primary" href="{% url 'administration:afgiftsperiode-update' pk=periode.pk %}">{% translate 'Redigér' %}</a>
                 <a class="btn btn-primary" href="{% url 'administration:afgiftsperiode-satstabel' pk=periode.pk %}">{% translate 'Satstabel' %}</a>
                 <a class="btn btn-primary" href="{% url 'administration:afgiftsperiode-history' pk=periode.pk %}">{% translate 'Historik' %}</a>
             </td>

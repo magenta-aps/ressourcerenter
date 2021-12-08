@@ -27,10 +27,20 @@ class Migration(migrations.Migration):
             options={'ordering': ['dato_fra', 'dato_til']},
         ),
         migrations.CreateModel(
+            name='BeregningsModel',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('navn', models.CharField(max_length=256, unique=True)),
+            ],
+            options={
+                'abstract': False,
+            },
+        ),
+        migrations.CreateModel(
             name='BeregningsModel2021',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=256)),
+                ('beregningsmodel_ptr', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='administration.beregningsmodel')),
                 ('transport_afgift_rate', models.DecimalField(decimal_places=2, default=None, max_digits=4, null=True, verbose_name='Transportafgift i procent')),
             ],
             options={
@@ -97,8 +107,6 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('afgift', models.DecimalField(decimal_places=2, default='0.0', max_digits=12)),
-                ('beregnings_model_id', models.PositiveIntegerField(null=True)),
-                ('beregnings_model_indholds_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='contenttypes.contenttype')),
                 ('rate_element', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='administration.satstabelelement')),
             ],
         ),

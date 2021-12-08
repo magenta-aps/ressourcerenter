@@ -3,10 +3,10 @@
 
 {% block content %}
 <h1>
-    {% if object.pk %}
-    {% translate 'Redigér Fiskeart' %}
-    {% else %}
+    {% if creating %}
     {% translate 'Opret Fiskeart' %}
+    {% else %}
+    {% translate 'Redigér Fiskeart' %}
     {% endif %}
 </h1>
 

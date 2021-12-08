@@ -39,12 +39,20 @@ class AfgiftsperiodeListView(ListView):
     queryset = Afgiftsperiode.objects.all()
 
 
+class AfgiftsperiodeUpdateView(UpdateView):
+    form_class = AfgiftsperiodeForm
+    model = Afgiftsperiode
+
+    def get_success_url(self):
+        return reverse('administration:afgiftsperiode-list')
+
+
 class AfgiftsperiodeHistoryView(HistoryMixin, DetailView):
 
     model = Afgiftsperiode
 
     def get_fields(self, **kwargs):
-        return ('navn', 'vis_i_indberetning',)
+        return ('navn', 'vis_i_indberetning', 'beregningsmodel')
 
     def get_back_url(self):
         return reverse('administration:afgiftsperiode-list')
@@ -119,6 +127,12 @@ class FiskeArtCreateView(CreateView):
     def get_success_url(self):
         return reverse('administration:fiskeart-list')
 
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**{
+            **kwargs,
+            'creating': True
+        })
+
 
 class FiskeArtUpdateView(UpdateView):
 
@@ -158,7 +172,7 @@ class ProduktKategoriCreateView(CreateView):
         return reverse('administration:produktkategori-list')
 
     def get_context_data(self, **kwargs):
-        return super(ProduktKategoriCreateView, self).get_context_data(**{
+        return super().get_context_data(**{
             **kwargs,
             'creating': True
         })

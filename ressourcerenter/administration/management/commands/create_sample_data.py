@@ -3,9 +3,10 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.db.utils import IntegrityError
 
-from administration.models import Afgiftsperiode, FiskeArt, FangstType, Ressource, ProduktKategori
+from administration.models import Afgiftsperiode, FiskeArt, FangstType, Ressource, ProduktKategori, BeregningsModel2021
 from indberetning.models import Indberetning, Virksomhed, IndberetningLinje
 from datetime import date
+from decimal import Decimal
 
 
 class Command(BaseCommand):
@@ -97,3 +98,13 @@ class Command(BaseCommand):
                                                      salgspris=400,
                                                      kategori=kategori,
                                                      fiskeart=FiskeArt.objects.get(navn='Torsk'))
+
+        try:
+            BeregningsModel2021.objects.create(
+                navn='TestBeregningsModel',
+                transport_afgift_rate=Decimal(1),
+            )
+        except IntegrityError:
+            beregningsmodel = BeregningsModel2021.objects.get(navn='TestBeregningsModel')
+            beregningsmodel.transport_afgift_rate = Decimal(1)
+            beregningsmodel.save()

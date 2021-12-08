@@ -83,7 +83,7 @@ class AfgiftTestCase(TransactionTestCase):
             levende_vægt=Decimal(levende_vaegt),
             salgsvægt=Decimal(salgsvaegt),
         )
-        model = BeregningsModel2021.objects.create()
+        model, _ = BeregningsModel2021.objects.get_or_create(navn="TestBeregning")
         result = model.calculate(self.periode, indberetning, til_export=til_export, overfoert_til_tredje_part=overfoert_til_tredje_part, export_inkluderet_i_pris=export_inkluderet_i_pris, fartoej_groenlandsk=fartoej_groenlandsk)
         return result[0]
 
