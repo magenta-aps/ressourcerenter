@@ -76,3 +76,32 @@ Ressourcerenter Unittest:
     POSTGRES_HOST: ressourcerenter-db
   script:
     - cd /app && python manage.py test
+
+# Release stage
+###############
+
+.release-aalisakkat: &release-aalisakkat
+  stage: release
+  image: alpine
+  needs: ["aalisakkat Unittest"]
+  variables:
+    GIT_STRATEGY: none # We do not need the source code
+  dependencies: []
+  tags:
+    - docker
+  before_script:
+    # install skopeo
+    - apk add skopeo
+
+Release aalisakkat dev image:
+  <<: *release-aalisakkat
+  only:
+    refs:
+      - master
+      - development
+  script:
+    - skopeo copy
+      --src-creds=${CI_REGISTRY_USER}:${CI_BUILD_TOKEN}
+      --dest-creds=${CI_REGISTRY_USER}:${CI_BUILD_TOKEN}
+      "docker://${AALISAKKAT_IMAGE_SHA}"
+      "docker://${AALISAKKAT_IMAGE_DEV}"
