@@ -1,8 +1,6 @@
 from decimal import Decimal, ROUND_HALF_EVEN
 from uuid import uuid4
 
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models.signals import post_save
 from django.utils.translation import gettext as _
@@ -119,6 +117,13 @@ class Afgiftsperiode(models.Model):
 
     history = HistoricalRecords()
 
+    beregningsmodel = models.ForeignKey(
+        'BeregningsModel',
+        on_delete=models.SET_NULL,
+        null=True,
+        default=None,
+    )
+
     def entry_for_resource(self, fiskeart, fangsttype):
         try:
             return self.entries.get(ressource__fiskeart=fiskeart, ressource__fangsttype=fangsttype)
@@ -222,18 +227,12 @@ class FangstAfgift(models.Model):
         default='0.0',
     )
 
-    beregnings_model_indholds_type = models.ForeignKey(
-        ContentType,
+    beregningsmodel = models.ForeignKey(
+        'BeregningsModel',
         on_delete=models.SET_NULL,
-        null=True
-    )  # Model class of the source
-    beregnings_model_id = models.PositiveIntegerField(
-        null=True
-    )  # id of the sources
-    beregnings_model = GenericForeignKey(
-        'beregnings_model_indholds_type',
-        'beregnings_model_id'
-    )  # FK to the object who created the transaction
+        null=True,
+        default=None,
+    )
 
     rate_element = models.ForeignKey(
         SatsTabelElement,
@@ -244,20 +243,41 @@ class FangstAfgift(models.Model):
 
 class BeregningsModel(models.Model):
 
-    class Meta:
-        abstract = True
-
-    name = models.CharField(
+    navn = models.CharField(
         max_length=256,
         blank=False,
         null=False,
+        unique=True,
     )
 
     def calculate(self, rate_tabel: Afgiftsperiode, indberetning):
         raise NotImplementedError(f"{self.__class__.__name__}.calculate")
 
+    def __str__(self):
+        return self.navn
+
+    # BeregningsModel-implementationer kan være et arbitrært hierarki af klasser, f.eks.:
+    # class BeregningsModelA(BeregningsModel)
+    # class BeregningsModelB(BeregningsModelA)
+    # class BeregningsModelC(BeregningsModelB)
+    # find den specifikke leaf-instans (instansen af BeregningsModelC som peger på dette objekt)
+    @property
+    def specific(self):
+        instance = self
+        while (next := instance.subclass_instance) != instance:
+            instance = next
+        return instance
+
 
 class BeregningsModel2021(BeregningsModel):
+
+    beregningsmodel_ptr = models.OneToOneField(
+        BeregningsModel,
+        on_delete=models.CASCADE,
+        parent_link=True,
+        primary_key=True,
+        related_name='subclass_instance',
+    )
 
     transport_afgift_rate = models.DecimalField(
         max_digits=4,

@@ -2,7 +2,7 @@ from administration.apps import AdministrationConfig
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
 from administration.views import FrontpageView
-from administration.views import AfgiftsperiodeCreateView, AfgiftsperiodeListView, AfgiftsperiodeHistoryView, AfgiftsperiodeSatsTabelUpdateView
+from administration.views import AfgiftsperiodeCreateView, AfgiftsperiodeUpdateView, AfgiftsperiodeListView, AfgiftsperiodeHistoryView, AfgiftsperiodeSatsTabelUpdateView
 from administration.views import SatsTabelElementHistoryView
 from administration.views import FiskeArtListView, FiskeArtCreateView, FiskeArtUpdateView, FiskeArtHistoryView
 from administration.views import ProduktKategoriListView, ProduktKategoriCreateView, ProduktKategoriUpdateView, ProduktKategoriHistoryView
@@ -16,6 +16,7 @@ urlpatterns = [
 
     path('afgiftsperiode/', AfgiftsperiodeListView.as_view(), name='afgiftsperiode-list'),
     path('afgiftsperiode/create', AfgiftsperiodeCreateView.as_view(), name='afgiftsperiode-create'),
+    path('afgiftsperiode/<uuid:pk>/update', AfgiftsperiodeUpdateView.as_view(), name='afgiftsperiode-update'),
     path('afgiftsperiode/<uuid:pk>/satstabel', AfgiftsperiodeSatsTabelUpdateView.as_view(), name='afgiftsperiode-satstabel'),
     path('afgiftsperiode/<uuid:pk>/history/', AfgiftsperiodeHistoryView.as_view(), name='afgiftsperiode-history'),
     path('satstabelelement/<int:pk>/history/', SatsTabelElementHistoryView.as_view(), name='satstabelelement-history'),
