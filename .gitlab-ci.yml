@@ -6,7 +6,7 @@ stages:
   - deploy
 
 variables:
-IMAGE_SHA: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
+  IMAGE_SHA: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
   IMAGE_DEV: ${CI_REGISTRY_IMAGE}:dev
   AALISAKKAT_IMAGE_TAG: magentaaps/aalisakkat:${CI_COMMIT_TAG}-aalisakkat
 
@@ -85,7 +85,7 @@ Aalisakkat Unittest:
 .release-aalisakkat: &release-aalisakkat
   stage: release
   image: alpine
-  needs: ["aalisakkat Unittest"]
+  needs: ["Aalisakkat Unittest"]
   variables:
     GIT_STRATEGY: none # We do not need the source code
   dependencies: []
@@ -100,7 +100,6 @@ Release aalisakkat dev image:
   only:
     refs:
       - master
-      - development
   script:
     - skopeo copy
       --src-creds=${CI_REGISTRY_USER}:${CI_BUILD_TOKEN}
@@ -108,48 +107,3 @@ Release aalisakkat dev image:
       "docker://${IMAGE_SHA}"
       "docker://${IMAGE_DEV}"
 
-Release aalisakkat production image:
-  <<: *release-aalisakkat
-  only:
-    variables:
-      # Matches all of SemVer 2.0.0
-      - $CI_COMMIT_TAG =~ /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/
-  script:
-    - skopeo copy
-      --src-creds=${CI_REGISTRY_USER}:${CI_BUILD_TOKEN}
-      --dest-creds=${RELEASE_REGISTRY_USER}:${RELEASE_REGISTRY_PASSWORD}
-      "docker://${AALISAKKAT_IMAGE_SHA}"
-      "docker://${AALISAKKAT_IMAGE_TAG}"
-
-# Deploy stage
-##############
-
-.deploy-default: &deploy-default
-  stage: deploy
-  image: magentalabs/pepper:latest
-  services: []
-  dependencies: []
-  tags:
-    - deploy
-
-
-Deploy test:
-  # Automatic deployment of branch master to test
-  <<: *deploy-default
-  needs: ["Release aalisakkat dev image"]
-  only:
-    refs:
-      - master
-      - development
-  when: manual
-  variables:
-    DEPLOYMENT_NAMESPACE: aalisakkat.service-test
-    SALTAPI_URL: https://ctrldev1.magenta-aps.dk/api/
-    SALTAPI_EAUTH: file
-    GIT_STRATEGY: none
-  script:
-    - echo Attempting to call deployment
-    - pepper --client runner --fail-any state.orchestrate ${DEPLOYMENT_NAMESPACE}
-  environment:
-    name: test
-    url: ""
