@@ -29,4 +29,4 @@ USER ressourcerenter
 VOLUME  /srv/media
 EXPOSE 8000
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["gunicorn", "--bind=0.0.0.0:8000", "project.wsgi:application", "--workers=4", "--timeout 120", "--error-logfile -", "--capture-output"]
+CMD ["gunicorn","-b","0.0.0.0:8000","project.wsgi:application","-w 4","-t 120","--error-logfile","-","--capture-output"]
