@@ -16,7 +16,6 @@ services:
       - ./data/:/srv/media
     environment:
       - MAKE_MIGRATIONS=true
-      - MIGRATE=true
     command: gunicorn --bind=0.0.0.0:8000 project.wsgi:application --reload --workers=1 --access-logfile - --error-logfile - --capture-output
 
   postgres:

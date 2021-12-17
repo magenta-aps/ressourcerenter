@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 MAKE_MIGRATIONS=${MAKE_MIGRATIONS:=false}
-MIGRATE=${MIGRATE:=false}
+MIGRATE=${MIGRATE:=true}
 TEST=${TEST:=false}
 SAMPLE_DATA=${SAMPLE_DATA:=false}
 
