@@ -6,35 +6,20 @@
 <div class="table-responsive">
     {% include 'indberetning/includes/linje_list.html' with object_list=object.linjer.all %}
 </div>
-<hr />
 <h2>{% translate 'Justerer indberetning'%}</h2>
 {% else %}
-<hr />
 <h2>{% translate 'Nye indberetninger'%}</h2>
 {% endif %}
 <form method="POST" enctype="multipart/form-data" action="{{ form_url }}">
     {% csrf_token %}
-    {{ formset.management_form }}
+    {{ form.management_form }}
     {{ bilag_formset.management_form }}
-    {{ form.non_form_errors }}
     <div>
         <div class="form-inline">
-            <strong class="mr-2">{% translate 'Kvartal / år:' %}</strong>{{ afgiftsperiode }}
+            <strong class="mr-2">{% translate 'Afgiftsperiode:' %}</strong>{{ afgiftsperiode }}
         </div>
         <div class="form-inline">
             <strong class="mr-2">{% translate 'Selskab / CVR:' %}</strong> {{ request.session.cvr }}
-        </div>
-        <div class="form-inline">
-            <strong class="mr-2">{% translate 'Fartøjs navn:' %}</strong>
-            <select name="navn" class="form-control col-2" id="js-boat-select" autocomplete="off">
-                <option value="">--</option>
-                {% for object in fartøj %}
-                    <option {% if object.navn ==  form.navn.value%}selected{% endif %} value="{{ object.navn }}">{{ object.navn }}</option>
-                {% endfor %}
-            </select>
-            {% if form.errors.navn %}
-                <small class="error">{{form.errors.navn}}</small>
-            {% endif %}
         </div>
     </div>
     <div class="table-responsive">
@@ -42,46 +27,62 @@
         <table class="table table-bordered text-center table-sm" id="js-product-table">
             <thead>
             <tr>
-                <th>{% translate 'Fiskeart'%}</th>
-                <th>{% translate 'Produkt'%}</th>
-                <th>{% translate 'Salgsvægt'%}</th>
-                <th>{% translate 'Levende vægt'%}</th>
-                <th>{% translate 'Salgspris'%}</th>
+                <th class="col-2">{% translate 'Fartøjs navn' %}</th>
+                <th class="col-2">{% translate 'ProduktType'%}</th>
+                <th class="col-2">{% translate 'Salgsvægt'%}</th>
+                <th class="col-2">{% translate 'Levende vægt'%}</th>
+                <th class="col-2">{% translate 'Salgspris'%}</th>
+                {% if skema_id == 1 %}
+                <th class="col-2">{% translate 'Transporttillæg'%}</th>
+                {% elif skema_id == 2 or skema_id == 3 %}
+                <th class="col-2">{% translate 'Bonus og andet vederlag'%}</th>
+                {% endif %}
             </tr>
             </thead>
             <tbody>
-            {% for form in formset %}
-            {{ form.non_field_errors }}
+            {% for subform in form %}
+            {{ subform.non_field_errors }}
             <tr>
-                <td>{{form.fiskeart}}{% if form.errors.fiskeart %}<br/><small>{{form.errors.fiskeart}}</small>{% endif %}</td>
-                <td>{{form.kategori}}{% if form.errors.kategori %}<br/><small>{{form.errors.kategori}}</small>{% endif %}</td>
-                <td>{{form.salgsvægt}}{% if form.errors.salgsvægt %}<br/><small>{{form.errors.salgsvægt}}</small>{% endif %}</td>
-                <td>{{form.levende_vægt}}{% if form.errors.levende_vægt %}<br/><small>{{form.errors.levende_vægt}}</small>{% endif %}</td>
-                <td>{{form.salgspris}}{% if form.errors.salgspris %}<br/><small>{{form.errors.salgspris}}</small>{% endif %}</td>
+                <td>{{subform.navn}}{% if form.errors.navn %}<small class="error">{{form.errors.navn}}</small>{% endif %}</td>
+                <td>{{subform.produkttype}}{% if subform.errors.kategori %}<br/><small>{{subform.errors.kategori}}</small>{% endif %}</td>
+                <td>{{subform.salgsvægt}}{% if subform.errors.salgsvægt %}<br/><small>{{subform.errors.salgsvægt}}</small>{% endif %}</td>
+                <td>{{subform.levende_vægt}}{% if subform.errors.levende_vægt %}<br/><small>{{subform.errors.levende_vægt}}</small>{% endif %}</td>
+                <td>{{subform.salgspris}}{% if subform.errors.salgspris %}<br/><small>{{subform.errors.salgspris}}</small>{% endif %}</td>
+                {% if subform.transporttillæg %}
+                <td>{{subform.transporttillæg}}{% if subform.errors.transporttillæg %}<br/><small>{{subform.errors.transporttillæg}}</small>{% endif %}</td>
+                {% elif subform.bonus %}
+                <td>{{subform.bonus}}{% if subform.errors.bonus %}<br/><small>{{subform.errors.bonus}}</small>{% endif %}</td>
+                {% endif %}
             </tr>
             {% endfor %}
             </tbody>
         </table>
     </div>
-    <div class="text-right">
+    <div>
         <input type="button" class="btn btn-sm btn-primary" id="js-add-product-button" value="{% translate 'Tilføj linje'%}">
     </div>
     <hr/>
+    {% if object.bilag.count %}
     <div class="form-inline">
-        <strong class="mr-2">{% translate 'Eksisterende bilag:'%}</strong>{% for bilag in object.bilag.all %}<a class="mr-2" href="{% url 'indberetning:bilag-download' pk=bilag.uuid%}">{{bilag.filename}}</a>{% endfor %}
+        <strong class="mr-2">{% translate 'Eksisterende bilag:'%}</strong>
+        {% for bilag in object.bilag.all %}
+        <a class="mr-2" href="{% url 'indberetning:bilag-download' pk=bilag.uuid%}">{{bilag.filename}}</a>
+        {% endfor %}
     </div>
+    {% endif %}
     {{ bilag_formset.non_form_errors }}
     {{ form.non_field_errors }}
     <div id="js-bilag-wrapper">
         {% for form in bilag_formset %}
         <div class="form-inline mt-2">
-            {{form}}
+            {{ form.bilag }}
         </div>
         {% endfor %}
     </div>
     <div class="form-inline mt-2">
         <input type="button" id="js-add-bilag-button" class="btn btn-primary btn-sm" value="{% translate 'Tilføj bilag' %}">
     </div>
+    <hr/>
     <div class="form-inline justify-content-end">
         <input type="submit" class="btn btn-success" value="{% translate 'Indsend' %}" />
     </div>
@@ -91,31 +92,39 @@
     <table>
         <tbody id="js-initial-row">
         <tr>
-            <td>{{formset.empty_form.fiskeart}}</td>
-            <td>{{formset.empty_form.kategori}}</td>
-            <td>{{formset.empty_form.salgsvægt}}</td>
-            <td>{{formset.empty_form.levende_vægt}}</td>
-            <td>{{formset.empty_form.salgspris}}</td>
+            <td>{{form.empty_form.navn}}</td>
+            <td>{{form.empty_form.produkttype}}</td>
+            <td>{{form.empty_form.salgsvægt}}</td>
+            <td>{{form.empty_form.levende_vægt}}</td>
+            <td>{{form.empty_form.salgspris}}</td>
+            <td>{% if form.empty_form.transporttillæg %}{{form.empty_form.transporttillæg}}{% elif form.empty_form.bonus %}{{form.empty_form.bonus}}</td>
+            {% endif %}
         </tr>
         </tbody>
     </table>
     <div id="js-bilag-empty">
         <div class="form-inline mt-2">
-            {{ bilag_formset.empty_form }}
+            {{ bilag_formset.empty_form.bilag }}
         </div>
     </div>
 </div>
 <script>
     $(document).ready(function() {
-        $('select#js-boat-select').select2({
+        $('#js-product-table select.js-boat-select').select2({
             tags: true,
             placeholder: "Vælg eller opret nyt fartøj",
             allowClear: true
         });
         $('input#js-add-product-button').on('click', function(){
-            let form_idx = $('input[name=linje-TOTAL_FORMS]').val();
+            const form_idx = $('input[name=linje-TOTAL_FORMS]').val();
             $('table#js-product-table tbody').append($('tbody#js-initial-row').html().replace(/__prefix__/g, form_idx));
             $('input[name=linje-TOTAL_FORMS]').val(parseInt(form_idx)+1);
+            const newRow = $('table#js-product-table tbody tr:last');
+            newRow.find('select.js-boat-select').select2({
+                tags: true,
+                placeholder: "Vælg eller opret nyt fartøj",
+                allowClear: true
+            });
         });
         $('input#js-add-bilag-button').on('click', function(){
             let form_idx = $('input[name=bilag-TOTAL_FORMS]').val();

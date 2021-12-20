@@ -15,47 +15,79 @@
 {% endblock %}
 {% block content %}
 <h1>Tidligere indberetninger</h1>
-<div class="table-responsive">
-    <table class="table table-borderless text-center table-sm">
-        <thead>
-        <tr>
-            <th>{% translate 'Dato'%}</th>
-            <th>{% translate 'Fartøjs navn/indhandlingssted '%}</th>
-            <th>{% translate 'Fiskeart'%}</th>
-            <th>{% translate 'Produkt'%}</th>
-            <th>{% translate 'Salgsvægt'%}</th>
-            <th>{% translate 'Levende vægt'%}</th>
-            <th>{% translate 'Salgspris'%}</th>
-        </tr>
-        </thead>
+
+{% for indberetning in object_list %}
+{% with skematype_id=indberetning.skematype.id %}
+
+
+<div class="table-bordered p-3">
+
+<div class="table-responsive col-12">
+    <table class="table table-sm">
         <tbody>
-        {% for indberetning in object_list %}
         <tr>
-            <td class="border-top border-dark">{{indberetning.indberetningstidspunkt|date:"SHORT_DATE_FORMAT"}}</td>
-            <td class="border-top border-dark">{{ indberetning.navn }}</td>
-            <td class="border-top border-dark"></td>
-            <td class="border-top border-dark"></td>
-            <td class="border-top border-dark"></td>
-            <td class="border-top border-dark"></td>
-            <td class="border-top border-dark">
+            <th class="col-2">{% translate 'Dato'%}</th>
+            <td class="col-4">{{indberetning.indberetningstidspunkt|date:"SHORT_DATE_FORMAT"}}</td>
+            <td class="col-6">
                 <a href="{% url 'indberetning:indberetning-edit' indberetning.uuid %}" class="btn btn-sm btn-secondary">{% translate 'Justér indberetning'%}</a>
             </td>
         </tr>
+        <tr>
+            <th>{% translate 'Indberetter CPR'%}</th>
+            <td>{{indberetning.indberetters_cpr}}</td>
+            <td rowspan="2">
+                <strong class="mr-2">{% translate 'Eksisterende bilag:'%}</strong>
+                {% for bilag in indberetning.bilag.all %}
+                <a class="mr-2" href="{% url 'indberetning:bilag-download' pk=bilag.uuid%}">{{bilag.filename}}</a>
+                {% endfor %}
+            </td>
+        </tr>
+        <tr>
+            <th>{% translate 'Skematype'%}</th>
+            <td>{{indberetning.skematype}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="table-responsive col-12">
+    <table class="table text-center table-sm">
+        <thead>
+        <tr>
+            <th class="col-2">{% translate 'Fartøjs navn/indhandlingssted '%}</th>
+            <th class="col-2">{% translate 'ProduktType'%}</th>
+            <th class="col-2">{% translate 'Salgsvægt'%}</th>
+            <th class="col-2">{% translate 'Levende vægt'%}</th>
+            <th class="col-2">{% translate 'Salgspris'%}</th>
+            {% if skematype_id == 1 %}
+            <th class="col-2">{% translate 'Transporttillæg'%}</th>
+            {% elif skematype_id == 2 or skematype_id == 3 %} %}
+            <th class="col-2">{% translate 'Bonus og andet vederlag'%}</th>
+            {% endif %}
+        </tr>
+        </thead>
+        <tbody>
         {% for object in indberetning.linjer.all %}
         <tr>
-            <td></td>
-            <td></td>
-            <td>{{ object.fiskeart }}</td>
-            <td>{{object.kategori|default_if_none:'-'}}</td>
+            <td>{{ object.navn }}</td>
+            <td>{{ object.produkttype }}</td>
             <td>{{ object.salgsvægt }}</td>
             <td>{{ object.levende_vægt }}</td>
-            <td>{{ object.salgspris }}</td>
+            <td>{{ object.salgspris|default_if_none:'' }}</td>
+            {% if skematype_id == 1 %}
+            <td>{{ object.transporttillæg|default_if_none:'' }}</td>
+            {% elif skematype_id == 2 or skematype_id == 3 %} %}
+            <td>{{ object.bonus|default_if_none:'' }}</td>
+            {% endif %}
         </tr>
-        {% endfor %}
         {% endfor %}
         </tbody>
     </table>
 </div>
+</div>
+{% endwith %}
+{% endfor %}
+
 <div class="row justify-content-center">
     <form class="form-inline" method="POST" action="{% url 'indberetning:type-select'%}">
         {% csrf_token %}

@@ -11,54 +11,58 @@
             <a class="btn btn-secondary" href="{% url 'administration:afgiftsperiode-list' %}">{% trans 'Tilbage' %}</a>
         </div>
     </div>
+    {% for item in form.forms_by_skematype %}
+    {% with skematype=item.skematype subforms=item.forms %}
+    <h2>
+        {% blocktrans with id=skematype.id %}Skematype {{id}}{% endblocktrans %}
+    </h2>
+    <p>
+        {{ skematype }}
+    </p>
     <table id="satstabel" class="table">
         <thead>
             <tr>
                 <th>{% translate 'Fiskeart' %}</th>
-                <th>{% translate 'Fangsttype' %}</th>
-                <th>{% translate 'Satstype' %}</th>
-                <th>{% translate 'Indhandling, kr/kg' %}</th>
-                <th>{% translate 'Eksport, kr/kg' %}</th>
-                <th>{% translate 'Grønlandsk fartøj, kr/kg' %}</th>
-                <th>{% translate 'Udenlandsk fartøj, kr/kg' %}</th>
-                <th>{% translate 'Indhandling, procent af salgspris' %}</th>
-                <th>{% translate 'Eksport, procent af salgspris' %}</th>
+                <th>{% translate 'Grønlandsk fartøj' %}</th>
+                <th>{% translate 'Afgift, kr pr. kg' %}</th>
+                <th>{% translate 'Afgift, procent af salgspris' %}</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
-        {% for subform in form %}
+        {% for subform in subforms %}
+        {{subform.errors}}
+        {% with instance=subform.instance %}
             <tr>
                 <td>
-                    {{ subform.ressource_obj.fiskeart.navn }}
                     {{ subform.id }}
-                    {{ subform.ressource }}
+                    {{ subform.skematype }}
+                    {{ subform.fiskeart }}
+                    {{ instance.fiskeart }}
                 </td>
-                <td>{{ subform.ressource_obj.fangsttype.navn }}</td>
                 <td>
-                    <select class="form-control type_select">
-                        <option value="">{% translate 'Vælg en satstype...' %}</option>
-                        <option value="prkg_indhandling_export">{% translate 'Indhandling/eksport kr/kg' %}</option>
-                        <option value="prkg_groenland_udenlandsk">{% translate 'Grønlandsk/udenlandsk fartøj kr/kg' %}</option>
-                        <option value="pct_indhandling_export">{% translate 'Indhandling/eksport procent' %}</option>
-                    </select>
+                    {{ subform.fartoej_groenlandsk }}
+                    {{ instance.fartoej_groenlandsk|janej|default_if_none:''|capfirst }}
                 </td>
-                <td class="switchcolumn prkg_indhandling_export">{{ subform.rate_pr_kg_indhandling }}</td>
-                <td class="switchcolumn prkg_indhandling_export">{{ subform.rate_pr_kg_export }}</td>
-                <td class="switchcolumn prkg_groenland_udenlandsk">{{ subform.rate_prkg_groenland }}</td>
-                <td class="switchcolumn prkg_groenland_udenlandsk">{{ subform.rate_prkg_udenlandsk }}</td>
-                <td class="switchcolumn pct_indhandling_export">{{ subform.rate_procent_indhandling }}</td>
-                <td class="switchcolumn pct_indhandling_export">{{ subform.rate_procent_export }}</td>
+                <td class="switchcolumn prkg">{{ subform.rate_pr_kg }}</td>
+                <td class="switchcolumn pct">{{ subform.rate_procent }}</td>
                 <td>
                     {% if subform.id.value %}
-                    <a class="btn btn-primary" href="{% url 'administration:satstabelelement-history' subform.id.value %}">{% translate 'Historik' %}</a>
+                    <a class="btn btn-primary" href="{% url 'administration:satstabelelement-history' subform.id.value %}">
+                        {% translate 'Historik' %}
+                    </a>
                     {% endif %}
                 </td>
             </tr>
+        {% endwith %}
         {% endfor %}
         </tbody>
     </table>
-    <a class="btn btn-secondary" href="{% url 'administration:afgiftsperiode-list' %}">{% translate 'Annullér' %}</a>
+    {% endwith %}
+    {% endfor %}
+    <a class="btn btn-secondary" href="{% url 'administration:afgiftsperiode-list' %}">
+        {% translate 'Annullér' %}
+    </a>
     <button class="btn btn-primary" type="submit">{% translate 'Gem' %}</button>
 </form>
 <script>

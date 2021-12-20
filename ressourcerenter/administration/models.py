@@ -8,29 +8,6 @@ from django.utils.translation import gettext as _
 from simple_history.models import HistoricalRecords
 
 
-class ProduktKategori(models.Model):
-
-    class Meta:
-        ordering = ['navn']
-
-    uuid = models.UUIDField(
-        primary_key=True,
-        default=uuid4
-    )
-    navn = models.TextField(  # Hel fisk, filet, bi-produkt
-        unique=True
-    )
-    beskrivelse = models.TextField(
-        null=False,
-        blank=True,
-        default='',
-    )
-    history = HistoricalRecords()
-
-    def __str__(self):
-        return self.navn
-
-
 class NamedModel(models.Model):
 
     class Meta:
@@ -40,9 +17,13 @@ class NamedModel(models.Model):
         primary_key=True,
         default=uuid4
     )
-    navn = models.TextField(
+    navn_dk = models.TextField(
         max_length=2048,
-        verbose_name=_('Navn'),
+        verbose_name=_('Dansk navn'),
+    )
+    navn_gl = models.TextField(
+        max_length=2048,
+        verbose_name=_('Grønlandsk navn'),
     )
     beskrivelse = models.TextField(
         blank=True,
@@ -54,28 +35,57 @@ class NamedModel(models.Model):
         return f"{self.navn}"
 
 
+class SkemaType(models.Model):
+
+    class Meta:
+        ordering = ['id']
+
+    id = models.SmallIntegerField(
+        primary_key=True
+    )
+    navn_dk = models.TextField(
+        max_length=2048,
+        verbose_name=_('Dansk navn'),
+    )
+    navn_gl = models.TextField(
+        max_length=2048,
+        verbose_name=_('Grønlandsk navn'),
+    )
+
+    def __str__(self):
+        return self.navn_dk
+
+
 class FiskeArt(models.Model):
 
     class Meta:
-        ordering = ['navn']
+        ordering = ['navn_dk']
 
     uuid = models.UUIDField(primary_key=True, default=uuid4)
-    navn = models.TextField(unique=True)
+
+    navn_dk = models.TextField(
+        max_length=2048,
+        verbose_name=_('Dansk navn'),
+        unique=True,
+    )
+    navn_gl = models.TextField(
+        max_length=2048,
+        verbose_name=_('Grønlandsk navn'),
+        unique=True,
+    )
     beskrivelse = models.TextField()
+    pelagisk = models.BooleanField(default=False)
+    skematype = models.ManyToManyField(SkemaType)
     history = HistoricalRecords()
 
     def __str__(self):
-        return self.navn
+        return self.navn_dk
 
 
-class FangstType(NamedModel):
-    pass
-
-
-class Ressource(models.Model):
+class ProduktType(NamedModel):
 
     class Meta:
-        unique_together = ['fiskeart', 'fangsttype']
+        unique_together = ['fiskeart', 'navn_dk', 'fartoej_groenlandsk']
 
     fiskeart = models.ForeignKey(
         FiskeArt,
@@ -83,14 +93,12 @@ class Ressource(models.Model):
         null=False
     )
 
-    fangsttype = models.ForeignKey(
-        FangstType,
-        on_delete=models.CASCADE,
-        null=False
+    fartoej_groenlandsk = models.BooleanField(
+        null=True
     )
 
     def __str__(self):
-        return f"{self.fiskeart.navn} | {self.fangsttype.navn}"
+        return f"{self.navn_dk}"
 
 
 class Afgiftsperiode(models.Model):
@@ -137,7 +145,7 @@ class Afgiftsperiode(models.Model):
 class SatsTabelElement(models.Model):
 
     class Meta:
-        unique_together = ['periode', 'ressource']
+        unique_together = ['periode', 'skematype', 'fiskeart', 'fartoej_groenlandsk']
 
     periode = models.ForeignKey(
         Afgiftsperiode,
@@ -145,60 +153,37 @@ class SatsTabelElement(models.Model):
         related_name='entries'
     )
 
-    ressource = models.ForeignKey(
-        Ressource,
+    skematype = models.ForeignKey(
+        SkemaType,
         on_delete=models.CASCADE
     )
 
+    fiskeart = models.ForeignKey(
+        FiskeArt,
+        on_delete=models.CASCADE
+    )
+
+    fartoej_groenlandsk = models.BooleanField(
+        null=True
+    )
+
     def __str__(self):
-        return f"{self.ressource} | {self.periode.navn}"
+        return f"{self.fiskeart} | {self.periode}"
 
-    rate_pr_kg_indhandling = models.DecimalField(
+    rate_pr_kg = models.DecimalField(
         max_digits=4,
         decimal_places=2,
         null=True,
         blank=True,
-        verbose_name=_('Indhandling, kr/kg'),
+        verbose_name=_('Afgift, kr/kg'),
     )
 
-    rate_pr_kg_export = models.DecimalField(
+    rate_procent = models.DecimalField(
         max_digits=4,
         decimal_places=2,
         null=True,
         blank=True,
-        verbose_name=_('Eksport, kr/kg'),
-    )
-
-    rate_procent_indhandling = models.DecimalField(
-        max_digits=4,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        verbose_name=_('Indhandling, procent af salgspris'),
-    )
-
-    rate_procent_export = models.DecimalField(
-        max_digits=4,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        verbose_name=_('Eksport, procent af salgspris'),
-    )
-
-    rate_prkg_groenland = models.DecimalField(
-        max_digits=4,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        verbose_name=_('Grønlandsk fartøj, kr/kg'),
-    )
-
-    rate_prkg_udenlandsk = models.DecimalField(
-        max_digits=4,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        verbose_name=_('Udenlandsk fartøj, kr/kg'),
+        verbose_name=_('Afgift, procent af salgspris'),
     )
 
     history = HistoricalRecords()
@@ -206,8 +191,15 @@ class SatsTabelElement(models.Model):
     @staticmethod
     def create_for_period_from_resources(sender, instance, created, raw, using, update_fields, **kwargs):
         if created is True:
-            for ressource in Ressource.objects.all():
-                SatsTabelElement.objects.create(ressource=ressource, periode=instance)
+            for skematype in SkemaType.objects.all():
+                for fiskeart in skematype.fiskeart_set.all():
+                    for produkttype in fiskeart.produkttype_set.all():
+                        SatsTabelElement.objects.create(
+                            skematype=skematype,
+                            fiskeart=fiskeart,
+                            periode=instance,
+                            fartoej_groenlandsk=produkttype.fartoej_groenlandsk
+                        )
 
 
 post_save.connect(SatsTabelElement.create_for_period_from_resources, Afgiftsperiode, dispatch_uid='create_satstabel_for_period')
@@ -238,6 +230,17 @@ class FangstAfgift(models.Model):
         SatsTabelElement,
         on_delete=models.SET_NULL,
         null=True,
+    )
+
+    rate_procent = models.DecimalField(
+        null=True,
+        max_digits=4,
+        decimal_places=2,
+    )
+    rate_pr_kg = models.DecimalField(
+        null=True,
+        max_digits=6,
+        decimal_places=2,
     )
 
 
@@ -287,45 +290,36 @@ class BeregningsModel2021(BeregningsModel):
         default=None
     )
 
-    def calculate(self, rate_tabel: Afgiftsperiode, indberetning, til_export=False, overfoert_til_tredje_part=False, export_inkluderet_i_pris=False, fartoej_groenlandsk=True):
+    def get_satstabelelement(self, afgiftsperiode, indberetninglinje):
+        return SatsTabelElement.objects.get(
+            periode=afgiftsperiode,
+            skematype=indberetninglinje.indberetning.skematype,
+            fiskeart=indberetninglinje.produkttype.fiskeart,
+            fartoej_groenlandsk=indberetninglinje.produkttype.fartoej_groenlandsk,
+        )
+
+    def calculate(self, periode: Afgiftsperiode, indberetning):
         afgift_items = []
-
-        # TODO: Find ud af fangsttypen fra Indberetningen på en bedre måde.
-        fangsttype_navn = 'Havgående' if indberetning.indberetnings_type == 'havgående' else 'Kystnært'
-        fangsttype = FangstType.objects.get(navn=fangsttype_navn)
-
         for indberetninglinje in indberetning.linjer.all():
-            afgift_item = FangstAfgift()
-            table_entry = rate_tabel.entry_for_resource(indberetninglinje.fiskeart, fangsttype)  # indberetninglinje.kategori
-            if table_entry:
-                self.calculate_sats(table_entry, indberetninglinje, afgift_item, til_export=til_export, overfoert_til_tredje_part=overfoert_til_tredje_part, export_inkluderet_i_pris=export_inkluderet_i_pris, fartoej_groenlandsk=fartoej_groenlandsk)
+            sats = self.get_satstabelelement(periode, indberetninglinje)
+            afgift_item = self.calculate_afgift(sats, indberetninglinje)
             afgift_items.append(afgift_item)
         return afgift_items
 
-    def calculate_sats(self, tabel_entry, indberetninglinje, afgift_item, til_export=False, overfoert_til_tredje_part=False, export_inkluderet_i_pris=False, fartoej_groenlandsk=True):
+    def calculate_afgift(self, sats, indberetninglinje):
+        afgift_item = FangstAfgift()
 
-        if overfoert_til_tredje_part or til_export:
-            # Afhængigt af table_entry vil flere af disse være 0
-            rate_procent = tabel_entry.rate_procent_export or 0
-            rate_pr_kg = tabel_entry.rate_pr_kg_export or 0
-        else:
-            rate_procent = tabel_entry.rate_procent_indhandling or 0
-            rate_pr_kg = tabel_entry.rate_pr_kg_indhandling or 0
-
-        if fartoej_groenlandsk:
-            rate_pr_kg_2 = tabel_entry.rate_prkg_groenland or 0
-        else:
-            rate_pr_kg_2 = tabel_entry.rate_prkg_udenlandsk or 0
-
+        rate_procent = sats.rate_procent or 0
+        rate_pr_kg = sats.rate_pr_kg or 0
         vaegt = indberetninglinje.levende_vægt
         pris = indberetninglinje.salgspris
-        if til_export and not export_inkluderet_i_pris:
-            pris += Decimal(1 * vaegt)
 
         # Hvis table_entry er korrekt konstrueret, vil kun ét af disse led være != 0
-        afgift = (rate_pr_kg * vaegt) + (rate_pr_kg_2 * vaegt) + (rate_procent * Decimal(0.01) * pris)
-        afgift_item.afgift = afgift.quantize(Decimal('.01'), rounding=ROUND_HALF_EVEN)
+        afgift = (rate_pr_kg * vaegt) + (rate_procent * Decimal(0.01) * pris)
 
+        afgift_item.afgift = afgift.quantize(Decimal('.01'), rounding=ROUND_HALF_EVEN)
         afgift_item.calculation_model = self
-        afgift_item.rate_element = tabel_entry
+        afgift_item.rate_element = sats
+        afgift_item.rate_pr_kg = rate_pr_kg
+        afgift_item.rate_procent = rate_procent
         return afgift_item

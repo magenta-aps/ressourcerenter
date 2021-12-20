@@ -1,9 +1,8 @@
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.db.utils import IntegrityError
 
-from administration.models import Afgiftsperiode, FiskeArt, FangstType, Ressource, ProduktKategori, BeregningsModel2021
+from administration.models import Afgiftsperiode, FiskeArt, ProduktType, BeregningsModel2021, SkemaType
 from indberetning.models import Indberetning, Virksomhed, IndberetningLinje
 from datetime import date
 from decimal import Decimal
@@ -17,63 +16,11 @@ class Command(BaseCommand):
             print('DEBUG needs to be True (dev-environment)')
             return
 
-        User = get_user_model()
-        user, _ = User.objects.get_or_create(username='admin')
-        user.set_password('admin')
-        user.save()
-
-        for fish, place in [
-            ('Reje', 'Havgående'),
-            ('Reje', 'Kystnært'),
-            ('Hellefisk', 'Havgående'),
-            ('Hellefisk', 'Kystnært'),
-            ('Torsk', 'Havgående'),
-            ('Krabbe', 'Havgående'),
-            ('Kuller', 'Havgående'),
-            ('Sej', 'Havgående'),
-            ('Rødfisk', 'Havgående'),
-            ('Kammusling', 'Havgående'),
-            ('Makrel', 'Havgående'),
-            ('Makrel', 'Kystnært'),
-            ('Sild', 'Havgående'),
-            ('Sild', 'Kystnært'),
-            ('Lodde', 'Havgående'),
-            ('Lodde', 'Kystnært'),
-            ('Blåhvilling', 'Havgående'),
-            ('Blåhvilling', 'Kystnært'),
-            ('Guldlaks', 'Havgående'),
-            ('Guldlaks', 'Kystnært'),
-        ]:
-
-            try:
-                fiskeart = FiskeArt.objects.create(navn=fish)
-            except IntegrityError:
-                fiskeart = FiskeArt.objects.get(navn=fish)
-            try:
-                fangsttype = FangstType.objects.create(navn=place)
-            except IntegrityError:
-                fangsttype = FangstType.objects.get(navn=place)
-            try:
-                Ressource.objects.create(
-                    fiskeart=fiskeart,
-                    fangsttype=fangsttype,
-                )
-            except IntegrityError:
-                pass
-
-        kategorier = []
-        for kategori in ('Hel fisk', 'Filet', 'Biprodukt'):
-            kat, _ = ProduktKategori.objects.get_or_create(navn=kategori)
-            kategorier.append(kat)
-
         afgiftsperiode1, _ = Afgiftsperiode.objects.get_or_create(navn='4. kvartal 2021', vis_i_indberetning=True, dato_fra=date(2021, 10, 1), dato_til=date(2021, 12, 31))
-
         afgiftsperiode2, _ = Afgiftsperiode.objects.get_or_create(navn='3. kvartal 2021', vis_i_indberetning=True, dato_fra=date(2021, 7, 1), dato_til=date(2021, 9, 30))
-
-        kategorier = []
-        for kategori in ('Hel fisk', 'Filet', 'Biprodukt'):
-            kat, _ = ProduktKategori.objects.get_or_create(navn=kategori)
-            kategorier.append(kat)
+        skematype, _ = SkemaType.objects.get_or_create(id=1, defaults={'navn_dk': 'Havgående fartøjer og kystnære rejefartøjer - producerende fartøjer'})
+        fiskeart, _ = FiskeArt.objects.get_or_create(navn_dk='Torsk', skematype=skematype)
+        produkttype, _ = ProduktType.objects.get_or_create(fiskeart=fiskeart)
 
         virksomhed, _ = Virksomhed.objects.get_or_create(cvr='12345678')
 
@@ -82,22 +29,20 @@ class Command(BaseCommand):
                 for i, indberetnings_type in enumerate(('indhandling', 'pelagisk', 'fartøj')):
                     if indberetnings_type == 'indhandling':
                         navn = 'Bygd for indhandling'
-                        kategori = None
                     else:
                         navn = 'Tidligere fartøj'
-                        kategori = kategorier[i]
-                    indberetning = Indberetning.objects.create(virksomhed=virksomhed,
+                    indberetning = Indberetning.objects.create(skematype=skematype,
+                                                               virksomhed=virksomhed,
                                                                afgiftsperiode=periode,
-                                                               navn=navn,
                                                                indberetnings_type=indberetnings_type,
                                                                indberetters_cpr='123456-1955')
 
                     IndberetningLinje.objects.create(indberetning=indberetning,
+                                                     navn=navn,
                                                      salgsvægt=10,
                                                      levende_vægt=20,
                                                      salgspris=400,
-                                                     kategori=kategori,
-                                                     fiskeart=FiskeArt.objects.get(navn='Torsk'))
+                                                     produkttype=produkttype)
 
         try:
             BeregningsModel2021.objects.create(

@@ -5,8 +5,8 @@
     <form method="POST", action=".">
         {% csrf_token %}
         <div class="form-group mt-2">
-            <label for="{{ form.type.id_for_label }}">{% translate 'Type af indberetning' %}</label>
-            {{form.type}}
+            <label for="{{ form.skema.id_for_label }}">{% translate 'Type af indberetning' %}</label>
+            {{form.skema}}
         </div>
         <div class="form-group">
             <label for="{{ form.periode.id_for_label }}">{% translate 'Indberetningsperiode' %}</label>
