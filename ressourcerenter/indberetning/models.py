@@ -7,7 +7,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext as _
 
-from administration.models import Afgiftsperiode, FiskeArt, ProduktKategori
+from administration.models import SkemaType, Afgiftsperiode, ProduktType
 from indberetning.validators import validate_cvr, validate_cpr
 
 
@@ -47,6 +47,7 @@ indberetnings_type_choices = (
 
 class Indberetning(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid4)
+    skematype = models.ForeignKey(SkemaType, on_delete=models.CASCADE)
     indberetnings_type = models.TextField(choices=indberetnings_type_choices)
     virksomhed = models.ForeignKey(Virksomhed, on_delete=models.PROTECT, db_index=True)
     indberetters_cpr = models.TextField(validators=[validate_cpr])  # CPR fra medarbejder signatur eller nemid
@@ -54,7 +55,7 @@ class Indberetning(models.Model):
                                       on_delete=models.PROTECT)  # only used when sudo is used
     afgiftsperiode = models.ForeignKey(Afgiftsperiode, on_delete=models.PROTECT, db_index=True)
     indberetningstidspunkt = models.DateTimeField(auto_now_add=True)
-    navn = models.TextField()  # fartojs navn eller indhanlingssted/bygd
+    afstemt = models.BooleanField(default=False)
 
     def get_navn_display(self):
         if self.indberetnings_type == 'havgående':
@@ -69,28 +70,34 @@ class IndberetningLinje(models.Model):
     # eksport: summer på kategori niveau
     # indhandling: summer på fiskearts niveau
     uuid = models.UUIDField(primary_key=True, default=uuid4)
+    navn = models.TextField()  # fartojs navn eller indhandlingssted/bygd
     indberetning = models.ForeignKey(Indberetning, on_delete=models.CASCADE, related_name='linjer')
-    fiskeart = models.ForeignKey(FiskeArt, on_delete=models.PROTECT)
-    kategori = models.ForeignKey(ProduktKategori, on_delete=models.PROTECT,
-                                 null=True, blank=True)  # bruges ikke til inhandling
+    produkttype = models.ForeignKey(ProduktType, on_delete=models.PROTECT)
+
     salgsvægt = models.DecimalField(max_digits=20, decimal_places=2,
                                     verbose_name=_('Salgsvægt (kg)'))
     levende_vægt = models.DecimalField(max_digits=20, decimal_places=2,
                                        verbose_name=_('Levende vægt/helfisk mængde (kg)'))  # hel fisk
-    salgspris = models.DecimalField(max_digits=20, decimal_places=2,
+    salgspris = models.DecimalField(max_digits=20, decimal_places=2, null=True,
                                     verbose_name=_('Salgspris (kr.)'))
+    transporttillæg = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True,
+                                          verbose_name=_('Transporttillæg (kr)'))
+    bonus = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True,
+                                verbose_name=_('Bonus og andet vederlag (kr)'))
+
+    note = models.TextField()
 
 
-@receiver(post_save, sender=Indberetning, dispatch_uid='indberetning_store_navne')
+@receiver(post_save, sender=IndberetningLinje, dispatch_uid='indberetning_store_navne')
 def store_navne(sender, **kwargs):
     # store new names
     instance = kwargs['instance']
-    if instance.indberetnings_type == 'indhandling':
+    if instance.indberetning.indberetnings_type == 'indhandling':
         navne_type = 'indhandlings_sted'
     else:
         navne_type = 'fartøj'
     try:
-        Navne.objects.create(virksomhed=instance.virksomhed, navn=instance.navn, type=navne_type)
+        Navne.objects.create(virksomhed=instance.indberetning.virksomhed, navn=instance.navn, type=navne_type)
     except IntegrityError:
         # navn all ready exists
         pass

@@ -8,15 +8,15 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
+from django.utils.functional import cached_property
 from django.views.decorators.clickjacking import xframe_options_exempt
-from django.views.generic import TemplateView, RedirectView, ListView, FormView, View, DetailView, UpdateView, \
-    CreateView
-from django.views.generic.detail import SingleObjectMixin
+from django.views.generic import TemplateView, RedirectView, ListView, FormView, View, DetailView, UpdateView
+from django.forms import inlineformset_factory
 
-from administration.models import Afgiftsperiode
-from indberetning.forms import IndberetningsTypeSelectForm, VirksomhedsAddressForm, IndberetningsForm, \
-    IndberetningFormSet, BilagsFormSet
-from indberetning.models import Indberetning, Virksomhed, IndberetningLinje, Navne, Bilag
+from administration.models import Afgiftsperiode, SkemaType
+from indberetning.forms import IndberetningsTypeSelectForm, VirksomhedsAddressForm, BilagsFormSet
+from indberetning.forms import IndberetningsLinjeSkema1Form, IndberetningsLinjeSkema2Form, IndberetningsLinjeSkema3Form
+from indberetning.models import Indberetning, Virksomhed, IndberetningLinje, Bilag
 from project.dafo import DatafordelerClient
 
 LoginProvider = import_string(settings.LOGIN_PROVIDER_CLASS)
@@ -77,46 +77,68 @@ class SelectIndberetningsType(FormView):
 
     def form_valid(self, form):
         periode_uuid = form.cleaned_data['periode'].uuid
-        if form.cleaned_data['type'] == 'indhandling':
-            # TODO handle different kinds of indberetnings_typer
-            pass
-        return HttpResponseRedirect(reverse('indberetning:indberetning-create', kwargs={'pk': periode_uuid}))
+        skema_id = form.cleaned_data['skema'].id
+
+        return HttpResponseRedirect(reverse('indberetning:indberetning-create', kwargs={'periode': periode_uuid, 'skema': skema_id}))
 
 
 class IndberetningsLinjebilagFormsetMixin:
 
+    def get_linje_form(self):
+        if self.skema.id == 1:
+            return IndberetningsLinjeSkema1Form
+        if self.skema.id == 2:
+            return IndberetningsLinjeSkema2Form
+        if self.skema.id == 3:
+            return IndberetningsLinjeSkema3Form
+
+    def get_form_class(self):
+        formset_class = inlineformset_factory(
+            parent_model=Indberetning,
+            model=IndberetningLinje,
+            form=self.get_linje_form(),
+            can_delete=False,
+            validate_min=True,
+            extra=1
+        )
+        return formset_class
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({
+            'prefix': 'linje',
+            'auto_id': False,
+            'form_kwargs': {
+                'cvr': self.request.session['cvr']
+            }
+        })
+        if 'data' not in kwargs:
+            kwargs['queryset'] = IndberetningLinje.objects.none()
+        return kwargs
+
     def get_context_data(self, **kwargs):
-        if 'formset' not in kwargs:
-            # initialize new empty formset
-            kwargs['formset'] = IndberetningFormSet(auto_id=False,
-                                                    prefix='linje',
-                                                    queryset=IndberetningLinje.objects.none())
         if 'bilag_formset' not in kwargs:
             kwargs['bilag_formset'] = BilagsFormSet(auto_id=False,
                                                     prefix='bilag',
                                                     queryset=Bilag.objects.none())
         ctx = super(IndberetningsLinjebilagFormsetMixin, self).get_context_data(**kwargs)
-        ctx.update({
-            'fartøj': Navne.objects.filter(virksomhed__cvr=self.request.session['cvr'], type='fartøj'),
-        })
         return ctx
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
-        formset = IndberetningFormSet(request.POST,
-                                      auto_id=False,
-                                      prefix='linje')
         bilag_formset = BilagsFormSet(request.POST,
                                       request.FILES,
                                       auto_id=False,
                                       prefix='bilag')
-        if form.is_valid() and formset.is_valid() and bilag_formset.is_valid():
-            return self.form_valid(form, formset, bilag_formset)
+        if form.is_valid() and bilag_formset.is_valid():
+            return self.form_valid(form, bilag_formset)
         else:
-            return self.form_invalid(form, formset, bilag_formset)
+            return self.form_invalid(form, bilag_formset)
 
-    def form_valid(self, form, formset, bilag_formset):
-        indberetning = form.save()
+    def form_valid(self, formset, bilag_formset):
+        print("form_valid")
+        indberetning = self.get_indberetning_instance()
+        indberetning.save()
         linjer = []
         for line in formset.save(commit=False):
             # need to set FK
@@ -125,37 +147,42 @@ class IndberetningsLinjebilagFormsetMixin:
             linjer.append(line)
         bilags = []
         for bilag in bilag_formset.save(commit=False):
+            print(bilag)
             bilag.indberetning = indberetning
             bilag.save()
             bilags.append(bilag)
 
         return linjer, bilags
 
-    def form_invalid(self, form, formset, bilag_formset):
-        return self.render_to_response(self.get_context_data(form=form, formset=formset, bilag_formset=bilag_formset))
+    def form_invalid(self, formset, bilag_formset):
+        return self.render_to_response(self.get_context_data(form=formset, bilag_formset=bilag_formset))
 
 
-class CreateIndberetningCreateView(IndberetningsLinjebilagFormsetMixin, CreateView, SingleObjectMixin):
+class CreateIndberetningCreateView(IndberetningsLinjebilagFormsetMixin, FormView):
     """
     Creat view for kystnært (fartøj)/pelagisk (havgående) fiskeri og måske flere.
     """
     template_name = 'indberetning/indberetning_form.html'
-    model = Afgiftsperiode
     indberetnings_type = 'fartøj'
-    form_class = IndberetningsForm
 
-    def get_object(self, queryset=None):
-        if not hasattr(self, 'object') or self.object is None:
-            self.object = super(CreateIndberetningCreateView, self).get_object(queryset=queryset)
-        return self.object
+    @cached_property
+    def afgiftsperiode(self):
+        return Afgiftsperiode.objects.get(uuid=self.kwargs['periode'])
+
+    @cached_property
+    def skema(self):
+        return SkemaType.objects.get(id=self.kwargs['skema'])
 
     def get_indberetning_instance(self):
         """
-        :return: an unsaved instance of inberetning with th virksomhed and afgiftsperiode etc set
+        :return: an unsaved instance of indberetning with th virksomhed and afgiftsperiode etc set
         """
-        instance = Indberetning(indberetnings_type=self.indberetnings_type,
-                                virksomhed=Virksomhed.objects.get(cvr=self.request.session['cvr']),
-                                afgiftsperiode=self.get_object())
+        instance = Indberetning(
+            indberetnings_type=self.indberetnings_type,
+            virksomhed=Virksomhed.objects.get(cvr=self.request.session['cvr']),
+            afgiftsperiode=self.afgiftsperiode,
+            skematype=self.skema
+        )
         if self.request.user.is_authenticated:
             # if the user is logged in as an administrator set the administrator field.
             instance.administrator = self.request.user
@@ -167,8 +194,9 @@ class CreateIndberetningCreateView(IndberetningsLinjebilagFormsetMixin, CreateVi
     def get_context_data(self, **kwargs):
         ctx = super(CreateIndberetningCreateView, self).get_context_data(**kwargs)
         ctx.update({
-            'form_url': reverse('indberetning:indberetning-create', kwargs={'pk': self.get_object().uuid}),
-            'afgiftsperiode': self.get_object(),
+            'form_url': reverse('indberetning:indberetning-create', kwargs={'periode': self.afgiftsperiode.uuid, 'skema': self.skema.id}),
+            'afgiftsperiode': self.afgiftsperiode,
+            'skema_id': self.skema.id
         })
         return ctx
 
@@ -176,9 +204,9 @@ class CreateIndberetningCreateView(IndberetningsLinjebilagFormsetMixin, CreateVi
         self.object = None
         return super(CreateIndberetningCreateView, self).post(request, *args, **kwargs)
 
-    def form_valid(self, form, formset, bilag_formset):
-        linjer, bilags = super(CreateIndberetningCreateView, self).form_valid(form, formset, bilag_formset)
-        fiskearter = set([linje.fiskeart.navn for linje in linjer])
+    def form_valid(self, formset, bilag_formset):
+        linjer, bilags = super(CreateIndberetningCreateView, self).form_valid(formset, bilag_formset)
+        fiskearter = set([str(linje.produkttype) for linje in linjer])
         message = _('Ny Indberetning oprettet for: %s.') % ', '.join(fiskearter)
         if len(bilags) > 0:
             message = _('Ny Indberetning oprettet for: %(fiskearter)s med %(bilag)s bilag.') %\
@@ -190,15 +218,16 @@ class CreateIndberetningCreateView(IndberetningsLinjebilagFormsetMixin, CreateVi
                              message)
         return redirect(reverse('indberetning:indberetning-list'))
 
-    def get_form_kwargs(self):
-        kwargs = super(CreateIndberetningCreateView, self).get_form_kwargs()
-        kwargs['instance'] = self.get_indberetning_instance()
-        return kwargs
-
 
 class UpdateIndberetningsView(IndberetningsLinjebilagFormsetMixin, UpdateView):
     template_name = 'indberetning/indberetning_form.html'
-    form_class = IndberetningsForm
+
+    @cached_property
+    def skema(self):
+        return self.object.skematype
+
+    def get_indberetning_instance(self):
+        return self.object
 
     def get_queryset(self):
         # always limit the QS to indberetninger belonging to the company.
@@ -211,9 +240,9 @@ class UpdateIndberetningsView(IndberetningsLinjebilagFormsetMixin, UpdateView):
         ctx = super(UpdateIndberetningsView, self).get_context_data(**kwargs)
         ctx.update({
             'edit_mode': True,
-            'form_url': reverse('indberetning:indberetning-edit',
-                                kwargs={'pk': self.get_object().uuid}),
+            'form_url': reverse('indberetning:indberetning-edit', kwargs={'pk': self.get_object().uuid}),
             'afgiftsperiode': self.get_object().afgiftsperiode,
+            'skema_id': self.skema.id
         })
         return ctx
 
@@ -221,21 +250,18 @@ class UpdateIndberetningsView(IndberetningsLinjebilagFormsetMixin, UpdateView):
         self.object = self.get_object()
         return super(UpdateIndberetningsView, self).post(request, *args, **kwargs)
 
-    def form_valid(self, form, formset, bilag_formset):
-        linjer, bilags = super(UpdateIndberetningsView, self).form_valid(form, formset, bilag_formset)
+    def form_valid(self, formset, bilag_formset):
+        linjer, bilags = super(UpdateIndberetningsView, self).form_valid(formset, bilag_formset)
         message = None
         if linjer and bilags:
-            message = _('Indberetning for %s blev justeret og tilføjet %s nye bilag.') % (
-                self.object.navn, len(bilags))
+            message = _('Indberetningen blev justeret og tilføjet %d nye bilag.') % len(bilags)
         elif bilags:
-            message = _('Der blev tilføjet nye bilag til indberetning for %s.') % self.object.navn
+            message = _('Der blev tilføjet %d nye bilag til indberetningen') % len(bilags)
         elif linjer:
-            message = _('Indberetning for %s blev justeret.') % self.object.navn
+            message = _('Indberetningen blev justeret.')
 
         if message:
-            messages.add_message(self.request,
-                                 messages.INFO,
-                                 message)
+            messages.add_message(self.request, messages.INFO, message)
         return redirect(reverse('indberetning:indberetning-list'))
 
 

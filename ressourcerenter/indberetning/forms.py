@@ -1,9 +1,9 @@
 from django.core.exceptions import ValidationError
-from django.forms import forms, ModelChoiceField, ChoiceField, CharField, ModelForm, modelformset_factory
+from django.forms import forms, ModelChoiceField, CharField, ModelForm, modelformset_factory, Select
 from django.utils.translation import gettext as _
 
-from administration.models import Afgiftsperiode, FiskeArt, ProduktKategori
-from indberetning.models import Bilag, indberetnings_type_choices, Virksomhed, Indberetning, IndberetningLinje
+from administration.models import Afgiftsperiode, ProduktType, SkemaType
+from indberetning.models import Bilag, Virksomhed, IndberetningLinje, Navne
 from project.form_fields import LocalizedDecimalField
 
 
@@ -24,40 +24,79 @@ class VirksomhedsAddressForm(ModelForm):
 
 
 class IndberetningsTypeSelectForm(forms.Form):
-    type = ChoiceField(choices=indberetnings_type_choices, required=True)
+    skema = ModelChoiceField(queryset=SkemaType.objects.all(), required=True)
     periode = ModelChoiceField(queryset=Afgiftsperiode.objects.filter(vis_i_indberetning=True),
                                required=True, empty_label=None)
 
 
 class IndberetningsLinjeForm(ModelForm):
-    fiskeart = ModelChoiceField(queryset=FiskeArt.objects.order_by('navn'), required=True)
-    kategori = ModelChoiceField(queryset=ProduktKategori.objects.order_by('navn'), required=True)
     salgsvægt = LocalizedDecimalField()
     levende_vægt = LocalizedDecimalField()
-    salgspris = LocalizedDecimalField()
+    salgspris = LocalizedDecimalField(required=False)
+    navn = CharField(widget=Select(attrs={'class': "js-boat-select form-control col-2 ", 'autocomplete': "off", 'style': 'width:100%'}))
+    pelagisk_nonrequired_fields = ()
+
+    def __init__(self, *args, **kwargs):
+        self.cvr = kwargs.pop('cvr')
+        super().__init__(*args, **kwargs)
+        self.fields['navn'].widget.choices = [(n.navn, n.navn) for n in Navne.objects.filter(virksomhed__cvr=self.cvr, type='fartøj')]
 
     def clean(self):
         cleaned_data = super().clean()
-        if 'salgsvægt' and 'levende_vægt' and 'salgspris' in cleaned_data:
-            numbers = (cleaned_data['salgsvægt'], cleaned_data['levende_vægt'], cleaned_data['salgspris'])
+        if ('salgsvægt' in cleaned_data or 'levende_vægt' in cleaned_data) and 'salgspris' in cleaned_data:
+            numbers = filter(None, (cleaned_data['salgsvægt'], cleaned_data['levende_vægt'], cleaned_data['salgspris']))
             if not (all(i > 0 for i in numbers) or all(i < 0 for i in numbers)):
                 raise ValidationError(_('Salgsvægt, levende vægt og salgspris skal alle være negative eller positive tal'))
+        return cleaned_data
 
     class Meta:
         model = IndberetningLinje
-        fields = ('fiskeart', 'kategori', 'salgsvægt', 'levende_vægt', 'salgspris')
+        fields = ('produkttype', 'salgsvægt', 'levende_vægt', 'salgspris', 'navn')
 
 
-class IndberetningsForm(ModelForm):
+class IndberetningsLinjeSkema1Form(IndberetningsLinjeForm):
+    produkttype = ModelChoiceField(queryset=ProduktType.objects.filter(fiskeart__skematype=1).order_by('navn_dk'), required=True)
+    transporttillæg = LocalizedDecimalField()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        produkttype = cleaned_data.get('produkttype')
+        if produkttype and not cleaned_data['produkttype'].fiskeart.pelagisk:
+            for field in ('salgspris', 'transporttillæg'):
+                if cleaned_data[field] is None:
+                    raise ValidationError({field: self.fields[field].error_messages['required']}, code='required')
+        return cleaned_data
 
     class Meta:
-        model = Indberetning
-        fields = ('navn', )
+        model = IndberetningLinje
+        fields = ('produkttype', 'salgsvægt', 'levende_vægt', 'salgspris', 'navn', 'transporttillæg')
 
 
-IndberetningFormSet = modelformset_factory(IndberetningLinje,
-                                           form=IndberetningsLinjeForm,
-                                           can_delete=False,
-                                           validate_min=True,
-                                           extra=1)
+class IndberetningsLinjeSkema2Form(IndberetningsLinjeForm):
+    produkttype = ModelChoiceField(queryset=ProduktType.objects.filter(fiskeart__skematype=2).order_by('navn_dk'), required=True)
+    bonus = LocalizedDecimalField()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        produkttype = cleaned_data.get('produkttype')
+        if produkttype and not produkttype.fiskeart.pelagisk:
+            for field in ('salgspris',):
+                if cleaned_data[field] is None:
+                    raise ValidationError({field: self.fields[field].error_messages['required']}, code='required')
+        return cleaned_data
+
+    class Meta:
+        model = IndberetningLinje
+        fields = ('produkttype', 'salgsvægt', 'levende_vægt', 'salgspris', 'navn', 'bonus')
+
+
+class IndberetningsLinjeSkema3Form(IndberetningsLinjeForm):
+    produkttype = ModelChoiceField(queryset=ProduktType.objects.filter(fiskeart__skematype=3).order_by('navn_dk'), required=True)
+    bonus = LocalizedDecimalField()
+
+    class Meta:
+        model = IndberetningLinje
+        fields = ('produkttype', 'salgsvægt', 'levende_vægt', 'salgspris', 'navn', 'bonus')
+
+
 BilagsFormSet = modelformset_factory(Bilag, can_order=False, exclude=('uuid', 'indberetning'), extra=1)

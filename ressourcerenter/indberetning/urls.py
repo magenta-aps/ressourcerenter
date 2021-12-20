@@ -11,7 +11,7 @@ urlpatterns = [
     path('company/<uuid:pk>/edit/', VirksomhedUpdateView.as_view(), name='company-edit'),
     path('list/', IndberetningsListView.as_view(), name='indberetning-list'),
     path('select/', SelectIndberetningsType.as_view(), name='type-select'),
-    path('indberetning/<uuid:pk>/create/', CreateIndberetningCreateView.as_view(), name='indberetning-create'),
+    path('indberetning/<uuid:periode>/<int:skema>/create/', CreateIndberetningCreateView.as_view(), name='indberetning-create'),
     path('indberetning/<uuid:pk>/edit/', UpdateIndberetningsView.as_view(), name='indberetning-edit'),
     path('bilag/<uuid:pk>/', BilagDownloadView.as_view(), name='bilag-download'),
 

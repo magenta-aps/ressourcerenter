@@ -1,5 +1,4 @@
 from django import forms
-from django.utils.functional import cached_property
 from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic import CreateView, UpdateView
 from django.urls import reverse
@@ -7,13 +6,13 @@ from django.urls import reverse
 from administration.views_mixin import HistoryMixin
 
 from administration.forms import AfgiftsperiodeForm, SatsTabelElementForm, SatsTabelElementFormSet
-from administration.models import Afgiftsperiode, Ressource, SatsTabelElement
+from administration.models import Afgiftsperiode, SatsTabelElement
 
 from administration.forms import FiskeArtForm
 from administration.models import FiskeArt
 
-from administration.forms import ProduktKategoriForm
-from administration.models import ProduktKategori
+from administration.forms import ProduktTypeForm
+from administration.models import ProduktType
 
 
 class FrontpageView(TemplateView):
@@ -72,17 +71,14 @@ class AfgiftsperiodeSatsTabelUpdateView(UpdateView):
 
     template_name = 'administration/afgiftsperiode_satstabel.html'
 
-    @cached_property
-    def resources(self):
-        return Ressource.objects.all().order_by('fiskeart__navn', 'fiskeart__navn')
-
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs.update({
-            'form_kwargs': {
-                'ressourcer': list(self.resources)
-            },
-            'queryset': self.object.entries.order_by('ressource__fiskeart__navn', 'ressource__fangsttype__navn'),
+            'queryset': self.object.entries.order_by(
+                'skematype__navn_dk',
+                'fiskeart__navn_dk',
+                'fartoej_groenlandsk'
+            ),
             'instance': self.object,
         })
         return kwargs
@@ -103,12 +99,8 @@ class SatsTabelElementHistoryView(HistoryMixin, DetailView):
 
     def get_fields(self):
         return (
-            'rate_pr_kg_indhandling',
-            'rate_pr_kg_export',
-            'rate_prkg_groenland',
-            'rate_prkg_udenlandsk',
-            'rate_procent_indhandling',
-            'rate_procent_export',
+            'rate_pr_kg',
+            'rate_procent',
         )
 
     def get_back_url(self):
@@ -161,15 +153,15 @@ class FiskeArtHistoryView(HistoryMixin, DetailView):
 # endregion
 
 
-# region ProduktKategori
+# region ProduktType
 
-class ProduktKategoriCreateView(CreateView):
+class ProduktTypeCreateView(CreateView):
 
-    model = ProduktKategori
-    form_class = ProduktKategoriForm
+    model = ProduktType
+    form_class = ProduktTypeForm
 
     def get_success_url(self):
-        return reverse('administration:produktkategori-list')
+        return reverse('administration:produkttype-list')
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(**{
@@ -178,26 +170,26 @@ class ProduktKategoriCreateView(CreateView):
         })
 
 
-class ProduktKategoriUpdateView(UpdateView):
+class ProduktTypeUpdateView(UpdateView):
 
-    model = ProduktKategori
-    form_class = ProduktKategoriForm
+    model = ProduktType
+    form_class = ProduktTypeForm
 
     def get_success_url(self):
-        return reverse('administration:produktkategori-list')
+        return reverse('administration:produkttype-list')
 
 
-class ProduktKategoriListView(ListView):
+class ProduktTypeListView(ListView):
 
-    model = ProduktKategori
+    model = ProduktType
 
 
-class ProduktKategoriHistoryView(HistoryMixin, DetailView):
+class ProduktTypeHistoryView(HistoryMixin, DetailView):
 
-    model = ProduktKategori
+    model = ProduktType
 
     def get_fields(self, **kwargs):
         return ('navn', 'beskrivelse',)
 
     def get_back_url(self):
-        return reverse('administration:produktkategori-list')
+        return reverse('administration:produkttype-list')
