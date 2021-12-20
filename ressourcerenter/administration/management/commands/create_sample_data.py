@@ -18,7 +18,7 @@ class Command(BaseCommand):
 
         afgiftsperiode1, _ = Afgiftsperiode.objects.get_or_create(navn='4. kvartal 2021', vis_i_indberetning=True, dato_fra=date(2021, 10, 1), dato_til=date(2021, 12, 31))
         afgiftsperiode2, _ = Afgiftsperiode.objects.get_or_create(navn='3. kvartal 2021', vis_i_indberetning=True, dato_fra=date(2021, 7, 1), dato_til=date(2021, 9, 30))
-        skematype, _ = SkemaType.objects.get_or_create(id=1, defaults={'navn_dk': 'Havgående fartøjer og kystnære rejefartøjer - producerende fartøjer'})
+        skematype, _ = SkemaType.objects.get_or_create(id=2, defaults={'navn_dk': 'Indhandlinger - Indberetninger fra fabrikkerne / Havgående fiskeri og kystnært fiskeri efter rejer'})
         fiskeart, _ = FiskeArt.objects.get_or_create(navn_dk='Torsk', skematype=skematype)
         produkttype, _ = ProduktType.objects.get_or_create(fiskeart=fiskeart)
 
@@ -27,8 +27,9 @@ class Command(BaseCommand):
         if not Indberetning.objects.exists():
             for periode in (afgiftsperiode1, afgiftsperiode2):
                 for i, indberetnings_type in enumerate(('indhandling', 'pelagisk', 'fartøj')):
+                    indhandlingssted, navn = None, None
                     if indberetnings_type == 'indhandling':
-                        navn = 'Bygd for indhandling'
+                        indhandlingssted = 'Bygd for indhandling'
                     else:
                         navn = 'Tidligere fartøj'
                     indberetning = Indberetning.objects.create(skematype=skematype,
@@ -38,7 +39,8 @@ class Command(BaseCommand):
                                                                indberetters_cpr='123456-1955')
 
                     IndberetningLinje.objects.create(indberetning=indberetning,
-                                                     navn=navn,
+                                                     fartøj_navn=navn,
+                                                     indhandlingssted=indhandlingssted,
                                                      salgsvægt=10,
                                                      levende_vægt=20,
                                                      salgspris=400,

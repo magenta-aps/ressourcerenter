@@ -73,7 +73,8 @@ class IndberetningLinje(models.Model):
     # eksport: summer på kategori niveau
     # indhandling: summer på fiskearts niveau
     uuid = models.UUIDField(primary_key=True, default=uuid4)
-    navn = models.TextField()  # fartojs navn eller indhandlingssted/bygd
+    fartøj_navn = models.TextField(null=True)
+    indhandlingssted = models.TextField(null=True)
     indberetning = models.ForeignKey(Indberetning, on_delete=models.CASCADE, related_name='linjer')
     produkttype = models.ForeignKey(ProduktType, on_delete=models.PROTECT)
 
@@ -95,15 +96,18 @@ class IndberetningLinje(models.Model):
 def store_navne(sender, **kwargs):
     # store new names
     instance = kwargs['instance']
-    if instance.indberetning.indberetnings_type == 'indhandling':
-        navne_type = 'indhandlings_sted'
-    else:
-        navne_type = 'fartøj'
-    try:
-        Navne.objects.create(virksomhed=instance.indberetning.virksomhed, navn=instance.navn, type=navne_type)
-    except IntegrityError:
-        # navn all ready exists
-        pass
+
+    for navn, navnetype in ((instance.fartøj_navn, 'fartøj'), (instance.indhandlingssted, 'indhandlings_sted')):
+        if navn is not None and navn != '':
+            try:
+                Navne.objects.create(
+                    virksomhed=instance.indberetning.virksomhed,
+                    navn=navn,
+                    type=navnetype
+                )
+            except IntegrityError:
+                # navn already exists
+                pass
 
 
 def bilag_filepath(instance, filename):

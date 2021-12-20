@@ -27,7 +27,12 @@
         <table class="table table-bordered text-center table-sm" id="js-product-table">
             <thead>
             <tr>
+                {% if skema_id == 1 or skema_id == 2 %}
                 <th class="col-2">{% translate 'Fartøjs navn' %}</th>
+                {% endif %}
+                {% if skema_id == 2 or skema_id == 3 %}
+                <th class="col-2">{% translate 'Indhandlingssted' %}</th>
+                {% endif %}
                 <th class="col-2">{% translate 'ProduktType'%}</th>
                 <th class="col-2">{% translate 'Salgsvægt'%}</th>
                 <th class="col-2">{% translate 'Levende vægt'%}</th>
@@ -43,7 +48,12 @@
             {% for subform in form %}
             {{ subform.non_field_errors }}
             <tr>
-                <td>{{subform.navn}}{% if form.errors.navn %}<small class="error">{{form.errors.navn}}</small>{% endif %}</td>
+                {% if skema_id == 1 or skema_id == 2 %}
+                <td>{{subform.fartøj_navn}}{% if subform.errors.fartøj_navn %}<small class="error">{{subform.errors.fartøj_navn}}</small>{% endif %}</td>
+                {% endif %}
+                {% if skema_id == 2 or skema_id == 3 %}
+                <td>{{subform.indhandlingssted}}{% if subform.errors.indhandlingssted %}<small class="error">{{subform.errors.indhandlingssted}}</small>{% endif %}</td>
+                {% endif %}
                 <td>{{subform.produkttype}}{% if subform.errors.kategori %}<br/><small>{{subform.errors.kategori}}</small>{% endif %}</td>
                 <td>{{subform.salgsvægt}}{% if subform.errors.salgsvægt %}<br/><small>{{subform.errors.salgsvægt}}</small>{% endif %}</td>
                 <td>{{subform.levende_vægt}}{% if subform.errors.levende_vægt %}<br/><small>{{subform.errors.levende_vægt}}</small>{% endif %}</td>
@@ -92,7 +102,12 @@
     <table>
         <tbody id="js-initial-row">
         <tr>
-            <td>{{form.empty_form.navn}}</td>
+            {% if skema_id == 1 or skema_id == 2 %}
+            <td>{{form.empty_form.fartøj_navn}}</td>
+            {% endif %}
+            {% if skema_id == 2 or skema_id == 3 %}
+            <td>{{form.empty_form.indhandlingssted}}</td>
+            {% endif %}
             <td>{{form.empty_form.produkttype}}</td>
             <td>{{form.empty_form.salgsvægt}}</td>
             <td>{{form.empty_form.levende_vægt}}</td>
@@ -109,10 +124,17 @@
     </div>
 </div>
 <script>
+    const boat_placeholder = "{% translate 'Vælg eller opret nyt fartøj' %}";
+    const place_placeholder = "{% translate 'Vælg eller opret nyt indhandlingssted' %}";
     $(document).ready(function() {
         $('#js-product-table select.js-boat-select').select2({
             tags: true,
-            placeholder: "Vælg eller opret nyt fartøj",
+            placeholder: boat_placeholder,
+            allowClear: true
+        });
+        $('#js-product-table select.js-place-select').select2({
+            tags: true,
+            placeholder: place_placeholder,
             allowClear: true
         });
         $('input#js-add-product-button').on('click', function(){
@@ -122,7 +144,12 @@
             const newRow = $('table#js-product-table tbody tr:last');
             newRow.find('select.js-boat-select').select2({
                 tags: true,
-                placeholder: "Vælg eller opret nyt fartøj",
+                placeholder: boat_placeholder,
+                allowClear: true
+            });
+            newRow.find('select.js-place-select').select2({
+                tags: true,
+                placeholder: place_placeholder,
                 allowClear: true
             });
         });

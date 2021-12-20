@@ -48,7 +48,8 @@ class Migration(migrations.Migration):
             name='IndberetningLinje',
             fields=[
                 ('uuid', models.UUIDField(default=uuid.uuid4, primary_key=True, serialize=False)),
-                ('navn', models.TextField()),
+                ('fartøj_navn', models.TextField(null=True)),
+                ('indhandlingssted', models.TextField(null=True)),
                 ('salgsvægt', models.DecimalField(decimal_places=2, max_digits=20, verbose_name='Salgsvægt (kg)')),
                 ('levende_vægt', models.DecimalField(decimal_places=2, max_digits=20, verbose_name='Levende vægt/helfisk mængde (kg)')),
                 ('salgspris', models.DecimalField(decimal_places=2, max_digits=20, null=True, verbose_name='Salgspris (kr.)')),

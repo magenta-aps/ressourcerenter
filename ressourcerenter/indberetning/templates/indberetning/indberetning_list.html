@@ -54,14 +54,19 @@
     <table class="table text-center table-sm">
         <thead>
         <tr>
-            <th class="col-2">{% translate 'Fartøjs navn/indhandlingssted '%}</th>
+            {% if skematype_id == 1 or skematype_id == 2 %}
+            <th class="col-2">{% translate 'Fartøjs navn '%}</th>
+            {% endif %}
+            {% if skematype_id == 2 or skematype_id == 3 %}
+            <th class="col-2">{% translate 'Indhandlingssted '%}</th>
+            {% endif %}
             <th class="col-2">{% translate 'ProduktType'%}</th>
             <th class="col-2">{% translate 'Salgsvægt'%}</th>
             <th class="col-2">{% translate 'Levende vægt'%}</th>
             <th class="col-2">{% translate 'Salgspris'%}</th>
             {% if skematype_id == 1 %}
             <th class="col-2">{% translate 'Transporttillæg'%}</th>
-            {% elif skematype_id == 2 or skematype_id == 3 %} %}
+            {% elif skematype_id == 2 or skematype_id == 3 %}
             <th class="col-2">{% translate 'Bonus og andet vederlag'%}</th>
             {% endif %}
         </tr>
@@ -69,14 +74,19 @@
         <tbody>
         {% for object in indberetning.linjer.all %}
         <tr>
-            <td>{{ object.navn }}</td>
+            {% if skematype_id == 1 or skematype_id == 2 %}
+            <td>{{ object.fartøj_navn }}</td>
+            {% endif %}
+            {% if skematype_id == 2 or skematype_id == 3 %}
+            <td>{{ object.indhandlingssted }}</td>
+            {% endif %}
             <td>{{ object.produkttype }}</td>
             <td>{{ object.salgsvægt }}</td>
             <td>{{ object.levende_vægt }}</td>
             <td>{{ object.salgspris|default_if_none:'' }}</td>
             {% if skematype_id == 1 %}
             <td>{{ object.transporttillæg|default_if_none:'' }}</td>
-            {% elif skematype_id == 2 or skematype_id == 3 %} %}
+            {% elif skematype_id == 2 or skematype_id == 3 %}
             <td>{{ object.bonus|default_if_none:'' }}</td>
             {% endif %}
         </tr>

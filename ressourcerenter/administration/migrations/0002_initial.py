@@ -37,4 +37,34 @@ class Migration(migrations.Migration):
             name='produkttype',
             unique_together={('fiskeart', 'navn_dk', 'fartoej_groenlandsk')},
         ),
+        migrations.AlterField(
+            model_name='fiskeart',
+            name='beskrivelse',
+            field=models.TextField(blank=True, default='', verbose_name='Beskrivelse'),
+        ),
+        migrations.AlterField(
+            model_name='fiskeart',
+            name='navn_dk',
+            field=models.TextField(max_length=2048, verbose_name='Dansk navn'),
+        ),
+        migrations.AlterField(
+            model_name='fiskeart',
+            name='navn_gl',
+            field=models.TextField(max_length=2048, verbose_name='Grønlandsk navn'),
+        ),
+        migrations.AlterField(
+            model_name='historicalfiskeart',
+            name='beskrivelse',
+            field=models.TextField(blank=True, default='', verbose_name='Beskrivelse'),
+        ),
+        migrations.AlterField(
+            model_name='historicalfiskeart',
+            name='navn_dk',
+            field=models.TextField(max_length=2048, verbose_name='Dansk navn'),
+        ),
+        migrations.AlterField(
+            model_name='historicalfiskeart',
+            name='navn_gl',
+            field=models.TextField(max_length=2048, verbose_name='Grønlandsk navn'),
+        ),
     ]
