@@ -56,24 +56,11 @@ class SkemaType(models.Model):
         return self.navn_dk
 
 
-class FiskeArt(models.Model):
+class FiskeArt(NamedModel):
 
     class Meta:
         ordering = ['navn_dk']
 
-    uuid = models.UUIDField(primary_key=True, default=uuid4)
-
-    navn_dk = models.TextField(
-        max_length=2048,
-        verbose_name=_('Dansk navn'),
-        unique=True,
-    )
-    navn_gl = models.TextField(
-        max_length=2048,
-        verbose_name=_('Grønlandsk navn'),
-        unique=True,
-    )
-    beskrivelse = models.TextField()
     pelagisk = models.BooleanField(default=False)
     skematype = models.ManyToManyField(SkemaType)
     history = HistoricalRecords()

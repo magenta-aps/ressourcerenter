@@ -33,10 +33,11 @@ class FiskeArtForm(forms.ModelForm, BootstrapForm):
 
     class Meta:
         model = FiskeArt
-        fields = ('navn_dk', 'beskrivelse',)
+        fields = ('navn_dk', 'navn_gl', 'beskrivelse',)
 
         widgets = {
-            'navn': forms.TextInput(),
+            'navn_dk': forms.TextInput(),
+            'navn_gl': forms.TextInput(),
             'beskrivelse': forms.TextInput(),
         }
 
@@ -45,7 +46,7 @@ class ProduktTypeForm(forms.ModelForm, BootstrapForm):
 
     class Meta:
         model = ProduktType
-        fields = ('navn_dk', 'navn_gl', 'fiskeart', 'fartoej_groenlandsk')
+        fields = ('navn_dk', 'navn_gl', 'beskrivelse', 'fiskeart', 'fartoej_groenlandsk')
 
         widgets = {
             'navn_dk': forms.TextInput(),

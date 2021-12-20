@@ -103,9 +103,6 @@ class SatsTabelElementHistoryView(HistoryMixin, DetailView):
             'rate_procent',
         )
 
-    def get_back_url(self):
-        return reverse('administration:afgiftsperiode-satstabel', kwargs={'pk': self.object.periode.pk})
-
 # endregion
 
 
@@ -147,9 +144,6 @@ class FiskeArtHistoryView(HistoryMixin, DetailView):
     def get_fields(self, **kwargs):
         return ('navn', 'beskrivelse',)
 
-    def get_back_url(self):
-        return reverse('administration:fiskeart-list')
-
 # endregion
 
 
@@ -190,6 +184,3 @@ class ProduktTypeHistoryView(HistoryMixin, DetailView):
 
     def get_fields(self, **kwargs):
         return ('navn', 'beskrivelse',)
-
-    def get_back_url(self):
-        return reverse('administration:produkttype-list')

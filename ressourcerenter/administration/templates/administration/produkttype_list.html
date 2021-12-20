@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block content %}
-<h1>{% translate 'Fiskearter' %}</h1>
+<h1>{% translate 'Produkter' %}</h1>
 
 <table class="table">
     <thead>
@@ -26,13 +26,13 @@
                 {{ object.beskrivelse|default_if_none:'' }}
             </td>
             <td>
-                <a class="btn btn-primary" href="{% url 'administration:fiskeart-update' pk=object.pk %}">{% translate 'Redigér' %}</a>
-                <a class="btn btn-primary" href="{% url 'administration:fiskeart-history' pk=object.pk %}">{% translate 'Historik' %}</a>
+                <a class="btn btn-primary" href="{% url 'administration:produkttype-update' pk=object.pk %}">{% translate 'Redigér' %}</a>
+                <a class="btn btn-primary" href="{% url 'administration:produkttype-history' pk=object.pk %}">{% translate 'Historik' %}</a>
             </td>
         </tr>
     {% endfor %}
     </tbody>
 </table>
-<a class="btn btn-primary" href="{% url 'administration:fiskeart-create' %}">{% translate 'Opret ny' %}</a>
+<a class="btn btn-primary" href="{% url 'administration:produkttype-create' %}">{% translate 'Opret ny' %}</a>
 
 {% endblock %}

@@ -6,11 +6,6 @@
 <form method="post">
     {% csrf_token %}
     {{ form.management_form }}
-    <div class="row">
-        <div class="col-1">
-            <a class="btn btn-secondary" href="{% url 'administration:afgiftsperiode-list' %}">{% trans 'Tilbage' %}</a>
-        </div>
-    </div>
     {% for item in form.forms_by_skematype %}
     {% with skematype=item.skematype subforms=item.forms %}
     <h2>
