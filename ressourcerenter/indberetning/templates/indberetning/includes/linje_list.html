@@ -2,7 +2,12 @@
 <table class="table table-bordered text-center table-sm">
     <thead>
     <tr>
+        {% if skema_id == 1 or skema_id == 2 %}
         <th>{% translate 'Fartøjs navn' %}</th>
+        {% endif %}
+        {% if skema_id == 2 or skema_id == 3 %}
+        <th>{% translate 'Indhandlingssted' %}</th>
+        {% endif %}
         <th>{% translate 'ProduktType'%}</th>
         <th>{% translate 'Salgsvægt'%}</th>
         <th>{% translate 'Levende vægt'%}</th>
@@ -19,7 +24,12 @@
     <tbody>
     {% for linje in object_list %}
     <tr>
-        <td>{{ linje.navn }}</td>
+        {% if skema_id == 1 or skema_id == 2 %}
+        <td>{{linje.fartøj_navn}}</td>
+        {% endif %}
+        {% if skema_id == 2 or skema_id == 3 %}
+        <td>{{linje.indhandlingssted}}</td>
+        {% endif %}
         <td>{{ linje.produkttype }}</td>
         <td>{{ linje.salgsvægt }}</td>
         <td>{{ linje.levende_vægt }}</td>

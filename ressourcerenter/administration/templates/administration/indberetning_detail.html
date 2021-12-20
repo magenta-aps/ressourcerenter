@@ -15,8 +15,12 @@
         <td>{{ object.indberetningstidspunkt }}</td>
     </tr>
     <tr>
-        <th>{% translate 'Navn' %}</th>
-        <td>{{ object.navn }}</td>
+        <th>{% translate 'Skematype' %}</th>
+        <td>{{ object.skematype.navn_dk }}</td>
+    </tr>
+    <tr>
+        <th>{% translate 'Fartøj' %}</th>
+        <td>{{ object.fartøj_navn }}</td>
     </tr>
     <tr>
         <th>{% translate 'CVR' %}</th>
@@ -42,12 +46,17 @@
 </table>
 
 <h2>{% translate 'Indberetningslinjer' %}</h2>
-
+{% with skematype_id=object.skematype.id %}
 <table class="table">
     <thead>
     <tr>
-        <th>{% translate 'Fiskeart' %}</th>
-        <th>{% translate 'Kategori' %}</th>
+        {% if skematype_id == 1 or skematype_id == 2 %}
+        <th>{% translate 'Fartøj' %}</th>
+        {% endif %}
+        {% if skematype_id == 2 or skematype_id == 3 %}
+        <th>{% translate 'Indhandlingssted' %}</th>
+        {% endif %}
+        <th>{% translate 'Produkttype' %}</th>
         <th>{% translate 'Salgsvægt (kg)' %}</th>
         <th>{% translate 'Levende vægt/helfisk mængde (kg)' %}</th>
         <th>{% translate 'Salgspris (kr.)' %}</th>
@@ -56,8 +65,13 @@
     <tbody>
     {% for linje in object.linjer.all %}
         <tr>
-            <td>{{ linje.fiskeart }}</td>
-            <td>{{ linje.kategori|default_if_none:'' }}</td>
+            {% if skematype_id == 1 or skematype_id == 2 %}
+            <td>{{ linje.fartøj_navn }}</td>
+            {% endif %}
+            {% if skematype_id == 2 or skematype_id == 3 %}
+            <td>{{ linje.indhandlingssted }}</td>
+            {% endif %}
+            <td>{{ linje.produkttype }}</td>
             <td>{{ linje.salgsvægt }}</td>
             <td>{{ linje.levende_vægt }}</td>
             <td>{{ linje.salgspris }}</td>
@@ -65,5 +79,6 @@
     {% endfor %}
     </tbody>
 </table>
+{% endwith %}
 
 {% endblock %}
