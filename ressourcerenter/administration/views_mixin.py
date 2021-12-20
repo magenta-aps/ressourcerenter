@@ -12,11 +12,7 @@ class HistoryMixin():
                 (field, self.model._meta.get_field(field))
                 for field in self.get_fields()
             ],
-            'back_url': self.get_back_url(),
         })
 
     def get_fields(self):
         return ()
-
-    def get_back_url(self):
-        return None

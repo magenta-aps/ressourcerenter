@@ -15,10 +15,19 @@
 
     <div class="form-row">
         <div class="col-2">
-            <label for="{{ form.navn.id_for_label }}">{% translate 'Navn:' %}</label>
+            <label for="{{ form.navn_dk.id_for_label }}">{% translate 'Dansk navn:' %}</label>
         </div>
         <div class="col-4">
-            {{ form.navn }}
+            {{ form.navn_dk }}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="col-2">
+            <label for="{{ form.navn_gl.id_for_label }}">{% translate 'Grønlandsk navn:' %}</label>
+        </div>
+        <div class="col-4">
+            {{ form.navn_gl }}
         </div>
     </div>
 
@@ -31,7 +40,6 @@
         </div>
     </div>
 
-    <a class="btn btn-secondary" href="{% url 'administration:fiskeart-list' %}">{% translate 'Annullér' %}</a>
     <button type="submit" class="btn btn-primary">{% translate 'Gem' %}</button>
 </form>
 {% endblock %}
