@@ -1,0 +1,66 @@
+{% extends 'administration/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% translate 'Indberetninger' %}</h1>
+
+<div class="container-fluid">
+    <form method="get">
+        <div class="row mb-3">
+            <label class="col-sm-1 col-form-label" for="{{ form.afgiftsperiode.id_for_label }}">{{ form.afgiftsperiode.label }}</label>
+            <div class="col-sm-4">{{ form.afgiftsperiode }}</div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-1 col-form-label" for="{{ form.beregningsmodel.id_for_label }}">{{ form.beregningsmodel.label }}</label>
+            <div class="col-sm-4">{{ form.beregningsmodel }}</div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-1 col-form-label" for="{{ form.tidspunkt_fra.id_for_label }}">{% translate 'Tidspunkt' %}</label>
+            <div class="col-sm-2">{{ form.tidspunkt_fra }}</div>
+            <div class="col-sm-2">{{ form.tidspunkt_til }}</div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-1 col-form-label" for="{{ form.cvr.id_for_label }}">{{ form.cvr.label }}</label>
+            <div class="col-sm-4">{{ form.cvr }}</div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-1 col-form-label" for="{{ form.produkttype.id_for_label }}">{{ form.produkttype.label }}</label>
+            <div class="col-sm-4">{{ form.produkttype }}</div>
+        </div>
+        <button type="submit" class="btn btn-primary">{% translate 'Søg' %}</button>
+    </form>
+
+    <div class="row mb-1 mt-1">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>{% translate 'Afgiftsperiode' %}</th>
+                <th>{% translate 'Virksomhed' %}</th>
+                <th>{% translate 'Cpr' %}</th>
+                <th>{% translate 'Indberetningstidspunkt' %}</th>
+                <th>{% translate 'Navn' %}</th>
+                <th>{% translate 'Fiskearter' %}</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for object in object_list %}
+            <tr>
+                <td>{{ object.afgiftsperiode.navn }}</td>
+                <td>{{ object.virksomhed.cvr }}</td>
+                <td>{{ object.indberetters_cpr }}</td>
+                <td>{{ object.indberetningstidspunkt }}</td>
+                <td>{{ object.navn }}</td>
+                <td>{{ object.get_fishcategories_string }}</td>
+                <td><a class="btn btn-primary" href="{% url 'administration:indberetning-detail' object.pk %}">{% translate 'Vis detaljer' %}</a></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row">
+        <a class="btn btn-primary" href="{{ excel_link }}">{% translate 'Hent excel-regneark' %}</a>
+    </div>
+</div>
+{% endblock %}

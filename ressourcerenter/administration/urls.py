@@ -6,6 +6,7 @@ from administration.views import AfgiftsperiodeCreateView, AfgiftsperiodeUpdateV
 from administration.views import SatsTabelElementHistoryView
 from administration.views import FiskeArtListView, FiskeArtCreateView, FiskeArtUpdateView, FiskeArtHistoryView
 from administration.views import ProduktTypeListView, ProduktTypeCreateView, ProduktTypeUpdateView, ProduktTypeHistoryView
+from administration.views import IndberetningDetailView, IndberetningListView
 
 app_name = AdministrationConfig.name
 
@@ -20,6 +21,7 @@ urlpatterns = [
     path('afgiftsperiode/<uuid:pk>/satstabel', AfgiftsperiodeSatsTabelUpdateView.as_view(), name='afgiftsperiode-satstabel'),
     path('afgiftsperiode/<uuid:pk>/history/', AfgiftsperiodeHistoryView.as_view(), name='afgiftsperiode-history'),
     path('satstabelelement/<int:pk>/history/', SatsTabelElementHistoryView.as_view(), name='satstabelelement-history'),
+
     path('fiskeart/', FiskeArtListView.as_view(), name='fiskeart-list'),
     path('fiskeart/create', FiskeArtCreateView.as_view(), name='fiskeart-create'),
     path('fiskeart/<uuid:pk>/update', FiskeArtUpdateView.as_view(), name='fiskeart-update'),
@@ -29,4 +31,7 @@ urlpatterns = [
     path('produkttype/create', ProduktTypeCreateView.as_view(), name='produkttype-create'),
     path('produkttype/<uuid:pk>/update', ProduktTypeUpdateView.as_view(), name='produkttype-update'),
     path('produkttype/<uuid:pk>/history/', ProduktTypeHistoryView.as_view(), name='produkttype-history'),
+
+    path('indberetning/', IndberetningListView.as_view(), name='indberetning-list'),
+    path('indberetning/<uuid:pk>/', IndberetningDetailView.as_view(), name='indberetning-detail'),
 ]
