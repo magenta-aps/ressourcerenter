@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from django import forms
 from django.utils.functional import cached_property
-from administration.models import Afgiftsperiode, SatsTabelElement
+from administration.models import Afgiftsperiode, SatsTabelElement, BeregningsModel
 from administration.models import FiskeArt
 from administration.models import SkemaType
 from administration.models import ProduktType
@@ -93,3 +93,33 @@ class SatsTabelElementForm(forms.ModelForm, BootstrapForm):
             'rate_procent': forms.NumberInput(),
             'fartoej_groenlandsk': forms.HiddenInput(),
         }
+
+    def __init__(self, *args, ressource, initial=None, **kwargs):
+        super(SatsTabelElementForm, self).__init__(*args, initial=initial, **kwargs)
+        self.ressource_obj = ressource
+
+
+class IndberetningSearchForm(BootstrapForm):
+    afgiftsperiode = forms.ModelChoiceField(
+        Afgiftsperiode.objects,
+        required=False
+    )
+    beregningsmodel = forms.ModelChoiceField(
+        BeregningsModel.objects,
+        required=False
+    )
+    tidspunkt_fra = forms.DateField(
+        required=False,
+        widget=DateInput()
+    )
+    tidspunkt_til = forms.DateField(
+        required=False,
+        widget=DateInput()
+    )
+    cvr = forms.CharField(
+        required=False
+    )
+    produkttype = forms.ModelChoiceField(
+        ProduktType.objects,
+        required=False
+    )

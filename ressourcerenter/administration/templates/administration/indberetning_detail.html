@@ -1,0 +1,69 @@
+{% extends 'administration/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% translate 'Indberetning' %}</h1>
+
+<table class="table table-bordered table-sm" style="width: auto;">
+    <tbody>
+    <tr>
+        <th>{% translate 'Afgiftsperiode' %}</th>
+        <td>{{ object.afgiftsperiode }}</td>
+    </tr>
+    <tr>
+        <th>{% translate 'Indberetningstidspunkt' %}</th>
+        <td>{{ object.indberetningstidspunkt }}</td>
+    </tr>
+    <tr>
+        <th>{% translate 'Navn' %}</th>
+        <td>{{ object.navn }}</td>
+    </tr>
+    <tr>
+        <th>{% translate 'CVR' %}</th>
+        <td>{{ object.virksomhed.cvr }}</td>
+    </tr>
+    <tr>
+        <th>{% translate 'Kontaktperson' %}</th>
+        <td>{{ object.virksomhed.kontakt_person }}</td>
+    </tr>
+    <tr>
+        <th>{% translate 'Email' %}</th>
+        <td>{{ object.virksomhed.kontakt_email }}</td>
+    </tr>
+    <tr>
+        <th>{% translate 'Telefon' %}</th>
+        <td>{{ object.virksomhed.kontakts_phone_nr }}</td>
+    </tr>
+    <tr>
+        <th>{% translate 'Indberetter CPR' %}</th>
+        <td>{{ object.indberetters_cpr }}</td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>{% translate 'Indberetningslinjer' %}</h2>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>{% translate 'Fiskeart' %}</th>
+        <th>{% translate 'Kategori' %}</th>
+        <th>{% translate 'Salgsvægt (kg)' %}</th>
+        <th>{% translate 'Levende vægt/helfisk mængde (kg)' %}</th>
+        <th>{% translate 'Salgspris (kr.)' %}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for linje in object.linjer.all %}
+        <tr>
+            <td>{{ linje.fiskeart }}</td>
+            <td>{{ linje.kategori|default_if_none:'' }}</td>
+            <td>{{ linje.salgsvægt }}</td>
+            <td>{{ linje.levende_vægt }}</td>
+            <td>{{ linje.salgspris }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

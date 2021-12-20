@@ -2,8 +2,11 @@ from django import forms
 from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic import CreateView, UpdateView
 from django.urls import reverse
+from django.utils.translation import gettext as _
+from datetime import timedelta
+import re
 
-from administration.views_mixin import HistoryMixin
+from administration.views_mixin import ExcelMixin, HistoryMixin
 
 from administration.forms import AfgiftsperiodeForm, SatsTabelElementForm, SatsTabelElementFormSet
 from administration.models import Afgiftsperiode, SatsTabelElement
@@ -13,6 +16,9 @@ from administration.models import FiskeArt
 
 from administration.forms import ProduktTypeForm
 from administration.models import ProduktType
+
+from indberetning.models import Indberetning
+from administration.forms import IndberetningSearchForm
 
 
 class FrontpageView(TemplateView):
@@ -184,3 +190,56 @@ class ProduktTypeHistoryView(HistoryMixin, DetailView):
 
     def get_fields(self, **kwargs):
         return ('navn', 'beskrivelse',)
+
+
+class IndberetningDetailView(DetailView):
+    template_name = 'administration/indberetning_detail.html'
+    model = Indberetning
+
+
+class IndberetningListView(ExcelMixin, ListView):
+    template_name = 'administration/indberetning_list.html'  # Eksplicit for at undgå navnekollision med template i indberetning
+    model = Indberetning
+    form_class = IndberetningSearchForm
+
+    excel_fields = (
+        (_('Afgiftsperiode'), 'afgiftsperiode__navn'),
+        (_('Virksomhed'), 'virksomhed__cvr'),
+        (_('Cpr'), 'indberetters_cpr'),
+        (_('Indberetningstidspunkt'), 'indberetningstidspunkt'),
+        (_('Navn'), 'navn'),
+        (_('Fiskearter'), 'get_fishcategories_string')
+    )
+
+    def get_form(self):
+        return self.form_class(**self.get_form_kwargs())
+
+    def get_form_kwargs(self):
+        return {
+            'data': self.request.GET,
+        }
+
+    def get_queryset(self):
+        form = self.get_form()
+        qs = self.model.objects.all()
+        if form.is_valid():
+            data = form.cleaned_data
+            if data['afgiftsperiode']:
+                qs = qs.filter(afgiftsperiode=data['afgiftsperiode'])
+            if data['beregningsmodel']:
+                qs = qs.filter(afgiftsperiode__beregningsmodel=data['beregningsmodel'])
+            if data['tidspunkt_fra']:
+                qs = qs.filter(indberetningstidspunkt__gte=data['tidspunkt_fra'])
+            if data['tidspunkt_til']:
+                qs = qs.filter(indberetningstidspunkt__lt=data['tidspunkt_til'] + timedelta(days=1))
+            if data['cvr']:
+                qs = qs.filter(virksomhed__cvr__contains=re.sub(r'[^\d]', '', data['cvr']))
+            if data['produkttype']:
+                qs = qs.filter(linjer__produkttype=data['produkttype'])
+        return qs
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**{
+            **kwargs,
+            'form': self.get_form()
+        })

@@ -62,6 +62,9 @@ class Indberetning(models.Model):
             return _('Fartøjets navn')
         return _('indhandlingssted/Bygd')
 
+    def get_fishcategories_string(self):
+        return '; '.join([linje.produkttype.fiskeart.navn_dk for linje in self.linjer.all()])
+
     class Meta:
         ordering = ('indberetningstidspunkt',)
 
