@@ -1,0 +1,23 @@
+textarea.form-control.single-line {
+    /* For textareas that are initially one line, but the user may expand it as needed */
+    height: calc(1.5em + .75rem + 2px);  /* Same as in bootstrap, overriding textarea.form-control { height: auto } */
+}
+
+.table tbody.collapser,
+.table tbody.collapsing,
+.table tbody.collapse {
+    border-top-width: 1px !important;
+}
+
+.table-hover tbody tr.subrow:hover {
+    color:#808080;
+    background-color:#fff;
+}
+
+tr.subrow td {
+    border: none;
+    color: #808080;
+}
+tr.subrow:hover {
+    background: transparent;
+}

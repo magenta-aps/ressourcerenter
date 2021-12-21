@@ -31,29 +31,45 @@
     </form>
 
     <div class="row mb-1 mt-1">
-        <table class="table">
+        <table class="table table-hover">
             <thead>
             <tr>
-                <th>{% translate 'Afgiftsperiode' %}</th>
-                <th>{% translate 'Virksomhed' %}</th>
-                <th>{% translate 'Cpr' %}</th>
-                <th>{% translate 'Indberetningstidspunkt' %}</th>
-                <th>{% translate 'Fiskearter' %}</th>
-                <th></th>
+                <th class="col-1">{% translate 'Afgiftsperiode' %}</th>
+                <th class="col-1">{% translate 'Virksomhed' %}</th>
+                <th class="col-1">{% translate 'Cpr' %}</th>
+                <th class="col-2">{% translate 'Indberetningstidspunkt' %}</th>
+                <th class="col-2">{% translate 'Fiskearter' %}</th>
+                <th class="col-4">{% translate 'Kommentar' %}</th>
+                <th class="col-1"></th>
             </tr>
             </thead>
-            <tbody>
             {% for object in object_list %}
-            <tr>
+            {% with kommentarer=object.get_all_comment_strings %}
+            <tbody class="collapser">
+            <tr data-toggle="collapse" role="button" aria-expanded="false" data-target="#collapse-{{object.uuid}}">
                 <td>{{ object.afgiftsperiode.navn }}</td>
                 <td>{{ object.virksomhed.cvr }}</td>
                 <td>{{ object.indberetters_cpr }}</td>
                 <td>{{ object.indberetningstidspunkt }}</td>
-                <td>{{ object.get_fishcategories_string }}</td>
-                <td><a class="btn btn-primary" href="{% url 'administration:indberetning-detail' object.pk %}">{% translate 'Vis detaljer' %}</a></td>
+                <td>{{ object.get_fishcategories_string|truncatechars:30 }}</td>
+                <td>{% if kommentarer %}{{kommentarer|first|truncatechars:50}}{% endif %}</td>
+                <td>
+                    <a class="btn btn-primary" href="{% url 'administration:indberetning-detail' object.pk %}">{% translate 'Vis detaljer' %}</a>
+                </td>
+            </tr>
+            </tbody>
+            <tbody class="collapse" id="collapse-{{object.uuid}}">
+            {% for linje in object.linjer.all %}
+            <tr class="subrow">
+                <td colspan="4"></td>
+                <td>{{ linje.produkttype.fiskeart }}</td>
+                <td>{{ linje.kommentar }}</td>
+                <td></td>
             </tr>
             {% endfor %}
             </tbody>
+            {% endwith %}
+            {% endfor %}
         </table>
     </div>
 
@@ -61,4 +77,9 @@
         <a class="btn btn-primary" href="{{ excel_link }}">{% translate 'Hent excel-regneark' %}</a>
     </div>
 </div>
+<script>
+    $("[data-toggle=collapse] a").on('click', function(event){
+        event.stopPropagation();
+    })
+</script>
 {% endblock %}

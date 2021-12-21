@@ -7,6 +7,7 @@ from administration.models import SkemaType
 from administration.models import ProduktType
 from administration.forms_mixin import BootstrapForm
 from project.form_fields import DateInput
+from indberetning.models import IndberetningLinje
 
 
 class AfgiftsperiodeForm(forms.ModelForm, BootstrapForm):
@@ -123,3 +124,12 @@ class IndberetningSearchForm(BootstrapForm):
         ProduktType.objects,
         required=False
     )
+
+
+class IndberetningLinjeKommentarForm(forms.ModelForm, BootstrapForm):
+    class Meta:
+        model = IndberetningLinje
+        fields = ('kommentar',)
+        widgets = {
+            'kommentar': forms.Textarea(attrs={'class': 'single-line'})
+        }

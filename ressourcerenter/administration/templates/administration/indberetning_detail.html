@@ -47,38 +47,53 @@
 
 <h2>{% translate 'Indberetningslinjer' %}</h2>
 {% with skematype_id=object.skematype.id %}
-<table class="table">
-    <thead>
-    <tr>
-        {% if skematype_id == 1 or skematype_id == 2 %}
-        <th>{% translate 'Fartøj' %}</th>
-        {% endif %}
-        {% if skematype_id == 2 or skematype_id == 3 %}
-        <th>{% translate 'Indhandlingssted' %}</th>
-        {% endif %}
-        <th>{% translate 'Produkttype' %}</th>
-        <th>{% translate 'Salgsvægt (kg)' %}</th>
-        <th>{% translate 'Levende vægt/helfisk mængde (kg)' %}</th>
-        <th>{% translate 'Salgspris (kr.)' %}</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for linje in object.linjer.all %}
+<form method="post">
+
+    {% csrf_token %}
+    {{ form.management_form }}
+    <table class="table">
+        <thead>
         <tr>
             {% if skematype_id == 1 or skematype_id == 2 %}
-            <td>{{ linje.fartøj_navn }}</td>
+            <th>{% translate 'Fartøj' %}</th>
             {% endif %}
             {% if skematype_id == 2 or skematype_id == 3 %}
-            <td>{{ linje.indhandlingssted }}</td>
+            <th>{% translate 'Indhandlingssted' %}</th>
             {% endif %}
-            <td>{{ linje.produkttype }}</td>
-            <td>{{ linje.salgsvægt }}</td>
-            <td>{{ linje.levende_vægt }}</td>
-            <td>{{ linje.salgspris }}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+            <th>{% translate 'Produkttype' %}</th>
+            <th>{% translate 'Salgsvægt (kg)' %}</th>
+            <th>{% translate 'Levende vægt/helfisk mængde (kg)' %}</th>
+            <th>{% translate 'Salgspris (kr.)' %}</th>
+            <th>{% translate 'Kommentar' %}</th>
+		</tr>
+		</thead>
+		<tbody>
+        {% for subform in form %}
+        {% with linje=subform.instance %}
+		    <tr>
+		        {% if skematype_id == 1 or skematype_id == 2 %}
+		        <td>{{ linje.fartøj_navn }}</td>
+		        {% endif %}
+		        {% if skematype_id == 2 or skematype_id == 3 %}
+		        <td>{{ linje.indhandlingssted }}</td>
+		        {% endif %}
+		        <td>{{ linje.produkttype }}</td>
+		        <td>{{ linje.salgsvægt }}</td>
+		        <td>{{ linje.levende_vægt }}</td>
+		        <td>{{ linje.salgspris }}</td>
+		        <td>
+		            {{ subform.uuid }}
+		            {{ subform.kommentar }}
+		        </td>
+		    </tr>
+        {% endwith %}
+		{% endfor %}
+		</tbody>
+	</table>
+    <button type="submit" class="btn btn-primary">
+        {% translate 'Gem kommentarer' %}
+    </button>
+</form>
 {% endwith %}
 
 {% endblock %}

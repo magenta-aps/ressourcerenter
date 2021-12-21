@@ -20,6 +20,9 @@ from administration.models import ProduktType
 from indberetning.models import Indberetning
 from administration.forms import IndberetningSearchForm
 
+from indberetning.models import IndberetningLinje
+from administration.forms import IndberetningLinjeKommentarForm
+
 
 class FrontpageView(TemplateView):
     # TODO can be replaced, just needed a landing page.
@@ -192,9 +195,22 @@ class ProduktTypeHistoryView(HistoryMixin, DetailView):
         return ('navn', 'beskrivelse',)
 
 
-class IndberetningDetailView(DetailView):
+class IndberetningDetailView(UpdateView):
     template_name = 'administration/indberetning_detail.html'
     model = Indberetning
+
+    form_class = forms.inlineformset_factory(
+        Indberetning,
+        IndberetningLinje,
+        form=IndberetningLinjeKommentarForm,
+        extra=0,
+        can_delete=False
+    )
+
+    def get_success_url(self):
+        # The list may supply its full url in the `back`-parameter,
+        # so that we return to the last search results instead of the unfiltered list
+        return self.request.GET.get('back', reverse('administration:indberetning-list'))
 
 
 class IndberetningListView(ExcelMixin, ListView):
