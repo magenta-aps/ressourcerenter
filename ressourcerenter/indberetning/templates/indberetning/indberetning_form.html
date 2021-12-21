@@ -1,5 +1,6 @@
 {% extends "indberetning/base.html"%}
 {% load i18n %}
+{% load static %}
 {% block content %}
 {% if edit_mode %}
 <h2>{% blocktranslate with tidspunkt=object.indberetningstidspunkt|date:"SHORT_DATE_FORMAT" %}Tidligere Indberetninger fra {{tidspunkt}}{% endblocktranslate %}</h2>
@@ -34,20 +35,21 @@
                 <th class="col-2">{% translate 'Indhandlingssted' %}</th>
                 {% endif %}
                 <th class="col-2">{% translate 'ProduktType'%}</th>
-                <th class="col-2">{% translate 'Salgsvægt'%}</th>
-                <th class="col-2">{% translate 'Levende vægt'%}</th>
+                <th class="col-1">{% translate 'Salgsvægt'%}</th>
+                <th class="col-1">{% translate 'Levende vægt'%}</th>
                 <th class="col-2">{% translate 'Salgspris'%}</th>
                 {% if skema_id == 1 %}
                 <th class="col-2">{% translate 'Transporttillæg'%}</th>
                 {% elif skema_id == 2 or skema_id == 3 %}
                 <th class="col-2">{% translate 'Bonus og andet vederlag'%}</th>
                 {% endif %}
+                <th class="col-2" id="afgift_column" data-endpoint="{% url 'indberetning:indberetning-calculate' %}">{% translate 'Beregnet afgift (kr)' %}</th>
             </tr>
             </thead>
             <tbody>
             {% for subform in form %}
             {{ subform.non_field_errors }}
-            <tr>
+            <tr class="autocalc-afgift" data-prefix="{{subform.prefix}}">
                 {% if skema_id == 1 or skema_id == 2 %}
                 <td>{{subform.fartøj_navn}}{% if subform.errors.fartøj_navn %}<small class="error">{{subform.errors.fartøj_navn}}</small>{% endif %}</td>
                 {% endif %}
@@ -63,6 +65,7 @@
                 {% elif subform.bonus %}
                 <td>{{subform.bonus}}{% if subform.errors.bonus %}<br/><small>{{subform.errors.bonus}}</small>{% endif %}</td>
                 {% endif %}
+                <td class="autocalc-afgift-dest"></td>
             </tr>
             {% endfor %}
             </tbody>
@@ -123,6 +126,8 @@
         </div>
     </div>
 </div>
+{{indberetning.to_json|json_script:'indberetning'}}
+<script src="{% static 'js/cookie.js' %}"></script>
 <script>
     const boat_placeholder = "{% translate 'Vælg eller opret nyt fartøj' %}";
     const place_placeholder = "{% translate 'Vælg eller opret nyt indhandlingssted' %}";
@@ -157,6 +162,37 @@
             let form_idx = $('input[name=bilag-TOTAL_FORMS]').val();
             $('div#js-bilag-wrapper').append($('div#js-bilag-empty').html().replace(/__prefix__/g, form_idx))
             $('input[name=bilag-TOTAL_FORMS]').val(parseInt(form_idx)+1);
+        });
+
+        const afgift_endpoint = $('#afgift_column').data('endpoint');
+        const indberetning = JSON.parse($("#indberetning").text());
+        $(".autocalc-afgift input, .autocalc-afgift select").on('change', function(){
+            const row = $(this).parents('tr');
+            const prefix = row.data('prefix') + '-';
+            const indberetninglinje = {
+                'afgiftsperiode': indberetning['afgiftsperiode.uuid'],
+                'skematype': indberetning['skematype.id']
+            };
+            row.find('input, select').each(function () {
+                let name = $(this).attr('name');
+                if (name.startsWith(prefix)) {
+                    name = name.replace(prefix, '');
+                }
+                indberetninglinje[name] = $(this).val();
+            });
+            $.ajax({
+                'url': afgift_endpoint,
+                'method': 'post',
+                'data': indberetninglinje,
+                'dataType': 'json',
+                'headers': {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                'success': function (responseObject) {
+                    const afgift = responseObject['afgift'].replace('.', ',');
+                    row.find('.autocalc-afgift-dest').text(afgift);
+                }
+            });
         });
     });
 </script>

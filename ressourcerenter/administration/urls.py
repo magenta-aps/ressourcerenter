@@ -6,7 +6,7 @@ from administration.views import AfgiftsperiodeCreateView, AfgiftsperiodeUpdateV
 from administration.views import SatsTabelElementHistoryView
 from administration.views import FiskeArtListView, FiskeArtCreateView, FiskeArtUpdateView, FiskeArtHistoryView
 from administration.views import ProduktTypeListView, ProduktTypeCreateView, ProduktTypeUpdateView, ProduktTypeHistoryView
-from administration.views import IndberetningDetailView, IndberetningListView
+from administration.views import IndberetningDetailView, IndberetningListView, IndberetningAfstemFormView
 
 app_name = AdministrationConfig.name
 
@@ -34,4 +34,6 @@ urlpatterns = [
 
     path('indberetning/', IndberetningListView.as_view(), name='indberetning-list'),
     path('indberetning/<uuid:pk>/', IndberetningDetailView.as_view(), name='indberetning-detail'),
+    path('indberetning/<uuid:pk>/afstem', IndberetningAfstemFormView.as_view(), name='indberetning-afstem'),
+
 ]

@@ -19,6 +19,7 @@
         {% translate 'Bonus og andet vederlag' %}
         {% endif %}
         </th>
+        <th>{% translate 'Beregnet afgift (kr)' %}</th>
     </tr>
     </thead>
     <tbody>
@@ -41,6 +42,7 @@
         {{ linje.bonus|default_if_none:'' }}
         {% endif %}
         </td>
+        <td>{{linje.afgift}}</td>
     </tr>
     {% endfor %}
     </tbody>

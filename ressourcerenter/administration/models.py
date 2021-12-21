@@ -194,7 +194,7 @@ post_save.connect(SatsTabelElement.create_for_period_from_resources, Afgiftsperi
 
 class FangstAfgift(models.Model):
 
-    indberetninglinje = models.ForeignKey(
+    indberetninglinje = models.OneToOneField(
         'indberetning.IndberetningLinje',
         on_delete=models.CASCADE,
         null=True,
@@ -230,6 +230,15 @@ class FangstAfgift(models.Model):
         decimal_places=2,
     )
 
+    def to_json(self):
+        return {
+            'beregningsmodel': self.beregningsmodel.pk if self.beregningsmodel else None,
+            'rate_element': self.rate_element.pk if self.rate_element else None,
+            'afgift': str(self.afgift),
+            'rate_procent': str(self.rate_procent),
+            'rate_pr_kg': str(self.rate_pr_kg)
+        }
+
 
 class BeregningsModel(models.Model):
 
@@ -239,9 +248,6 @@ class BeregningsModel(models.Model):
         null=False,
         unique=True,
     )
-
-    def calculate(self, rate_tabel: Afgiftsperiode, indberetning):
-        raise NotImplementedError(f"{self.__class__.__name__}.calculate")
 
     def __str__(self):
         return self.navn
@@ -257,6 +263,12 @@ class BeregningsModel(models.Model):
         while (next := instance.subclass_instance) != instance:
             instance = next
         return instance
+
+    def calculate(self, indberetning):
+        return self.specific.calculate(indberetning)
+
+    def calculate_for_linje(self, indberetninglinje):
+        return self.specific.calculate_for_linje(indberetninglinje)
 
 
 class BeregningsModel2021(BeregningsModel):
@@ -277,29 +289,28 @@ class BeregningsModel2021(BeregningsModel):
         default=None
     )
 
-    def get_satstabelelement(self, afgiftsperiode, indberetninglinje):
+    def get_satstabelelement(self, indberetninglinje):
         return SatsTabelElement.objects.get(
-            periode=afgiftsperiode,
+            periode=indberetninglinje.indberetning.afgiftsperiode,
             skematype=indberetninglinje.indberetning.skematype,
             fiskeart=indberetninglinje.produkttype.fiskeart,
             fartoej_groenlandsk=indberetninglinje.produkttype.fartoej_groenlandsk,
         )
 
-    def calculate(self, periode: Afgiftsperiode, indberetning):
+    def calculate(self, indberetning):
         afgift_items = []
         for indberetninglinje in indberetning.linjer.all():
-            sats = self.get_satstabelelement(periode, indberetninglinje)
-            afgift_item = self.calculate_afgift(sats, indberetninglinje)
-            afgift_items.append(afgift_item)
+            afgift_items.append(self.calculate_for_linje(indberetninglinje))
         return afgift_items
 
-    def calculate_afgift(self, sats, indberetninglinje):
+    def calculate_for_linje(self, indberetninglinje):
+        sats = self.get_satstabelelement(indberetninglinje)
         afgift_item = FangstAfgift()
 
         rate_procent = sats.rate_procent or 0
         rate_pr_kg = sats.rate_pr_kg or 0
-        vaegt = indberetninglinje.levende_vægt
-        pris = indberetninglinje.salgspris
+        vaegt = indberetninglinje.levende_vægt or 0
+        pris = indberetninglinje.salgspris or 0
 
         # Hvis table_entry er korrekt konstrueret, vil kun ét af disse led være != 0
         afgift = (rate_pr_kg * vaegt) + (rate_procent * Decimal(0.01) * pris)
@@ -309,4 +320,5 @@ class BeregningsModel2021(BeregningsModel):
         afgift_item.rate_element = sats
         afgift_item.rate_pr_kg = rate_pr_kg
         afgift_item.rate_procent = rate_procent
+        afgift_item.indberetninglinje = indberetninglinje
         return afgift_item

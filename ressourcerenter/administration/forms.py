@@ -7,6 +7,7 @@ from administration.models import SkemaType
 from administration.models import ProduktType
 from administration.forms_mixin import BootstrapForm
 from project.form_fields import DateInput
+from indberetning.models import Indberetning
 from indberetning.models import IndberetningLinje
 
 
@@ -95,10 +96,6 @@ class SatsTabelElementForm(forms.ModelForm, BootstrapForm):
             'fartoej_groenlandsk': forms.HiddenInput(),
         }
 
-    def __init__(self, *args, ressource, initial=None, **kwargs):
-        super(SatsTabelElementForm, self).__init__(*args, initial=initial, **kwargs)
-        self.ressource_obj = ressource
-
 
 class IndberetningSearchForm(BootstrapForm):
     afgiftsperiode = forms.ModelChoiceField(
@@ -124,6 +121,12 @@ class IndberetningSearchForm(BootstrapForm):
         ProduktType.objects,
         required=False
     )
+
+
+class IndberetningAfstemForm(forms.ModelForm):
+    class Meta:
+        model = Indberetning
+        fields = ('afstemt',)
 
 
 class IndberetningLinjeKommentarForm(forms.ModelForm, BootstrapForm):

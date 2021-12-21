@@ -19,10 +19,6 @@
         <td>{{ object.skematype.navn_dk }}</td>
     </tr>
     <tr>
-        <th>{% translate 'Fartøj' %}</th>
-        <td>{{ object.fartøj_navn }}</td>
-    </tr>
-    <tr>
         <th>{% translate 'CVR' %}</th>
         <td>{{ object.virksomhed.cvr }}</td>
     </tr>
@@ -42,8 +38,26 @@
         <th>{% translate 'Indberetter CPR' %}</th>
         <td>{{ object.indberetters_cpr }}</td>
     </tr>
+    <tr>
+        <th>{% translate 'Total beregnet afgift (kr)' %}</th>
+        <td>{{ object.afgift_sum|default_if_none:'' }}</td>
+    </tr>
+    <tr>
+        <th>{% translate 'Afstemt' %}</th>
+        <td>{{ object.afstemt|janej|capfirst }}</td>
+    </tr>
     </tbody>
 </table>
+
+{% if not object.afstemt %}
+<form method="post" action="{% url 'administration:indberetning-afstem' pk=object.pk %}">
+    {% csrf_token %}
+    <input name="afstemt" type="hidden" value="1"/>
+    <button type="submit" class="btn btn-primary">
+        {% translate 'Afstem' %}
+    </button>
+</form>
+{% endif %}
 
 <h2>{% translate 'Indberetningslinjer' %}</h2>
 {% with skematype_id=object.skematype.id %}
@@ -63,7 +77,8 @@
             <th>{% translate 'Produkttype' %}</th>
             <th>{% translate 'Salgsvægt (kg)' %}</th>
             <th>{% translate 'Levende vægt/helfisk mængde (kg)' %}</th>
-            <th>{% translate 'Salgspris (kr.)' %}</th>
+            <th>{% translate 'Salgspris (kr)' %}</th>
+            <th>{% translate 'Beregnet afgift (kr)' %}</th>
             <th>{% translate 'Kommentar' %}</th>
 		</tr>
 		</thead>
@@ -81,8 +96,9 @@
 		        <td>{{ linje.salgsvægt }}</td>
 		        <td>{{ linje.levende_vægt }}</td>
 		        <td>{{ linje.salgspris }}</td>
+		        <td>{{ linje.afgift }}</td>
 		        <td>
-		            {{ subform.uuid }}
+                    {{ subform.uuid }}
 		            {{ subform.kommentar }}
 		        </td>
 		    </tr>
