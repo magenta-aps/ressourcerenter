@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from django.db.utils import IntegrityError
 from datetime import date
 
-from administration.models import SkemaType, FiskeArt, ProduktType, Afgiftsperiode
+from administration.models import SkemaType, FiskeArt, ProduktType, Afgiftsperiode, SatsTabelElement
 
 
 class Command(BaseCommand):
@@ -62,20 +62,76 @@ class Command(BaseCommand):
                 except IntegrityError:
                     pass
 
+        perioder = []
         for year in (2021, 2022, 2023):
             try:
-                Afgiftsperiode.objects.create(navn=f"1. kvartal {year}", dato_fra=date(year, 1, 1), dato_til=date(year, 3, 31), vis_i_indberetning=True)
+                perioder.append(Afgiftsperiode.objects.create(navn=f"1. kvartal {year}", dato_fra=date(year, 1, 1), dato_til=date(year, 3, 31), vis_i_indberetning=True))
             except IntegrityError:
                 pass
             try:
-                Afgiftsperiode.objects.create(navn=f"2. kvartal {year}", dato_fra=date(year, 4, 1), dato_til=date(year, 6, 30), vis_i_indberetning=True)
+                perioder.append(Afgiftsperiode.objects.create(navn=f"2. kvartal {year}", dato_fra=date(year, 4, 1), dato_til=date(year, 6, 30), vis_i_indberetning=True))
             except IntegrityError:
                 pass
             try:
-                Afgiftsperiode.objects.create(navn=f"3. kvartal {year}", dato_fra=date(year, 7, 1), dato_til=date(year, 9, 30), vis_i_indberetning=True)
+                perioder.append(Afgiftsperiode.objects.create(navn=f"3. kvartal {year}", dato_fra=date(year, 7, 1), dato_til=date(year, 9, 30), vis_i_indberetning=True))
             except IntegrityError:
                 pass
             try:
-                Afgiftsperiode.objects.create(navn=f"4. kvartal {year}", dato_fra=date(year, 10, 1), dato_til=date(year, 12, 31), vis_i_indberetning=True)
+                perioder.append(Afgiftsperiode.objects.create(navn=f"4. kvartal {year}", dato_fra=date(year, 10, 1), dato_til=date(year, 12, 31), vis_i_indberetning=True))
             except IntegrityError:
                 pass
+
+        for navn, skematype_id, fartoej_groenlandsk, rate_procent, rate_pr_kg in [
+            ('Reje - havgående licens', 1, None, 5, None),
+            ('Reje - kystnær licens', 1, None, 5, None),
+            ('Hellefisk', 1, None, 5, None),
+            ('Torsk', 1, None, 5, None),
+            ('Kuller', 1, None, 5, None),
+            ('Sej', 1, None, 5, None),
+            ('Rødfisk', 1, None, 5, None),
+            ('Sild', 1, True, None, 0.25),
+            ('Sild', 1, False, None, 0.8),
+            ('Lodde', 1, True, None, 0.15),
+            ('Lodde', 1, False, None, 0.7),
+            ('Makrel', 1, True, None, 0.4),
+            ('Makrel', 1, False, None, 1),
+            ('Blåhvilling', 1, True, None, 0.15),
+            ('Blåhvilling', 1, False, None, 0.7),
+            ('Guldlaks', 1, True, None, 0.15),
+            ('Guldlaks', 1, False, None, 0.7),
+
+            ('Reje - havgående licens', 2, None, 5, None),
+            ('Reje - kystnær licens', 2, None, 5, None),
+            ('Hellefisk', 2, None, 5, None),
+            ('Torsk', 2, None, 5, None),
+            ('Kuller', 2, None, 5, None),
+            ('Sej', 2, None, 5, None),
+            ('Rødfisk', 2, None, 5, None),
+            ('Sild', 2, True, None, 0.25),
+            ('Sild', 2, False, None, 0.8),
+            ('Lodde', 2, True, None, 0.15),
+            ('Lodde', 2, False, None, 0.7),
+            ('Makrel', 2, True, None, 0.4),
+            ('Makrel', 2, False, None, 1),
+            ('Blåhvilling', 2, True, None, 0.15),
+            ('Blåhvilling', 2, False, None, 0.7),
+            ('Guldlaks', 2, True, None, 0.15),
+            ('Guldlaks', 2, False, None, 0.7),
+
+            ('Hellefisk', 3, None, 5, None),
+            ('Torsk', 3, None, 5, None),
+            ('Kuller', 3, None, 5, None),
+            ('Sej', 3, None, 5, None),
+            ('Rødfisk', 3, None, 5, None),
+        ]:
+            fiskeart = FiskeArt.objects.get(navn_dk=navn)
+            for periode in perioder:
+                sats = SatsTabelElement.objects.get(
+                    periode=periode,
+                    skematype__id=skematype_id,
+                    fiskeart=fiskeart,
+                    fartoej_groenlandsk=fartoej_groenlandsk,
+                )
+                sats.rate_procent = rate_procent
+                sats.rate_pr_kg = rate_pr_kg
+                sats.save()

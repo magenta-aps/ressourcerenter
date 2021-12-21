@@ -1,7 +1,8 @@
 from django.urls import path
 from indberetning.views import CreateIndberetningCreateView, CompanySelectView, IndberetningsListView, \
     SelectIndberetningsType, LoginView, LoginCallbackView, Frontpage, \
-    LogoutView, LogoutCallback, VirksomhedUpdateView, UpdateIndberetningsView, BilagDownloadView
+    LogoutView, LogoutCallback, VirksomhedUpdateView, UpdateIndberetningsView, BilagDownloadView, \
+    IndberetningCalculateJsonView
 from indberetning.apps import IndberetningConfig
 app_name = IndberetningConfig.name
 
@@ -11,6 +12,8 @@ urlpatterns = [
     path('company/<uuid:pk>/edit/', VirksomhedUpdateView.as_view(), name='company-edit'),
     path('list/', IndberetningsListView.as_view(), name='indberetning-list'),
     path('select/', SelectIndberetningsType.as_view(), name='type-select'),
+    path('indberetning/calculate', IndberetningCalculateJsonView.as_view(), name='indberetning-calculate'),
+
     path('indberetning/<uuid:periode>/<int:skema>/create/', CreateIndberetningCreateView.as_view(), name='indberetning-create'),
     path('indberetning/<uuid:pk>/edit/', UpdateIndberetningsView.as_view(), name='indberetning-edit'),
     path('bilag/<uuid:pk>/', BilagDownloadView.as_view(), name='bilag-download'),

@@ -35,7 +35,7 @@
         <tr>
             <th>{% translate 'Indberetter CPR'%}</th>
             <td>{{indberetning.indberetters_cpr}}</td>
-            <td rowspan="2">
+            <td rowspan="3">
                 <strong class="mr-2">{% translate 'Eksisterende bilag:'%}</strong>
                 {% for bilag in indberetning.bilag.all %}
                 <a class="mr-2" href="{% url 'indberetning:bilag-download' pk=bilag.uuid%}">{{bilag.filename}}</a>
@@ -45,6 +45,10 @@
         <tr>
             <th>{% translate 'Skematype'%}</th>
             <td>{{indberetning.skematype}}</td>
+        </tr>
+        <tr>
+            <th>{% translate 'Total beregnet afgift (kr)' %}</th>
+            <td>{{ indberetning.afgift_sum|default_if_none:'' }}</td>
         </tr>
         </tbody>
     </table>
@@ -61,14 +65,15 @@
             <th class="col-2">{% translate 'Indhandlingssted '%}</th>
             {% endif %}
             <th class="col-2">{% translate 'ProduktType'%}</th>
-            <th class="col-2">{% translate 'Salgsvægt'%}</th>
-            <th class="col-2">{% translate 'Levende vægt'%}</th>
-            <th class="col-2">{% translate 'Salgspris'%}</th>
+            <th class="col-1">{% translate 'Salgsvægt (kg)'%}</th>
+            <th class="col-1">{% translate 'Levende vægt (kg)'%}</th>
+            <th class="col-2">{% translate 'Salgspris (kr)'%}</th>
             {% if skematype_id == 1 %}
-            <th class="col-2">{% translate 'Transporttillæg'%}</th>
+            <th class="col-2">{% translate 'Transporttillæg (kr)'%}</th>
             {% elif skematype_id == 2 or skematype_id == 3 %}
-            <th class="col-2">{% translate 'Bonus og andet vederlag'%}</th>
+            <th class="col-2">{% translate 'Bonus og andet vederlag (kr)'%}</th>
             {% endif %}
+            <th>{% translate 'Afgift' %}</th>
         </tr>
         </thead>
         <tbody>
@@ -89,6 +94,7 @@
             {% elif skematype_id == 2 or skematype_id == 3 %}
             <td>{{ object.bonus|default_if_none:'' }}</td>
             {% endif %}
+            <td>{{ object.afgift }}</td>
         </tr>
         {% endfor %}
         </tbody>

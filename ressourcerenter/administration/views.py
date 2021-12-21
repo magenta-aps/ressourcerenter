@@ -22,6 +22,7 @@ from administration.forms import IndberetningSearchForm
 
 from indberetning.models import IndberetningLinje
 from administration.forms import IndberetningLinjeKommentarForm
+from administration.forms import IndberetningAfstemForm
 
 
 class FrontpageView(TemplateView):
@@ -211,6 +212,14 @@ class IndberetningDetailView(UpdateView):
         # The list may supply its full url in the `back`-parameter,
         # so that we return to the last search results instead of the unfiltered list
         return self.request.GET.get('back', reverse('administration:indberetning-list'))
+
+
+class IndberetningAfstemFormView(UpdateView):
+    model = Indberetning
+    form_class = IndberetningAfstemForm
+
+    def get_success_url(self):
+        return reverse('administration:indberetning-detail', kwargs={'pk': self.object.pk})
 
 
 class IndberetningListView(ExcelMixin, ListView):

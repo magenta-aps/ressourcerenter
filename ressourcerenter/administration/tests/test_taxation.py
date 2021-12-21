@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.test import TransactionTestCase
 from administration.models import Afgiftsperiode, SatsTabelElement, ProduktType, BeregningsModel2021, FiskeArt, SkemaType
 from indberetning.models import Virksomhed, Indberetning, IndberetningLinje
@@ -25,6 +26,19 @@ class AfgiftTestCase(TransactionTestCase):
         Command().handle()
 
         self.periode = Afgiftsperiode.objects.get(dato_fra=date(2021, 1, 1))
+
+        try:
+            beregningsmodel = BeregningsModel2021.objects.create(
+                navn='TestBeregningsModel',
+                transport_afgift_rate=Decimal(1),
+            )
+        except IntegrityError:
+            beregningsmodel = BeregningsModel2021.objects.get(navn='TestBeregningsModel')
+            beregningsmodel.transport_afgift_rate = Decimal(1)
+            beregningsmodel.save()
+
+        self.periode.beregningsmodel = beregningsmodel
+        self.periode.save()
 
         self.skematyper = {s.id: s for s in SkemaType.objects.all()}
 
@@ -78,7 +92,7 @@ class AfgiftTestCase(TransactionTestCase):
             salgsvægt=Decimal(salgsvaegt),
         )
         model = BeregningsModel2021.objects.create(navn=uuid4())
-        result = model.calculate(self.periode, indberetning)
+        result = model.calculate(indberetning)
         return result[0]
 
     def test_transferred_calculation_1(self):

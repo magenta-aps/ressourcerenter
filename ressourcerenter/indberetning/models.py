@@ -1,10 +1,13 @@
 import os
 from uuid import uuid4
+from decimal import Decimal
 
 from django.contrib.auth import get_user_model
 from django.db import models, IntegrityError
+from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from administration.models import SkemaType, Afgiftsperiode, ProduktType
@@ -74,6 +77,34 @@ class Indberetning(models.Model):
     def get_all_comment_strings(self):
         return [linje.kommentar for linje in self.linjer.exclude(kommentar='')]
 
+    @property
+    def afgift_sum(self):
+        return self.linjer.aggregate(sum=Sum('fangstafgift__afgift'))['sum']
+        # return sum([linje.fangstafgift.afgift for linje in self.linjer.all()])
+
+    @staticmethod
+    def from_json(data):
+        data = {k: v for k, v in data.items() if v is not None}
+        return Indberetning(
+            skematype=SkemaType.objects.get(id=data['skematype.id']),
+            indberetnings_type=data.get('indberetnings_type'),
+            virksomhed=Virksomhed.objects.get(cvr=data['virksomhed.cvr']),
+            indberetters_cpr=data.get('indberetters_cpr'),
+            administrator=get_user_model().objects.get(data['administrator.id']) if 'administrator.id' in data else None,
+            afgiftsperiode=Afgiftsperiode.objects.get(uuid=data['afgiftsperiode.uuid']),
+            indberetningstidspunkt=timezone.now()
+        )
+
+    def to_json(self):
+        return {
+            'skematype.id': self.skematype.id,
+            'indberetnings_type': self.indberetnings_type,
+            'virksomhed.cvr': self.virksomhed.cvr,
+            'indberetters_cpr': self.indberetters_cpr,
+            'administrator.id': self.administrator.id if self.administrator else None,
+            'afgiftsperiode.uuid': self.afgiftsperiode.uuid
+        }
+
     class Meta:
         ordering = ('indberetningstidspunkt',)
 
@@ -100,6 +131,45 @@ class IndberetningLinje(models.Model):
     kommentar = models.TextField(default='')
 
     note = models.TextField()
+
+    @property
+    def afgift(self):
+        return self.fangstafgift.afgift
+
+    @staticmethod
+    def from_json(data):
+        data = {k: v for k, v in data.items() if v is not None}
+        return IndberetningLinje(
+            navn=data.get('navn'),
+            indberetning=Indberetning.from_json(data['indberetning']),
+            produkttype=ProduktType.objects.get(pk=data['produkttype']),
+            salgsvægt=Decimal(data['salgsvægt']),
+            levende_vægt=Decimal(data['levende_vægt']),
+            salgspris=Decimal(data['salgspris']) if 'salgspris' in data else None,
+            transporttillæg=Decimal(data['transporttillæg']) if 'bonus' in data else None,
+            bonus=Decimal(data['bonus']) if 'bonus' in data else None,
+            note=data.get('note'),
+        )
+
+    def calculate_afgift(self):
+        afgiftsperiode = self.indberetning.afgiftsperiode
+        beregningsmodel = afgiftsperiode.beregningsmodel
+        if beregningsmodel is None:
+            raise Exception(f"Kan ikke beregne afgift for Indberetningslinje; beregningsmodel er ikke sat for afgiftsperiode {afgiftsperiode}")
+        return beregningsmodel.calculate_for_linje(self)
+
+
+@receiver(post_save, sender=IndberetningLinje, dispatch_uid='indberetninglinje_calculate_afgift')
+def calculate_afgift(sender, **kwargs):
+    indberetningslinje = kwargs['instance']
+    try:
+        fangstafgift = indberetningslinje.calculate_afgift()
+        # Note: koblingen er one-to-one, så hvis man forsøger at oprette en fangstafgift for en indberetningslinje
+        # der allerede har én, springer det i luften, men eftersom indberetningslinjer kun skal gemmes én gang
+        # bør det være et non-issue.
+        fangstafgift.save()
+    except Exception as e:
+        print(e)
 
 
 @receiver(post_save, sender=IndberetningLinje, dispatch_uid='indberetning_store_navne')

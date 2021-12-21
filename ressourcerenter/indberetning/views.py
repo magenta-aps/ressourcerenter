@@ -3,7 +3,7 @@ import mimetypes
 from django.conf import settings
 from django.contrib import messages
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.module_loading import import_string
@@ -16,8 +16,10 @@ from django.forms import inlineformset_factory
 from administration.models import Afgiftsperiode, SkemaType
 from indberetning.forms import IndberetningsTypeSelectForm, VirksomhedsAddressForm, BilagsFormSet
 from indberetning.forms import IndberetningsLinjeSkema1Form, IndberetningsLinjeSkema2Form, IndberetningsLinjeSkema3Form
+from indberetning.forms import IndberetningBeregningForm, IndberetningsLinjeBeregningForm
 from indberetning.models import Indberetning, Virksomhed, IndberetningLinje, Bilag
 from project.dafo import DatafordelerClient
+import json
 
 LoginProvider = import_string(settings.LOGIN_PROVIDER_CLASS)
 
@@ -122,6 +124,7 @@ class IndberetningsLinjebilagFormsetMixin:
                                                     prefix='bilag',
                                                     queryset=Bilag.objects.none())
         ctx = super(IndberetningsLinjebilagFormsetMixin, self).get_context_data(**kwargs)
+        ctx['indberetning'] = self.get_indberetning_instance()
         return ctx
 
     def post(self, request, *args, **kwargs):
@@ -136,7 +139,6 @@ class IndberetningsLinjebilagFormsetMixin:
             return self.form_invalid(form, bilag_formset)
 
     def form_valid(self, formset, bilag_formset):
-        print("form_valid")
         indberetning = self.get_indberetning_instance()
         indberetning.save()
         linjer = []
@@ -147,7 +149,6 @@ class IndberetningsLinjebilagFormsetMixin:
             linjer.append(line)
         bilags = []
         for bilag in bilag_formset.save(commit=False):
-            print(bilag)
             bilag.indberetning = indberetning
             bilag.save()
             bilags.append(bilag)
@@ -229,6 +230,10 @@ class UpdateIndberetningsView(IndberetningsLinjebilagFormsetMixin, UpdateView):
     def get_indberetning_instance(self):
         return self.object
 
+    @cached_property
+    def afgiftsperiode(self):
+        return self.get_object().afgiftsperiode
+
     def get_queryset(self):
         # always limit the QS to indberetninger belonging to the company.
         # check for session['cvr'] is done in middleware,
@@ -241,7 +246,7 @@ class UpdateIndberetningsView(IndberetningsLinjebilagFormsetMixin, UpdateView):
         ctx.update({
             'edit_mode': True,
             'form_url': reverse('indberetning:indberetning-edit', kwargs={'pk': self.get_object().uuid}),
-            'afgiftsperiode': self.get_object().afgiftsperiode,
+            'afgiftsperiode': self.afgiftsperiode,
             'skema_id': self.skema.id
         })
         return ctx
@@ -277,6 +282,57 @@ class BilagDownloadView(DetailView):
         response = HttpResponse(file.read(), content_type=mime_type)
         response['Content-Disposition'] = "attachment; filename=%s" % bilag.filename
         return response
+
+
+class MultipleFormView(View):
+
+    def get_form_classes(self):
+        return self.form_classes
+
+    def get_forms(self):
+        kwargs = self.get_forms_kwargs()
+        form_classes = self.get_form_classes()
+        if len(form_classes) != len(kwargs):
+            raise Exception("Incorrect number of form classes and kwarg dicts")
+        return [form_class(**kwargs[i]) for i, form_class in enumerate(form_classes)]
+
+    def post(self, request, *args, **kwargs):
+        forms = self.get_forms()
+        if all([form.is_valid() for form in forms]):
+            return self.forms_valid(forms)
+        else:
+            return self.forms_invalid(forms)
+
+    def get_forms_kwargs(self):
+        return [self.get_form_kwargs(form_class) for form_class in self.form_classes]
+
+    def get_form_kwargs(self, form_class):
+        kwargs = {
+            # 'initial': self.get_initial(),
+            # 'prefix': self.get_prefix(),
+        }
+        if self.request.method in ('POST', 'PUT'):
+            kwargs.update({
+                'data': self.request.POST,
+                'files': self.request.FILES,
+            })
+        if hasattr(self, 'object'):
+            kwargs.update({'instance': self.object})
+        return kwargs
+
+
+class IndberetningCalculateJsonView(MultipleFormView):
+
+    form_classes = [IndberetningBeregningForm, IndberetningsLinjeBeregningForm]
+
+    def forms_valid(self, forms):
+        indberetning, linje = (form.save(False) for form in forms)
+        linje.indberetning = indberetning
+        fangstafgift = linje.calculate_afgift()
+        return HttpResponse(json.dumps(fangstafgift.to_json()))
+
+    def forms_invalid(self, forms):
+        return HttpResponseBadRequest(json.dumps([form.errors.get_json_data() for form in forms]))
 
 
 class LoginView(View):

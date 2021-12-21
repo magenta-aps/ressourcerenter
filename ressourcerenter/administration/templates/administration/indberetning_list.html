@@ -37,12 +37,15 @@
                 <th class="col-1">{% translate 'Afgiftsperiode' %}</th>
                 <th class="col-1">{% translate 'Virksomhed' %}</th>
                 <th class="col-1">{% translate 'Cpr' %}</th>
-                <th class="col-2">{% translate 'Indberetningstidspunkt' %}</th>
+                <th class="col-1">{% translate 'Indberetningstidspunkt' %}</th>
                 <th class="col-2">{% translate 'Fiskearter' %}</th>
-                <th class="col-4">{% translate 'Kommentar' %}</th>
+                <th class="col-3">{% translate 'Kommentar' %}</th>
+                <th class="col-1">{% translate 'Afgift' %}</th>
+                <th class="col-1">{% translate 'Afstemt' %}</th>
                 <th class="col-1"></th>
             </tr>
             </thead>
+            <tbody>
             {% for object in object_list %}
             {% with kommentarer=object.get_all_comment_strings %}
             <tbody class="collapser">
@@ -51,8 +54,10 @@
                 <td>{{ object.virksomhed.cvr }}</td>
                 <td>{{ object.indberetters_cpr }}</td>
                 <td>{{ object.indberetningstidspunkt }}</td>
-                <td>{{ object.get_fishcategories_string|truncatechars:30 }}</td>
+                <td>{{ object.get_fishcategories_string|truncatechars:50 }}</td>
                 <td>{% if kommentarer %}{{kommentarer|first|truncatechars:50}}{% endif %}</td>
+                <td>{{ object.afgift_sum }}</td>
+                <td>{{ object.afstemt|janej|capfirst }}</td>
                 <td>
                     <a class="btn btn-primary" href="{% url 'administration:indberetning-detail' object.pk %}">{% translate 'Vis detaljer' %}</a>
                 </td>
@@ -64,7 +69,7 @@
                 <td colspan="4"></td>
                 <td>{{ linje.produkttype.fiskeart }}</td>
                 <td>{{ linje.kommentar }}</td>
-                <td></td>
+                <td colspan="2"></td>
             </tr>
             {% endfor %}
             </tbody>
