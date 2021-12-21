@@ -63,7 +63,16 @@ class Indberetning(models.Model):
         return _('indhandlingssted/Bygd')
 
     def get_fishcategories_string(self):
-        return '; '.join([linje.produkttype.fiskeart.navn_dk for linje in self.linjer.all()])
+        fishtypes = {str(linje.produkttype.fiskeart): None for linje in self.linjer.all()}
+        return '; '.join(fishtypes.keys())
+
+    def get_first_comment_string(self):
+        linje = self.linjer.exclude(kommentar='')
+        if linje:
+            return linje.kommentar
+
+    def get_all_comment_strings(self):
+        return [linje.kommentar for linje in self.linjer.exclude(kommentar='')]
 
     class Meta:
         ordering = ('indberetningstidspunkt',)
@@ -88,6 +97,7 @@ class IndberetningLinje(models.Model):
                                           verbose_name=_('Transporttillæg (kr)'))
     bonus = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True,
                                 verbose_name=_('Bonus og andet vederlag (kr)'))
+    kommentar = models.TextField(default='')
 
     note = models.TextField()
 
