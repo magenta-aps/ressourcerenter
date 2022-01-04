@@ -7,7 +7,7 @@ from indberetning.apps import IndberetningConfig
 app_name = IndberetningConfig.name
 
 urlpatterns = [
-    path('frontpage/', Frontpage.as_view(), name='frontpage'),
+    path('', Frontpage.as_view(), name='frontpage'),
     path('company/select/', CompanySelectView.as_view(), name='company-select'),
     path('company/<uuid:pk>/edit/', VirksomhedUpdateView.as_view(), name='company-edit'),
     path('list/', IndberetningsListView.as_view(), name='indberetning-list'),

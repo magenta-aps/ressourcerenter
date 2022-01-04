@@ -17,3 +17,8 @@ def janej(item):
     if type(item) == bool:
         return _('ja') if item else _('nej')
     return item
+
+
+@register.filter
+def list_sum_attr(itemlist, attribute):
+    return sum([getattr(item, attribute) for item in itemlist])

@@ -135,12 +135,30 @@
         $('#js-product-table select.js-boat-select').select2({
             tags: true,
             placeholder: boat_placeholder,
-            allowClear: true
+            allowClear: true,
+            selectOnClose: true
         });
         $('#js-product-table select.js-place-select').select2({
             tags: true,
             placeholder: place_placeholder,
-            allowClear: true
+            allowClear: true,
+            selectOnClose: true
+        });
+        // Focus text field on open
+        // https://github.com/select2/select2/issues/5993#issuecomment-800927000
+        // Deferred with a setTimeout because 'open' events are fired before 'close' events,
+        // so if you have one select open and click on a second select, the second select would lose focus:
+        //   selectB:open  gives focus to selectB
+        //   selectA:close removes the focus again
+        $('#js-product-table select.js-boat-select').on('select2:open', () => {
+            setTimeout(() => {
+                document.querySelector('.select2-search__field').focus();
+            }, 0);
+        });
+        $('#js-product-table select.js-place-select').on('select2:open', () => {
+            setTimeout(() => {
+                document.querySelector('.select2-search__field').focus();
+            }, 0);
         });
         $('input#js-add-product-button').on('click', function(){
             const form_idx = $('input[name=linje-TOTAL_FORMS]').val();

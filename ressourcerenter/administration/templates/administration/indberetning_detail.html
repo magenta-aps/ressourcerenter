@@ -59,12 +59,15 @@
 </form>
 {% endif %}
 
-<h2>{% translate 'Indberetningslinjer' %}</h2>
+<hr/>
+
 {% with skematype_id=object.skematype.id %}
 <form method="post">
 
     {% csrf_token %}
     {{ form.management_form }}
+    {% for group in form.forms_by_produkttype %}
+    <h3>{{ group.produkttype }}</h3>
     <table class="table">
         <thead>
         <tr>
@@ -74,16 +77,16 @@
             {% if skematype_id == 2 or skematype_id == 3 %}
             <th>{% translate 'Indhandlingssted' %}</th>
             {% endif %}
-            <th>{% translate 'Produkttype' %}</th>
             <th>{% translate 'Salgsvægt (kg)' %}</th>
             <th>{% translate 'Levende vægt/helfisk mængde (kg)' %}</th>
             <th>{% translate 'Salgspris (kr)' %}</th>
+            <th>{% translate 'Afgiftssats' %}</th>
             <th>{% translate 'Beregnet afgift (kr)' %}</th>
             <th>{% translate 'Kommentar' %}</th>
 		</tr>
 		</thead>
 		<tbody>
-        {% for subform in form %}
+        {% for subform in group.forms %}
         {% with linje=subform.instance %}
 		    <tr>
 		        {% if skematype_id == 1 or skematype_id == 2 %}
@@ -92,10 +95,10 @@
 		        {% if skematype_id == 2 or skematype_id == 3 %}
 		        <td>{{ linje.indhandlingssted }}</td>
 		        {% endif %}
-		        <td>{{ linje.produkttype }}</td>
 		        <td>{{ linje.salgsvægt }}</td>
 		        <td>{{ linje.levende_vægt }}</td>
 		        <td>{{ linje.salgspris }}</td>
+                <td>{{ linje.fangstafgift.rate_string }}</td>
 		        <td>{{ linje.afgift }}</td>
 		        <td>
                     {{ subform.uuid }}
@@ -105,7 +108,28 @@
         {% endwith %}
 		{% endfor %}
 		</tbody>
+        <tfoot>
+            <tr>
+                <td {% if skematype_id == 2 %}colspan="2"{% endif %}><strong>{% translate 'I alt' %}</strong></td>
+
+                <td>
+                    {{group.instances|list_sum_attr:'salgsvægt'}}
+                </td>
+                <td>
+                    {{group.instances|list_sum_attr:'levende_vægt'}}
+                </td>
+                <td>
+                    {{group.instances|list_sum_attr:'salgspris'}}
+                </td>
+                <td></td>
+                <td>
+                    {{group.instances|list_sum_attr:'afgift'}}
+                </td>
+                <td></td>
+            </tr>
+        </tfoot>
 	</table>
+    {% endfor %}
     <button type="submit" class="btn btn-primary">
         {% translate 'Gem kommentarer' %}
     </button>

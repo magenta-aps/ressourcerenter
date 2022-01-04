@@ -73,6 +73,7 @@ class ProduktType(NamedModel):
 
     class Meta:
         unique_together = ['fiskeart', 'navn_dk', 'fartoej_groenlandsk']
+        ordering = ['navn_dk']
 
     fiskeart = models.ForeignKey(
         FiskeArt,
@@ -238,6 +239,14 @@ class FangstAfgift(models.Model):
             'rate_procent': str(self.rate_procent),
             'rate_pr_kg': str(self.rate_pr_kg)
         }
+
+    def rate_string(self):
+        lines = []
+        if self.rate_pr_kg:
+            lines.append(_('%s kr/kg') % self.rate_pr_kg)
+        if self.rate_procent:
+            lines.append(_('%s%% af salgspris') % self.rate_procent)
+        return '+'.join(lines)
 
 
 class BeregningsModel(models.Model):

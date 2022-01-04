@@ -43,10 +43,9 @@ class Command(BaseCommand):
             if not indberetninger_exist:
                 for i, indberetnings_type in enumerate(('indhandling', 'pelagisk', 'fartøj')):
                     indhandlingssted, navn = None, None
+                    navn = 'Tidligere fartøj'
                     if indberetnings_type == 'indhandling':
                         indhandlingssted = 'Bygd for indhandling'
-                    else:
-                        navn = 'Tidligere fartøj'
                     indberetning = Indberetning.objects.create(skematype=skematype,
                                                                virksomhed=virksomhed,
                                                                afgiftsperiode=periode,

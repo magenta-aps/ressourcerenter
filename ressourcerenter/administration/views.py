@@ -21,7 +21,7 @@ from indberetning.models import Indberetning
 from administration.forms import IndberetningSearchForm
 
 from indberetning.models import IndberetningLinje
-from administration.forms import IndberetningLinjeKommentarForm
+from administration.forms import IndberetningLinjeKommentarForm, IndberetningLinjeKommentarFormSet
 from administration.forms import IndberetningAfstemForm
 
 
@@ -204,6 +204,7 @@ class IndberetningDetailView(UpdateView):
         Indberetning,
         IndberetningLinje,
         form=IndberetningLinjeKommentarForm,
+        formset=IndberetningLinjeKommentarFormSet,
         extra=0,
         can_delete=False
     )
