@@ -1,11 +1,10 @@
-from collections import OrderedDict
 from django import forms
 from django.utils.functional import cached_property
 from administration.models import Afgiftsperiode, SatsTabelElement, BeregningsModel
 from administration.models import FiskeArt
 from administration.models import SkemaType
 from administration.models import ProduktType
-from administration.forms_mixin import BootstrapForm
+from project.forms_mixin import BootstrapForm
 from project.form_fields import DateInput
 from indberetning.models import Indberetning
 from indberetning.models import IndberetningLinje
@@ -71,7 +70,7 @@ class SatsTabelElementFormSet(forms.BaseInlineFormSet):
 
     @cached_property
     def forms_by_skematype(self):
-        by_skematype = OrderedDict()
+        by_skematype = {}
         for skematype in SkemaType.objects.all():
             by_skematype[skematype.id] = {'forms': [], 'skematype': skematype}
         for form in self.forms:
@@ -136,3 +135,19 @@ class IndberetningLinjeKommentarForm(forms.ModelForm, BootstrapForm):
         widgets = {
             'kommentar': forms.Textarea(attrs={'class': 'single-line'})
         }
+
+
+class IndberetningLinjeKommentarFormSet(forms.BaseInlineFormSet):
+
+    @cached_property
+    def forms_by_produkttype(self):
+        by_produkttype = {}
+        for produkttype in ProduktType.objects.all():
+            by_produkttype[produkttype.uuid] = {'forms': [], 'produkttype': produkttype, 'instances': [], 'afgift_sum': 0}
+        for form in self.forms:
+            form_produkttype = form.instance.produkttype if form.instance else form.data.get('produkttype')
+            if form_produkttype:
+                group = by_produkttype[form_produkttype.uuid]
+                group['forms'].append(form)
+                group['instances'].append(form.instance)
+        return by_produkttype.values()

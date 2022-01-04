@@ -158,6 +158,9 @@ class IndberetningLinje(models.Model):
             raise Exception(f"Kan ikke beregne afgift for Indberetningslinje; beregningsmodel er ikke sat for afgiftsperiode {afgiftsperiode}")
         return beregningsmodel.calculate_for_linje(self)
 
+    class Meta:
+        ordering = ('produkttype__navn_dk',)
+
 
 @receiver(post_save, sender=IndberetningLinje, dispatch_uid='indberetninglinje_calculate_afgift')
 def calculate_afgift(sender, **kwargs):

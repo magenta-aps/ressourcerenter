@@ -58,22 +58,26 @@
     <table class="table text-center table-sm">
         <thead>
         <tr>
-            {% if skematype_id == 1 or skematype_id == 2 %}
+            {% if skematype_id == 1 %}
             <th class="col-2">{% translate 'Fartøjs navn '%}</th>
             {% endif %}
-            {% if skematype_id == 2 or skematype_id == 3 %}
+            {% if skematype_id == 2 %}
+            <th class="col-1">{% translate 'Fartøjs navn '%}</th>
+            <th class="col-1">{% translate 'Indhandlingssted '%}</th>
+            {% endif %}
+            {% if skematype_id == 3 %}
             <th class="col-2">{% translate 'Indhandlingssted '%}</th>
             {% endif %}
-            <th class="col-2">{% translate 'ProduktType'%}</th>
+            <th class="col-2">{% translate 'Produkttype'%}</th>
             <th class="col-1">{% translate 'Salgsvægt (kg)'%}</th>
             <th class="col-1">{% translate 'Levende vægt (kg)'%}</th>
             <th class="col-2">{% translate 'Salgspris (kr)'%}</th>
             {% if skematype_id == 1 %}
-            <th class="col-2">{% translate 'Transporttillæg (kr)'%}</th>
+            <th class="col-1">{% translate 'Transporttillæg (kr)'%}</th>
             {% elif skematype_id == 2 or skematype_id == 3 %}
-            <th class="col-2">{% translate 'Bonus og andet vederlag (kr)'%}</th>
+            <th class="col-1">{% translate 'Bonus og andet vederlag (kr)'%}</th>
             {% endif %}
-            <th>{% translate 'Afgift' %}</th>
+            <th class="col-1">{% translate 'Afgift (kr)' %}</th>
         </tr>
         </thead>
         <tbody>

@@ -6,6 +6,7 @@ from django.utils.translation import gettext as _
 from administration.models import Afgiftsperiode, ProduktType, SkemaType
 from indberetning.models import Bilag, Virksomhed, IndberetningLinje, Navne, Indberetning
 from project.form_fields import LocalizedDecimalField
+from project.forms_mixin import BootstrapForm
 
 
 class VirksomhedsAddressForm(ModelForm):
@@ -52,14 +53,17 @@ class IndberetningsLinjeBeregningForm(ModelForm):
         return cleaned_data
 
 
-class IndberetningsLinjeForm(IndberetningsLinjeBeregningForm):
+class IndberetningsLinjeForm(BootstrapForm, IndberetningsLinjeBeregningForm):
     """
     Basisform til indberetningslinjer
     """
     def __init__(self, *args, **kwargs):
         self.cvr = kwargs.pop('cvr')
         super().__init__(*args, **kwargs)
-        self.fields['fartøj_navn'].widget.choices = [(n.navn, n.navn) for n in Navne.objects.filter(virksomhed__cvr=self.cvr, type='fartøj')]
+        if 'fartøj_navn' in self.fields:
+            self.fields['fartøj_navn'].widget.choices = [(n.navn, n.navn) for n in Navne.objects.filter(virksomhed__cvr=self.cvr, type='fartøj')]
+        if 'indhandlingssted' in self.fields:
+            self.fields['indhandlingssted'].widget.choices = [(n.navn, n.navn) for n in Navne.objects.filter(virksomhed__cvr=self.cvr, type='indhandlings_sted')]
 
     class Meta:
         model = IndberetningLinje
