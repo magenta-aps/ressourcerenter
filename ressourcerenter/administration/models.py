@@ -73,7 +73,7 @@ class ProduktType(NamedModel):
 
     class Meta:
         unique_together = ['fiskeart', 'navn_dk', 'fartoej_groenlandsk']
-        ordering = ['navn_dk']
+        ordering = ('navn_dk',)
 
     fiskeart = models.ForeignKey(
         FiskeArt,

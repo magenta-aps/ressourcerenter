@@ -28,22 +28,31 @@
         <table class="table table-bordered text-center table-sm" id="js-product-table">
             <thead>
             <tr>
-                {% if skema_id == 1 or skema_id == 2 %}
-                <th class="col-2">{% translate 'Fartøjs navn' %}</th>
+                {% if skema_id == 1 %}
+                <th class="col-4">{% translate 'Fartøjs navn' %}</th>
                 {% endif %}
-                {% if skema_id == 2 or skema_id == 3 %}
+                {% if skema_id == 2 %}
+                <th class="col-2">{% translate 'Fartøjs navn' %}</th>
                 <th class="col-2">{% translate 'Indhandlingssted' %}</th>
+                {% endif %}
+                {% if skema_id == 3 %}
+                <th class="col-4">{% translate 'Indhandlingssted' %}</th>
                 {% endif %}
                 <th class="col-2">{% translate 'ProduktType'%}</th>
                 <th class="col-1">{% translate 'Salgsvægt'%}</th>
                 <th class="col-1">{% translate 'Levende vægt'%}</th>
-                <th class="col-2">{% translate 'Salgspris'%}</th>
+                <th class="col-1">{% translate 'Salgspris'%}</th>
                 {% if skema_id == 1 %}
-                <th class="col-2">{% translate 'Transporttillæg'%}</th>
+                <th class="col-1">{% translate 'Transporttillæg'%}</th>
                 {% elif skema_id == 2 or skema_id == 3 %}
-                <th class="col-2">{% translate 'Bonus og andet vederlag'%}</th>
+                <th class="col-1">{% translate 'Bonus og andet vederlag'%}</th>
                 {% endif %}
-                <th class="col-2" id="afgift_column" data-endpoint="{% url 'indberetning:indberetning-calculate' %}">{% translate 'Beregnet afgift (kr)' %}</th>
+                <th class="col-1" id="afgift_column" data-endpoint="{% url 'indberetning:indberetning-calculate' %}">{% translate 'Beregnet afgift (kr)' %}</th>
+
+                {% if request.session.impersonating %}
+                <th class="col-1">{% translate 'Kommentar' %}</th>
+                {% endif %}
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -66,6 +75,10 @@
                 <td>{{subform.bonus}}{% if subform.errors.bonus %}<br/><small>{{subform.errors.bonus}}</small>{% endif %}</td>
                 {% endif %}
                 <td class="autocalc-afgift-dest"></td>
+                {% if request.session.impersonating %}
+                <td>{{ subform.kommentar }}</td>
+                {% endif %}
+                <td><button type="button" class="btn btn-danger btn-sm" data-delete="{{subform.prefix}}">{% translate 'Slet' %}</button></td>
             </tr>
             {% endfor %}
             </tbody>
@@ -104,7 +117,7 @@
 <div style="display: none">
     <table>
         <tbody id="js-initial-row">
-        <tr>
+        <tr class="autocalc-afgift" data-prefix="{{form.empty_form.prefix}}">
             {% if skema_id == 1 or skema_id == 2 %}
             <td>{{form.empty_form.fartøj_navn}}</td>
             {% endif %}
@@ -115,8 +128,18 @@
             <td>{{form.empty_form.salgsvægt}}</td>
             <td>{{form.empty_form.levende_vægt}}</td>
             <td>{{form.empty_form.salgspris}}</td>
-            <td>{% if form.empty_form.transporttillæg %}{{form.empty_form.transporttillæg}}{% elif form.empty_form.bonus %}{{form.empty_form.bonus}}</td>
+            <td>
+                {% if form.empty_form.transporttillæg %}
+                {{form.empty_form.transporttillæg}}
+                {% elif form.empty_form.bonus %}
+                {{form.empty_form.bonus}}
+                {% endif %}
+            </td>
+            <td class="autocalc-afgift-dest"></td>
+            {% if request.session.impersonating %}
+            <td>{{ form.empty_form.kommentar }}</td>
             {% endif %}
+            <td><button type="button" class="btn btn-danger btn-sm" data-delete="{{form.empty_form.prefix}}">{% translate 'Slet' %}</button></td>
         </tr>
         </tbody>
     </table>
@@ -132,6 +155,49 @@
     const boat_placeholder = "{% translate 'Vælg eller opret nyt fartøj' %}";
     const place_placeholder = "{% translate 'Vælg eller opret nyt indhandlingssted' %}";
     $(document).ready(function() {
+        const afgift_endpoint = $('#afgift_column').data('endpoint');
+        const indberetning = JSON.parse($("#indberetning").text());
+        const calculate_afgift = function(){
+            const row = $(this).parents('tr');
+            const prefix = row.data('prefix') + '-';
+            const indberetninglinje = {
+                'afgiftsperiode': indberetning['afgiftsperiode.uuid'],
+                'skematype': indberetning['skematype.id']
+            };
+            row.find('input, select').each(function () {
+                let name = $(this).attr('name');
+                if (name.startsWith(prefix)) {
+                    name = name.replace(prefix, '');
+                }
+                indberetninglinje[name] = $(this).val();
+            });
+            if (indberetninglinje['produkttype'] && (indberetninglinje['levende_vægt'] !== '' || indberetninglinje['salgspris'] !== '')) {
+                $.ajax({
+                    'url': afgift_endpoint,
+                    'method': 'post',
+                    'data': indberetninglinje,
+                    'dataType': 'json',
+                    'headers': {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    'success': function (responseObject) {
+                        const afgift = responseObject['afgift'].replace('.', ',');
+                        row.find('.autocalc-afgift-dest').text(afgift);
+                    }
+                });
+            }
+        };
+        $(".autocalc-afgift input, .autocalc-afgift select").on('change', calculate_afgift);
+
+        const deleteRow = function() {
+            const prefix = $(this).data('delete')
+            $("tr[data-prefix='"+prefix+"']").remove();
+            const form_idx = $('input[name=linje-TOTAL_FORMS]').val();
+            $('input[name=linje-TOTAL_FORMS]').val(parseInt(form_idx)-1);
+        };
+        $('button[data-delete]').on('click', deleteRow);
+
+
         $('#js-product-table select.js-boat-select').select2({
             tags: true,
             placeholder: boat_placeholder,
@@ -144,6 +210,7 @@
             allowClear: true,
             selectOnClose: true
         });
+        $('#js-product-table select.js-boat-select, #js-product-table select.js-place-select').val(null).change();
         // Focus text field on open
         // https://github.com/select2/select2/issues/5993#issuecomment-800927000
         // Deferred with a setTimeout because 'open' events are fired before 'close' events,
@@ -175,42 +242,14 @@
                 placeholder: place_placeholder,
                 allowClear: true
             });
+            newRow.find('select.js-boat-select, select.js-place-select').val(null).change();
+            newRow.find("input, select").on('change', calculate_afgift);
+            newRow.find('button[data-delete]').on('click', deleteRow);
         });
         $('input#js-add-bilag-button').on('click', function(){
             let form_idx = $('input[name=bilag-TOTAL_FORMS]').val();
             $('div#js-bilag-wrapper').append($('div#js-bilag-empty').html().replace(/__prefix__/g, form_idx))
             $('input[name=bilag-TOTAL_FORMS]').val(parseInt(form_idx)+1);
-        });
-
-        const afgift_endpoint = $('#afgift_column').data('endpoint');
-        const indberetning = JSON.parse($("#indberetning").text());
-        $(".autocalc-afgift input, .autocalc-afgift select").on('change', function(){
-            const row = $(this).parents('tr');
-            const prefix = row.data('prefix') + '-';
-            const indberetninglinje = {
-                'afgiftsperiode': indberetning['afgiftsperiode.uuid'],
-                'skematype': indberetning['skematype.id']
-            };
-            row.find('input, select').each(function () {
-                let name = $(this).attr('name');
-                if (name.startsWith(prefix)) {
-                    name = name.replace(prefix, '');
-                }
-                indberetninglinje[name] = $(this).val();
-            });
-            $.ajax({
-                'url': afgift_endpoint,
-                'method': 'post',
-                'data': indberetninglinje,
-                'dataType': 'json',
-                'headers': {
-                    'X-CSRFToken': getCookie('csrftoken'),
-                },
-                'success': function (responseObject) {
-                    const afgift = responseObject['afgift'].replace('.', ',');
-                    row.find('.autocalc-afgift-dest').text(afgift);
-                }
-            });
         });
     });
 </script>

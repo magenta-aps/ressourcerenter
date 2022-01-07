@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.forms import forms, ModelChoiceField, CharField, ModelForm, modelformset_factory, Select
+from django.forms import forms, ModelChoiceField, CharField, ModelForm, modelformset_factory, Select, Textarea
 from django.utils.translation import gettext as _
 
 
@@ -67,13 +67,14 @@ class IndberetningsLinjeForm(BootstrapForm, IndberetningsLinjeBeregningForm):
 
     class Meta:
         model = IndberetningLinje
-        fields = ('produkttype', 'salgsvægt', 'levende_vægt', 'salgspris', 'fartøj_navn', 'indhandlingssted')
+        fields = ('produkttype', 'salgsvægt', 'levende_vægt', 'salgspris', 'fartøj_navn', 'indhandlingssted', 'kommentar')
 
 
 class IndberetningsLinjeSkema1Form(IndberetningsLinjeForm):
     produkttype = ModelChoiceField(queryset=ProduktType.objects.filter(fiskeart__skematype=1).order_by('navn_dk'), required=True)
     transporttillæg = LocalizedDecimalField()
     fartøj_navn = CharField(widget=Select(attrs={'class': "js-boat-select form-control col-2 ", 'autocomplete': "off", 'style': 'width:100%'}))
+    kommentar = CharField(widget=Textarea(attrs={'class': 'single-line form-control'}), required=False)
 
     def clean(self):
         cleaned_data = super().clean()
@@ -86,7 +87,7 @@ class IndberetningsLinjeSkema1Form(IndberetningsLinjeForm):
 
     class Meta:
         model = IndberetningLinje
-        fields = ('produkttype', 'salgsvægt', 'levende_vægt', 'salgspris', 'fartøj_navn', 'transporttillæg')
+        fields = ('produkttype', 'salgsvægt', 'levende_vægt', 'salgspris', 'fartøj_navn', 'transporttillæg', 'kommentar')
 
 
 class IndberetningsLinjeSkema2Form(IndberetningsLinjeForm):
@@ -94,6 +95,7 @@ class IndberetningsLinjeSkema2Form(IndberetningsLinjeForm):
     bonus = LocalizedDecimalField()
     fartøj_navn = CharField(widget=Select(attrs={'class': "js-boat-select form-control col-2 ", 'autocomplete': "off", 'style': 'width:100%'}))
     indhandlingssted = CharField(widget=Select(attrs={'class': "js-place-select form-control col-2 ", 'autocomplete': "off", 'style': 'width:100%'}))
+    kommentar = CharField(widget=Textarea(attrs={'class': 'single-line form-control'}), required=False)
 
     def clean(self):
         cleaned_data = super().clean()
@@ -106,17 +108,18 @@ class IndberetningsLinjeSkema2Form(IndberetningsLinjeForm):
 
     class Meta:
         model = IndberetningLinje
-        fields = ('produkttype', 'salgsvægt', 'levende_vægt', 'salgspris', 'fartøj_navn', 'indhandlingssted', 'bonus')
+        fields = ('produkttype', 'salgsvægt', 'levende_vægt', 'salgspris', 'fartøj_navn', 'indhandlingssted', 'bonus', 'kommentar')
 
 
 class IndberetningsLinjeSkema3Form(IndberetningsLinjeForm):
     produkttype = ModelChoiceField(queryset=ProduktType.objects.filter(fiskeart__skematype=3).order_by('navn_dk'), required=True)
     bonus = LocalizedDecimalField()
     indhandlingssted = CharField(widget=Select(attrs={'class': "js-place-select form-control col-2 ", 'autocomplete': "off", 'style': 'width:100%'}))
+    kommentar = CharField(widget=Textarea(attrs={'class': 'single-line form-control'}), required=False)
 
     class Meta:
         model = IndberetningLinje
-        fields = ('produkttype', 'salgsvægt', 'levende_vægt', 'salgspris', 'indhandlingssted', 'bonus')
+        fields = ('produkttype', 'salgsvægt', 'levende_vægt', 'salgspris', 'indhandlingssted', 'bonus', 'kommentar')
 
 
 BilagsFormSet = modelformset_factory(Bilag, can_order=False, exclude=('uuid', 'indberetning'), extra=1)

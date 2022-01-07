@@ -1,0 +1,66 @@
+{% extends 'administration/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<h1>
+    {% if creating %}
+    {% translate 'Opret Virksomhed' %}
+    {% else %}
+    {% translate 'Redigér Virksomhed' %}
+    {% endif %}
+</h1>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="form-row">
+        <div class="col-2">
+            <label for="{{ form.cvr.id_for_label }}">{% translate 'CVR-nummer:' %}</label>
+        </div>
+        <div class="col-4">
+            {{ form.cvr }}
+        </div>
+        <div class="col-6">
+            {{ form.cvr.errors }}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="col-2">
+            <label for="{{ form.kontakt_person.id_for_label }}">{% translate 'Kontaktperson navn:' %}</label>
+        </div>
+        <div class="col-4">
+            {{ form.kontakt_person }}
+        </div>
+        <div class="col-6">
+            {{ form.kontakt_person.errors }}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="col-2">
+            <label for="{{ form.kontakt_email.id_for_label }}">{% translate 'Kontaktperson email:' %}</label>
+        </div>
+        <div class="col-4">
+            {{ form.kontakt_email }}
+        </div>
+        <div class="col-6">
+            {{ form.kontakt_email.errors }}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="col-2">
+            <label for="{{ form.kontakts_phone_nr.id_for_label }}">{% translate 'Kontaktperson telefon:' %}</label>
+        </div>
+        <div class="col-4">
+            {{ form.kontakts_phone_nr }}
+        </div>
+        <div class="col-6">
+            {{ form.kontakts_phone_nr.errors }}
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">{% translate 'Gem' %}</button>
+</form>
+{% endblock %}

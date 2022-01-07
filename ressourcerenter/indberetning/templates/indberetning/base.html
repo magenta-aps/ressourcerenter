@@ -18,7 +18,15 @@
 <main role="main">
     <nav class="nav d-flex p-2">
         <span class="ml-auto">
-            <span class="p-2">Du er logget ind som Brian pedersen på CVR nr. <strong>12345678</strong></span>
+            <span class="p-2">
+                {% if request.session.impersonating %}
+                Logget ind som <strong>{{request.user.username}}</strong>,
+                på vegne af CVR nr. <strong>{{ request.session.cvr }}</strong>
+                <a class="btn btn-primary btn-sm" href="{% url 'administration:virksomhed-represent-stop' %}">{% translate 'Afslut repræsentation' %}</a>
+                {% else %}
+                Du er logget ind som Brian pedersen på CVR nr. <strong>{{ request.session.cvr }}</strong>
+                {% endif %}
+            </span>
             <a class="btn btn-secondary btn-sm" href="">Tilbage til administration</a>
         </span>
     </nav>

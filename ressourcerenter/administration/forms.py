@@ -8,6 +8,7 @@ from project.forms_mixin import BootstrapForm
 from project.form_fields import DateInput
 from indberetning.models import Indberetning
 from indberetning.models import IndberetningLinje
+from indberetning.models import Virksomhed
 
 
 class AfgiftsperiodeForm(forms.ModelForm, BootstrapForm):
@@ -151,3 +152,15 @@ class IndberetningLinjeKommentarFormSet(forms.BaseInlineFormSet):
                 group['forms'].append(form)
                 group['instances'].append(form.instance)
         return by_produkttype.values()
+
+
+class VirksomhedForm(forms.ModelForm, BootstrapForm):
+    class Meta:
+        model = Virksomhed
+        fields = ('cvr', 'kontakt_person', 'kontakt_email', 'kontakts_phone_nr')
+        widgets = {
+            'cvr': forms.TextInput(),
+            'kontakt_person': forms.TextInput(),
+            'kontakt_email': forms.TextInput(),
+            'kontakts_phone_nr': forms.TextInput(),
+        }
