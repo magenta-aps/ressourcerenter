@@ -89,7 +89,11 @@ class Migration(migrations.Migration):
                 ('beskrivelse', models.TextField(blank=True, default='', verbose_name='Beskrivelse')),
                 ('fartoej_groenlandsk', models.BooleanField(null=True)),
                 ('fiskeart', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='administration.fiskeart')),
+
             ],
+            options={
+                'ordering': ('navn_dk',)
+            },
         ),
         migrations.CreateModel(
             name='HistoricalSatsTabelElement',

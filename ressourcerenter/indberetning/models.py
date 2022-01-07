@@ -1,13 +1,11 @@
 import os
 from uuid import uuid4
-from decimal import Decimal
 
 from django.contrib.auth import get_user_model
 from django.db import models, IntegrityError
 from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from administration.models import SkemaType, Afgiftsperiode, ProduktType
@@ -16,10 +14,13 @@ from indberetning.validators import validate_cvr, validate_cpr
 
 class Virksomhed(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid4)
-    cvr = models.TextField(unique=True, validators=[validate_cvr])
-    kontakt_person = models.TextField(default='', blank=True)
-    kontakt_email = models.EmailField(default='', blank=True)
-    kontakts_phone_nr = models.TextField(default='', blank=True)
+    cvr = models.TextField(unique=True, validators=[validate_cvr], verbose_name=_('CVR-nummer'))
+    kontakt_person = models.TextField(default='', blank=True, verbose_name=_('Kontaktperson navn'))
+    kontakt_email = models.EmailField(default='', blank=True, verbose_name=_('Kontaktperson email'))
+    kontakts_phone_nr = models.TextField(default='', blank=True, verbose_name=_('Kontaktperson telefonnr'))
+
+    def __str__(self):
+        return f"CVR {self.cvr}"
 
 
 navne_typer = (
@@ -82,19 +83,6 @@ class Indberetning(models.Model):
         return self.linjer.aggregate(sum=Sum('fangstafgift__afgift'))['sum']
         # return sum([linje.fangstafgift.afgift for linje in self.linjer.all()])
 
-    @staticmethod
-    def from_json(data):
-        data = {k: v for k, v in data.items() if v is not None}
-        return Indberetning(
-            skematype=SkemaType.objects.get(id=data['skematype.id']),
-            indberetnings_type=data.get('indberetnings_type'),
-            virksomhed=Virksomhed.objects.get(cvr=data['virksomhed.cvr']),
-            indberetters_cpr=data.get('indberetters_cpr'),
-            administrator=get_user_model().objects.get(data['administrator.id']) if 'administrator.id' in data else None,
-            afgiftsperiode=Afgiftsperiode.objects.get(uuid=data['afgiftsperiode.uuid']),
-            indberetningstidspunkt=timezone.now()
-        )
-
     def to_json(self):
         return {
             'skematype.id': self.skematype.id,
@@ -128,28 +116,11 @@ class IndberetningLinje(models.Model):
                                           verbose_name=_('Transporttillæg (kr)'))
     bonus = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True,
                                 verbose_name=_('Bonus og andet vederlag (kr)'))
-    kommentar = models.TextField(default='')
-
-    note = models.TextField()
+    kommentar = models.TextField(default='', blank=True)
 
     @property
     def afgift(self):
         return self.fangstafgift.afgift
-
-    @staticmethod
-    def from_json(data):
-        data = {k: v for k, v in data.items() if v is not None}
-        return IndberetningLinje(
-            navn=data.get('navn'),
-            indberetning=Indberetning.from_json(data['indberetning']),
-            produkttype=ProduktType.objects.get(pk=data['produkttype']),
-            salgsvægt=Decimal(data['salgsvægt']),
-            levende_vægt=Decimal(data['levende_vægt']),
-            salgspris=Decimal(data['salgspris']) if 'salgspris' in data else None,
-            transporttillæg=Decimal(data['transporttillæg']) if 'bonus' in data else None,
-            bonus=Decimal(data['bonus']) if 'bonus' in data else None,
-            note=data.get('note'),
-        )
 
     def calculate_afgift(self):
         afgiftsperiode = self.indberetning.afgiftsperiode

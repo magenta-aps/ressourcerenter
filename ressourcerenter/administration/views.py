@@ -1,4 +1,7 @@
 from django import forms
+from django.conf import settings
+from django.http import HttpResponseNotFound
+from django.views.generic import RedirectView
 from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic import CreateView, UpdateView
 from django.urls import reverse
@@ -23,6 +26,9 @@ from administration.forms import IndberetningSearchForm
 from indberetning.models import IndberetningLinje
 from administration.forms import IndberetningLinjeKommentarForm, IndberetningLinjeKommentarFormSet
 from administration.forms import IndberetningAfstemForm
+
+from indberetning.models import Virksomhed
+from administration.forms import VirksomhedForm
 
 
 class FrontpageView(TemplateView):
@@ -205,7 +211,6 @@ class IndberetningDetailView(UpdateView):
         IndberetningLinje,
         form=IndberetningLinjeKommentarForm,
         formset=IndberetningLinjeKommentarFormSet,
-        extra=0,
         can_delete=False
     )
 
@@ -269,3 +274,56 @@ class IndberetningListView(ExcelMixin, ListView):
             **kwargs,
             'form': self.get_form()
         })
+
+
+class VirksomhedListView(ListView):
+    model = Virksomhed
+    template_name = 'administration/virksomhed_list.html'
+
+
+class VirksomhedCreateView(CreateView):
+    form_class = VirksomhedForm
+    model = Virksomhed
+    template_name = 'administration/virksomhed_form.html'
+
+    def get_success_url(self):
+        return reverse('administration:produkttype-list')
+
+
+class VirksomhedUpdateView(UpdateView):
+    form_class = VirksomhedForm
+    model = Virksomhed
+    template_name = 'administration/virksomhed_form.html'
+
+    def get_success_url(self):
+        return reverse('administration:virksomhed-list')
+
+
+class VirksomhedRepræsentantView(RedirectView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse('indberetning:indberetning-list')
+
+    def get(self, request, *args, **kwargs):
+        try:
+            virksomhed = Virksomhed.objects.get(pk=kwargs['pk'])
+        except Virksomhed.DoesNotExist:
+            return HttpResponseNotFound
+        request.session['cvr'] = virksomhed.cvr
+        request.session['impersonating'] = True
+        return super().get(request, *args, **kwargs)
+
+
+class VirksomhedRepræsentantStopView(RedirectView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        for key in ('cvr', 'impersonating'):
+            try:
+                del self.request.session[key]
+            except KeyError:
+                pass
+
+        if settings.OPENID.get('mock') == 'cvr':
+            self.request.session['cvr'] = '12345678'
+
+        return reverse('administration:virksomhed-list')

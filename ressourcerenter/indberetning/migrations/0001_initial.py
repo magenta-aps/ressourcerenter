@@ -38,10 +38,10 @@ class Migration(migrations.Migration):
             name='Virksomhed',
             fields=[
                 ('uuid', models.UUIDField(default=uuid.uuid4, primary_key=True, serialize=False)),
-                ('cvr', models.TextField(unique=True, validators=[indberetning.validators.validate_cvr])),
-                ('kontakt_person', models.TextField(blank=True, default='')),
-                ('kontakt_email', models.EmailField(blank=True, default='', max_length=254)),
-                ('kontakts_phone_nr', models.TextField(blank=True, default='')),
+                ('cvr', models.TextField(unique=True, validators=[indberetning.validators.validate_cvr], verbose_name='CVR-nummer')),
+                ('kontakt_person', models.TextField(blank=True, default='', verbose_name='Kontaktperson navn')),
+                ('kontakt_email', models.EmailField(blank=True, default='', max_length=254, verbose_name='Kontaktperson email')),
+                ('kontakts_phone_nr', models.TextField(blank=True, default='', verbose_name='Kontaktperson telefonnr')),
             ],
         ),
         migrations.CreateModel(
@@ -55,10 +55,13 @@ class Migration(migrations.Migration):
                 ('salgspris', models.DecimalField(decimal_places=2, max_digits=20, null=True, verbose_name='Salgspris (kr.)')),
                 ('transporttillæg', models.DecimalField(blank=True, decimal_places=2, max_digits=20, null=True, verbose_name='Transporttillæg (kr)')),
                 ('bonus', models.DecimalField(blank=True, decimal_places=2, max_digits=20, null=True, verbose_name='Bonus og andet vederlag (kr)')),
-                ('note', models.TextField()),
                 ('indberetning', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='linjer', to='indberetning.indberetning')),
                 ('produkttype', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='administration.produkttype')),
+                ('kommentar', models.TextField(blank=True, default='')),
             ],
+            options={
+                'ordering': ('produkttype__navn_dk',)
+            },
         ),
         migrations.AddField(
             model_name='indberetning',

@@ -1,0 +1,47 @@
+{% extends 'administration/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% translate 'Virksomheder' %}</h1>
+
+<a class="btn btn-primary" href="{% url 'administration:virksomhed-create' %}">{% translate 'Opret ny' %}</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>{% translate 'CVR-nummer' %}</th>
+            <th>{% translate 'Kontaktperson' %}</th>
+            <th>{% translate 'Email' %}</th>
+            <th>{% translate 'Telefonnummer' %}</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for object in object_list %}
+        <tr {% if request.session.impersonating and request.session.cvr == object.cvr %}class="table-primary"{% endif %}>
+            <td>
+                {{ object.cvr }}
+            </td>
+            <td>
+                {{ object.kontakt_person }}
+            </td>
+            <td>
+                {{ object.kontakt_email }}
+            </td>
+            <td>
+                {{ object.kontakts_phone_nr }}
+            </td>
+            <td>
+                <a class="btn btn-primary" href="{% url 'administration:virksomhed-update' pk=object.pk %}">{% translate 'Redigér' %}</a>
+                {% if request.session.impersonating and request.session.cvr == object.cvr %}
+                <a class="btn btn-primary" href="{% url 'administration:virksomhed-represent-stop' %}">{% translate 'Afslut repræsentation' %}</a>
+                {% else %}
+                <a class="btn btn-primary" href="{% url 'administration:virksomhed-represent' pk=object.pk %}">{% translate 'Repræsentér' %}</a>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
