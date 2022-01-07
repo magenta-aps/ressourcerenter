@@ -14,13 +14,21 @@
     {% endif %}
 {% endblock %}
 {% block content %}
+
+<div class="row justify-content-center">
+    <form class="form-inline" method="POST" action="{% url 'indberetning:type-select'%}">
+        {% csrf_token %}
+        <input class="btn btn-sm btn-success" type="submit" value="{% translate 'Opret ny indberetning'%}">
+    </form>
+</div>
+
 <h1>Tidligere indberetninger</h1>
 
 {% for indberetning in object_list %}
 {% with skematype_id=indberetning.skematype.id %}
 
 
-<div class="table-bordered p-3">
+<div class="table-bordered p-3 mb-3">
 
 <div class="table-responsive col-12">
     <table class="table table-sm">
@@ -53,8 +61,11 @@
         </tbody>
     </table>
 </div>
+<button class="btn btn-link" data-toggle="collapse" data-target="#linjer-{{indberetning.pk}}" aria-expanded="true" aria-controls="linjer-{{indberetning.pk}}">
+    {% translate 'Indberetningslinjer' %}
+</button>
 
-<div class="table-responsive col-12">
+<div id="linjer-{{indberetning.pk}}" class="table-responsive col-12 collapse">
     <table class="table text-center table-sm">
         <thead>
         <tr>
@@ -107,11 +118,4 @@
 </div>
 {% endwith %}
 {% endfor %}
-
-<div class="row justify-content-center">
-    <form class="form-inline" method="POST" action="{% url 'indberetning:type-select'%}">
-        {% csrf_token %}
-        <input class="btn btn-sm btn-success" type="submit" value="{% translate 'Opret ny indberetning'%}">
-    </form>
-</div>
 {% endblock %}
