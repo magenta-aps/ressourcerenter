@@ -105,3 +105,36 @@ Release aalisakkat dev image:
       --dest-creds=${RELEASE_REGISTRY_USER}:${RELEASE_REGISTRY_PASSWORD}
       "docker://${IMAGE_SHA}"
       "docker://${IMAGE_DEV}"
+
+
+# Deploy stage
+##############
+
+.deploy-default: &deploy-default
+  stage: deploy
+  image: magentalabs/pepper:latest
+  services: []
+  dependencies: []
+  tags:
+    - deploy
+
+
+Deploy test:
+  # Automatic deployment of branch master to test
+  <<: *deploy-default
+  needs: ["Release aalisakkat dev image"]
+  only:
+    refs:
+      - master
+  when: manual
+  variables:
+    DEPLOYMENT_NAMESPACE: ressourcerenter.service-test
+    SALTAPI_URL: https://ctrldev1.magenta-aps.dk/api/
+    SALTAPI_EAUTH: file
+    GIT_STRATEGY: none
+  script:
+    - echo Attempting to call deployment
+    - pepper --client runner --fail-any state.orchestrate ${DEPLOYMENT_NAMESPACE}
+  environment:
+    name: test
+    url: ""
