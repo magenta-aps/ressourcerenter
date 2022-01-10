@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.forms import forms, ModelChoiceField, CharField, ModelForm, modelformset_factory, Select, Textarea
+from django.forms import ModelChoiceField, CharField, ModelForm, modelformset_factory, Select, Textarea
 from django.utils.translation import gettext as _
 
 
@@ -25,7 +25,7 @@ class VirksomhedsAddressForm(ModelForm):
                   'kontakts_phone_nr')
 
 
-class IndberetningsTypeSelectForm(forms.Form):
+class IndberetningsTypeSelectForm(BootstrapForm):
     skema = ModelChoiceField(queryset=SkemaType.objects.all(), required=True)
     periode = ModelChoiceField(queryset=Afgiftsperiode.objects.filter(vis_i_indberetning=True),
                                required=True, empty_label=None)

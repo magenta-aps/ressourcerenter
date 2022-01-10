@@ -65,19 +65,19 @@ class Command(BaseCommand):
         perioder = []
         for year in (2021, 2022, 2023):
             try:
-                perioder.append(Afgiftsperiode.objects.create(navn=f"1. kvartal {year}", dato_fra=date(year, 1, 1), dato_til=date(year, 3, 31), vis_i_indberetning=True))
+                perioder.append(Afgiftsperiode.objects.create(navn_dk=f"1. kvartal {year}", navn_gl=f"1. kvartal {year}", dato_fra=date(year, 1, 1), dato_til=date(year, 3, 31), vis_i_indberetning=True))
             except IntegrityError:
                 pass
             try:
-                perioder.append(Afgiftsperiode.objects.create(navn=f"2. kvartal {year}", dato_fra=date(year, 4, 1), dato_til=date(year, 6, 30), vis_i_indberetning=True))
+                perioder.append(Afgiftsperiode.objects.create(navn_dk=f"2. kvartal {year}", navn_gl=f"2. kvartal {year}", dato_fra=date(year, 4, 1), dato_til=date(year, 6, 30), vis_i_indberetning=True))
             except IntegrityError:
                 pass
             try:
-                perioder.append(Afgiftsperiode.objects.create(navn=f"3. kvartal {year}", dato_fra=date(year, 7, 1), dato_til=date(year, 9, 30), vis_i_indberetning=True))
+                perioder.append(Afgiftsperiode.objects.create(navn_dk=f"3. kvartal {year}", navn_gl=f"3. kvartal {year}", dato_fra=date(year, 7, 1), dato_til=date(year, 9, 30), vis_i_indberetning=True))
             except IntegrityError:
                 pass
             try:
-                perioder.append(Afgiftsperiode.objects.create(navn=f"4. kvartal {year}", dato_fra=date(year, 10, 1), dato_til=date(year, 12, 31), vis_i_indberetning=True))
+                perioder.append(Afgiftsperiode.objects.create(navn_dk=f"4. kvartal {year}", navn_gl=f"4. kvartal {year}", dato_fra=date(year, 10, 1), dato_til=date(year, 12, 31), vis_i_indberetning=True))
             except IntegrityError:
                 pass
 

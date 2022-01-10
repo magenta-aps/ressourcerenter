@@ -20,6 +20,9 @@
         <div class="col-4">
             {{ form.navn_dk }}
         </div>
+        <div class="col-6">
+            {{ form.navn_dk.errors }}
+        </div>
     </div>
 
     <div class="form-row">
@@ -29,6 +32,9 @@
         <div class="col-4">
             {{ form.navn_gl }}
         </div>
+        <div class="col-6">
+            {{ form.navn_gl.errors }}
+        </div>
     </div>
 
     <div class="form-row">
@@ -37,6 +43,9 @@
         </div>
         <div class="col-4">
             {{ form.beskrivelse }}
+        </div>
+        <div class="col-6">
+            {{ form.beskrivelse.errors }}
         </div>
     </div>
 

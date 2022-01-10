@@ -24,10 +24,9 @@
                 på vegne af CVR nr. <strong>{{ request.session.cvr }}</strong>
                 <a class="btn btn-primary btn-sm" href="{% url 'administration:virksomhed-represent-stop' %}">{% translate 'Afslut repræsentation' %}</a>
                 {% else %}
-                Du er logget ind som Brian pedersen på CVR nr. <strong>{{ request.session.cvr }}</strong>
+                Du er logget ind som Brian Pedersen på CVR nr. <strong>{{ request.session.cvr }}</strong>
                 {% endif %}
             </span>
-            <a class="btn btn-secondary btn-sm" href="">Tilbage til administration</a>
         </span>
     </nav>
     <hr class="p-0 m-0">

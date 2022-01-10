@@ -16,9 +16,12 @@ class Command(BaseCommand):
             print('DEBUG needs to be True (dev-environment)')
             return
 
-        afgiftsperiode1, _ = Afgiftsperiode.objects.get_or_create(navn='4. kvartal 2021', vis_i_indberetning=True, dato_fra=date(2021, 10, 1), dato_til=date(2021, 12, 31))
-        afgiftsperiode2, _ = Afgiftsperiode.objects.get_or_create(navn='3. kvartal 2021', vis_i_indberetning=True, dato_fra=date(2021, 7, 1), dato_til=date(2021, 9, 30))
-        skematype, _ = SkemaType.objects.get_or_create(id=2, defaults={'navn_dk': 'Indhandlinger - Indberetninger fra fabrikkerne / Havgående fiskeri og kystnært fiskeri efter rejer'})
+        afgiftsperiode1, _ = Afgiftsperiode.objects.get_or_create(navn_dk='4. kvartal 2021', navn_gl='4. kvartal 2021', vis_i_indberetning=True, dato_fra=date(2021, 10, 1), dato_til=date(2021, 12, 31))
+        afgiftsperiode2, _ = Afgiftsperiode.objects.get_or_create(navn_dk='3. kvartal 2021', navn_gl='3. kvartal 2021', vis_i_indberetning=True, dato_fra=date(2021, 7, 1), dato_til=date(2021, 9, 30))
+        skematype, _ = SkemaType.objects.get_or_create(id=2, defaults={
+            'navn_dk': 'Indhandlinger - Indberetninger fra fabrikkerne / Havgående fiskeri og kystnært fiskeri efter rejer',
+            'navn_gl': 'Indhandlinger - Indberetninger fra fabrikkerne / Havgående fiskeri og kystnært fiskeri efter rejer'
+        })
         fiskeart, _ = FiskeArt.objects.get_or_create(navn_dk='Torsk', skematype=skematype)
         produkttype, _ = ProduktType.objects.get_or_create(fiskeart=fiskeart)
 

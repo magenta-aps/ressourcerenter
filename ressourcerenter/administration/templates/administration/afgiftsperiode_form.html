@@ -14,10 +14,24 @@
     {{form.errors}}
     <div class="form-row">
         <div class="col-2">
-            <label for="{{ form.navn.id_for_label }}">{% translate 'Periodenavn:' %}</label>
+            <label for="{{ form.navn_dk.id_for_label }}">{% translate 'Dansk navn:' %}</label>
         </div>
         <div class="col-4">
-            {{ form.navn }}
+            {{ form.navn_dk }}
+        </div>
+        <div class="col-6">
+            {{ form.navn_dk.errors }}
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="col-2">
+            <label for="{{ form.navn_gl.id_for_label }}">{% translate 'Grønlandsk navn:' %}</label>
+        </div>
+        <div class="col-4">
+            {{ form.navn_gl }}
+        </div>
+        <div class="col-6">
+            {{ form.navn_gl.errors }}
         </div>
     </div>
     <div class="form-row">
@@ -27,6 +41,9 @@
         <div class="col-4">
             {{ form.dato_fra }}
         </div>
+        <div class="col-6">
+            {{ form.dato_fra.errors }}
+        </div>
     </div>
     <div class="form-row">
         <div class="col-2">
@@ -35,6 +52,9 @@
         <div class="col-4">
             {{ form.dato_til }}
         </div>
+        <div class="col-6">
+            {{ form.dato_til.errors }}
+        </div>
     </div>
     <div class="form-row">
         <div class="col-2">
@@ -42,6 +62,9 @@
         </div>
         <div class="col-4">
             {{ form.beregningsmodel }}
+        </div>
+        <div class="col-6">
+            {{ form.beregningsmodel.errors }}
         </div>
     </div>
 
