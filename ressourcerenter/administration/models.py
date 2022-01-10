@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from django.db import models
 from django.db.models.signals import post_save
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext as _, get_language
 
 from simple_history.models import HistoricalRecords
 
@@ -32,7 +32,10 @@ class NamedModel(models.Model):
     )
 
     def __str__(self):
-        return f"{self.navn}"
+        if get_language() == 'kl-GL':
+            return self.navn_gl
+        else:
+            return self.navn_dk
 
 
 class SkemaType(models.Model):
@@ -65,9 +68,6 @@ class FiskeArt(NamedModel):
     skematype = models.ManyToManyField(SkemaType)
     history = HistoricalRecords()
 
-    def __str__(self):
-        return self.navn_dk
-
 
 class ProduktType(NamedModel):
 
@@ -85,11 +85,8 @@ class ProduktType(NamedModel):
         null=True
     )
 
-    def __str__(self):
-        return f"{self.navn_dk}"
 
-
-class Afgiftsperiode(models.Model):
+class Afgiftsperiode(NamedModel):
 
     class Meta:
         ordering = ['dato_fra', 'dato_til']
@@ -97,10 +94,6 @@ class Afgiftsperiode(models.Model):
     uuid = models.UUIDField(
         primary_key=True,
         default=uuid4
-    )
-
-    navn = models.TextField(
-        default=''
     )
 
     vis_i_indberetning = models.BooleanField(
@@ -125,9 +118,6 @@ class Afgiftsperiode(models.Model):
             return self.entries.get(ressource__fiskeart=fiskeart, ressource__fangsttype=fangsttype)
         except SatsTabelElement.DoesNotExist:
             return None
-
-    def __str__(self):
-        return self.navn
 
 
 class SatsTabelElement(models.Model):

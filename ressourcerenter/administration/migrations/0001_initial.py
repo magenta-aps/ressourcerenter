@@ -20,7 +20,9 @@ class Migration(migrations.Migration):
             name='Afgiftsperiode',
             fields=[
                 ('uuid', models.UUIDField(default=uuid.uuid4, primary_key=True, serialize=False)),
-                ('navn', models.TextField(default='')),
+                ('navn_dk', models.TextField(max_length=2048, verbose_name='Dansk navn')),
+                ('navn_gl', models.TextField(max_length=2048, verbose_name='Grønlandsk navn')),
+                ('beskrivelse', models.TextField(blank=True, default='', verbose_name='Beskrivelse')),
                 ('vis_i_indberetning', models.BooleanField(default=False)),
                 ('dato_fra', models.DateField()),
                 ('dato_til', models.DateField()),
@@ -143,7 +145,9 @@ class Migration(migrations.Migration):
             name='HistoricalAfgiftsperiode',
             fields=[
                 ('uuid', models.UUIDField(db_index=True, default=uuid.uuid4)),
-                ('navn', models.TextField(default='')),
+                ('navn_dk', models.TextField(max_length=2048, verbose_name='Dansk navn')),
+                ('navn_gl', models.TextField(max_length=2048, verbose_name='Grønlandsk navn')),
+                ('beskrivelse', models.TextField(blank=True, default='', verbose_name='Beskrivelse')),
                 ('vis_i_indberetning', models.BooleanField(default=False)),
                 ('dato_fra', models.DateField()),
                 ('dato_til', models.DateField()),

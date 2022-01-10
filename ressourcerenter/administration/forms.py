@@ -15,10 +15,11 @@ class AfgiftsperiodeForm(forms.ModelForm, BootstrapForm):
 
     class Meta:
         model = Afgiftsperiode
-        fields = ('dato_fra', 'dato_til', 'navn', 'beregningsmodel')
+        fields = ('dato_fra', 'dato_til', 'navn_dk', 'navn_gl', 'beregningsmodel')
 
         widgets = {
-            'navn': forms.widgets.TextInput(),
+            'navn_dk': forms.widgets.TextInput(),
+            'navn_gl': forms.widgets.TextInput(),
         }
 
     dato_fra = forms.DateField(

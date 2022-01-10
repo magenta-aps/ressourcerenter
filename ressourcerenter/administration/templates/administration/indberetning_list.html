@@ -50,7 +50,7 @@
             {% with kommentarer=object.get_all_comment_strings %}
             <tbody class="collapser">
             <tr data-toggle="collapse" role="button" aria-expanded="false" data-target="#collapse-{{object.uuid}}">
-                <td>{{ object.afgiftsperiode.navn }}</td>
+                <td>{{ object.afgiftsperiode }}</td>
                 <td>{{ object.virksomhed.cvr }}</td>
                 <td>{{ object.indberetters_cpr }}</td>
                 <td>{{ object.indberetningstidspunkt }}</td>

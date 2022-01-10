@@ -20,6 +20,9 @@
         <div class="col-4">
             {{ form.navn_dk }}
         </div>
+        <div class="col-6">
+            {{ form.navn_dk.errors }}
+        </div>
     </div>
 
     <div class="form-row">
@@ -29,6 +32,21 @@
         <div class="col-4">
             {{ form.navn_gl }}
         </div>
+        <div class="col-6">
+            {{ form.navn_gl.errors }}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="col-2">
+            <label for="{{ form.fiskeart.id_for_label }}">{% translate 'Fiskeart:' %}</label>
+        </div>
+        <div class="col-4">
+            {{ form.fiskeart }}
+        </div>
+        <div class="col-6">
+            {{ form.fiskeart.errors }}
+        </div>
     </div>
 
     <div class="form-row">
@@ -37,6 +55,9 @@
         </div>
         <div class="col-4">
             {{ form.beskrivelse }}
+        </div>
+        <div class="col-6">
+            {{ form.beskrivelse.errors }}
         </div>
     </div>
 
