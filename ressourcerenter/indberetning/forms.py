@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.forms import ModelChoiceField, CharField, ModelForm, modelformset_factory, Select, Textarea
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
 
@@ -21,14 +22,22 @@ class VirksomhedsAddressForm(ModelForm):
 
     class Meta:
         model = Virksomhed
-        fields = ('kontakt_person', 'kontakt_email',
-                  'kontakts_phone_nr')
+        fields = ('kontakt_person', 'kontakt_email', 'kontakts_phone_nr')
 
 
 class IndberetningsTypeSelectForm(BootstrapForm):
     skema = ModelChoiceField(queryset=SkemaType.objects.all(), required=True)
     periode = ModelChoiceField(queryset=Afgiftsperiode.objects.filter(vis_i_indberetning=True),
                                required=True, empty_label=None)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Default to the period for todays date
+        today = timezone.now().date()
+        current_periode = Afgiftsperiode.objects.filter(dato_fra__lte=today, dato_til__gt=today).first()
+        if current_periode:
+            self.fields['periode'].initial = current_periode.uuid
 
 
 class IndberetningsLinjeBeregningForm(ModelForm):
@@ -71,8 +80,8 @@ class IndberetningsLinjeForm(BootstrapForm, IndberetningsLinjeBeregningForm):
 
 
 class IndberetningsLinjeSkema1Form(IndberetningsLinjeForm):
-    produkttype = ModelChoiceField(queryset=ProduktType.objects.filter(fiskeart__skematype=1).order_by('navn_dk'), required=True)
-    transporttillæg = LocalizedDecimalField()
+    produkttype = ModelChoiceField(queryset=ProduktType.objects.filter(fiskeart__skematype=1).order_by('fiskeart__pelagisk', 'navn_dk'), required=True)
+    transporttillæg = LocalizedDecimalField(initial=0)
     fartøj_navn = CharField(widget=Select(attrs={'class': "js-boat-select form-control col-2 ", 'autocomplete': "off", 'style': 'width:100%'}))
     kommentar = CharField(widget=Textarea(attrs={'class': 'single-line form-control'}), required=False)
 
@@ -80,7 +89,7 @@ class IndberetningsLinjeSkema1Form(IndberetningsLinjeForm):
         cleaned_data = super().clean()
         produkttype = cleaned_data.get('produkttype')
         if produkttype and not cleaned_data['produkttype'].fiskeart.pelagisk:
-            for field in ('salgspris', 'transporttillæg'):
+            for field in ('salgspris',):
                 if cleaned_data.get(field) is None:
                     raise ValidationError({field: self.fields[field].error_messages['required']}, code='required')
         return cleaned_data
@@ -91,8 +100,8 @@ class IndberetningsLinjeSkema1Form(IndberetningsLinjeForm):
 
 
 class IndberetningsLinjeSkema2Form(IndberetningsLinjeForm):
-    produkttype = ModelChoiceField(queryset=ProduktType.objects.filter(fiskeart__skematype=2).order_by('navn_dk'), required=True)
-    bonus = LocalizedDecimalField()
+    produkttype = ModelChoiceField(queryset=ProduktType.objects.filter(fiskeart__skematype=2).order_by('fiskeart__pelagisk', 'navn_dk'), required=True)
+    bonus = LocalizedDecimalField(initial=0)
     fartøj_navn = CharField(widget=Select(attrs={'class': "js-boat-select form-control col-2 ", 'autocomplete': "off", 'style': 'width:100%'}))
     indhandlingssted = CharField(widget=Select(attrs={'class': "js-place-select form-control col-2 ", 'autocomplete': "off", 'style': 'width:100%'}))
     kommentar = CharField(widget=Textarea(attrs={'class': 'single-line form-control'}), required=False)
@@ -112,8 +121,8 @@ class IndberetningsLinjeSkema2Form(IndberetningsLinjeForm):
 
 
 class IndberetningsLinjeSkema3Form(IndberetningsLinjeForm):
-    produkttype = ModelChoiceField(queryset=ProduktType.objects.filter(fiskeart__skematype=3).order_by('navn_dk'), required=True)
-    bonus = LocalizedDecimalField()
+    produkttype = ModelChoiceField(queryset=ProduktType.objects.filter(fiskeart__skematype=3).order_by('fiskeart__pelagisk', 'navn_dk'), required=True)
+    bonus = LocalizedDecimalField(initial=0)
     indhandlingssted = CharField(widget=Select(attrs={'class': "js-place-select form-control col-2 ", 'autocomplete': "off", 'style': 'width:100%'}))
     kommentar = CharField(widget=Textarea(attrs={'class': 'single-line form-control'}), required=False)
 
@@ -129,3 +138,11 @@ class IndberetningBeregningForm(ModelForm):
     class Meta:
         model = Indberetning
         fields = ('afgiftsperiode', 'skematype', )
+
+
+class IndberetningSearchForm(BootstrapForm):
+    afgiftsperiode = ModelChoiceField(
+        Afgiftsperiode.objects,
+        required=False,
+        empty_label=_('Alle perioder')
+    )

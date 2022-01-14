@@ -89,7 +89,7 @@ class ProduktType(NamedModel):
 class Afgiftsperiode(NamedModel):
 
     class Meta:
-        ordering = ['dato_fra', 'dato_til']
+        ordering = ['-dato_fra', '-dato_til']
 
     uuid = models.UUIDField(
         primary_key=True,
