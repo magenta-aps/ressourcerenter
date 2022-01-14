@@ -1,5 +1,6 @@
 from django import forms
 from django.conf import settings
+from django.db.models.query import prefetch_related_objects
 from django.http import HttpResponseNotFound
 from django.views.generic import RedirectView
 from django.views.generic import TemplateView, ListView, DetailView
@@ -89,12 +90,13 @@ class AfgiftsperiodeSatsTabelUpdateView(UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
+        qs = self.object.entries.order_by(
+            'skematype__navn_dk',
+            'fiskeart__navn_dk',
+            'fartoej_groenlandsk'
+        ).select_related('fiskeart')
         kwargs.update({
-            'queryset': self.object.entries.order_by(
-                'skematype__navn_dk',
-                'fiskeart__navn_dk',
-                'fartoej_groenlandsk'
-            ),
+            'queryset': qs,
             'instance': self.object,
         })
         return kwargs
@@ -211,7 +213,8 @@ class IndberetningDetailView(UpdateView):
         IndberetningLinje,
         form=IndberetningLinjeKommentarForm,
         formset=IndberetningLinjeKommentarFormSet,
-        can_delete=False
+        can_delete=False,
+        extra=0,
     )
 
     def get_success_url(self):
@@ -270,6 +273,8 @@ class IndberetningListView(ExcelMixin, ListView):
         return qs
 
     def get_context_data(self, **kwargs):
+        for related in ('afgiftsperiode', 'virksomhed', 'linjer__produkttype__fiskeart'):
+            prefetch_related_objects(self.object_list, related)
         return super().get_context_data(**{
             **kwargs,
             'form': self.get_form()

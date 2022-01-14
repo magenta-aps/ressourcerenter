@@ -74,11 +74,10 @@ class AfgiftTestCase(TransactionTestCase):
 
         self.virksomhed = Virksomhed.objects.create(cvr=1234)
 
-    def _calculate(self, indberetnings_type='havgående', skematype_id=1, fiskeart=None, salgspris=0, levende_vaegt=0, salgsvaegt=0, fartoej_groenlandsk=None):
+    def _calculate(self, skematype_id=1, fiskeart=None, salgspris=0, levende_vaegt=0, salgsvaegt=0, fartoej_groenlandsk=None):
         indberetning = Indberetning.objects.create(
             afgiftsperiode=self.periode,
             virksomhed=self.virksomhed,
-            indberetnings_type=indberetnings_type,
             skematype=self.skematyper[skematype_id]
         )
         IndberetningLinje.objects.create(
@@ -150,7 +149,7 @@ class AfgiftTestCase(TransactionTestCase):
         result = self._calculate(fiskeart='Torsk', salgspris=500, levende_vaegt=100, salgsvaegt=100)
         self.assertEquals(Decimal(25), result.afgift)
 
-        result = self._calculate(fiskeart='Hellefisk', indberetnings_type='indhandling', salgspris=300, levende_vaegt=150, salgsvaegt=150)
+        result = self._calculate(fiskeart='Hellefisk', salgspris=300, levende_vaegt=150, salgsvaegt=150)
         self.assertEquals(Decimal(15), result.afgift)
 
     def test_transferred_calculation_3(self):
@@ -185,32 +184,32 @@ class AfgiftTestCase(TransactionTestCase):
         Guldlaks    0,15 | 0,70
         kr.pr.kg levende vægt
         '''
-        result = self._calculate(fiskeart='Sild', indberetnings_type='indhandling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, fartoej_groenlandsk=True)
+        result = self._calculate(fiskeart='Sild', salgspris=1000, levende_vaegt=100, salgsvaegt=100, fartoej_groenlandsk=True)
         self.assertEquals(result.afgift, Decimal(25))
 
-        result = self._calculate(fiskeart='Sild', indberetnings_type='indhandling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, fartoej_groenlandsk=False)
+        result = self._calculate(fiskeart='Sild', salgspris=1000, levende_vaegt=100, salgsvaegt=100, fartoej_groenlandsk=False)
         self.assertEquals(result.afgift, Decimal(80))
 
-        result = self._calculate(fiskeart='Lodde', indberetnings_type='indhandling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, fartoej_groenlandsk=True)
+        result = self._calculate(fiskeart='Lodde', salgspris=1000, levende_vaegt=100, salgsvaegt=100, fartoej_groenlandsk=True)
         self.assertEquals(result.afgift, Decimal(15))
 
-        result = self._calculate(fiskeart='Lodde', indberetnings_type='indhandling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, fartoej_groenlandsk=False)
+        result = self._calculate(fiskeart='Lodde', salgspris=1000, levende_vaegt=100, salgsvaegt=100, fartoej_groenlandsk=False)
         self.assertEquals(result.afgift, Decimal(70))
 
-        result = self._calculate(fiskeart='Makrel', indberetnings_type='indhandling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, fartoej_groenlandsk=True)
+        result = self._calculate(fiskeart='Makrel', salgspris=1000, levende_vaegt=100, salgsvaegt=100, fartoej_groenlandsk=True)
         self.assertEquals(result.afgift, Decimal(40))
 
-        result = self._calculate(fiskeart='Makrel', indberetnings_type='indhandling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, fartoej_groenlandsk=False)
+        result = self._calculate(fiskeart='Makrel', salgspris=1000, levende_vaegt=100, salgsvaegt=100, fartoej_groenlandsk=False)
         self.assertEquals(result.afgift, Decimal(100))
 
-        result = self._calculate(fiskeart='Blåhvilling', indberetnings_type='indhandling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, fartoej_groenlandsk=True)
+        result = self._calculate(fiskeart='Blåhvilling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, fartoej_groenlandsk=True)
         self.assertEquals(result.afgift, Decimal(15))
 
-        result = self._calculate(fiskeart='Blåhvilling', indberetnings_type='indhandling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, fartoej_groenlandsk=False)
+        result = self._calculate(fiskeart='Blåhvilling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, fartoej_groenlandsk=False)
         self.assertEquals(result.afgift, Decimal(70))
 
-        result = self._calculate(fiskeart='Guldlaks', indberetnings_type='indhandling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, fartoej_groenlandsk=True)
+        result = self._calculate(fiskeart='Guldlaks', salgspris=1000, levende_vaegt=100, salgsvaegt=100, fartoej_groenlandsk=True)
         self.assertEquals(result.afgift, Decimal(15))
 
-        result = self._calculate(fiskeart='Guldlaks', indberetnings_type='indhandling', salgspris=1000, levende_vaegt=100, salgsvaegt=100, fartoej_groenlandsk=False)
+        result = self._calculate(fiskeart='Guldlaks', salgspris=1000, levende_vaegt=100, salgsvaegt=100, fartoej_groenlandsk=False)
         self.assertEquals(result.afgift, Decimal(70))

@@ -3,6 +3,7 @@ import mimetypes
 from django.conf import settings
 from django.contrib import messages
 from django.db import IntegrityError
+from django.db.models.query import prefetch_related_objects
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -16,7 +17,7 @@ from django.forms import inlineformset_factory
 from administration.models import Afgiftsperiode, SkemaType
 from indberetning.forms import IndberetningsTypeSelectForm, VirksomhedsAddressForm, BilagsFormSet
 from indberetning.forms import IndberetningsLinjeSkema1Form, IndberetningsLinjeSkema2Form, IndberetningsLinjeSkema3Form
-from indberetning.forms import IndberetningBeregningForm, IndberetningsLinjeBeregningForm
+from indberetning.forms import IndberetningBeregningForm, IndberetningsLinjeBeregningForm, IndberetningSearchForm
 from indberetning.models import Indberetning, Virksomhed, IndberetningLinje, Bilag
 from project.dafo import DatafordelerClient
 import json
@@ -69,8 +70,33 @@ class CompanySelectView(TemplateView):
 
 
 class IndberetningsListView(ListView):
+
+    form_class = IndberetningSearchForm
+
     def get_queryset(self):
-        return Indberetning.objects.filter(virksomhed__cvr=self.request.session['cvr'])
+        qs = Indberetning.objects.filter(virksomhed__cvr=self.request.session['cvr']).order_by('-indberetningstidspunkt')
+        form = self.get_form()
+        if form.is_valid():
+            data = form.cleaned_data
+            if data['afgiftsperiode']:
+                qs = qs.filter(afgiftsperiode=data['afgiftsperiode'])
+        return qs
+
+    def get_form(self):
+        return self.form_class(**self.get_form_kwargs())
+
+    def get_form_kwargs(self):
+        return {
+            'data': self.request.GET,
+        }
+
+    def get_context_data(self, **kwargs):
+        for related in ('afgiftsperiode', 'virksomhed', 'linjer__produkttype__fiskeart', 'linjer__fangstafgift', 'skematype', 'bilag'):
+            prefetch_related_objects(self.object_list, related)
+        return super().get_context_data(**{
+            **kwargs,
+            'form': self.get_form()
+        })
 
 
 class SelectIndberetningsType(FormView):
@@ -164,7 +190,6 @@ class CreateIndberetningCreateView(IndberetningsLinjebilagFormsetMixin, FormView
     Creat view for kystnært (fartøj)/pelagisk (havgående) fiskeri og måske flere.
     """
     template_name = 'indberetning/indberetning_form.html'
-    indberetnings_type = 'fartøj'
 
     @cached_property
     def afgiftsperiode(self):
@@ -179,7 +204,6 @@ class CreateIndberetningCreateView(IndberetningsLinjebilagFormsetMixin, FormView
         :return: an unsaved instance of indberetning with th virksomhed and afgiftsperiode etc set
         """
         instance = Indberetning(
-            indberetnings_type=self.indberetnings_type,
             virksomhed=Virksomhed.objects.get(cvr=self.request.session['cvr']),
             afgiftsperiode=self.afgiftsperiode,
             skematype=self.skema

@@ -15,23 +15,32 @@
 {% endblock %}
 {% block content %}
 
-<div class="row justify-content-center">
-    <form class="form-inline" method="POST" action="{% url 'indberetning:type-select'%}">
-        {% csrf_token %}
-        <input class="btn btn-sm btn-success" type="submit" value="{% translate 'Opret ny indberetning'%}">
-    </form>
-</div>
+<h1>{% translate 'Indberetninger' %}</h1>
 
-<h1>Tidligere indberetninger</h1>
+<form method="get" data-autosubmit="true">
+    <div class="form-row mb-3">
+        <div class="col-2">
+            <label for="{{ form.afgiftsperiode.id_for_label }}">{% translate 'Vis indberetninger for:' %}</label>
+        </div>
+        <div class="col-4">
+            {{ form.afgiftsperiode }}
+        </div>
+        <div class="col-4">
+            {{ form.afgiftsperiode.errors }}
+        </div>
+        <div class="col-2 text-right">
+            <a class="btn btn-primary" href="{% url 'indberetning:type-select' %}">{% translate 'Opret ny indberetning'%}</a>
+        </div>
+    </div>
+</form>
 
 {% for indberetning in object_list %}
 {% with skematype_id=indberetning.skematype.id %}
 
-
 <div class="table-bordered p-3 mb-3">
 
 <div class="table-responsive col-12">
-    <table class="table table-sm">
+    <table class="table table-sm table-bordered">
         <tbody>
         <tr>
             <th class="col-2">{% translate 'Dato'%}</th>
@@ -44,19 +53,19 @@
             <th>{% translate 'Indberetter CPR'%}</th>
             <td>{{indberetning.indberetters_cpr}}</td>
             <td rowspan="3">
-                <strong class="mr-2">{% translate 'Eksisterende bilag:'%}</strong>
+                <strong class="mr-2">{% translate 'Bilag:'%}</strong>
                 {% for bilag in indberetning.bilag.all %}
                 <a class="mr-2" href="{% url 'indberetning:bilag-download' pk=bilag.uuid%}">{{bilag.filename}}</a>
                 {% endfor %}
             </td>
         </tr>
         <tr>
-            <th>{% translate 'Skematype'%}</th>
-            <td>{{indberetning.skematype}}</td>
+            <th class="col-2">{% translate 'Skematype'%}</th>
+            <td class="col-4">{{indberetning.skematype}}</td>
         </tr>
         <tr>
-            <th>{% translate 'Total beregnet afgift (kr)' %}</th>
-            <td>{{ indberetning.afgift_sum|default_if_none:'' }}</td>
+            <th class="col-2">{% translate 'Total beregnet afgift (kr)' %}</th>
+            <td class="col-4">{{ indberetning.afgift_sum|default_if_none:'' }}</td>
         </tr>
         </tbody>
     </table>
@@ -95,10 +104,10 @@
         {% for object in indberetning.linjer.all %}
         <tr>
             {% if skematype_id == 1 or skematype_id == 2 %}
-            <td>{{ object.fartøj_navn }}</td>
+            <td>{{ object.fartøj_navn|default_if_none:'' }}</td>
             {% endif %}
             {% if skematype_id == 2 or skematype_id == 3 %}
-            <td>{{ object.indhandlingssted }}</td>
+            <td>{{ object.indhandlingssted|default_if_none:'' }}</td>
             {% endif %}
             <td>{{ object.produkttype }}</td>
             <td>{{ object.salgsvægt }}</td>
@@ -118,4 +127,11 @@
 </div>
 {% endwith %}
 {% endfor %}
+<script>
+    $(function () {
+        $("[data-autosubmit]").find("input,select").on("change", function () {
+            $(this).parents("form").first().submit();
+        });
+    });
+</script>
 {% endblock %}

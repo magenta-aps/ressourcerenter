@@ -76,9 +76,9 @@ class SatsTabelElementFormSet(forms.BaseInlineFormSet):
         for skematype in SkemaType.objects.all():
             by_skematype[skematype.id] = {'forms': [], 'skematype': skematype}
         for form in self.forms:
-            form_skematype = form.instance.skematype if form.instance else form.data.get('skematype')
-            if form_skematype and form_skematype.id in by_skematype:
-                by_skematype[form_skematype.id]['forms'].append(form)
+            form_skematype_id = form.instance.skematype_id if form.instance else form.data.get('skematype')
+            if form_skematype_id and form_skematype_id in by_skematype:
+                by_skematype[form_skematype_id]['forms'].append(form)
         return by_skematype.values()
 
 

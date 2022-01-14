@@ -14,7 +14,7 @@ from indberetning.validators import validate_cvr, validate_cpr
 
 class Virksomhed(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid4)
-    cvr = models.TextField(unique=True, validators=[validate_cvr], verbose_name=_('CVR-nummer'))
+    cvr = models.TextField(unique=True, validators=[validate_cvr], verbose_name=_('CVR-nummer'), db_index=True)
     kontakt_person = models.TextField(default='', blank=True, verbose_name=_('Kontaktperson navn'))
     kontakt_email = models.EmailField(default='', blank=True, verbose_name=_('Kontaktperson email'))
     kontakts_phone_nr = models.TextField(default='', blank=True, verbose_name=_('Kontaktperson telefonnr'))
@@ -42,29 +42,15 @@ class Navne(models.Model):
         unique_together = ('navn', 'virksomhed', 'type')
 
 
-indberetnings_type_choices = (
-    ('fartøj', _('Indrapportering fra fartøj')),
-    ('pelagisk', _('Pelagisk fiskeri')),
-    ('indhandling', _('indhandlingssted/produktionsanlæg'))
-)
-
-
 class Indberetning(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid4)
     skematype = models.ForeignKey(SkemaType, on_delete=models.CASCADE)
-    indberetnings_type = models.TextField(choices=indberetnings_type_choices)
-    virksomhed = models.ForeignKey(Virksomhed, on_delete=models.PROTECT, db_index=True)
+    virksomhed = models.ForeignKey(Virksomhed, on_delete=models.PROTECT)
     indberetters_cpr = models.TextField(validators=[validate_cpr])  # CPR fra medarbejder signatur eller nemid
-    administrator = models.ForeignKey(get_user_model(), null=True,
-                                      on_delete=models.PROTECT)  # only used when sudo is used
-    afgiftsperiode = models.ForeignKey(Afgiftsperiode, on_delete=models.PROTECT, db_index=True)
-    indberetningstidspunkt = models.DateTimeField(auto_now_add=True)
+    administrator = models.ForeignKey(get_user_model(), null=True, on_delete=models.PROTECT)  # only used when sudo is used
+    afgiftsperiode = models.ForeignKey(Afgiftsperiode, on_delete=models.PROTECT)
+    indberetningstidspunkt = models.DateTimeField(auto_now_add=True, db_index=True)
     afstemt = models.BooleanField(default=False)
-
-    def get_navn_display(self):
-        if self.indberetnings_type == 'havgående':
-            return _('Fartøjets navn')
-        return _('indhandlingssted/Bygd')
 
     def get_fishcategories_string(self):
         fishtypes = {str(linje.produkttype.fiskeart): None for linje in self.linjer.all()}
@@ -86,7 +72,6 @@ class Indberetning(models.Model):
     def to_json(self):
         return {
             'skematype.id': self.skematype.id,
-            'indberetnings_type': self.indberetnings_type,
             'virksomhed.cvr': self.virksomhed.cvr,
             'indberetters_cpr': self.indberetters_cpr,
             'administrator.id': self.administrator.id if self.administrator else None,
