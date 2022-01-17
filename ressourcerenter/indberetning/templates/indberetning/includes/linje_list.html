@@ -26,10 +26,10 @@
     {% for linje in object_list %}
     <tr>
         {% if skema_id == 1 or skema_id == 2 %}
-        <td>{{linje.fartøj_navn}}</td>
+        <td>{{linje.fartøj_navn|default_if_none:''}}</td>
         {% endif %}
         {% if skema_id == 2 or skema_id == 3 %}
-        <td>{{linje.indhandlingssted}}</td>
+        <td>{{linje.indhandlingssted|default_if_none:''}}</td>
         {% endif %}
         <td>{{ linje.produkttype }}</td>
         <td>{{ linje.salgsvægt }}</td>

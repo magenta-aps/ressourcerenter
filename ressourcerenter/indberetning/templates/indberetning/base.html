@@ -16,9 +16,13 @@
 </head>
 <body>
 <main role="main">
-    <nav class="nav d-flex p-2">
+    <nav class="nav d-flex p-2 navbar-dark bg-dark">
+        <a class="navbar-brand" href="https://sullissivik.gl/" aria-label="{% translate 'Tilbage til forsiden for Sullissivik.gl' %}">Sullissivik.gl</a>
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item"><a class="nav-link" href="{% url 'indberetning:indberetning-list' %}">{% translate 'Indberetninger' %}</a></li>
+        </ul>
         <span class="ml-auto">
-            <span class="p-2">
+            <span class="p-2 navbar-text">
                 {% if request.session.impersonating %}
                 Logget ind som <strong>{{request.user.username}}</strong>,
                 på vegne af CVR nr. <strong>{{ request.session.cvr }}</strong>
