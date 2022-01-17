@@ -9,7 +9,7 @@
     {% for item in form.forms_by_skematype %}
     {% with skematype=item.skematype subforms=item.forms %}
     <h2>
-        {% blocktrans with id=skematype.id %}Skematype {{id}}{% endblocktrans %}
+        {% blocktranslate with id=skematype.id %}Skematype {{id}}{% endblocktranslate %}
     </h2>
     <p>
         {{ skematype }}
