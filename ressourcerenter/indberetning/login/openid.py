@@ -20,7 +20,8 @@ class OpenId:
         return 'openid'
 
     def __init__(self, mock=None, scope=None, client_id=None, private_key=None, certificate=None, issuer=None,
-                 front_channel_logout_uri=None, post_logout_redirect_uri=None, logout_uri=None):
+                 front_channel_logout_uri=None, post_logout_redirect_uri=None,
+                 logout_uri=None, login_callback_url=None):
         self._mock = mock
         if not mock:
             self._scope = scope
@@ -29,6 +30,7 @@ class OpenId:
             self._front_channel_logout_uri = front_channel_logout_uri
             self._post_logout_redirect_uri = post_logout_redirect_uri
             self._logout_uri = logout_uri
+            self._login_callback_url = login_callback_url
 
             # private_key and certificate needs to be a path
             rsa_key = rsa_load(private_key)
@@ -76,7 +78,7 @@ class OpenId:
         provider_info = self._oic_client.provider_config(self._issuer)  # noqa
         client_reg = RegistrationResponse(**{
             'client_id': self._client_id,
-            'redirect_uris': [reverse('indberetning:login-callback')]
+            'redirect_uris': [self._login_callback_url]
         })
         self._oic_client.store_registration_info(client_reg)
 
@@ -86,7 +88,7 @@ class OpenId:
             'response_type': 'code',
             'scope': self._scope,
             'client_id': self._client_id,
-            'redirect_uri': reverse('indberetning:login-callback'),
+            'redirect_uri': self._login_callback_url,
             'state': state,
             'nonce': nonce
         }
@@ -168,7 +170,7 @@ class OpenId:
                     state=authorization_response['state'],
                     scope=self._scope,
                     request_args={'code': authorization_response['code'],
-                                  'redirect_uri': request.build_absolute_uri(reverse('indberetning:login-callback'))},
+                                  'redirect_uri': self._login_callback_url},
                     authn_method="private_key_jwt",
                     authn_endpoint='token'
                 )
