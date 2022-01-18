@@ -144,6 +144,7 @@ OPENID = {
     'logout_uri': os.environ.get('OPENID_LOGOUT_URI'),
     'front_channel_logout_uri': os.environ.get('OPENID_FRONT_CHANNEL_LOGOUT_URI'),
     'post_logout_redirect_uri': os.environ.get('OPENID_POST_LOGOUT_REDIRECT_URI'),
+    'login_callback_url': os.environ.get('OPENID_LOGIN_CALLBACK')
 }
 
 DAFO = {
