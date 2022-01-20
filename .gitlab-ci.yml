@@ -137,4 +137,4 @@ Deploy test:
     - pepper --client runner --fail-any state.orchestrate ${DEPLOYMENT_NAMESPACE}
   environment:
     name: test
-    url: ""
+    url: "https://test.aalisakkat.aka.sullissivik.gl/"
