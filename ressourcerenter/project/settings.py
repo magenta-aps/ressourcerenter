@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'simple_history',
     'administration',
     'indberetning',
+    'watchman',
 ]
 
 MIDDLEWARE = [
@@ -170,3 +171,6 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 WHITENOISE_USE_FINDERS = True
+
+# Skip health_check for cache layer since we are not using it
+WATCHMAN_CHECKS = ('watchman.checks.databases', 'watchman.checks.storage')

@@ -9,7 +9,8 @@ urlpatterns = [
     path('django-admin/', admin.site.urls),
     path('administration/', include('administration.urls', namespace='administration')),
     path('indberetning/', include('indberetning.urls', namespace='indberetning')),
-    path('', RedirectView.as_view(permanent=False, url='indberetning/'))
+    path('', RedirectView.as_view(permanent=False, url='indberetning/')),
+    path('_ht/', include('watchman.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += staticfiles_urlpatterns()
