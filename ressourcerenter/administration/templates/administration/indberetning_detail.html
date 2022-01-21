@@ -67,13 +67,13 @@
     <table class="table">
         <thead>
         <tr>
-            {% if skematype_id == 1 or skematype_id == 2 %}
-            <th>{% translate 'Fartøj' %}</th>
-            {% endif %}
             {% if skematype_id == 2 or skematype_id == 3 %}
             <th>{% translate 'Indhandlingssted' %}</th>
             {% endif %}
-            <th>{% translate 'Salgsvægt (kg)' %}</th>
+            {% if skematype_id == 1 or skematype_id == 2 %}
+            <th>{% translate 'Fartøj' %}</th>
+            {% endif %}
+            <th>{% translate 'Produktvægt (kg)' %}</th>
             <th>{% translate 'Levende vægt/helfisk mængde (kg)' %}</th>
             <th>{% translate 'Salgspris (kr)' %}</th>
             <th>{% translate 'Afgiftssats' %}</th>
@@ -85,13 +85,13 @@
         {% for subform in group.forms %}
         {% with linje=subform.instance %}
 		    <tr>
+                {% if skematype_id == 2 or skematype_id == 3 %}
+                <td>{{ linje.indhandlingssted|default_if_none:'' }}</td>
+                {% endif %}
 		        {% if skematype_id == 1 or skematype_id == 2 %}
-		        <td>{{ linje.fartøj_navn }}</td>
+		        <td>{{ linje.fartøj_navn|default_if_none:'' }}</td>
 		        {% endif %}
-		        {% if skematype_id == 2 or skematype_id == 3 %}
-		        <td>{{ linje.indhandlingssted }}</td>
-		        {% endif %}
-		        <td>{{ linje.salgsvægt }}</td>
+		        <td>{{ linje.produktvægt }}</td>
 		        <td>{{ linje.levende_vægt }}</td>
 		        <td>{{ linje.salgspris }}</td>
                 <td>{{ linje.fangstafgift.rate_string }}</td>
@@ -109,7 +109,7 @@
                 <td {% if skematype_id == 2 %}colspan="2"{% endif %}><strong>{% translate 'I alt' %}</strong></td>
 
                 <td>
-                    {{group.instances|list_sum_attr:'salgsvægt'}}
+                    {{group.instances|list_sum_attr:'produktvægt'}}
                 </td>
                 <td>
                     {{group.instances|list_sum_attr:'levende_vægt'}}

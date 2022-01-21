@@ -56,7 +56,10 @@ class SkemaType(models.Model):
     )
 
     def __str__(self):
-        return self.navn_dk
+        if get_language() == 'kl-GL':
+            return self.navn_gl
+        else:
+            return self.navn_dk
 
 
 class FiskeArt(NamedModel):
@@ -84,6 +87,29 @@ class ProduktType(NamedModel):
     fartoej_groenlandsk = models.BooleanField(
         null=True
     )
+    # Skematype 1's queryset skal være produkter som ikke har children
+    # andre skematyper skal være produkter som ikke er children
+    gruppe = models.ForeignKey(
+        'ProduktType',
+        null=True,
+        blank=True,
+        related_name='subtyper',
+        on_delete=models.SET_NULL,
+    )
+
+    @staticmethod
+    def sort_in_groups(produkttyper):
+        groups = {}
+        non_group_items = {}
+        for item in produkttyper:
+            if item.gruppe:
+                gruppenavn = str(item.gruppe)
+                if gruppenavn not in groups:
+                    groups[gruppenavn] = [gruppenavn, []]
+                groups[gruppenavn][1].append((str(item.pk), str(item)))
+            else:
+                non_group_items[str(item)] = (str(item.pk), str(item))
+        return [groups[x] for x in sorted(groups)] + [non_group_items[x] for x in sorted(non_group_items)]
 
 
 class Afgiftsperiode(NamedModel):
@@ -171,12 +197,13 @@ class SatsTabelElement(models.Model):
         if created is True:
             for skematype in SkemaType.objects.all():
                 for fiskeart in skematype.fiskeart_set.all():
-                    for produkttype in fiskeart.produkttype_set.all():
+                    for valuedict in fiskeart.produkttype_set.values('fartoej_groenlandsk').order_by('fartoej_groenlandsk').distinct('fartoej_groenlandsk'):
+                        fartoej_groenlandsk = valuedict['fartoej_groenlandsk']
                         SatsTabelElement.objects.create(
                             skematype=skematype,
                             fiskeart=fiskeart,
                             periode=instance,
-                            fartoej_groenlandsk=produkttype.fartoej_groenlandsk
+                            fartoej_groenlandsk=fartoej_groenlandsk
                         )
 
 
@@ -235,7 +262,7 @@ class FangstAfgift(models.Model):
         if self.rate_pr_kg:
             lines.append(_('%s kr/kg') % self.rate_pr_kg)
         if self.rate_procent:
-            lines.append(_('%s%% af salgspris') % self.rate_procent)
+            lines.append(_('%s %%') % self.rate_procent)
         return '+'.join(lines)
 
 
@@ -309,7 +336,11 @@ class BeregningsModel2021(BeregningsModel):
         rate_procent = sats.rate_procent or 0
         rate_pr_kg = sats.rate_pr_kg or 0
         vaegt = indberetninglinje.levende_vægt or 0
-        pris = indberetninglinje.salgspris or 0
+        pris = (indberetninglinje.salgspris or 0)
+        if indberetninglinje.transporttillæg:
+            pris += indberetninglinje.transporttillæg
+        elif indberetninglinje.bonus:
+            pris += indberetninglinje.bonus
 
         # Hvis table_entry er korrekt konstrueret, vil kun ét af disse led være != 0
         afgift = (rate_pr_kg * vaegt) + (rate_procent * Decimal(0.01) * pris)

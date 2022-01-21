@@ -7,46 +7,64 @@
 <div class="table-responsive">
     {% include 'indberetning/includes/linje_list.html' with object_list=object.linjer.all %}
 </div>
-<h2>{% translate 'Justerer indberetning'%}</h2>
+<h2>{% translate 'Justerer indberetning' %}</h2>
 {% else %}
-<h2>{% translate 'Nye indberetninger'%}</h2>
+<h2>{% translate 'Nye indberetninger' %}</h2>
 {% endif %}
 <form method="POST" enctype="multipart/form-data" action="{{ form_url }}">
     {% csrf_token %}
     {{ form.management_form }}
     {{ bilag_formset.management_form }}
-    <div>
-        <div class="form-inline">
-            <strong class="mr-2">{% translate 'Afgiftsperiode:' %}</strong>{{ afgiftsperiode }}
-        </div>
-        <div class="form-inline">
-            <strong class="mr-2">{% translate 'Selskab / CVR:' %}</strong> {{ request.session.cvr }}
-        </div>
-    </div>
+    <table class="table table-borderless table-sm">
+        <tbody>
+        <tr>
+            <th class="col-1">{% translate 'Afgiftsperiode:' %}</th>
+            <td>{{ afgiftsperiode }}</td>
+        </tr>
+        <tr>
+            <th class="col-1">{% translate 'Selskab / CVR:' %}</th>
+            <td>{{ request.session.cvr }}</td>
+        </tr>
+        <tr>
+            <th class="col-1">{% translate 'Skematype:' %}</th>
+            <td>{{ skema }}</td>
+        </tr>
+        </tbody>
+    </table>
     <div class="table-responsive">
         <hr />
         <table class="table table-bordered text-center table-sm" id="js-product-table">
             <thead>
             <tr>
-                {% if skema_id == 1 %}
+                {% if skema.id == 1 %}
                 <th class="col-4">{% translate 'Fartøjs navn' %}</th>
                 {% endif %}
-                {% if skema_id == 2 %}
-                <th class="col-2">{% translate 'Fartøjs navn' %}</th>
+                {% if skema.id == 2 %}
                 <th class="col-2">{% translate 'Indhandlingssted' %}</th>
+                <th class="col-2">{% translate 'Fartøjs navn' %}</th>
                 {% endif %}
-                {% if skema_id == 3 %}
+                {% if skema.id == 3 %}
                 <th class="col-4">{% translate 'Indhandlingssted' %}</th>
                 {% endif %}
-                <th class="col-2">{% translate 'ProduktType'%}</th>
-                <th class="col-1">{% translate 'Salgsvægt'%}</th>
-                <th class="col-1">{% translate 'Levende vægt'%}</th>
-                <th class="col-1">{% translate 'Salgspris'%}</th>
-                {% if skema_id == 1 %}
-                <th class="col-1">{% translate 'Transporttillæg'%}</th>
-                {% elif skema_id == 2 or skema_id == 3 %}
-                <th class="col-1">{% translate 'Bonus og andet vederlag'%}</th>
+                <th class="col-2">{% translate 'Produkttype'%}</th>
+                {% if skema.id != 3 %}
+                <th class="col-1">{% translate 'Produktvægt (kg)'%}</th>
                 {% endif %}
+                <th class="col-1">{% translate 'Levende vægt (kg)'%}</th>
+
+                {% if skema.id == 1 %}
+                <th class="col-1">{% translate 'Omsætning (kr)'%}</th>
+                {% elif skema.id == 2 or skema.id == 3 %}
+                <th class="col-1">{% translate 'Indhandlingsværdi (kr)'%}</th>
+                {% endif %}
+
+                {% if skema.id == 1 %}
+                <th class="col-1">{% translate 'Transporttillæg (kr)'%}</th>
+                {% elif skema.id == 2 or skema.id == 3 %}
+                <th class="col-1">{% translate 'Bonus og andet vederlag (kr)'%}</th>
+                {% endif %}
+
+                <th class="col-1">{% translate 'Afgiftssats' %}</th>
                 <th class="col-1" id="afgift_column" data-endpoint="{% url 'indberetning:indberetning-calculate' %}">{% translate 'Beregnet afgift (kr)' %}</th>
 
                 {% if request.session.impersonating %}
@@ -59,21 +77,25 @@
             {% for subform in form %}
             {{ subform.non_field_errors }}
             <tr class="autocalc-afgift" data-prefix="{{subform.prefix}}">
-                {% if skema_id == 1 or skema_id == 2 %}
-                <td>{{subform.fartøj_navn}}{% if subform.errors.fartøj_navn %}<small class="error">{{subform.errors.fartøj_navn}}</small>{% endif %}</td>
+                {% if skema.id == 2 or skema.id == 3 %}
+                <td>{{subform.indhandlingssted}}{% if subform.errors.indhandlingssted %}<small class="error text-left">{{subform.errors.indhandlingssted}}</small>{% endif %}</td>
                 {% endif %}
-                {% if skema_id == 2 or skema_id == 3 %}
-                <td>{{subform.indhandlingssted}}{% if subform.errors.indhandlingssted %}<small class="error">{{subform.errors.indhandlingssted}}</small>{% endif %}</td>
+                {% if skema.id == 1 or skema.id == 2 %}
+                <td>{{subform.fartøj_navn}}{% if subform.errors.fartøj_navn %}<small class="error text-left">{{subform.errors.fartøj_navn}}</small>{% endif %}</td>
                 {% endif %}
-                <td>{{subform.produkttype}}{% if subform.errors.kategori %}<br/><small>{{subform.errors.kategori}}</small>{% endif %}</td>
-                <td>{{subform.salgsvægt}}{% if subform.errors.salgsvægt %}<br/><small>{{subform.errors.salgsvægt}}</small>{% endif %}</td>
-                <td>{{subform.levende_vægt}}{% if subform.errors.levende_vægt %}<br/><small>{{subform.errors.levende_vægt}}</small>{% endif %}</td>
-                <td>{{subform.salgspris}}{% if subform.errors.salgspris %}<br/><small>{{subform.errors.salgspris}}</small>{% endif %}</td>
-                {% if subform.transporttillæg %}
-                <td>{{subform.transporttillæg}}{% if subform.errors.transporttillæg %}<br/><small>{{subform.errors.transporttillæg}}</small>{% endif %}</td>
-                {% elif subform.bonus %}
-                <td>{{subform.bonus}}{% if subform.errors.bonus %}<br/><small>{{subform.errors.bonus}}</small>{% endif %}</td>
+                <td>{{subform.produkttype}}{% if subform.errors.kategori %}<small class="error text-left">{{subform.errors.kategori}}</small>{% endif %}</td>
+                {% if skema.id != 3 %}
+                <td>{{subform.produktvægt}}{% if subform.errors.produktvægt %}<small class="error text-left">{{subform.errors.produktvægt}}</small>{% endif %}</td>
                 {% endif %}
+                <td>{{subform.levende_vægt}}{% if subform.errors.levende_vægt %}<small class="error text-left">{{subform.errors.levende_vægt}}</small>{% endif %}</td>
+                <td>{{subform.salgspris}}{% if subform.errors.salgspris %}<small class="error text-left">{{subform.errors.salgspris}}</small>{% endif %}</td>
+                {% if skema.id == 1 %}
+                <td>{{subform.transporttillæg}}{% if subform.errors.transporttillæg %}<small class="error text-left">{{subform.errors.transporttillæg}}</small>{% endif %}</td>
+                {% endif %}
+                {% if skema.id == 2 or skema.id == 3 %}
+                <td>{{subform.bonus}}{% if subform.errors.bonus %}<small class="error text-left">{{subform.errors.bonus}}</small>{% endif %}</td>
+                {% endif %}
+                <td class="autocalc-sats-dest"></td>
                 <td class="autocalc-afgift-dest"></td>
                 {% if request.session.impersonating %}
                 <td>{{ subform.kommentar }}</td>
@@ -118,14 +140,14 @@
     <table>
         <tbody id="js-initial-row">
         <tr class="autocalc-afgift" data-prefix="{{form.empty_form.prefix}}">
-            {% if skema_id == 1 or skema_id == 2 %}
-            <td>{{form.empty_form.fartøj_navn}}</td>
-            {% endif %}
-            {% if skema_id == 2 or skema_id == 3 %}
+            {% if skema.id == 2 or skema.id == 3 %}
             <td>{{form.empty_form.indhandlingssted}}</td>
             {% endif %}
+            {% if skema.id == 1 or skema.id == 2 %}
+            <td>{{form.empty_form.fartøj_navn}}</td>
+            {% endif %}
             <td>{{form.empty_form.produkttype}}</td>
-            <td>{{form.empty_form.salgsvægt}}</td>
+            <td>{{form.empty_form.produktvægt}}</td>
             <td>{{form.empty_form.levende_vægt}}</td>
             <td>{{form.empty_form.salgspris}}</td>
             <td>
@@ -135,6 +157,7 @@
                 {{form.empty_form.bonus}}
                 {% endif %}
             </td>
+            <td class="autocalc-sats-dest"></td>
             <td class="autocalc-afgift-dest"></td>
             {% if request.session.impersonating %}
             <td>{{ form.empty_form.kommentar }}</td>
@@ -154,6 +177,8 @@
 <script>
     const boat_placeholder = "{% translate 'Vælg eller opret nyt fartøj' %}";
     const place_placeholder = "{% translate 'Vælg eller opret nyt indhandlingssted' %}";
+    const rate_prkg_string = "{% translate '{rate} kr/kg' %}";
+    const rate_none = "{% translate 'Ingen afgift' %}";
     $(document).ready(function() {
         const afgift_endpoint = $('#afgift_column').data('endpoint');
         const indberetning = JSON.parse($("#indberetning").text());
@@ -181,8 +206,19 @@
                         'X-CSRFToken': getCookie('csrftoken'),
                     },
                     'success': function (responseObject) {
-                        const afgift = responseObject['afgift'].replace('.', ',');
-                        row.find('.autocalc-afgift-dest').text(afgift);
+                        const afgift = responseObject['afgift'];
+                        row.find('.autocalc-afgift-dest').text(afgift.replace('.', ','));
+
+                        const rate_procent = responseObject['rate_procent'];
+                        const rate_prkg = responseObject['rate_pr_kg'];
+                        const field = row.find('.autocalc-sats-dest');
+                        if (rate_procent && rate_procent !== '0') {
+                            field.text(rate_procent.replace('.', ',') + ' %');
+                        } else if (rate_prkg && rate_prkg !== '0') {
+                            field.text(rate_prkg_string.replace('{rate}', rate_prkg.replace('.', ',')));
+                        } else {
+                            field.text(rate_none);
+                        }
                     }
                 });
             }

@@ -4,7 +4,7 @@ from django.db.utils import IntegrityError
 from django.utils import timezone
 
 from administration.models import Afgiftsperiode, BeregningsModel2021, SkemaType
-from indberetning.models import Indberetning, Virksomhed, IndberetningLinje
+from indberetning.models import Indberetning, Virksomhed, IndberetningLinje, Indhandlingssted
 from decimal import Decimal
 
 import datetime
@@ -29,6 +29,14 @@ class Command(BaseCommand):
             beregningsmodel = BeregningsModel2021.objects.get(navn='TestBeregningsModel')
             beregningsmodel.transport_afgift_rate = Decimal(1)
             beregningsmodel.save()
+
+        indhandlingssteder = []
+        for navn, stedkode in (('Nuuk', '1111'), ('Sisimiut', '2222'), ('Ilulissat', '3333')):
+            try:
+                sted = Indhandlingssted.objects.create(navn=navn, stedkode=stedkode)
+            except IntegrityError:
+                sted = Indhandlingssted.objects.get(navn=navn)
+            indhandlingssteder.append(sted)
 
         indberetninger_exist = Indberetning.objects.exists()
 
@@ -58,7 +66,7 @@ class Command(BaseCommand):
                             for produkttype in fiskeart.produkttype_set.all():
                                 IndberetningLinje.objects.create(indberetning=indberetning,
                                                                  fartøj_navn=fartoej,
-                                                                 salgsvægt=10,
+                                                                 produktvægt=10,
                                                                  levende_vægt=20,
                                                                  salgspris=400,
                                                                  kommentar='Her er en lang kommentar som er meget lang for at demonstrere hvordan vi håndtererer en lang kommentar som bliver bred på siden',
@@ -68,8 +76,8 @@ class Command(BaseCommand):
                         # Two types of product types, identified by pelagisk true/false
                         # Two types of trading, identified by whether trading is done from a boat or on land
                         for indhandlingssted, fartoej_navn, pelagisk in (
-                            ('Bygd for indhandling', None, True),
-                            ('Bygd for indhandling', None, False),
+                            (indhandlingssteder[0], None, True),
+                            (indhandlingssteder[1], None, False),
                             (None, 'Systemoprettet fartøj', True),
                             (None, 'Systemoprettet fartøj', False),
                         ):
@@ -89,14 +97,14 @@ class Command(BaseCommand):
                                     IndberetningLinje.objects.create(indberetning=indberetning,
                                                                      fartøj_navn=fartoej_navn,
                                                                      indhandlingssted=indhandlingssted,
-                                                                     salgsvægt=10,
+                                                                     produktvægt=10,
                                                                      levende_vægt=20,
                                                                      salgspris=400,
                                                                      kommentar='Her er en lang kommentar som er meget lang for at demonstrere hvordan vi håndtererer en lang kommentar som bliver bred på siden',
                                                                      produkttype=produkttype)
 
                     if skematype.id == 3:
-                        sted = 'Bygd for indhandling'
+                        sted = indhandlingssteder[2]
                         indberetning = Indberetning.objects.create(skematype=skematype,
                                                                    virksomhed=virksomhed,
                                                                    afgiftsperiode=periode,
@@ -110,7 +118,7 @@ class Command(BaseCommand):
                             for produkttype in fiskeart.produkttype_set.all():
                                 IndberetningLinje.objects.create(indberetning=indberetning,
                                                                  indhandlingssted=sted,
-                                                                 salgsvægt=10,
+                                                                 produktvægt=10,
                                                                  levende_vægt=20,
                                                                  salgspris=400,
                                                                  kommentar='Her er en lang kommentar som er meget lang for at demonstrere hvordan vi håndtererer en lang kommentar som bliver bred på siden',

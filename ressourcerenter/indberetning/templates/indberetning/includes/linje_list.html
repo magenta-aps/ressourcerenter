@@ -2,37 +2,37 @@
 <table class="table table-bordered text-center table-sm">
     <thead>
     <tr>
-        {% if skema_id == 1 or skema_id == 2 %}
-        <th>{% translate 'Fartøjs navn' %}</th>
-        {% endif %}
         {% if skema_id == 2 or skema_id == 3 %}
         <th>{% translate 'Indhandlingssted' %}</th>
         {% endif %}
-        <th>{% translate 'ProduktType'%}</th>
-        <th>{% translate 'Salgsvægt'%}</th>
-        <th>{% translate 'Levende vægt'%}</th>
-        <th>{% translate 'Salgspris'%}</th>
-        <th>
-        {% if skema_id == 1 %}
-        {% translate 'Transporttillæg' %}
-        {% elif skema_id == 2 or skema_id == 3 %}
-        {% translate 'Bonus og andet vederlag' %}
+        {% if skema_id == 1 or skema_id == 2 %}
+        <th>{% translate 'Fartøjs navn' %}</th>
         {% endif %}
-        </th>
+        <th>{% translate 'Produkttype'%}</th>
+        <th>{% translate 'Produktvægt (kg)'%}</th>
+        <th>{% translate 'Levende vægt (kg)'%}</th>
+        {% if skema.id == 1 %}
+        <th>{% translate 'Omsætning (kr)'%}</th>
+        <th>{% translate 'Transporttillæg (kr)' %}</th>
+        {% elif skema.id == 2 or skema.id == 3 %}
+        <th>{% translate 'Indhandlingsværdi (kr)'%}</th>
+        <th>{% translate 'Bonus og andet vederlag (kr)' %}</th>
+        {% endif %}
+        <th>{% translate 'Afgiftssats' %}</th>
         <th>{% translate 'Beregnet afgift (kr)' %}</th>
     </tr>
     </thead>
     <tbody>
     {% for linje in object_list %}
     <tr>
-        {% if skema_id == 1 or skema_id == 2 %}
-        <td>{{linje.fartøj_navn|default_if_none:''}}</td>
-        {% endif %}
         {% if skema_id == 2 or skema_id == 3 %}
         <td>{{linje.indhandlingssted|default_if_none:''}}</td>
         {% endif %}
+        {% if skema_id == 1 or skema_id == 2 %}
+        <td>{{linje.fartøj_navn|default_if_none:''}}</td>
+        {% endif %}
         <td>{{ linje.produkttype }}</td>
-        <td>{{ linje.salgsvægt }}</td>
+        <td>{{ linje.produktvægt }}</td>
         <td>{{ linje.levende_vægt }}</td>
         <td>{{ linje.salgspris|default_if_none:'' }}</td>
         <td>
@@ -42,6 +42,7 @@
         {{ linje.bonus|default_if_none:'' }}
         {% endif %}
         </td>
+        <td>{{linje.fangstafgift.rate_string}}</td>
         <td>{{linje.afgift}}</td>
     </tr>
     {% endfor %}
