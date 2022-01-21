@@ -68,3 +68,12 @@ tr.subrow:hover {
 .col-12 {
     width: 100%;
 }
+
+ul.errorlist {
+    margin: 0;
+    padding: 0;
+}
+
+ul.errorlist li {
+    list-style-type: none;
+}

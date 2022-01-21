@@ -12,9 +12,9 @@ from administration.views import VirksomhedListView, VirksomhedCreateView, Virks
 app_name = AdministrationConfig.name
 
 urlpatterns = [
+    path('', FrontpageView.as_view(), name='frontpage'),
     path('login/', LoginView.as_view(template_name='administration/login.html'), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
-    path('frontpage/', FrontpageView.as_view(), name='frontpage'),
 
     path('afgiftsperiode/', AfgiftsperiodeListView.as_view(), name='afgiftsperiode-list'),
     path('afgiftsperiode/create', AfgiftsperiodeCreateView.as_view(), name='afgiftsperiode-create'),

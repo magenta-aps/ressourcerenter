@@ -89,12 +89,14 @@
             <th class="col-2">{% translate 'Indhandlingssted '%}</th>
             {% endif %}
             <th class="col-2">{% translate 'Produkttype'%}</th>
-            <th class="col-1">{% translate 'Salgsvægt (kg)'%}</th>
+            <th class="col-1">{% translate 'Produktvægt (kg)'%}</th>
             <th class="col-1">{% translate 'Levende vægt (kg)'%}</th>
             <th class="col-2">{% translate 'Salgspris (kr)'%}</th>
             {% if skematype_id == 1 %}
+            <th class="col-1">{% translate 'Omsætning (kr)'%}</th>
             <th class="col-1">{% translate 'Transporttillæg (kr)'%}</th>
             {% elif skematype_id == 2 or skematype_id == 3 %}
+            <th class="col-1">{% translate 'Indhandlingsværdi (kr)'%}</th>
             <th class="col-1">{% translate 'Bonus og andet vederlag (kr)'%}</th>
             {% endif %}
             <th class="col-1">{% translate 'Afgift (kr)' %}</th>
@@ -110,7 +112,7 @@
             <td>{{ object.indhandlingssted|default_if_none:'' }}</td>
             {% endif %}
             <td>{{ object.produkttype }}</td>
-            <td>{{ object.salgsvægt }}</td>
+            <td>{{ object.produktvægt }}</td>
             <td>{{ object.levende_vægt }}</td>
             <td>{{ object.salgspris|default_if_none:'' }}</td>
             {% if skematype_id == 1 %}

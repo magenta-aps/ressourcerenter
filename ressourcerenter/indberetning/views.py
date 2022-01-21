@@ -165,20 +165,23 @@ class IndberetningsLinjebilagFormsetMixin:
             return self.form_invalid(form, bilag_formset)
 
     def form_valid(self, formset, bilag_formset):
-        indberetning = self.get_indberetning_instance()
-        indberetning.save()
         linjer = []
         for line in formset.save(commit=False):
-            # need to set FK
-            line.indberetning = indberetning
-            line.save()
             linjer.append(line)
         bilags = []
         for bilag in bilag_formset.save(commit=False):
-            bilag.indberetning = indberetning
-            bilag.save()
             bilags.append(bilag)
-
+        # Only create indberetning if there are lines or attachments
+        if linjer or bilags:
+            indberetning = self.get_indberetning_instance()
+            indberetning.save()
+            # need to set FK
+            for line in linjer:
+                line.indberetning = indberetning
+                line.save()
+            for bilag in bilags:
+                bilag.indberetning = indberetning
+                bilag.save()
         return linjer, bilags
 
     def form_invalid(self, formset, bilag_formset):
@@ -221,7 +224,7 @@ class CreateIndberetningCreateView(IndberetningsLinjebilagFormsetMixin, FormView
         ctx.update({
             'form_url': reverse('indberetning:indberetning-create', kwargs={'periode': self.afgiftsperiode.uuid, 'skema': self.skema.id}),
             'afgiftsperiode': self.afgiftsperiode,
-            'skema_id': self.skema.id
+            'skema': self.skema
         })
         return ctx
 
@@ -237,10 +240,8 @@ class CreateIndberetningCreateView(IndberetningsLinjebilagFormsetMixin, FormView
             message = _('Ny Indberetning oprettet for: %(fiskearter)s med %(bilag)s bilag.') %\
                 {'fiskearter': ', '.join(fiskearter),
                  'bilag': len(bilags)}
-
-        messages.add_message(self.request,
-                             messages.INFO,
-                             message)
+        if len(bilags) > 0 or len(linjer) > 0:
+            messages.add_message(self.request, messages.INFO, message)
         return redirect(reverse('indberetning:indberetning-list'))
 
 
@@ -271,7 +272,7 @@ class UpdateIndberetningsView(IndberetningsLinjebilagFormsetMixin, UpdateView):
             'edit_mode': True,
             'form_url': reverse('indberetning:indberetning-edit', kwargs={'pk': self.get_object().uuid}),
             'afgiftsperiode': self.afgiftsperiode,
-            'skema_id': self.skema.id
+            'skema': self.skema
         })
         return ctx
 

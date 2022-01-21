@@ -82,13 +82,13 @@ class AfgiftTestCase(TransactionTestCase):
         )
         IndberetningLinje.objects.create(
             indberetning=indberetning,
-            produkttype=ProduktType.objects.get(
+            produkttype=ProduktType.objects.filter(
                 fiskeart__navn_dk=fiskeart,
                 fartoej_groenlandsk=fartoej_groenlandsk
-            ),
+            ).first(),
             salgspris=Decimal(salgspris),
             levende_vægt=Decimal(levende_vaegt),
-            salgsvægt=Decimal(salgsvaegt),
+            produktvægt=Decimal(salgsvaegt),
         )
         model = BeregningsModel2021.objects.create(navn=uuid4())
         result = model.calculate(indberetning)

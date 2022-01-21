@@ -23,6 +23,18 @@ class Virksomhed(models.Model):
         return f"CVR {self.cvr}"
 
 
+class Indhandlingssted(models.Model):
+    stedkode = models.UUIDField(primary_key=True, default=uuid4)
+    navn = models.TextField(null=False)
+    stedkode = models.CharField(max_length=8)
+
+    def __str__(self):
+        return self.navn
+
+    class Meta:
+        ordering = ('navn',)
+
+
 navne_typer = (
     ('fartøj', _('Fartøj')),
     ('indhandlings_sted', _('Indhandlings sted'))
@@ -87,12 +99,12 @@ class IndberetningLinje(models.Model):
     # indhandling: summer på fiskearts niveau
     uuid = models.UUIDField(primary_key=True, default=uuid4)
     fartøj_navn = models.TextField(null=True)
-    indhandlingssted = models.TextField(null=True)
+    indhandlingssted = models.ForeignKey(Indhandlingssted, null=True, on_delete=models.SET_NULL)
     indberetning = models.ForeignKey(Indberetning, on_delete=models.CASCADE, related_name='linjer')
     produkttype = models.ForeignKey(ProduktType, on_delete=models.PROTECT)
 
-    salgsvægt = models.DecimalField(max_digits=20, decimal_places=2,
-                                    verbose_name=_('Salgsvægt (kg)'))
+    produktvægt = models.DecimalField(max_digits=20, decimal_places=2, null=True,
+                                      verbose_name=_('Produktvægt (kg)'))
     levende_vægt = models.DecimalField(max_digits=20, decimal_places=2,
                                        verbose_name=_('Levende vægt/helfisk mængde (kg)'))  # hel fisk
     salgspris = models.DecimalField(max_digits=20, decimal_places=2, null=True,
