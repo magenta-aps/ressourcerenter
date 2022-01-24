@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.forms import ModelChoiceField, CharField, ModelForm, modelformset_factory, Select, Textarea
+from django.forms import ModelChoiceField, CharField, ModelForm, modelformset_factory, Select, Textarea, FileInput, FileField
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -140,7 +140,12 @@ class IndberetningsLinjeSkema3Form(IndberetningsLinjeForm):
         fields = ('produkttype', 'levende_vægt', 'salgspris', 'indhandlingssted', 'bonus', 'kommentar')
 
 
-BilagsFormSet = modelformset_factory(Bilag, can_order=False, exclude=('uuid', 'indberetning'), extra=1)
+class BilagsForm(ModelForm):
+    model = Bilag
+    bilag = FileField(widget=FileInput(attrs={'class': 'custom-file-input'}))
+
+
+BilagsFormSet = modelformset_factory(Bilag, form=BilagsForm, can_order=False, exclude=('uuid', 'indberetning'), extra=1)
 
 
 class IndberetningBeregningForm(ModelForm):
