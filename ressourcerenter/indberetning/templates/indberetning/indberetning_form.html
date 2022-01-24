@@ -122,8 +122,11 @@
     {{ form.non_field_errors }}
     <div id="js-bilag-wrapper">
         {% for form in bilag_formset %}
-        <div class="form-inline mt-2">
+        <div style="display: block">
+        <div class="form-inline mt-2 custom-file col-4">
+            <label class="custom-file-label" for="{{ form.bilag.id_for_label }}">{% trans 'Vælg en fil' %}</label>
             {{ form.bilag }}
+        </div>
         </div>
         {% endfor %}
     </div>
@@ -167,11 +170,15 @@
         </tbody>
     </table>
     <div id="js-bilag-empty">
-        <div class="form-inline mt-2">
+        <div style="display: block">
+        <div class="form-inline custom-file mt-2 col-4">
+            <label class="custom-file-label" for="bilag-{{form.empty_form.prefix}}-bilag">{% translate 'Vælg en fil' %}</label>
             {{ bilag_formset.empty_form.bilag }}
+        </div>
         </div>
     </div>
 </div>
+
 {{indberetning.to_json|json_script:'indberetning'}}
 <script src="{% static 'js/cookie.js' %}"></script>
 <script>
@@ -182,14 +189,14 @@
     $(document).ready(function() {
         const afgift_endpoint = $('#afgift_column').data('endpoint');
         const indberetning = JSON.parse($("#indberetning").text());
-        const calculate_afgift = function(){
+        const calculate_afgift = function() {
             const row = $(this).parents('tr');
             const prefix = row.data('prefix') + '-';
             const indberetninglinje = {
                 'afgiftsperiode': indberetning['afgiftsperiode.uuid'],
                 'skematype': indberetning['skematype.id']
             };
-            row.find('input, select').each(function () {
+            row.find('input, select').each(function() {
                 let name = $(this).attr('name');
                 if (name.startsWith(prefix)) {
                     name = name.replace(prefix, '');
@@ -263,7 +270,7 @@
                 document.querySelector('.select2-search__field').focus();
             }, 0);
         });
-        $('input#js-add-product-button').on('click', function(){
+        $('input#js-add-product-button').on('click', function() {
             const form_idx = $('input[name=linje-TOTAL_FORMS]').val();
             $('table#js-product-table tbody').append($('tbody#js-initial-row').html().replace(/__prefix__/g, form_idx));
             $('input[name=linje-TOTAL_FORMS]').val(parseInt(form_idx)+1);
@@ -282,11 +289,24 @@
             newRow.find("input, select").on('change', calculate_afgift);
             newRow.find('button[data-delete]').on('click', deleteRow);
         });
-        $('input#js-add-bilag-button').on('click', function(){
+        $('input#js-add-bilag-button').on('click', function() {
             let form_idx = $('input[name=bilag-TOTAL_FORMS]').val();
             $('div#js-bilag-wrapper').append($('div#js-bilag-empty').html().replace(/__prefix__/g, form_idx))
             $('input[name=bilag-TOTAL_FORMS]').val(parseInt(form_idx)+1);
+            const newRow = $('div#js-bilag-wrapper > div:last');
+            newRow.find(".custom-file-input").on("change", function() {
+                var fileName = $(this).val().split("\\").pop();
+                $(this).siblings(".custom-file-label").addClass("selected").text(fileName);
+            });
+        });
+
+        $(".custom-file-input").on("change", function() {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").text(fileName);
         });
     });
 </script>
+<style>
+    .custom-file-label::after { content: "{% translate 'Gennemse...' %}"; }
+</style>
 {% endblock %}
