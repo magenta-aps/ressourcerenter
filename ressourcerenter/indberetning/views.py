@@ -1,27 +1,27 @@
+import json
 import mimetypes
 
 from django.conf import settings
 from django.contrib import messages
 from django.db import IntegrityError
 from django.db.models.query import prefetch_related_objects
+from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils.functional import cached_property
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
-from django.utils.functional import cached_property
 from django.views.decorators.clickjacking import xframe_options_exempt
-from django.views.generic import TemplateView, RedirectView, ListView, FormView, View, DetailView, UpdateView
-from django.forms import inlineformset_factory
+from django.views.generic import RedirectView, ListView, FormView, View, DetailView, UpdateView
+from requests.exceptions import RequestException
 
 from administration.models import Afgiftsperiode, SkemaType
-from indberetning.forms import IndberetningsTypeSelectForm, VirksomhedsAddressForm, BilagsFormSet
-from indberetning.forms import IndberetningsLinjeSkema1Form, IndberetningsLinjeSkema2Form, IndberetningsLinjeSkema3Form
-from indberetning.forms import IndberetningBeregningForm, IndberetningsLinjeBeregningForm, IndberetningSearchForm
+from indberetning.forms import IndberetningsTypeSelectForm, VirksomhedsAddressForm, BilagsFormSet, \
+    IndberetningsLinjeSkema1Form, IndberetningsLinjeSkema2Form, IndberetningsLinjeSkema3Form, IndberetningBeregningForm, \
+    IndberetningsLinjeBeregningForm, IndberetningSearchForm
 from indberetning.models import Indberetning, Virksomhed, IndberetningLinje, Bilag
 from project.dafo import DatafordelerClient
-from requests.exceptions import RequestException
-import json
 
 LoginProvider = import_string(settings.LOGIN_PROVIDER_CLASS)
 

@@ -75,7 +75,7 @@ class UserTestCase(TestCase):
         """
         User is not logged in so redirect to the login page
         """
-        company = Virksomhed.objects.create(cvr=self.cvr)
+        Virksomhed.objects.create(cvr=self.cvr)
         r = self.client.get(reverse('indberetning:indberetning-list'), follow=True)
         self.assertRedirects(r, reverse('indberetning:indberetning-list'))
         self.assertEqual(200, r.status_code)
