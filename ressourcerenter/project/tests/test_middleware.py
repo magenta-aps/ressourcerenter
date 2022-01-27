@@ -1,6 +1,7 @@
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
+from indberetning.models import Virksomhed
 
 
 @override_settings(OPENID={'mock': 'cvr'})
@@ -51,7 +52,8 @@ class UserTestCase(TestCase):
     using nemId
     """
     def setUp(self) -> None:
-        self.client.session['cpr'] = '1234567-4566'
+        self.cvr = '12345678'
+        self.client.session['cvr'] = self.cvr
 
     def tearDown(self) -> None:
         for key in ('cpr', 'cvr'):
@@ -61,19 +63,21 @@ class UserTestCase(TestCase):
     @override_settings(OPENID={'mock': 'cvr'}, DAFO={'mock': True})
     def test_logged_in_frontpage(self):
         """
-        user is "logged in" and can access the frontpage
-        :return:
+        User is "logged in" and can access the frontpage, but gets redirected to the company edit page.
         """
         r = self.client.get(reverse('indberetning:frontpage'), follow=True)
+        company = Virksomhed.objects.get(cvr=self.client.session['cvr'])
+        self.assertRedirects(r, reverse('indberetning:company-edit', kwargs={'pk': company.pk}))
         self.assertEqual(200, r.status_code)
 
-    @override_settings(OPENID={'mock': 'cpr'}, DAFO={'mock': True})
-    def test_logged_in_no_cvr_list(self):
+    @override_settings(OPENID={'mock': 'cvr'}, DAFO={'mock': True})
+    def test_logged_in_cvr_exists(self):
         """
-        User is logged in but have no active cvr number so it should redirect to company_select
+        User is not logged in so redirect to the login page
         """
+        company = Virksomhed.objects.create(cvr=self.cvr)
         r = self.client.get(reverse('indberetning:indberetning-list'), follow=True)
-        self.assertRedirects(r, reverse('indberetning:company-select'))
+        self.assertRedirects(r, reverse('indberetning:indberetning-list'))
         self.assertEqual(200, r.status_code)
 
     @override_settings(OPENID={'mock': 'cvr'})
