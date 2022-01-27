@@ -177,6 +177,7 @@ class OpenId:
                 access_token_dictionary = self._validate_access_token_response(access_token_response, request.session)
                 if access_token_dictionary:
                     userinfo = self._oic_client.do_user_info_request(state=request.session['oid_state'])
+                    logger.exception(userinfo.to_dict())
                     request.session['user_session'] = userinfo.to_dict()
                     # needed for logout
                     request.session['id_token'] = access_token_dictionary['id_token']
