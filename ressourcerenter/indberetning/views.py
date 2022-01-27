@@ -360,7 +360,7 @@ class LoginView(View):
 class LoginCallbackView(View):
     def get(self, request):
         provider = LoginProvider.from_settings()
-        if provider.handle_login_callback(request=request)
+        if provider.handle_login_callback(request=request):
             # if the call back was successfully, redirect to frontpage
             return HttpResponseRedirect(reverse('indberetning:frontpage'))
         return HttpResponseRedirect(reverse('indberetning:login'))
