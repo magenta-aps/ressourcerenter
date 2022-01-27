@@ -21,15 +21,12 @@ from indberetning.forms import IndberetningsTypeSelectForm, VirksomhedsAddressFo
     IndberetningsLinjeBeregningForm, IndberetningSearchForm
 from indberetning.models import Indberetning, Virksomhed, IndberetningLinje, Bilag
 from project.dafo import DatafordelerClient
-import logging
-logger = logging.getLogger(__name__)
 LoginProvider = import_string(settings.LOGIN_PROVIDER_CLASS)
 
 
 class Frontpage(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         cvr = self.request.session.get('cvr')
-        logger.exception('Frontpage: cvr: %s' % cvr)
         if cvr:
             # lookup company information
             dafo_client = DatafordelerClient.from_settings()
@@ -362,9 +359,7 @@ class LoginView(View):
 class LoginCallbackView(View):
     def get(self, request):
         provider = LoginProvider.from_settings()
-        r = provider.handle_login_callback(request=request)
-        logger.exception('handle_login_callback %s' % r)
-        if r:
+        if provider.handle_login_callback(request=request)
             # if the call back was successfully, redirect to frontpage
             return HttpResponseRedirect(reverse('indberetning:frontpage'))
         return HttpResponseRedirect(reverse('indberetning:login'))

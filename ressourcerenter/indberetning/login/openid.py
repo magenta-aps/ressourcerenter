@@ -187,7 +187,6 @@ class OpenId:
                     # needed for logout
                     request.session['id_token'] = access_token_dictionary['id_token']
                     request.session['raw_id_token'] = access_token_response['id_token'].jwt
-                    logger.exception('callback: %s' % (str(request.session)))
                     self._clear_secrets(request.session)
                     return True
         self._clear_secrets(request.session)
