@@ -1,5 +1,5 @@
 from django.urls import path
-from indberetning.views import CreateIndberetningCreateView, CompanySelectView, IndberetningsListView, \
+from indberetning.views import CreateIndberetningCreateView, IndberetningsListView, \
     SelectIndberetningsType, LoginView, LoginCallbackView, Frontpage, \
     LogoutView, LogoutCallback, VirksomhedUpdateView, UpdateIndberetningsView, BilagDownloadView, \
     IndberetningCalculateJsonView
@@ -8,7 +8,6 @@ app_name = IndberetningConfig.name
 
 urlpatterns = [
     path('', Frontpage.as_view(), name='frontpage'),
-    path('company/select/', CompanySelectView.as_view(), name='company-select'),
     path('company/<uuid:pk>/edit/', VirksomhedUpdateView.as_view(), name='company-edit'),
     path('list/', IndberetningsListView.as_view(), name='indberetning-list'),
     path('select/', SelectIndberetningsType.as_view(), name='type-select'),

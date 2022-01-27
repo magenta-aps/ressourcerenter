@@ -1,26 +1,27 @@
+import json
 import mimetypes
 
 from django.conf import settings
 from django.contrib import messages
 from django.db import IntegrityError
 from django.db.models.query import prefetch_related_objects
+from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils.functional import cached_property
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
-from django.utils.functional import cached_property
 from django.views.decorators.clickjacking import xframe_options_exempt
-from django.views.generic import TemplateView, RedirectView, ListView, FormView, View, DetailView, UpdateView
-from django.forms import inlineformset_factory
+from django.views.generic import RedirectView, ListView, FormView, View, DetailView, UpdateView
+from requests.exceptions import RequestException
 
 from administration.models import Afgiftsperiode, SkemaType
-from indberetning.forms import IndberetningsTypeSelectForm, VirksomhedsAddressForm, BilagsFormSet
-from indberetning.forms import IndberetningsLinjeSkema1Form, IndberetningsLinjeSkema2Form, IndberetningsLinjeSkema3Form
-from indberetning.forms import IndberetningBeregningForm, IndberetningsLinjeBeregningForm, IndberetningSearchForm
+from indberetning.forms import IndberetningsTypeSelectForm, VirksomhedsAddressForm, BilagsFormSet, \
+    IndberetningsLinjeSkema1Form, IndberetningsLinjeSkema2Form, IndberetningsLinjeSkema3Form, IndberetningBeregningForm, \
+    IndberetningsLinjeBeregningForm, IndberetningSearchForm
 from indberetning.models import Indberetning, Virksomhed, IndberetningLinje, Bilag
 from project.dafo import DatafordelerClient
-import json
 
 LoginProvider = import_string(settings.LOGIN_PROVIDER_CLASS)
 
@@ -31,8 +32,11 @@ class Frontpage(RedirectView):
         if cvr:
             # lookup company information
             dafo_client = DatafordelerClient.from_settings()
-            # TODO handle when dafo/pitu is not reachable
-            self.request.session['company_information'] = dafo_client.get_company_information(cvr)
+            try:
+                self.request.session['company_information'] = dafo_client.get_company_information(cvr)
+            except RequestException:
+                # Just means the company_information is not available
+                pass
             try:
                 virksomhed, created = Virksomhed.objects.get_or_create(cvr=cvr)
             except IntegrityError:
@@ -44,7 +48,7 @@ class Frontpage(RedirectView):
                 # redirect til redigering af administrativ adresse.
                 return reverse('indberetning:company-edit', kwargs={'pk': virksomhed.uuid})
             return reverse('indberetning:indberetning-list')
-        return reverse('indberetning:company-select')
+        return reverse('indberetning:login')
 
 
 class VirksomhedUpdateView(UpdateView):
@@ -53,20 +57,6 @@ class VirksomhedUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse('indberetning:indberetning-list')
-
-
-class CompanySelectView(TemplateView):
-    template_name = 'indberetning/company_select.html'
-
-    def get_context_data(self, **kwargs):
-        ctx = super(CompanySelectView, self).get_context_data(**kwargs)
-        dafo_client = DatafordelerClient.from_settings()
-        ctx.update({
-            'companies': dafo_client.get_owner_information(self.request.session['cpr'])
-        })
-        # TODO handle when there is no companies
-        # Show a warning and logout the user?
-        return ctx
 
 
 class IndberetningsListView(ListView):
