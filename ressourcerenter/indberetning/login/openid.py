@@ -62,7 +62,7 @@ class OpenId:
         """
         checks if the user is "logged in"
         """
-        return request.session.get('cpr', '') != ''
+        return request.session.get('cvr', '') != ''
 
     def login(self, request):
         """

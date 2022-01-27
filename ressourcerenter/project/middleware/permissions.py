@@ -33,7 +33,3 @@ class PermissionMiddleware:
             if self._login_provider.user_is_logged_in(request) is False:
                 # nemId user not logged in so redirect to login page
                 return HttpResponseRedirect(self._indberetning_login_url)
-            elif request.session.get('cvr') is None and request.path != reverse('indberetning:company-select'):
-                # if the session do not contain a cvr number,
-                # always redirect to the company select page
-                return HttpResponseRedirect(reverse('indberetning:company-select'))
