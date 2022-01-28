@@ -7,7 +7,8 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN mkdir /app && \
 #gid/uid from salt
 groupadd -g 75090 -r ressourcerenter && \
-useradd -u 75090 --no-log-init -r -g ressourcerenter ressourcerenter
+groupadd -g 75100 -r certificate_exporter && \
+useradd -u 75090 --no-log-init -r -g ressourcerenter -G certificate_exporter ressourcerenter
 # hadolint ignore=DL3008
 RUN apt-get update && \
     apt-get install -y --no-install-recommends gettext && \
