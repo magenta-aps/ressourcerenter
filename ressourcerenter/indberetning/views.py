@@ -206,7 +206,7 @@ class CreateIndberetningCreateView(IndberetningsLinjebilagFormsetMixin, FormView
             instance.administrator = self.request.user
         else:
             # nemid bruger indberetter
-            instance.indberetters_cpr = self.request.session['cpr']
+            instance.indberetters_cpr = self.request.session['cpr'] or '-'
         return instance
 
     def get_context_data(self, **kwargs):
