@@ -158,6 +158,15 @@ class OpenId:
                 elif self._mock == 'cvr':
                     request.session['cpr'] = '123456-1955'
                     request.session['cvr'] = '12345678'
+                request.session['user_info'] = {
+                    'UserType': 'MOCES',
+                    'CVR': '12345678',
+                    'PersonName': 'Darth Vader',
+                    'OrganizationName': 'S',
+                    'Language': 'da-DK',
+                    'nemid-login-id': '1f1738c6-90b4-4d81-8f0d-912f6c9c4f5b',
+                    'sub': 'digitalimik:b6f68479-ece3-464c-a4f4-a8d32c3ab172'
+                }
                 return True
 
             self._oic_client.store_registration_info({'client_id': self._client_id,
@@ -176,15 +185,15 @@ class OpenId:
                 )
                 access_token_dictionary = self._validate_access_token_response(access_token_response, request.session)
                 if access_token_dictionary:
-                    userinfo = self._oic_client.do_user_info_request(state=request.session['oid_state'])
-                    cvr = userinfo.to_dict().get('CVR')
-                    # andre informationer: PersonName og OrganizationName
+                    userinfo = self._oic_client.do_user_info_request(state=request.session['oid_state']).to_dict()
+                    cvr = userinfo.get('CVR')
                     if cvr:
                         request.session['cvr'] = cvr
-                    cpr = userinfo.to_dict().get('CPR')
+                    cpr = userinfo.get('CPR')
                     if cpr:
                         request.session['cpr'] = cpr
                     # needed for logout
+                    request.session['user_info'] = userinfo
                     request.session['id_token'] = access_token_dictionary['id_token']
                     request.session['raw_id_token'] = access_token_response['id_token'].jwt
                     self._clear_secrets(request.session)
