@@ -162,7 +162,7 @@ class OpenId:
                     'UserType': 'MOCES',
                     'CVR': '12345678',
                     'PersonName': 'Darth Vader',
-                    'OrganizationName': 'S',
+                    'OrganizationName': 'The Galactic Empire',
                     'Language': 'da-DK',
                     'nemid-login-id': '1f1738c6-90b4-4d81-8f0d-912f6c9c4f5b',
                     'sub': 'digitalimik:b6f68479-ece3-464c-a4f4-a8d32c3ab172'

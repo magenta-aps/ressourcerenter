@@ -18,6 +18,7 @@ class Virksomhed(models.Model):
     kontakt_person = models.TextField(default='', blank=True, verbose_name=_('Kontaktperson navn'))
     kontakt_email = models.EmailField(default='', blank=True, verbose_name=_('Kontaktperson email'))
     kontakts_phone_nr = models.TextField(default='', blank=True, verbose_name=_('Kontaktperson telefonnr'))
+    navn = models.TextField(verbose_name=_('Navn'), null=True)
 
     def __str__(self):
         return f"CVR {self.cvr}"
