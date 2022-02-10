@@ -14,14 +14,12 @@ from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.generic import RedirectView, ListView, FormView, View, DetailView, UpdateView
-from requests.exceptions import RequestException
 
 from administration.models import Afgiftsperiode, SkemaType
 from indberetning.forms import IndberetningsTypeSelectForm, VirksomhedsAddressForm, BilagsFormSet, \
     IndberetningsLinjeSkema1Form, IndberetningsLinjeSkema2Form, IndberetningsLinjeSkema3Form, IndberetningBeregningForm, \
     IndberetningsLinjeBeregningForm, IndberetningSearchForm
 from indberetning.models import Indberetning, Virksomhed, IndberetningLinje, Bilag
-from project.dafo import DatafordelerClient
 
 LoginProvider = import_string(settings.LOGIN_PROVIDER_CLASS)
 
@@ -30,19 +28,21 @@ class Frontpage(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         cvr = self.request.session.get('cvr')
         if cvr:
-            # lookup company information
-            dafo_client = DatafordelerClient.from_settings()
-            try:
-                self.request.session['company_information'] = dafo_client.get_company_information(cvr)
-            except RequestException:
-                # Just means the company_information is not available
-                pass
             try:
                 virksomhed, created = Virksomhed.objects.get_or_create(cvr=cvr)
             except IntegrityError:
                 # virksomhed exists so get it
                 created = False
                 virksomhed = Virksomhed.objects.get(cvr=cvr)
+
+            virksomhed_navn = self.request.session['user_info']['OrganizationName']
+            if virksomhed.navn is None:
+                virksomhed.navn = virksomhed_navn
+                virksomhed.save(update_fields=['navn'])
+            elif virksomhed.navn != virksomhed_navn:
+                # What to do when data from login doesn't match DB?
+                self.request.session['user_info']['OrganizationName'] = virksomhed.navn
+
             if created:
                 # Hvis cvr nummeret lige er blevet oprettet,
                 # redirect til redigering af administrativ adresse.

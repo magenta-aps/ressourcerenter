@@ -24,13 +24,13 @@
         <span class="ml-auto">
             <span class="p-2 navbar-text">
                 {% if request.session.impersonating %}
-                    {% blocktranslate with name=request.user.username cvr=request.session.cvr %}Logget ind som <strong>{{name}}</strong> på vegne af CVR nr. <strong>{{cvr}}</strong>{% endblocktranslate %}
+                    {% blocktranslate with name=request.user.username company=request.session.user_info.OrganizationName cvr=request.session.cvr %}Logget ind som <strong>{{name}}</strong> på vegne af <strong>{{company}} ({{cvr}})</strong>{% endblocktranslate %}
                     <a class="btn btn-primary btn-sm" href="{% url 'administration:virksomhed-represent-stop' %}">{% translate 'Afslut repræsentation' %}</a>
                 {% else %}
                     {% if request.session.user_info.PersonName %}
-                        {% blocktranslate with name=request.session.user_info.PersonName cvr=request.session.cvr %}Du er logget ind som {{name}} med CVR nr. <strong>{{cvr}}<strong>{% endblocktranslate %}
+                        {% blocktranslate with name=request.session.user_info.PersonName company=request.session.user_info.OrganizationName cvr=request.session.cvr %}Du er logget ind som <strong>{{name}}</strong> ved <strong>{{company}} ({{cvr}})</strong>{% endblocktranslate %}
                     {% else %}
-                        {% blocktranslate with cvr=request.session.cvr %}Du er logget ind med CVR nr. <strong>{{cvr}}</strong>{% endblocktranslate %}
+                        {% blocktranslate with company=request.session.company cvr=request.session.user_info.OrganizationName %}Du er logget ind som <strong>{{company}} ({{cvr}})</strong>{% endblocktranslate %}
                     {% endif %}
                 {% endif %}
             </span>
