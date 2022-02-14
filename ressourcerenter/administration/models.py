@@ -8,6 +8,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.utils import timezone
 from django.utils.translation import gettext as _, get_language
+
 from simple_history.models import HistoricalRecords
 from tenQ.client import put_file_in_prisme_folder
 from tenQ.writer import TenQTransactionWriter
