@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='indberetninglinje',
-            name='kode',
+            name='debitorgruppekode',
             field=models.PositiveSmallIntegerField(default=0),
         ),
     ]
