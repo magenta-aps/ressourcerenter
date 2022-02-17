@@ -77,11 +77,12 @@ class Migration(migrations.Migration):
             name='Faktura',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('virksomhed', models.ForeignKey(null=False, on_delete=django.db.models.deletion.CASCADE, to='indberetning.virksomhed')),
                 ('beløb', models.DecimalField(decimal_places=2, default=Decimal('0.0'), max_digits=12)),
                 ('oprettet', models.DateTimeField(auto_now_add=True)),
                 ('bogført', models.BooleanField(default=False)),
                 ('kode', models.PositiveSmallIntegerField()),
-                ('batch', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='administration.prisme10qbatch')),
+                ('batch', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='fakturaer', to='administration.prisme10qbatch')),
                 ('opretter', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
                 ('periode', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='administration.afgiftsperiode')),
             ],
