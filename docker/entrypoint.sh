@@ -11,7 +11,7 @@ if [ "$MAKE_MIGRATIONS" = true ] || [ "$MIGRATE" = true ] || [ "$ADMIN_USER" = t
   python manage.py wait_for_db
   if [ "$MAKE_MIGRATIONS" = true ]; then
     echo 'generating migrations'
-    python manage.py makemigrations
+    python manage.py makemigrations indberetning administration
   fi
   if [ "$MIGRATE" = true ]; then
     echo 'running migations'
