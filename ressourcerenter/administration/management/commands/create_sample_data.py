@@ -33,9 +33,9 @@ class Command(BaseCommand):
         indhandlingssteder = []
         for navn, stedkode in (('Nuuk', '1111'), ('Sisimiut', '2222'), ('Ilulissat', '3333')):
             try:
-                sted = Indhandlingssted.objects.create(navn=navn, stedkode=stedkode)
-            except IntegrityError:
                 sted = Indhandlingssted.objects.get(navn=navn)
+            except Indhandlingssted.DoesNotExist:
+                sted = Indhandlingssted.objects.create(navn=navn, stedkode=stedkode)
             indhandlingssteder.append(sted)
 
         indberetninger_exist = Indberetning.objects.exists()

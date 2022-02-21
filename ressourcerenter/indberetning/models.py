@@ -21,11 +21,14 @@ class Virksomhed(models.Model):
     navn = models.TextField(verbose_name=_('Navn'), null=True)
 
     def __str__(self):
-        return f"CVR {self.cvr}"
+        if self.navn:
+            return f"{self.navn} (CVR: {self.cvr})"
+        else:
+            return f"CVR {self.cvr}"
 
 
 class Indhandlingssted(models.Model):
-    stedkode = models.UUIDField(primary_key=True, default=uuid4)
+    uuid = models.UUIDField(primary_key=True, default=uuid4)
     navn = models.TextField(null=False)
     stedkode = models.CharField(max_length=8)
 

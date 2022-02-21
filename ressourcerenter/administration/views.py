@@ -1,14 +1,17 @@
 from django import forms
 from django.conf import settings
+from django.db.models import Sum
 from django.db.models.query import prefetch_related_objects
 from django.http import HttpResponseNotFound
 from django.views.generic import RedirectView
-from django.views.generic import TemplateView, ListView, DetailView
+from django.views.generic import TemplateView, ListView, DetailView, FormView
 from django.views.generic import CreateView, UpdateView
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from datetime import timedelta
 import re
+
+from collections import OrderedDict
 
 from administration.views_mixin import ExcelMixin, HistoryMixin
 
@@ -20,6 +23,8 @@ from administration.models import FiskeArt
 
 from administration.forms import ProduktTypeForm
 from administration.models import ProduktType
+
+from administration.forms import StatistikForm
 
 from indberetning.models import Indberetning
 from administration.forms import IndberetningSearchForm
@@ -332,3 +337,155 @@ class VirksomhedRepræsentantStopView(RedirectView):
             self.request.session['cvr'] = '12345678'
 
         return reverse('administration:virksomhed-list')
+
+
+class StatistikView(FormView):
+    form_class = StatistikForm
+    template_name = 'administration/statistik_form.html'
+
+    def display_kvartal(self, value):
+        return {
+            '1': _('1. kvartal'),
+            '4': _('2. kvartal'),
+            '7': _('3. kvartal'),
+            '10': _('4. kvartal'),
+        }.get(str(value))
+
+    def display_year(self, value):
+        return str(value)
+
+    def display_enhed(self, value):
+        for x in StatistikForm.base_fields['enhed'].choices:
+            if x[0] == value:
+                return x[1]
+
+    def get_resultat(self, form):
+
+        # Output is a table containing a series of identifier colums with
+        # search/grouping criteria and their values. The columns for year
+        # and quarter will always be present, other identifier columns depend
+        # on the user having picked at least one value for that field.
+        # The last two columns in the table will always be enhed/unit and
+        # værdi/value. The value column will contain the aggregated Sum of the
+        # value specified by the unit column, grouped over the identifying columns.
+        # Identifying columns will only output their value if it has changed from
+        # the previous row or if the column to the left of it has output a value.
+
+        annotations = {}
+
+        grouping_fields = OrderedDict()
+        grouping_fields['years'] = 'indberetning__afgiftsperiode__dato_fra__year'
+        grouping_fields['quarter_starting_month'] = 'indberetning__afgiftsperiode__dato_fra__month'
+
+        # Since year and quarter fields are required we can always filter on them
+        perioder = Afgiftsperiode.objects.filter(
+            dato_fra__year__in=form.cleaned_data['years'],
+            dato_fra__month__in=form.cleaned_data['quarter_starting_month'],
+        )
+
+        qs = IndberetningLinje.objects.filter(
+            indberetning__afgiftsperiode__in=perioder
+        )
+
+        if form.cleaned_data['virksomhed']:
+            grouping_fields['virksomhed'] = 'indberetning__virksomhed__cvr'
+            qs = qs.filter(indberetning__virksomhed__in=form.cleaned_data['virksomhed'])
+
+        if form.cleaned_data['fartoej']:
+            grouping_fields['fartoej'] = 'fartøj_navn'
+            qs = qs.filter(fartøj_navn__in=form.cleaned_data['fartoej'])
+
+        if form.cleaned_data['indhandlingssted']:
+            grouping_fields['indhandlingssted'] = 'indhandlingssted__navn'
+            qs = qs.filter(indhandlingssted__in=form.cleaned_data['indhandlingssted'])
+
+        # TODO: How to search for "fiskested?!?"
+
+        if form.cleaned_data['fiskeart']:
+            grouping_fields['fiskeart'] = 'produkttype__fiskeart__navn_dk'
+            qs = qs.filter(produkttype__fiskeart__in=form.cleaned_data['fiskeart'])
+
+        if form.cleaned_data['produkttype']:
+            grouping_fields['produkttype'] = 'produkttype__navn_dk'
+            qs = qs.filter(produkttype__in=form.cleaned_data['produkttype'])
+
+        if 'kr' in form.cleaned_data['enhed']:
+            annotations['kr'] = Sum('salgspris')
+
+        if 'kg' in form.cleaned_data['enhed']:
+            annotations['kg'] = Sum('levende_vægt')
+
+        headings = [form.fields[x].label for x in grouping_fields.keys()]
+        headings.append(form.fields['enhed'].label)
+        headings.append(_('Værdi'))
+
+        qs = qs.values(*grouping_fields.values()).annotate(**annotations).order_by(
+            *grouping_fields.values()
+        )
+
+        # Translators for transforming database values to human readable output
+        translators = {
+            'indberetning__afgiftsperiode__dato_fra__year': self.display_year,
+            'indberetning__afgiftsperiode__dato_fra__month': self.display_kvartal
+        }
+
+        last_row = [''] * len(grouping_fields)
+
+        # Identifier value for "enhed" field
+        last_row.append('')
+
+        number_of_identifiers = len(last_row)
+
+        result = []
+
+        for db_row_dict in qs:
+            new_rows = []
+
+            # Add values from grouping fields
+            new_row_identifiers = []
+            for key in grouping_fields.values():
+                value = db_row_dict.get(key)
+
+                if key in translators:
+                    value = translators[key](value)
+
+                new_row_identifiers.append(value)
+
+            # Add value for selected enhed and the sum for that enhed/unit
+            for enhed in form.cleaned_data['enhed']:
+                value = db_row_dict.get(enhed)
+                unit_and_value = [
+                    self.display_enhed(enhed),
+                    value/1000
+                ]
+                new_rows.append(new_row_identifiers + unit_and_value)
+
+            for new_row in new_rows:
+                output_rest_of_identifiers = False
+                output_values = []
+                # Set values to empty string if they are the same
+                # as in the previous row
+                for index in range(number_of_identifiers):
+                    value = new_row[index]
+                    if output_rest_of_identifiers or new_row[index] != last_row[index]:
+                        output_values.append(new_row[index])
+                        output_rest_of_identifiers = True
+                    else:
+                        output_values.append('')
+
+                # Append the last column, containing the value
+                output_values.append(new_row[number_of_identifiers])
+
+                result.append(output_values)
+                last_row = new_row
+
+        return {
+            'headings': headings,
+            'rows': result
+        }
+
+    def form_valid(self, form, *args, **kwargs):
+        context_data = self.get_context_data(form=form)
+        context_data['form_is_valid'] = True
+        context_data['resultat'] = self.get_resultat(form)
+        return self.render_to_response(context_data)

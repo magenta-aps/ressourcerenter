@@ -1,0 +1,89 @@
+{% extends 'administration/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% trans 'Statistik' %}</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <div id="statistik-form" class="mb-3 collapse {% if not form.is_valid %}show{% endif %}">
+        {{ form.non_field_errors }}
+        {% for field in form %}
+        <div class="mb-3">
+            {{ field.errors }}
+            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            <div class="row">
+                <div class="col-6">{{ field }}</div>
+                <div class="col-2">
+                    <button class="btn btn-primary btn-sm select-all" data-target="{{ field.id_for_label }}">{% translate 'Vælg alle' %}</button>
+                    <button class="btn btn-primary btn-sm select-none" data-target="{{ field.id_for_label }}">{% translate 'Fravælg alle' %}</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="mb-3">
+        {% if form.is_valid %}
+        <button id="toggle-button" type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#statistik-form">{% translate 'Vis formular' %}</button>
+        {% endif %}
+        <button id="form-button" type="submit" class="btn btn-primary"{% if form.is_valid %}style="display:none"{% endif %}>{% translate 'Hent resultat' %}</button>
+    </div>
+
+</form>
+
+{% if form.is_valid %}
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            {% for heading in resultat.headings %}
+            <th>{{ heading }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody class="text-right">
+        {% for row in resultat.rows %}
+        <tr>
+            {% for value in row %}
+                <td>{{ value }}</td>
+            {% endfor %}
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="{{ resultat.headings|length }}" class="text-center">{% translate 'Der er ingen resultater' %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+
+<script>
+    $('button.select-all').on('click', function(e) {
+        e.preventDefault()
+        let target_id = '#' + $(this).data('target');
+        $(target_id + ' option').attr('selected', 'selected');
+        return false
+    });
+    $('button.select-none').on('click', function(e) {
+        e.preventDefault();
+        let target_id = '#' + $(this).data('target');
+        $(target_id + ' option').removeAttr('selected');
+        return false;
+    });
+
+    const show_text = "{% translate 'Vis formular' %}";
+    const hide_text = "{% translate 'Skjul formular' %}";
+    const toggle_button = $('#toggle-button');
+    const form_button = $('#form-button');
+    $('#statistik-form').on('show.bs.collapse', function(e) {
+        toggle_button.text(hide_text);
+        form_button.show();
+    })
+    $('#statistik-form').on('hide.bs.collapse', function(e) {
+        toggle_button.text(show_text);
+        form_button.hide();
+    })
+</script>
+
+{% endblock %}
