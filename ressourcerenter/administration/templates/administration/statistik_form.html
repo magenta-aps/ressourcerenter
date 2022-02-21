@@ -4,8 +4,7 @@
 {% block content %}
 <h1>{% trans 'Statistik' %}</h1>
 
-<form method="post">
-    {% csrf_token %}
+<form method="get">
     <div id="statistik-form" class="mb-3 collapse {% if not form.is_valid %}show{% endif %}">
         {{ form.non_field_errors }}
         {% for field in form %}
@@ -28,6 +27,7 @@
         <button id="toggle-button" type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#statistik-form">{% translate 'Vis formular' %}</button>
         {% endif %}
         <button id="form-button" type="submit" class="btn btn-primary"{% if form.is_valid %}style="display:none"{% endif %}>{% translate 'Hent resultat' %}</button>
+        <button id="excel-button" type="submit" class="btn btn-success" name="format" value="xlsx">{% translate 'Hent excel-fil' %}</button>
     </div>
 
 </form>
@@ -62,13 +62,13 @@
     $('button.select-all').on('click', function(e) {
         e.preventDefault()
         let target_id = '#' + $(this).data('target');
-        $(target_id + ' option').attr('selected', 'selected');
+        $(target_id + ' option').prop('selected', true);
         return false
     });
     $('button.select-none').on('click', function(e) {
         e.preventDefault();
         let target_id = '#' + $(this).data('target');
-        $(target_id + ' option').removeAttr('selected');
+        $(target_id + ' option').prop('selected', false);
         return false;
     });
 

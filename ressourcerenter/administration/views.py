@@ -4,7 +4,7 @@ from django.db.models import Sum
 from django.db.models.query import prefetch_related_objects
 from django.http import HttpResponseNotFound
 from django.views.generic import RedirectView
-from django.views.generic import TemplateView, ListView, DetailView, FormView
+from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic import CreateView, UpdateView
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -13,7 +13,7 @@ import re
 
 from collections import OrderedDict
 
-from administration.views_mixin import ExcelMixin, HistoryMixin
+from administration.views_mixin import ExcelMixin, HistoryMixin, GetFormView
 
 from administration.forms import AfgiftsperiodeForm, SatsTabelElementForm, SatsTabelElementFormSet
 from administration.models import Afgiftsperiode, SatsTabelElement
@@ -242,11 +242,10 @@ class IndberetningListView(ExcelMixin, ListView):
     form_class = IndberetningSearchForm
 
     excel_fields = (
-        (_('Afgiftsperiode'), 'afgiftsperiode__navn'),
+        (_('Afgiftsperiode'), 'afgiftsperiode__navn_dk'),
         (_('Virksomhed'), 'virksomhed__cvr'),
         (_('Cpr'), 'indberetters_cpr'),
         (_('Indberetningstidspunkt'), 'indberetningstidspunkt'),
-        (_('Navn'), 'navn'),
         (_('Fiskearter'), 'get_fishcategories_string')
     )
 
@@ -339,9 +338,10 @@ class VirksomhedRepræsentantStopView(RedirectView):
         return reverse('administration:virksomhed-list')
 
 
-class StatistikView(FormView):
+class StatistikView(ExcelMixin, GetFormView):
     form_class = StatistikForm
     template_name = 'administration/statistik_form.html'
+    filename_base = 'statistik'
 
     def display_kvartal(self, value):
         return {
@@ -360,7 +360,6 @@ class StatistikView(FormView):
                 return x[1]
 
     def get_resultat(self, form):
-
         # Output is a table containing a series of identifier colums with
         # search/grouping criteria and their values. The columns for year
         # and quarter will always be present, other identifier columns depend
@@ -370,7 +369,6 @@ class StatistikView(FormView):
         # value specified by the unit column, grouped over the identifying columns.
         # Identifying columns will only output their value if it has changed from
         # the previous row or if the column to the left of it has output a value.
-
         annotations = {}
 
         grouping_fields = OrderedDict()
@@ -398,8 +396,6 @@ class StatistikView(FormView):
         if form.cleaned_data['indhandlingssted']:
             grouping_fields['indhandlingssted'] = 'indhandlingssted__navn'
             qs = qs.filter(indhandlingssted__in=form.cleaned_data['indhandlingssted'])
-
-        # TODO: How to search for "fiskested?!?"
 
         if form.cleaned_data['fiskeart']:
             grouping_fields['fiskeart'] = 'produkttype__fiskeart__navn_dk'
@@ -467,8 +463,8 @@ class StatistikView(FormView):
                 # as in the previous row
                 for index in range(number_of_identifiers):
                     value = new_row[index]
-                    if output_rest_of_identifiers or new_row[index] != last_row[index]:
-                        output_values.append(new_row[index])
+                    if output_rest_of_identifiers or value != last_row[index]:
+                        output_values.append(value)
                         output_rest_of_identifiers = True
                     else:
                         output_values.append('')
@@ -484,8 +480,17 @@ class StatistikView(FormView):
             'rows': result
         }
 
+    def headers(self, form):
+        return self.get_resultat(form)['headings']
+
+    def rows(self, form):
+        return self.get_resultat(form)['rows']
+
     def form_valid(self, form, *args, **kwargs):
-        context_data = self.get_context_data(form=form)
-        context_data['form_is_valid'] = True
-        context_data['resultat'] = self.get_resultat(form)
-        return self.render_to_response(context_data)
+        context = self.get_context_data(form=form)
+        context.update({
+            'form_is_valid': True,
+            'resultat': self.get_resultat(form),
+            'form': form
+        })
+        return self.render_to_response(context)
