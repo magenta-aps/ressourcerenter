@@ -80,7 +80,7 @@ class Migration(migrations.Migration):
                 ('beløb', models.DecimalField(decimal_places=2, default=Decimal('0.0'), max_digits=12)),
                 ('betalingsdato', models.DateField()),
                 ('oprettet', models.DateTimeField(auto_now_add=True)),
-                ('bogført', models.BooleanField(default=False)),
+                ('bogført', models.DateField(null=True)),
                 ('kode', models.PositiveSmallIntegerField()),
                 ('batch', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='fakturaer', to='administration.prisme10qbatch')),
                 ('opretter', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
