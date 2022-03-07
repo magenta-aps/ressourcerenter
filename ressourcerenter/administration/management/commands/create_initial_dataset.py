@@ -94,10 +94,10 @@ class Command(BaseCommand):
             self.create_produkttype(reje_havgående, 'Reje - havgående licens - Biprodukter', 'Reje - havgående licens - Biprodukter', None, reje_havgående_produkt)
 
             reje_kystnært_produkt = self.create_produkttype(reje_kystnært, 'Reje - kystnær licens', 'Reje - kystnær licens', None)
-            self.create_produkttype(reje_havgående, 'Reje - kystnær licens - Råfrosne skalrejer', 'Reje - kystnær licens - Råfrosne skalrejer', None, reje_kystnært_produkt)
-            self.create_produkttype(reje_havgående, 'Reje - kystnær licens - Søkogte skalrejer', 'Reje - kystnær licens - Søkogte skalrejer', None, reje_kystnært_produkt)
-            self.create_produkttype(reje_havgående, 'Reje - kystnær licens - Industrirejer-sækkerejer', 'Reje - kystnær licens - Industrirejer-sækkerejer', None, reje_kystnært_produkt)
-            self.create_produkttype(reje_havgående, 'Reje - kystnær licens - Biprodukter', 'Reje - kystnær licens - Biprodukter', None, reje_kystnært_produkt)
+            self.create_produkttype(reje_kystnært, 'Reje - kystnær licens - Råfrosne skalrejer', 'Reje - kystnær licens - Råfrosne skalrejer', None, reje_kystnært_produkt)
+            self.create_produkttype(reje_kystnært, 'Reje - kystnær licens - Søkogte skalrejer', 'Reje - kystnær licens - Søkogte skalrejer', None, reje_kystnært_produkt)
+            self.create_produkttype(reje_kystnært, 'Reje - kystnær licens - Industrirejer-sækkerejer', 'Reje - kystnær licens - Industrirejer-sækkerejer', None, reje_kystnært_produkt)
+            self.create_produkttype(reje_kystnært, 'Reje - kystnær licens - Biprodukter', 'Reje - kystnær licens - Biprodukter', None, reje_kystnært_produkt)
 
         perioder = []
         if not Afgiftsperiode.objects.exists():
