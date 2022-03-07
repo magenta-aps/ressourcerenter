@@ -199,15 +199,15 @@ class StatistikForm(BootstrapForm):
         required=False,
     )
 
-    indhandlingssted = forms.ModelMultipleChoiceField(
-        label=_('Indhandlingssted'),
-        queryset=Indhandlingssted.objects.all(),
+    indberetningstype = forms.MultipleChoiceField(
+        label=_('Indberetningstype'),
+        choices=[(x, x) for x in ('Indhandling', 'Eksport')],
         required=False,
     )
 
-    fiskested = forms.MultipleChoiceField(
-        label=_('Fiskested'),
-        choices=[(x, x) for x in ('Kystnær', 'Havgående')],
+    indhandlingssted = forms.ModelMultipleChoiceField(
+        label=_('Indhandlingssted'),
+        queryset=Indhandlingssted.objects.all(),
         required=False,
     )
 
@@ -226,8 +226,13 @@ class StatistikForm(BootstrapForm):
     enhed = forms.MultipleChoiceField(
         label=_('Enhed'),
         choices=(
-            ('kr', '1.000 kr'),
-            ('kg', 'Ton'),
+            ('levende_ton', _('Levende vægt tons')),
+            ('produkt_ton', _('Produkt vægt tons')),
+            ('omsætning_m_transport_tkr', _('Omsætning inkl. transporttillæg, tusinde kr.')),
+            ('omsætning_m_bonus_tkr', _('Omsætning inkl. bonus, tusinde kr.')),
+            ('omsætning_u_bonus_tkr', _('Omsætning ekskl. bonus, tusinde kr.')),
+            ('bonus_tkr', _('Bonus')),
+            ('afgift_tkr', _('Beregnet afgiftsbetaling, tusinde kr.')),
         ),
         required=True,
     )

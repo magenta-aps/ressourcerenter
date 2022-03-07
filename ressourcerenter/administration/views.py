@@ -1,6 +1,5 @@
 from django import forms
 from django.conf import settings
-from django.db.models import Sum
 from django.db.models.query import prefetch_related_objects
 from django.http import HttpResponseNotFound
 from django.views.generic import RedirectView
@@ -8,8 +7,14 @@ from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic import CreateView, UpdateView
 from django.urls import reverse
 from django.utils.translation import gettext as _
+from django.utils.functional import cached_property
+
+from django.db.models import F, Sum
+from django.db.models import Case, Value, When
+from django.db.models.functions import Coalesce
 from datetime import timedelta
 import re
+from decimal import Decimal
 
 from collections import OrderedDict
 
@@ -397,6 +402,14 @@ class StatistikView(ExcelMixin, GetFormView):
             grouping_fields['indhandlingssted'] = 'indhandlingssted__navn'
             qs = qs.filter(indhandlingssted__in=form.cleaned_data['indhandlingssted'])
 
+        if form.cleaned_data['indberetningstype']:
+            qs = qs.annotate(indberetningstype=Case(
+                When(indberetning__skematype__id=2, then=Value('Indhandling')),  # Values skal matche form.indberetningstype.choices
+                default=Value('Eksport'),
+            ))
+            grouping_fields['indberetningstype'] = 'indberetningstype'
+            qs = qs.filter(indberetningstype__in=form.cleaned_data['indberetningstype'])
+
         if form.cleaned_data['fiskeart']:
             grouping_fields['fiskeart'] = 'produkttype__fiskeart__navn_dk'
             qs = qs.filter(produkttype__fiskeart__in=form.cleaned_data['fiskeart'])
@@ -405,11 +418,27 @@ class StatistikView(ExcelMixin, GetFormView):
             grouping_fields['produkttype'] = 'produkttype__navn_dk'
             qs = qs.filter(produkttype__in=form.cleaned_data['produkttype'])
 
-        if 'kr' in form.cleaned_data['enhed']:
-            annotations['kr'] = Sum('salgspris')
+        qs = qs.select_related('produkttype', 'indberetning', 'indhandlingssted')
 
-        if 'kg' in form.cleaned_data['enhed']:
-            annotations['kg'] = Sum('levende_vægt')
+        enheder = form.cleaned_data['enhed']
+        if 'levende_ton' in enheder:
+            annotations['levende_ton'] = Sum('levende_vægt')
+        if 'produkt_ton' in enheder:
+            annotations['produkt_ton'] = Sum('produktvægt')
+        if 'omsætning_m_transport_tkr' in enheder:
+            annotations['omsætning_m_transport_tkr'] = Sum(
+                Coalesce(F('salgspris'), Decimal('0.0')) + Coalesce(F('transporttillæg'), Decimal('0.0'))
+            )
+        if 'omsætning_m_bonus_tkr' in enheder:
+            annotations['omsætning_m_bonus_tkr'] = Sum(
+                Coalesce(F('salgspris'), Decimal('0.0')) + Coalesce(F('bonus'), Decimal('0.0'))
+            )
+        if 'omsætning_u_bonus_tkr' in enheder:
+            annotations['omsætning_u_bonus_tkr'] = Sum('salgspris')
+        if 'bonus_tkr' in enheder:
+            annotations['bonus'] = Sum('bonus')
+        if 'afgift_tkr' in enheder:
+            annotations['afgift_tkr'] = Sum('fangstafgift__afgift')
 
         headings = [form.fields[x].label for x in grouping_fields.keys()]
         headings.append(form.fields['enhed'].label)
@@ -449,7 +478,7 @@ class StatistikView(ExcelMixin, GetFormView):
 
             # Add value for selected enhed and the sum for that enhed/unit
             for enhed in form.cleaned_data['enhed']:
-                value = db_row_dict.get(enhed)
+                value = db_row_dict.get(enhed) or 0
                 unit_and_value = [
                     self.display_enhed(enhed),
                     value/1000
@@ -485,6 +514,19 @@ class StatistikView(ExcelMixin, GetFormView):
 
     def rows(self, form):
         return self.get_resultat(form)['rows']
+
+    @cached_property
+    def produkt_fiskeart_map(self):
+        return {
+            str(fiskeart.uuid): [str(produkttype.uuid) for produkttype in fiskeart.produkttype_set.all()]
+            for fiskeart in FiskeArt.objects.all()
+        }
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**{
+            **kwargs,
+            'produkt_fiskeart_map': self.produkt_fiskeart_map
+        })
 
     def form_valid(self, form, *args, **kwargs):
         context = self.get_context_data(form=form)

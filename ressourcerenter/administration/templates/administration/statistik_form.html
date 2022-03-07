@@ -57,7 +57,7 @@
 </table>
 {% endif %}
 
-
+{{ produkt_fiskeart_map|json_script:"produkt_fiskeart_map" }}
 <script>
     $('button.select-all').on('click', function(e) {
         e.preventDefault()
@@ -84,6 +84,21 @@
         toggle_button.text(show_text);
         form_button.hide();
     })
+    const produkt_fiskeart_map = JSON.parse($('#produkt_fiskeart_map').text());
+    $('#statistik-form [name="fiskeart"]').on('change', function(){
+        const produkttyper = {};
+        const fiskearter = $(this).val();
+        for (let i in fiskearter) {
+            const fiskeart = fiskearter[i];
+            for (let j in produkt_fiskeart_map[fiskeart]) {
+                const produkttype = produkt_fiskeart_map[fiskeart][j];
+                produkttyper[produkttype] = 1;
+            }
+        }
+        $('#statistik-form [name="produkttype"]').find('option').each(function (){
+            $(this).toggle(this.value in produkttyper);
+        });
+    });
 </script>
 
 {% endblock %}
