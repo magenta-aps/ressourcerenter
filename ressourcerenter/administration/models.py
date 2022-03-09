@@ -181,6 +181,10 @@ class Afgiftsperiode(NamedModel):
         except SatsTabelElement.DoesNotExist:
             return None
 
+    @property
+    def kvartal_nummer(self):
+        return ceil(self.dato_fra.month / 3)
+
 
 class SatsTabelElement(models.Model):
 
@@ -554,56 +558,52 @@ class Faktura(models.Model):
 
     @property
     def prisme10Q_content(self):
+        static_data = settings.TENQ['fielddata']
         return TenQTransactionWriter(
             due_date=self.betalingsdato,
+            creation_date=self.indberetninglinje.indberetningstidspunkt,
             year=self.periode.dato_fra.year,  # Bruges i paalign_aar,
             periode_fra=self.periode.dato_fra,
-            periode_til=self.periode.dato_til
+            periode_til=self.periode.dato_til,
+            faktura_no=self.id,
+            leverandoer_ident=static_data['provider_id'],
+            bruger_nummer=static_data['user_number'],
+            betal_art=static_data['payment_type'],
         ).serialize_transaction(
             cpr_nummer=self.virksomhed.cvr,
             amount_in_dkk=self.beløb,
             afstem_noegle=str(self.pk),
             rate_text=self.text,
+            rate_nummer=self.periode.kvartal_nummer,
             leverandoer_ident=settings.PRISME_PUSH['project_id']
         )
 
     @property
     def text(self):
-        linje = self.linjer.first()
-        # Vil blive trunkeret til 60 chars i 10Q
-        return f"Ressourcerenter {self.periode} ({linje.produkttype})"
+        # Type afgift og hvilke kvartal, hvis det er indhandling, så skal der stå indhandlingssted og rederiets navn (60 tegn pr. linje)
+        textparts = ['Ressourcerenter', self.periode, f'({self.linje.produkttype})']
+        if self.linje.indhandlingssted:
+            textparts.append(self.linje.indhandlingssted)
+        # TODO: Rederiets navn?
+        return ' '.join(textparts)
 
     def __str__(self):
         return f"Faktura (kode={self.kode}, periode={self.periode}, beløb={self.beløb})"
 
     @staticmethod
-    def opret_fakturaer(linjer, opretter, betalingsdato, batch=None):
-        map = {}
-        for linje in linjer:
-            uuid = linje.indberetning.virksomhed.uuid
-            kode = linje.debitorgruppekode  # Kode er unik for fiskeart/fangststed
-            if uuid not in map:
-                map[uuid] = {}
-            if kode not in map[uuid]:
-                # Der findes ikke allerede en faktura der passer - opret én
-                map[uuid][kode] = Faktura(
-                    kode=kode,
-                    periode=linje.indberetning.afgiftsperiode,  # Perioden er den samme for alle linjer i en indberetning
-                    opretter=opretter,
-                    virksomhed=linje.indberetning.virksomhed,
-                    betalingsdato=betalingsdato,
-                    batch=batch
-                )
+    def from_linje(linje, opretter, betalingsdato, batch=None):
+        kode = linje.debitorgruppekode  # Kode er unik for fiskeart/fangststed
 
-            faktura = map[uuid][kode]
-            faktura.beløb += linje.afgift
+        faktura = Faktura.objects.create(
+            kode=kode,
+            periode=linje.indberetning.afgiftsperiode,
+            opretter=opretter,
+            virksomhed=linje.indberetning.virksomhed,
+            betalingsdato=betalingsdato,
+            batch=batch,
+            beløb=linje.afgift
+        )
 
-        fakturaer = [y for x in map.values() for y in x.values()]
-        for faktura in fakturaer:
-            faktura.save()
-        for linje in linjer:
-            uuid = linje.indberetning.virksomhed.uuid
-            kode = linje.debitorgruppekode  # Kode er unik for fiskeart/fangststed
-            linje.faktura = map[uuid][kode]
-            linje.save(update_fields=['faktura'])
-        return fakturaer
+        linje.faktura = faktura
+        linje.save(update_fields=['faktura'])
+        return faktura
