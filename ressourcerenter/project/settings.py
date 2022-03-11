@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'simple_history',
     'administration',
     'indberetning',
+    'statistik',
     'watchman',
 ]
 

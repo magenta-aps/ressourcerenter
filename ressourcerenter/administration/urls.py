@@ -7,7 +7,6 @@ from administration.views import SatsTabelElementHistoryView
 from administration.views import FiskeArtListView, FiskeArtCreateView, FiskeArtUpdateView, FiskeArtHistoryView
 from administration.views import ProduktTypeListView, ProduktTypeCreateView, ProduktTypeUpdateView, ProduktTypeHistoryView
 from administration.views import IndberetningDetailView, IndberetningListView, IndberetningAfstemFormView
-from administration.views import StatistikView
 from administration.views import VirksomhedListView, VirksomhedCreateView, VirksomhedUpdateView, VirksomhedRepræsentantView, VirksomhedRepræsentantStopView
 
 app_name = AdministrationConfig.name
@@ -44,5 +43,5 @@ urlpatterns = [
     path('virksomhed/repræsenter/stop/', VirksomhedRepræsentantStopView.as_view(), name='virksomhed-represent-stop'),
     path('virksomhed/<uuid:pk>/repræsenter/', VirksomhedRepræsentantView.as_view(), name='virksomhed-represent'),
 
-    path('statistik', StatistikView.as_view(), name='statistik'),
+
 ]

@@ -1,5 +1,6 @@
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.test import TestCase, override_settings
 from indberetning.models import Virksomhed
 
@@ -27,10 +28,13 @@ class TestNotLoggedIn(TestCase):
 class AdministratorTestCase(TestCase):
 
     def setUp(self) -> None:
+        administration_group, _ = Group.objects.get_or_create(name='administration')
+        statistik_group, _ = Group.objects.get_or_create(name='statistik')
         self.username = 'test'
         self.user = get_user_model().objects.create_user(username=self.username)
         self.password = '1234'
         self.user.set_password(self.password)
+        self.user.groups.add(administration_group, statistik_group)
         self.user.save()
 
     def test_logged_in_frontpage(self):
@@ -39,6 +43,48 @@ class AdministratorTestCase(TestCase):
         """
         self.client.login(username=self.username, password=self.password)
         r = self.client.get(reverse('administration:frontpage'))
+        self.assertEqual(r.status_code, 200)
+
+    def test_logged_in_statistik(self):
+        """
+        Logged in user tries to access the statistics page.
+        """
+        self.client.login(username=self.username, password=self.password)
+        r = self.client.get(reverse('statistik:statistik'))
+        self.assertEqual(r.status_code, 200)
+
+    def test_not_existing(self):
+        self.client.login(username=self.username, password=self.password)
+        r = self.client.get('/something/login/')
+        self.assertEqual(r.status_code, 404)
+
+
+@override_settings(OPENID={'mock': 'cvr'})
+class StatistikTestCase(TestCase):
+
+    def setUp(self) -> None:
+        statistik_group, _ = Group.objects.get_or_create(name='statistik')
+        self.username = 'test'
+        self.user = get_user_model().objects.create_user(username=self.username)
+        self.password = '1234'
+        self.user.set_password(self.password)
+        self.user.groups.add(statistik_group)
+        self.user.save()
+
+    def test_logged_in_frontpage(self):
+        """
+        Logged in user tries to access the frontpage.
+        """
+        self.client.login(username=self.username, password=self.password)
+        r = self.client.get(reverse('administration:frontpage'))
+        self.assertEqual(r.status_code, 403)
+
+    def test_logged_in_statistik(self):
+        """
+        Logged in user tries to access the statistics page.
+        """
+        self.client.login(username=self.username, password=self.password)
+        r = self.client.get(reverse('statistik:statistik'))
         self.assertEqual(r.status_code, 200)
 
     def test_not_existing(self):
@@ -84,3 +130,11 @@ class UserTestCase(TestCase):
     def test_not_existing(self):
         r = self.client.get('/something/login/')
         self.assertEqual(r.status_code, 404)
+
+    @override_settings(OPENID={'mock': 'cvr'})
+    def test_logged_in_administration(self):
+        """
+        Logged in user tries to access the admin page.
+        """
+        r = self.client.get(reverse('administration:frontpage'))
+        self.assertEqual(r.status_code, 302)

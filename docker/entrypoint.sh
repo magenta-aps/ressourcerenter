@@ -5,7 +5,7 @@ MIGRATE=${MIGRATE:=true}
 TEST=${TEST:=false}
 SAMPLE_DATA=${SAMPLE_DATA:=false}
 INITIAL_DATA=${INITIAL_DATA:=false}
-ADMIN_USER=${ADMIN_USER:=false}
+CREATE_DUMMY_USERS=${CREATE_DUMMY_USERS:=false}
 
 if [ "$MAKE_MIGRATIONS" = true ] || [ "$MIGRATE" = true ] || [ "$ADMIN_USER" = true ] || [ "$TEST" = true ] || [ "$INITIAL_DATA" = true ] || [ "$SAMPLE_DATA" = true ]; then
   python manage.py wait_for_db
@@ -17,9 +17,9 @@ if [ "$MAKE_MIGRATIONS" = true ] || [ "$MIGRATE" = true ] || [ "$ADMIN_USER" = t
     echo 'running migations'
     python manage.py migrate
   fi
-  if [ "$ADMIN_USER" = true ]; then
-    echo "Creating admin user"
-    python manage.py create_admin_user
+  if [ "$CREATE_DUMMY_USERS" = true ]; then
+    echo "Creating dummy users"
+    python manage.py create_users
   fi
   if [ "$INITIAL_DATA" = true ]; then
     echo "Generating base data"

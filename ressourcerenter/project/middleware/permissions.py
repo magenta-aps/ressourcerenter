@@ -1,7 +1,8 @@
-from django.contrib.auth.views import redirect_to_login
 from django.conf import settings
+from django.contrib.auth.views import redirect_to_login
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import redirect
 from django.urls import reverse
-from django.http import HttpResponseRedirect
 from django.utils.module_loading import import_string
 
 
@@ -26,10 +27,18 @@ class PermissionMiddleware:
                             self._indberetning_login_url,
                             self._indberetning_callback_url):
             return None
-        if request.resolver_match.app_name == 'administration' and request.user.is_authenticated is False:
-            # user not logged in, but trying to access a page from the administration app
-            return redirect_to_login(request.get_full_path(), self._administrator_login_url, 'next')
-        elif request.resolver_match.app_name == 'indberetning':
+
+        app_name = request.resolver_match.app_name
+
+        if app_name == 'indberetning':
             if self._login_provider.user_is_logged_in(request) is False:
                 # nemId user not logged in so redirect to login page
-                return HttpResponseRedirect(self._indberetning_login_url)
+                return redirect(self._indberetning_login_url)
+        else:
+            if not request.user.is_authenticated:
+                # user not logged in, but trying to access a page they must be logged in for.
+                return redirect_to_login(request.get_full_path(), self._administrator_login_url, 'next')
+
+            if not request.user.groups.filter(name=request.resolver_match.app_name).exists():
+                # User is logged in, but has insufficient permissions
+                raise PermissionDenied
