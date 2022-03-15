@@ -58,7 +58,7 @@ class IndberetningsLinjeBeregningForm(ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         if ('produktvægt' in cleaned_data or 'levende_vægt' in cleaned_data) and 'salgspris' in cleaned_data:
-            numbers = filter(None, (cleaned_data.get('produktvægt'), cleaned_data.get('levende_vægt'), cleaned_data['salgspris']))
+            numbers = list(filter(None, (cleaned_data.get('produktvægt'), cleaned_data.get('levende_vægt'), cleaned_data['salgspris'])))
             if not (all(i > 0 for i in numbers) or all(i < 0 for i in numbers)):
                 raise ValidationError(_('Produktvægt, levende vægt og salgspris skal alle være negative eller positive tal'))
         return cleaned_data
