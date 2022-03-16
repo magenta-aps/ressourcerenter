@@ -469,8 +469,6 @@ class Prisme10QBatch(models.Model):
     }
 
     def send(self, destination, user, callback=None):
-        if not settings.PRISME_PUSH['do_send']:
-            return
         try:
             # Extra check for chosen destination
             b = list(Prisme10QBatch.destinations_available)
@@ -492,10 +490,12 @@ class Prisme10QBatch(models.Model):
             }
 
             print(f"content: {content}")
-            with tempfile.NamedTemporaryFile(mode='w') as batchfile:
-                batchfile.write(content)
-                batchfile.flush()
-                put_file_in_prisme_folder(connection_settings, batchfile.name, destination_folder, filename, callback)
+
+            if settings.PRISME_PUSH['do_send']:
+                with tempfile.NamedTemporaryFile(mode='w') as batchfile:
+                    batchfile.write(content)
+                    batchfile.flush()
+                    put_file_in_prisme_folder(connection_settings, batchfile.name, destination_folder, filename, callback)
 
             self.status = Prisme10QBatch.completion_statuses[destination]
             self.leveret_af = user

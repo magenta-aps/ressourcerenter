@@ -602,9 +602,9 @@ class FakturaCreateView(CreateView):
         try:
             batch.send(destination, self.request.user)
             messages.add_message(self.request, messages.INFO, _('Faktura oprettet og afsendt'))
-        except Exception:
+        except Exception as e:
             # Exception message has been saved to batch.fejlbesked
-            messages.add_message(self.request, messages.INFO, _('Faktura oprettet, men afsendelse fejlede'))
+            messages.add_message(self.request, messages.INFO, _('Faktura oprettet, men afsendelse fejlede: {error}').format(error=str(e)))
 
         return super().form_valid(form)
 
@@ -618,9 +618,9 @@ class FakturaSendView(SingleObjectMixin, BaseFormView):
         try:
             self.get_object().batch.send(form.cleaned_data['destination'], self.request.user)
             messages.add_message(self.request, messages.INFO, _('Faktura afsendt'))
-        except Exception:
+        except Exception as e:
             # Exception message has been saved to batch.fejlbesked
-            messages.add_message(self.request, messages.INFO, _('Afsendelse fejlede'))
+            messages.add_message(self.request, messages.INFO, _('Afsendelse fejlede: {error}').format(error=str(e)))
         return super().form_valid(form)
 
     def form_invalid(self, form):
