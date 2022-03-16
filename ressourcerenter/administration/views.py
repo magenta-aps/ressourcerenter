@@ -1,18 +1,27 @@
 from django import forms
 from django.conf import settings
 from django.db.models.query import prefetch_related_objects
+from django.contrib import messages
 from django.http import HttpResponseNotFound
 from django.views.generic import RedirectView
 from django.views.generic import TemplateView, ListView, DetailView
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, FormView
 from django.urls import reverse
 from django.utils.translation import gettext as _
+from django.utils.functional import cached_property
+
+from django.db.models import F, Sum
+from django.db.models import Case, Value, When
+from django.db.models.functions import Coalesce
 from datetime import timedelta
 import re
+from decimal import Decimal
+from datetime import date
 
+from collections import OrderedDict
 
 from administration.views_mixin import HistoryMixin
-from project.views_mixin import ExcelMixin
+from project.views_mixin import ExcelMixin, GetFormView
 
 from administration.forms import AfgiftsperiodeForm, SatsTabelElementForm, SatsTabelElementFormSet
 from administration.models import Afgiftsperiode, SatsTabelElement
@@ -23,6 +32,8 @@ from administration.models import FiskeArt
 from administration.forms import ProduktTypeForm
 from administration.models import ProduktType
 
+from administration.forms import StatistikForm
+
 from indberetning.models import Indberetning
 from administration.forms import IndberetningSearchForm
 
@@ -32,6 +43,9 @@ from administration.forms import IndberetningAfstemForm
 
 from indberetning.models import Virksomhed
 from administration.forms import VirksomhedForm
+
+from administration.models import Faktura, Prisme10QBatch
+from administration.forms import FakturaForm
 
 
 class FrontpageView(TemplateView):
@@ -282,6 +296,11 @@ class IndberetningListView(ExcelMixin, ListView):
         })
 
 
+class FakturaDetailView(DetailView):
+    template_name = 'administration/faktura_detail.html'
+    model = Faktura
+
+
 class VirksomhedListView(ListView):
     model = Virksomhed
     template_name = 'administration/virksomhed_list.html'
@@ -333,3 +352,290 @@ class VirksomhedRepræsentantStopView(RedirectView):
             self.request.session['cvr'] = '12345678'
 
         return reverse('administration:virksomhed-list')
+
+
+class StatistikView(ExcelMixin, GetFormView):
+    form_class = StatistikForm
+    template_name = 'administration/statistik_form.html'
+    filename_base = 'statistik'
+
+    def display_kvartal(self, value):
+        return {
+            '1': _('1. kvartal'),
+            '4': _('2. kvartal'),
+            '7': _('3. kvartal'),
+            '10': _('4. kvartal'),
+        }.get(str(value))
+
+    def display_year(self, value):
+        return str(value)
+
+    def display_enhed(self, value):
+        for x in StatistikForm.base_fields['enhed'].choices:
+            if x[0] == value:
+                return x[1]
+
+    def get_resultat(self, form):
+        # Output is a table containing a series of identifier colums with
+        # search/grouping criteria and their values. The columns for year
+        # and quarter will always be present, other identifier columns depend
+        # on the user having picked at least one value for that field.
+        # The last two columns in the table will always be enhed/unit and
+        # værdi/value. The value column will contain the aggregated Sum of the
+        # value specified by the unit column, grouped over the identifying columns.
+        # Identifying columns will only output their value if it has changed from
+        # the previous row or if the column to the left of it has output a value.
+        annotations = {}
+
+        grouping_fields = OrderedDict()
+        grouping_fields['years'] = 'indberetning__afgiftsperiode__dato_fra__year'
+        grouping_fields['quarter_starting_month'] = 'indberetning__afgiftsperiode__dato_fra__month'
+
+        # Since year and quarter fields are required we can always filter on them
+        perioder = Afgiftsperiode.objects.filter(
+            dato_fra__year__in=form.cleaned_data['years'],
+            dato_fra__month__in=form.cleaned_data['quarter_starting_month'],
+        )
+
+        qs = IndberetningLinje.objects.filter(
+            indberetning__afgiftsperiode__in=perioder
+        )
+
+        if form.cleaned_data['virksomhed']:
+            grouping_fields['virksomhed'] = 'indberetning__virksomhed__cvr'
+            qs = qs.filter(indberetning__virksomhed__in=form.cleaned_data['virksomhed'])
+
+        if form.cleaned_data['fartoej']:
+            grouping_fields['fartoej'] = 'fartøj_navn'
+            qs = qs.filter(fartøj_navn__in=form.cleaned_data['fartoej'])
+
+        if form.cleaned_data['indhandlingssted']:
+            grouping_fields['indhandlingssted'] = 'indhandlingssted__navn'
+            qs = qs.filter(indhandlingssted__in=form.cleaned_data['indhandlingssted'])
+
+        if form.cleaned_data['indberetningstype']:
+            qs = qs.annotate(indberetningstype=Case(
+                When(indberetning__skematype__id=2, then=Value('Indhandling')),  # Values skal matche form.indberetningstype.choices
+                default=Value('Eksport'),
+            ))
+            grouping_fields['indberetningstype'] = 'indberetningstype'
+            qs = qs.filter(indberetningstype__in=form.cleaned_data['indberetningstype'])
+
+        if form.cleaned_data['fiskeart']:
+            grouping_fields['fiskeart'] = 'produkttype__fiskeart__navn_dk'
+            qs = qs.filter(produkttype__fiskeart__in=form.cleaned_data['fiskeart'])
+
+        if form.cleaned_data['produkttype']:
+            grouping_fields['produkttype'] = 'produkttype__navn_dk'
+            qs = qs.filter(produkttype__in=form.cleaned_data['produkttype'])
+
+        qs = qs.select_related('produkttype', 'indberetning', 'indhandlingssted')
+
+        enheder = form.cleaned_data['enhed']
+        if 'levende_ton' in enheder:
+            annotations['levende_ton'] = Sum('levende_vægt')
+        if 'produkt_ton' in enheder:
+            annotations['produkt_ton'] = Sum('produktvægt')
+        if 'omsætning_m_transport_tkr' in enheder:
+            annotations['omsætning_m_transport_tkr'] = Sum(
+                Coalesce(F('salgspris'), Decimal('0.0')) + Coalesce(F('transporttillæg'), Decimal('0.0'))
+            )
+        if 'omsætning_m_bonus_tkr' in enheder:
+            annotations['omsætning_m_bonus_tkr'] = Sum(
+                Coalesce(F('salgspris'), Decimal('0.0')) + Coalesce(F('bonus'), Decimal('0.0'))
+            )
+        if 'omsætning_u_bonus_tkr' in enheder:
+            annotations['omsætning_u_bonus_tkr'] = Sum('salgspris')
+        if 'bonus_tkr' in enheder:
+            annotations['bonus'] = Sum('bonus')
+        if 'afgift_tkr' in enheder:
+            annotations['afgift_tkr'] = Sum('fangstafgift__afgift')
+
+        headings = [form.fields[x].label for x in grouping_fields.keys()]
+        headings.append(form.fields['enhed'].label)
+        headings.append(_('Værdi'))
+
+        qs = qs.values(*grouping_fields.values()).annotate(**annotations).order_by(
+            *grouping_fields.values()
+        )
+
+        # Translators for transforming database values to human readable output
+        translators = {
+            'indberetning__afgiftsperiode__dato_fra__year': self.display_year,
+            'indberetning__afgiftsperiode__dato_fra__month': self.display_kvartal
+        }
+
+        last_row = [''] * len(grouping_fields)
+
+        # Identifier value for "enhed" field
+        last_row.append('')
+
+        number_of_identifiers = len(last_row)
+
+        result = []
+
+        for db_row_dict in qs:
+            new_rows = []
+
+            # Add values from grouping fields
+            new_row_identifiers = []
+            for key in grouping_fields.values():
+                value = db_row_dict.get(key)
+
+                if key in translators:
+                    value = translators[key](value)
+
+                new_row_identifiers.append(value)
+
+            # Add value for selected enhed and the sum for that enhed/unit
+            for enhed in form.cleaned_data['enhed']:
+                value = db_row_dict.get(enhed) or 0
+                unit_and_value = [
+                    self.display_enhed(enhed),
+                    value/1000
+                ]
+                new_rows.append(new_row_identifiers + unit_and_value)
+
+            for new_row in new_rows:
+                output_rest_of_identifiers = False
+                output_values = []
+                # Set values to empty string if they are the same
+                # as in the previous row
+                for index in range(number_of_identifiers):
+                    value = new_row[index]
+                    if output_rest_of_identifiers or value != last_row[index]:
+                        output_values.append(value)
+                        output_rest_of_identifiers = True
+                    else:
+                        output_values.append('')
+
+                # Append the last column, containing the value
+                output_values.append(new_row[number_of_identifiers])
+
+                result.append(output_values)
+                last_row = new_row
+
+        return {
+            'headings': headings,
+            'rows': result
+        }
+
+    def headers(self, form):
+        return self.get_resultat(form)['headings']
+
+    def rows(self, form):
+        return self.get_resultat(form)['rows']
+
+    @cached_property
+    def produkt_fiskeart_map(self):
+        return {
+            str(fiskeart.uuid): [str(produkttype.uuid) for produkttype in fiskeart.produkttype_set.all()]
+            for fiskeart in FiskeArt.objects.all()
+        }
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**{
+            **kwargs,
+            'produkt_fiskeart_map': self.produkt_fiskeart_map
+        })
+
+    def form_valid(self, form, *args, **kwargs):
+        context = self.get_context_data(form=form)
+        context.update({
+            'form_is_valid': True,
+            'resultat': self.get_resultat(form),
+            'form': form
+        })
+        return self.render_to_response(context)
+
+
+class IndberetningsLinjeListView(FormView):
+    template_name = 'administration/indberetning_afstem.html'
+    model = Faktura
+    form_class = FakturaForm
+
+    def get_success_url(self):
+        url = reverse('administration:faktura-create')
+        periode = self.request.GET.get('periode')
+        if periode:
+            url += "?periode=" + periode
+        return url
+
+    def form_valid(self, form):
+        linjer = form.cleaned_data['linjer']
+        betalingsdato = date.today() + timedelta(days=14)  # form.cleaned_data['betalingsdato']
+        batch = Prisme10QBatch.objects.create(oprettet_af=self.request.user)
+        fakturaer = Faktura.opret_fakturaer(linjer, self.request.user, betalingsdato, batch)
+        message = _('Faktura oprettet') if len(fakturaer) == 1 else _('%(antal)s fakturaer oprettet') % {'antal': len(fakturaer)}
+        messages.add_message(self.request, messages.INFO, message)
+        destination = '10q_development'
+        batch.send(destination, self.request.user)
+        return super().form_valid(form)
+
+    @cached_property
+    def periode(self):
+        periode_id = self.request.GET.get('periode')
+        if periode_id:
+            try:
+                return Afgiftsperiode.objects.get(pk=periode_id)
+            except Afgiftsperiode.DoesNotExist:
+                pass
+        return Afgiftsperiode.objects.first()
+
+    @cached_property
+    def data(self):
+        # Opret et træ som grupperer indberetningslinjer i:
+        # * Virksomheder
+        # * Produkttyper
+        # * Fakturaer
+        # * Fangsttyper
+        virksomheder = []
+        sum_fields = {'produktvægt', 'levende_vægt', 'salgspris', 'afgift'}
+
+        virksomheder_uuids = [
+            virksomhed['virksomhed']
+            for virksomhed in Indberetning.objects.filter(afgiftsperiode=self.periode).values('virksomhed').distinct()
+        ]
+        for virksomhed in Virksomhed.objects.filter(uuid__in=virksomheder_uuids).prefetch_related('indberetning_set'):
+
+            virksomhed_data = {'virksomhed': virksomhed, 'produkttyper': {}}
+            virksomheder.append(virksomhed_data)
+            for indberetning in virksomhed.indberetning_set.filter(afgiftsperiode=self.periode):
+                for linje in indberetning.linjer.all().select_related('faktura', 'produkttype'):
+
+                    produkttype = linje.produkttype
+                    if produkttype.uuid not in virksomhed_data['produkttyper']:
+                        virksomhed_data['produkttyper'][produkttype.uuid] = {
+                            'produkttype': produkttype,
+                            'fakturaer': {},
+                        }
+                    produkttype_item = virksomhed_data['produkttyper'][produkttype.uuid]
+
+                    faktura_id = linje.faktura.id if linje.faktura else None
+                    if faktura_id not in produkttype_item['fakturaer']:
+                        produkttype_item['fakturaer'][faktura_id] = {
+                            'faktura': linje.faktura,
+                            'fangsttyper': {}
+                        }
+                    faktura_item = produkttype_item['fakturaer'][faktura_id]
+
+                    fangsttype = linje.fangsttype
+                    if fangsttype not in faktura_item['fangsttyper']:
+                        faktura_item['fangsttyper'][fangsttype] = {
+                            'sum': {key: 0 for key in sum_fields},
+                            'linjer': []
+                        }
+                    fangsttype_item = faktura_item['fangsttyper'][fangsttype]
+
+                    for key in sum_fields:
+                        fangsttype_item['sum'][key] += getattr(linje, key)
+                    fangsttype_item['linjer'].append(linje)
+        return virksomheder
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**{
+            **kwargs,
+            'data': self.data,
+            'afgiftsperioder': Afgiftsperiode.objects.all(),
+            'periode': self.periode
+        })

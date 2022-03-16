@@ -10,9 +10,17 @@ from administration.models import SkemaType, FiskeArt, ProduktType, Afgiftsperio
 class Command(BaseCommand):
     help = 'Create basic data'
 
-    def create_fiskeart(self, navn_dk, navn_gl, pelagisk, skematype_ids):
+    def create_fiskeart(self, navn_dk, navn_gl, pelagisk, skematype_ids, havgående_kode, indhandling_kode, kystnær_kode, debitorgruppekode_use_skematype=True):
         try:
-            fiskeart = FiskeArt.objects.create(navn_dk=navn_dk, navn_gl=navn_gl, pelagisk=pelagisk)
+            fiskeart = FiskeArt.objects.create(
+                navn_dk=navn_dk,
+                navn_gl=navn_gl,
+                pelagisk=pelagisk,
+                debitorgruppekode_havgående=havgående_kode,
+                debitorgruppekode_indhandling=indhandling_kode,
+                debitorgruppekode_kystnært=kystnær_kode,
+                debitorgruppekode_use_skematype=debitorgruppekode_use_skematype
+            )
             fiskeart.skematype.set([self.skematyper[id] for id in skematype_ids])
             fiskeart.save()
         except IntegrityError:
@@ -38,18 +46,18 @@ class Command(BaseCommand):
                 self.skematyper[id] = SkemaType.objects.create(id=id, navn_dk=navn, navn_gl=navn)
 
         if not FiskeArt.objects.exists():
-            makrel = self.create_fiskeart('Makrel', 'Makrel', True, [1, 2])
-            sild = self.create_fiskeart('Sild', 'Sild', True, [1, 2])
-            lodde = self.create_fiskeart('Lodde', 'Lodde', True, [1, 2])
-            blåhvilling = self.create_fiskeart('Blåhvilling', 'Blåhvilling', True, [1, 2])
-            guldlaks = self.create_fiskeart('Guldlaks', 'Guldlaks', True, [1, 2])
-            hellefisk = self.create_fiskeart('Hellefisk', 'Hellefisk', False, [1, 2, 3])
-            torsk = self.create_fiskeart('Torsk', 'Torsk', False, [1, 2])
-            kuller = self.create_fiskeart('Kuller', 'Kuller', False, [1, 2])
-            sej = self.create_fiskeart('Sej', 'Sej', False, [1, 2])
-            rødfisk = self.create_fiskeart('Rødfisk', 'Rødfisk', False, [1, 2])
-            reje_havgående = self.create_fiskeart('Reje - havgående licens', 'Reje - havgående licens', False, [1, 2])
-            reje_kystnært = self.create_fiskeart('Reje - kystnær licens', 'Reje - kystnær licens', False, [1, 2])
+            makrel = self.create_fiskeart('Makrel', 'Makrel', True, [1, 2], 106, 206, 306)
+            sild = self.create_fiskeart('Sild', 'Sild', True, [1, 2], 110, 210, 310)
+            lodde = self.create_fiskeart('Lodde', 'Lodde', True, [1, 2], 105, 205, 305)
+            blåhvilling = self.create_fiskeart('Blåhvilling', 'Blåhvilling', True, [1, 2], 101, 201, 301)
+            guldlaks = self.create_fiskeart('Guldlaks', 'Guldlaks', True, [1, 2], 102, 202, 302)
+            hellefisk = self.create_fiskeart('Hellefisk', 'Hellefisk', False, [1, 2, 3], 103, 203, 303)
+            torsk = self.create_fiskeart('Torsk', 'Torsk', False, [1, 2], 111, 211, 311)
+            kuller = self.create_fiskeart('Kuller', 'Kuller', False, [1, 2], 104, 204, 304)
+            sej = self.create_fiskeart('Sej', 'Sej', False, [1, 2], 109, 209, 309)
+            rødfisk = self.create_fiskeart('Rødfisk', 'Rødfisk', False, [1, 2], 108, 208, 308)
+            reje_havgående = self.create_fiskeart('Reje - havgående licens', 'Reje - havgående licens', False, [1, 2], 107, None, None, False)
+            reje_kystnært = self.create_fiskeart('Reje - kystnær licens', 'Reje - kystnær licens', False, [1, 2], None, None, 307, False)
 
             self.create_produkttype(makrel, f"{makrel.navn_dk}, ikke-grønlandsk fartøj", f"{makrel.navn_gl}, ikke-grønlandsk fartøj", False)
             self.create_produkttype(makrel, f"{makrel.navn_dk}, grønlandsk fartøj", f"{makrel.navn_gl}, grønlandsk fartøj", True)

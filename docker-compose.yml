@@ -2,6 +2,7 @@ version: "3.4"
 services:
   ressourcerenter-web:
     container_name: ressourcerenter
+    image: ressourcerenter:latest
     build:
       context: .
       dockerfile: docker/Dockerfile
@@ -28,6 +29,20 @@ services:
       - ./dev-environment/ressourcerenter.env
     volumes:
       - ressourcerenter-postgres-data:/var/lib/postgresql/data
+
+  ressourcerenter-cron:
+    container_name: ressourcerenter-cron
+    image: ressourcerenter:latest
+    depends_on:
+      - postgres
+    env_file:
+      - ./dev-environment/ressourcerenter.env
+    volumes:
+      - ./ressourcerenter/:/app
+      - ./data/:/srv/media
+      - ./dev-environment/crontab:/crontab
+    entrypoint: [ ]
+    command: [ "supercronic", "/crontab" ]
 
 volumes:
   ressourcerenter-postgres-data:

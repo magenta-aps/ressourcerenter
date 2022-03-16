@@ -4,7 +4,7 @@ from uuid import uuid4
 from django.contrib.auth import get_user_model
 from django.db import models, IntegrityError
 from django.db.models import Sum
-from django.db.models.signals import post_save
+from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext as _
 
@@ -119,6 +119,15 @@ class IndberetningLinje(models.Model):
                                 verbose_name=_('Bonus og andet vederlag (kr)'))
     kommentar = models.TextField(default='', blank=True)
 
+    debitorgruppekode = models.PositiveSmallIntegerField(default=0)
+
+    faktura = models.ForeignKey(
+        'administration.Faktura',
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='linjer'
+    )
+
     @property
     def afgift(self):
         return self.fangstafgift.afgift
@@ -130,8 +139,33 @@ class IndberetningLinje(models.Model):
             raise Exception(f"Kan ikke beregne afgift for Indberetningslinje; beregningsmodel er ikke sat for afgiftsperiode {afgiftsperiode}")
         return beregningsmodel.calculate_for_linje(self)
 
+    @property
+    def fangsttype(self):
+        return self.produkttype.fiskeart.get_fangsttype(self.indberetning.skematype)
+
+    @property
+    def fangsttype_display(self):
+        fangsttype = self.fangsttype
+        if fangsttype == 'havgående':
+            return _('Havgående')
+        if fangsttype == 'kystnært':
+            return _('Kystnært')
+        if fangsttype == 'indhandling':
+            return _('Indhandling')
+
     class Meta:
         ordering = ('produkttype__navn_dk',)
+
+
+@receiver(pre_save, sender=IndberetningLinje, dispatch_uid='indberetningslinje_set_debitorgruppekode')
+def set_debitorgruppekode(sender, **kwargs):
+    update_fields = kwargs['update_fields']
+    # Only set debitorgruppekode if it can have changed
+    if update_fields is None or ('produkttype' not in update_fields and 'indberetning' not in update_fields):
+        indberetningslinje = kwargs['instance']
+        indberetningslinje.debitorgruppekode = indberetningslinje.produkttype.fiskeart.get_debitorgruppekode(
+            indberetningslinje.indberetning.skematype
+        )
 
 
 @receiver(post_save, sender=IndberetningLinje, dispatch_uid='indberetninglinje_calculate_afgift')
