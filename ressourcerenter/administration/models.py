@@ -491,6 +491,7 @@ class Prisme10QBatch(models.Model):
                 'known_hosts': settings.PRISME_PUSH['known_hosts'],
             }
 
+            print(f"content: {content}")
             with tempfile.NamedTemporaryFile(mode='w') as batchfile:
                 batchfile.write(content)
                 batchfile.flush()
@@ -501,7 +502,7 @@ class Prisme10QBatch(models.Model):
             self.leveret_tidspunkt = timezone.now()
         except Exception as e:
             self.status = Prisme10QBatch.STATUS_DELIVERY_FAILED
-            self.delivery_error = str(e)
+            self.fejlbesked = str(e)
             raise
         finally:
             self.save()

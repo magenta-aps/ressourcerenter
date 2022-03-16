@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 from administration.models import Afgiftsperiode, SatsTabelElement, BeregningsModel
@@ -263,3 +264,16 @@ class FakturaForm(BootstrapForm, forms.ModelForm):
     class Meta:
         model = Faktura
         fields = ('betalingsdato',)
+        widgets = {
+            'betalingsdato': DateInput()
+        }
+
+    send_to_test = forms.BooleanField(
+        required=False
+    )
+
+class BatchSendForm(forms.Form):
+
+    destination = forms.ChoiceField(
+        choices=[(key, key) for key, value in settings.PRISME_PUSH['destinations_available'].items() if value]
+    )

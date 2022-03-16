@@ -17,6 +17,19 @@
             {{ form.betalingsdato.errors }}
         </div>
     </div>
+    {% if send_to_test_available %}
+    <div class="form-row form-check">
+        <div class="col-2">
+            {{ form.send_to_test }}
+        </div>
+        <div class="col-4">
+            <label class="form-check-label" for="{{ form.sent_to_test.id_for_label }}">{% translate 'Send til testsystem' %}</label>
+        </div>
+        <div class="col-6">
+            {{ form.betalingsdato.errors }}
+        </div>
+    </div>
+    {% endif %}
     <button type="submit" class="btn btn-primary">{% translate 'Gem' %}</button>
 </form>
 

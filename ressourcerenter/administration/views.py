@@ -1,12 +1,14 @@
 from django import forms
 from django.conf import settings
 from django.db.models.query import prefetch_related_objects
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.http import HttpResponseNotFound
 from django.views.generic import RedirectView
 from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic import CreateView, UpdateView, FormView
+from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.edit import BaseFormView
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.utils.functional import cached_property
@@ -18,6 +20,7 @@ from datetime import timedelta
 import re
 from decimal import Decimal
 from datetime import date
+from itertools import chain
 
 from collections import OrderedDict
 
@@ -47,6 +50,8 @@ from administration.forms import VirksomhedForm
 
 from administration.models import Faktura, Prisme10QBatch
 from administration.forms import FakturaForm
+
+from administration.forms import BatchSendForm
 
 
 class FrontpageView(TemplateView):
@@ -300,6 +305,12 @@ class IndberetningListView(ExcelMixin, ListView):
 class FakturaDetailView(DetailView):
     template_name = 'administration/faktura_detail.html'
     model = Faktura
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**{
+            **kwargs,
+            'destinations_available': settings.PRISME_PUSH['destinations_available']
+        })
 
 
 class VirksomhedListView(ListView):
@@ -558,6 +569,16 @@ class FakturaCreateView(CreateView):
     def get_success_url(self):
         return reverse('administration:indberetningslinje-list')
 
+    def get_context_data(self, **kwargs):
+        destinations_available = settings.PRISME_PUSH['destinations_available']
+        return super().get_context_data(
+            **{
+                **kwargs,
+                # Option to send to test is only avaliable when both are possible
+                'send_to_test_available': destinations_available['10q_production'] and destinations_available['10q_development']
+            }
+        )
+
     def form_valid(self, form):
         linje = get_object_or_404(IndberetningLinje, pk=self.kwargs['pk'])
         batch = Prisme10QBatch.objects.create(oprettet_af=self.request.user)
@@ -571,7 +592,47 @@ class FakturaCreateView(CreateView):
         faktura.save()
         linje.faktura = faktura
         linje.save(update_fields=('faktura',))
+
+        destinations_available = settings.PRISME_PUSH['destinations_available']
+        # Send to prod if it is available, fall back to dev
+        destination = '10q_production'\
+            if destinations_available['10q_production'] and not form.cleaned_data['send_to_test']\
+            else '10q_development'
+
+        try:
+            batch.send(destination, self.request.user)
+            messages.add_message(self.request, messages.INFO, _('Faktura oprettet og afsendt'))
+        except Exception:
+            # Exception message has been saved to batch.fejlbesked
+            messages.add_message(self.request, messages.INFO, _('Faktura oprettet, men afsendelse fejlede'))
+
         return super().form_valid(form)
+
+
+class FakturaSendView(SingleObjectMixin, BaseFormView):
+
+    form_class = BatchSendForm
+    model = Faktura
+
+    def form_valid(self, form):
+        try:
+            self.get_object().batch.send(form.cleaned_data['destination'], self.request.user)
+            messages.add_message(self.request, messages.INFO, _('Faktura afsendt'))
+        except Exception:
+            # Exception message has been saved to batch.fejlbesked
+            messages.add_message(self.request, messages.INFO, _('Afsendelse fejlede'))
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.add_message(
+            self.request,
+            messages.INFO,
+            _('Afsendelse fejlede: {error}').format(error=', '.join(chain(*form.errors.values())))
+        )
+        return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse('administration:faktura-detail', kwargs={'pk': self.get_object().pk})
 
 
 class IndberetningsLinjeListView(FormView):
