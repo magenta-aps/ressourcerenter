@@ -1,6 +1,7 @@
 from django import forms
 from django.conf import settings
 from django.db.models.query import prefetch_related_objects
+from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponseNotFound
 from django.views.generic import RedirectView
@@ -549,13 +550,37 @@ class StatistikView(ExcelMixin, GetFormView):
         return self.render_to_response(context)
 
 
+class FakturaCreateView(CreateView):
+    form_class = FakturaForm
+    model = Faktura
+    template_name = 'administration/faktura_form.html'
+
+    def get_success_url(self):
+        return reverse('administration:indberetningslinje-list')
+
+    def form_valid(self, form):
+        linje = get_object_or_404(IndberetningLinje, pk=self.kwargs['pk'])
+        batch = Prisme10QBatch.objects.create(oprettet_af=self.request.user)
+        faktura = form.save(commit=False)
+        faktura.kode = linje.debitorgruppekode
+        faktura.periode = linje.indberetning.afgiftsperiode
+        faktura.opretter = self.request.user
+        faktura.virksomhed = linje.indberetning.virksomhed
+        faktura.batch = batch
+        faktura.beløb = linje.afgift
+        faktura.save()
+        linje.faktura = faktura
+        linje.save(update_fields=('faktura',))
+        return super().form_valid(form)
+
+
 class IndberetningsLinjeListView(FormView):
     template_name = 'administration/indberetning_afstem.html'
     model = Faktura
     form_class = FakturaForm
 
     def get_success_url(self):
-        url = reverse('administration:faktura-create')
+        url = reverse('administration:indberetningslinje-list')
         periode = self.request.GET.get('periode')
         if periode:
             url += "?periode=" + periode
@@ -609,25 +634,17 @@ class IndberetningsLinjeListView(FormView):
                     if produkttype.uuid not in virksomhed_data['produkttyper']:
                         virksomhed_data['produkttyper'][produkttype.uuid] = {
                             'produkttype': produkttype,
-                            'fakturaer': {},
+                            'fangsttyper': {}
                         }
                     produkttype_item = virksomhed_data['produkttyper'][produkttype.uuid]
 
-                    faktura_id = linje.faktura.id if linje.faktura else None
-                    if faktura_id not in produkttype_item['fakturaer']:
-                        produkttype_item['fakturaer'][faktura_id] = {
-                            'faktura': linje.faktura,
-                            'fangsttyper': {}
-                        }
-                    faktura_item = produkttype_item['fakturaer'][faktura_id]
-
                     fangsttype = linje.fangsttype
-                    if fangsttype not in faktura_item['fangsttyper']:
-                        faktura_item['fangsttyper'][fangsttype] = {
+                    if fangsttype not in produkttype_item['fangsttyper']:
+                        produkttype_item['fangsttyper'][fangsttype] = {
                             'sum': {key: 0 for key in sum_fields},
                             'linjer': []
                         }
-                    fangsttype_item = faktura_item['fangsttyper'][fangsttype]
+                    fangsttype_item = produkttype_item['fangsttyper'][fangsttype]
 
                     for key in sum_fields:
                         fangsttype_item['sum'][key] += getattr(linje, key)

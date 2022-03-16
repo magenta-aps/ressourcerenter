@@ -5,6 +5,7 @@ from administration.models import Afgiftsperiode, SatsTabelElement, BeregningsMo
 from administration.models import FiskeArt
 from administration.models import SkemaType
 from administration.models import ProduktType
+from administration.models import Faktura
 from project.forms_mixin import BootstrapForm
 from project.form_fields import DateInput
 from indberetning.models import Indberetning, Indhandlingssted
@@ -257,8 +258,8 @@ class StatistikForm(BootstrapForm):
         super(StatistikForm, self).__init__(*args, **kwargs)
 
 
-class FakturaForm(BootstrapForm):
-    linjer = forms.ModelMultipleChoiceField(
-        queryset=IndberetningLinje.objects.all(),
-        widget=forms.MultipleHiddenInput
-    )
+class FakturaForm(BootstrapForm, forms.ModelForm):
+
+    class Meta:
+        model = Faktura
+        fields = ('betalingsdato',)

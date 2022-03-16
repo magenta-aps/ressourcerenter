@@ -1,0 +1,23 @@
+{% extends 'administration/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% translate 'Opret Faktura' %}</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+        <div class="col-2">
+            <label for="{{ form.betalingsdato.id_for_label }}">{% translate 'Betalingsdato:' %}</label>
+        </div>
+        <div class="col-4">
+            {{ form.betalingsdato }}
+        </div>
+        <div class="col-6">
+            {{ form.betalingsdato.errors }}
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">{% translate 'Gem' %}</button>
+</form>
+
+{% endblock %}
