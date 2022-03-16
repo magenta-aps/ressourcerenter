@@ -1,11 +1,17 @@
+import tempfile
 from decimal import Decimal, ROUND_HALF_EVEN
-from uuid import uuid4
-
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.validators import MaxValueValidator
 from django.db import models
 from django.db.models.signals import post_save
+from django.utils import timezone
 from django.utils.translation import gettext as _, get_language
-
 from simple_history.models import HistoricalRecords
+from tenQ.client import put_file_in_prisme_folder
+from tenQ.writer import TenQTransactionWriter
+from uuid import uuid4
 
 
 class NamedModel(models.Model):
@@ -69,7 +75,36 @@ class FiskeArt(NamedModel):
 
     pelagisk = models.BooleanField(default=False)
     skematype = models.ManyToManyField(SkemaType)
+    debitorgruppekode_indhandling = models.PositiveSmallIntegerField(validators=[MaxValueValidator(999)], null=True)
+    debitorgruppekode_kystnært = models.PositiveSmallIntegerField(validators=[MaxValueValidator(999)], null=True)
+    debitorgruppekode_havgående = models.PositiveSmallIntegerField(validators=[MaxValueValidator(999)], null=True)
     history = HistoricalRecords()
+    debitorgruppekode_use_skematype = models.BooleanField(default=True)
+
+    def get_fangsttype(self, skematype):
+        if self.debitorgruppekode_use_skematype:
+            if skematype.id == 1:
+                return 'havgående'
+            elif skematype.id == 2:
+                return 'indhandling'
+            elif skematype.id == 3:
+                return 'kystnært'
+        else:
+            if self.debitorgruppekode_indhandling:
+                return 'indhandling'
+            elif self.debitorgruppekode_kystnært:
+                return 'kystnært'
+            elif self.debitorgruppekode_havgående:
+                return 'havgående'
+
+    def get_debitorgruppekode(self, skematype):
+        fangsttype = self.get_fangsttype(skematype)
+        if fangsttype == 'havgående':
+            return self.debitorgruppekode_havgående
+        elif fangsttype == 'indhandling':
+            return self.debitorgruppekode_indhandling
+        elif fangsttype == 'kystnært':
+            return self.debitorgruppekode_kystnært
 
 
 class ProduktType(NamedModel):
@@ -260,9 +295,9 @@ class FangstAfgift(models.Model):
     def rate_string(self):
         lines = []
         if self.rate_pr_kg:
-            lines.append(_('%s kr/kg') % self.rate_pr_kg)
+            lines.append(_('%s kr/kg') % str(self.rate_pr_kg).replace('.', ','))
         if self.rate_procent:
-            lines.append(_('%s %%') % self.rate_procent)
+            lines.append(_('%s %%') % str(self.rate_procent).replace('.', ','))
         return '+'.join(lines)
 
 
@@ -331,7 +366,10 @@ class BeregningsModel2021(BeregningsModel):
 
     def calculate_for_linje(self, indberetninglinje):
         sats = self.get_satstabelelement(indberetninglinje)
-        afgift_item = FangstAfgift()
+        try:
+            afgift_item = indberetninglinje.fangstafgift
+        except ObjectDoesNotExist:
+            afgift_item = FangstAfgift()
 
         rate_procent = sats.rate_procent or 0
         rate_pr_kg = sats.rate_pr_kg or 0
@@ -352,3 +390,219 @@ class BeregningsModel2021(BeregningsModel):
         afgift_item.rate_procent = rate_procent
         afgift_item.indberetninglinje = indberetninglinje
         return afgift_item
+
+
+class Prisme10QBatch(models.Model):
+    class Meta:
+        ordering = ['oprettet_tidspunkt']
+        verbose_name = _('prisme 10Q batch')
+        verbose_name_plural = _('prisme 10Q batches')
+
+    # When was the batch created
+    oprettet_tidspunkt = models.DateTimeField(auto_now=True)
+    # Who created the batch
+    oprettet_af = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name='created_prisme_batches',
+    )
+    # When was the batch delivered
+    leveret_tidspunkt = models.DateTimeField(blank=True, null=True)
+    # Who delivered the batch
+    leveret_af = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name='prisme_batches',
+    )
+    # Any error encountered while trying to deliver the batch
+    fejlbesked = models.TextField(blank=True, default='')
+
+    # Status for delivery
+    STATUS_CREATED = 'created'
+    STATUS_DELIVERING = 'delivering'
+    STATUS_DELIVERY_FAILED = 'failed'
+    STATUS_DELIVERED = 'delivered'
+    STATUS_CANCELLED = 'cancelled'
+
+    status_choices = (
+        (STATUS_CREATED, _('Ikke afsendt')),
+        (STATUS_DELIVERING, _('Afsender')),
+        (STATUS_DELIVERY_FAILED, _('Afsendelse fejlet')),
+        (STATUS_DELIVERED, _('Afsendt')),
+        (STATUS_CANCELLED, _('Annulleret'))
+    )
+
+    status = models.CharField(
+        choices=status_choices,
+        default=STATUS_CREATED,
+        max_length=15
+    )
+
+    def get_prisme10Q_content(self, max_entries=None):
+        qs = self.fakturaer.filter(bogført__isnull=True)
+        if max_entries is not None:
+            qs = qs[:max_entries]
+        return '\r\n'.join([faktura.prisme10Q_content for faktura in qs])
+
+    destinations_all = (
+        ('10q_development', _('Undervisningssystem')),
+        ('10q_production', _('Produktionssystem')),
+    )
+    destinations_available = tuple((
+        (destination_id, label,)
+        for destination_id, label in destinations_all
+        if settings.PRISME_PUSH['destinations_available'][destination_id]
+    ))
+    completion_statuses = {
+        '10q_production': STATUS_DELIVERED,
+        '10q_development': STATUS_CREATED
+    }
+
+    def send(self, destination, user, callback=None):
+        if not settings.PRISME_PUSH['do_send']:
+            return
+        try:
+            # Extra check for chosen destination
+            b = list(Prisme10QBatch.destinations_available)
+            available = {destination_id for destination_id, label in b}
+            if destination not in available:
+                available_csep = ', '.join(available)
+                raise ValueError(f"Kan ikke sende batch til {destination}, det er kun {available_csep} der er tilgængelig på dette system")
+
+            destination_folder = settings.PRISME_PUSH['dirs'][destination]
+            # When sending to development environment, only send 100 entries
+            content = self.get_prisme10Q_content(100 if destination == '10q_development' else None)
+            filename = "KAS_10Q_export_{}.10q".format(timezone.now().strftime('%Y-%m-%dT%H-%M-%S'))
+            connection_settings = {
+                'host': settings.PRISME_PUSH['host'],
+                'port': settings.PRISME_PUSH['port'],
+                'username': settings.PRISME_PUSH['username'],
+                'password': settings.PRISME_PUSH['password'],
+                'known_hosts': settings.PRISME_PUSH['known_hosts'],
+            }
+
+            with tempfile.NamedTemporaryFile(mode='w') as batchfile:
+                batchfile.write(content)
+                batchfile.flush()
+                put_file_in_prisme_folder(connection_settings, batchfile.name, destination_folder, filename, callback)
+
+            self.status = Prisme10QBatch.completion_statuses[destination]
+            self.leveret_af = user
+            self.leveret_tidspunkt = timezone.now()
+        except Exception as e:
+            self.status = Prisme10QBatch.STATUS_DELIVERY_FAILED
+            self.delivery_error = str(e)
+            raise
+        finally:
+            self.save()
+
+
+class Faktura(models.Model):
+
+    virksomhed = models.ForeignKey(
+        'indberetning.Virksomhed',
+        null=False,
+        on_delete=models.CASCADE
+    )
+
+    beløb = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=Decimal('0.0'),
+    )
+
+    betalingsdato = models.DateField(
+        null=False
+    )
+
+    periode = models.ForeignKey(
+        Afgiftsperiode,
+        on_delete=models.SET_NULL,
+        null=True
+    )
+
+    opretter = models.ForeignKey(
+        get_user_model(),
+        null=False,
+        on_delete=models.CASCADE,
+    )
+
+    oprettet = models.DateTimeField(
+        auto_now_add=True,
+        null=False,
+    )
+
+    bogført = models.DateField(
+        null=True
+    )
+
+    kode = models.PositiveSmallIntegerField(
+        null=False
+    )
+
+    batch = models.ForeignKey(
+        Prisme10QBatch,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name='fakturaer',
+    )
+
+    @property
+    def prisme10Q_content(self):
+        return TenQTransactionWriter(
+            due_date=self.betalingsdato,
+            year=self.periode.dato_fra.year,  # Bruges i paalign_aar,
+            periode_fra=self.periode.dato_fra,
+            periode_til=self.periode.dato_til
+        ).serialize_transaction(
+            cpr_nummer=self.virksomhed.cvr,
+            amount_in_dkk=self.beløb,
+            afstem_noegle=str(self.pk),
+            rate_text=self.text,
+            leverandoer_ident=settings.PRISME_PUSH['project_id']
+        )
+
+    @property
+    def text(self):
+        linje = self.linjer.first()
+        # Vil blive trunkeret til 60 chars i 10Q
+        return f"Ressourcerenter {self.periode} ({linje.produkttype})"
+
+    def __str__(self):
+        return f"Faktura (kode={self.kode}, periode={self.periode}, beløb={self.beløb})"
+
+    @staticmethod
+    def opret_fakturaer(linjer, opretter, betalingsdato, batch=None):
+        map = {}
+        for linje in linjer:
+            uuid = linje.indberetning.virksomhed.uuid
+            kode = linje.debitorgruppekode  # Kode er unik for fiskeart/fangststed
+            if uuid not in map:
+                map[uuid] = {}
+            if kode not in map[uuid]:
+                # Der findes ikke allerede en faktura der passer - opret én
+                map[uuid][kode] = Faktura(
+                    kode=kode,
+                    periode=linje.indberetning.afgiftsperiode,  # Perioden er den samme for alle linjer i en indberetning
+                    opretter=opretter,
+                    virksomhed=linje.indberetning.virksomhed,
+                    betalingsdato=betalingsdato,
+                    batch=batch
+                )
+
+            faktura = map[uuid][kode]
+            faktura.beløb += linje.afgift
+
+        fakturaer = [y for x in map.values() for y in x.values()]
+        for faktura in fakturaer:
+            faktura.save()
+        for linje in linjer:
+            uuid = linje.indberetning.virksomhed.uuid
+            kode = linje.debitorgruppekode  # Kode er unik for fiskeart/fangststed
+            linje.faktura = map[uuid][kode]
+            linje.save(update_fields=['faktura'])
+        return fakturaer

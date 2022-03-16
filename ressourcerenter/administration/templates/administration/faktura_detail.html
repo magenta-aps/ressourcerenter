@@ -1,0 +1,153 @@
+{% extends 'administration/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% translate 'Faktura' %}</h1>
+
+<div class="row">
+
+    <div class="col-4">
+        <h2>{% translate 'Fakturadata' %}</h2>
+        <table class="table table-bordered table-sm">
+            <tbody>
+            <tr>
+                <th class="col-4">{% translate 'Afgiftsperiode' %}</th>
+                <td>{{ object.periode|default_if_none:'' }}</td>
+            </tr>
+            <tr>
+                <th>{% translate 'Oprettet af' %}</th>
+                <td>{{ object.opretter|default_if_none:'' }}</td>
+            </tr>
+            <tr>
+                <th>{% translate 'Oprettelsesdato' %}</th>
+                <td>{{ object.oprettet|default_if_none:'' }}</td>
+            </tr>
+            <tr>
+                <th>{% translate 'Betalingsdato' %}</th>
+                <td>{{ object.betalingsdato|default_if_none:'' }}</td>
+            </tr>
+            <tr>
+                <th>{% translate 'Total beregnet afgift (kr)' %}</th>
+                <td>{{ object.beløb|default_if_none:'' }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-4">
+        <h2>{% translate 'Virksomhed' %}</h2>
+        <table class="table table-bordered table-sm">
+            <tbody>
+            <tr>
+                <th class="col-4">{% translate 'Navn' %}</th>
+                <td>{{ object.virksomhed.navn|default_if_none:'' }}</td>
+            </tr>
+            <tr>
+                <th class="col-4">{% translate 'CVR' %}</th>
+                <td>{{ object.virksomhed.cvr }}</td>
+            </tr>
+            <tr>
+                <th>{% translate 'Kontaktperson' %}</th>
+                <td>{{ object.virksomhed.kontakt_person|default_if_none:'' }}</td>
+            </tr>
+            <tr>
+                <th>{% translate 'Email' %}</th>
+                <td>{{ object.virksomhed.kontakt_email|default_if_none:'' }}</td>
+            </tr>
+            <tr>
+                <th>{% translate 'Telefon' %}</th>
+                <td>{{ object.virksomhed.kontakts_phone_nr|default_if_none:'' }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-4">
+        <h2>{% translate 'Prisme-overførsel' %}</h2>
+        {% translate 'Nej' as nej %}
+        <table class="table table-bordered table-sm">
+            <tbody>
+            <tr>
+                <th class="col-4">{% translate 'Oprettet' %}</th>
+                <td>{{ object.batch.oprettet_tidspunkt|default:nej }}</td>
+            </tr>
+            <tr>
+                <th class="col-4">{% translate 'Leveret til Prisme' %}</th>
+                <td>{{ object.batch.leveret_tidspunkt|default:nej }}</td>
+            </tr>
+            <tr>
+                <th class="col-4">{% translate 'Overførselsstatus' %}</th>
+                <td>{{ object.batch.get_status_display }}</td>
+            </tr>
+            <tr>
+                <th>{% translate 'Fejl fra prisme' %}</th>
+                <td>{{ object.batch.fejlbesked|default:nej }}</td>
+            </tr>
+            <tr>
+                <th>{% translate 'Bogført' %}</th>
+                <td>{{ object.bogført|default_if_none:nej }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<hr/>
+
+<h2>{% translate 'Indberetningslinjer' %}</h2>
+{% with linjer=object.linjer.all %}
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>{% translate 'Indhandlingssted' %}</th>
+        <th>{% translate 'Fartøj' %}</th>
+        <th>{% translate 'Fangsttype' %}</th>
+        <th>{% translate 'Produkttype' %}</th>
+        <th>{% translate 'Produktvægt (kg)' %}</th>
+        <th>{% translate 'Levende vægt/helfisk mængde (kg)' %}</th>
+        <th>{% translate 'Omsætning / Indhandlingsværdi (kr)' %}</th>
+        <th>{% translate 'Afgiftssats' %}</th>
+        <th>{% translate 'Beregnet afgift (kr)' %}</th>
+        <th>{% translate 'Kommentar' %}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for linje in linjer %}
+        <tr>
+            <td>{{ linje.indhandlingssted|default_if_none:'' }}</td>
+            <td>{{ linje.fartøj_navn|default_if_none:'' }}</td>
+            <td>{{ linje.fangsttype_display }}</td>
+            <td>{{ linje.produkttype }}</td>
+            <td class="text-right">{{ linje.produktvægt }}</td>
+            <td class="text-right">{{ linje.levende_vægt }}</td>
+            <td class="text-right">{{ linje.salgspris }}</td>
+            <td class="text-right">{{ linje.fangstafgift.rate_string }}</td>
+            <td class="text-right">{{ linje.afgift }}</td>
+            <td>{{ linje.kommentar }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="4"><strong>{% translate 'I alt' %}</strong></td>
+
+            <td class="text-right">
+                {{linjer|list_sum_attr:'produktvægt'}}
+            </td>
+            <td class="text-right">
+                {{linjer|list_sum_attr:'levende_vægt'}}
+            </td>
+            <td class="text-right">
+                {{linjer|list_sum_attr:'salgspris'}}
+            </td>
+            <td></td>
+            <td class="text-right">
+                {{linjer|list_sum_attr:'afgift'}}
+            </td>
+            <td></td>
+        </tr>
+    </tfoot>
+</table>
+{% endwith %}
+
+{% endblock %}

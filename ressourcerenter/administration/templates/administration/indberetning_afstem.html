@@ -1,0 +1,150 @@
+{% extends 'administration/base.html' %}
+{% load i18n %}
+
+{% block alert %}
+{% if messages %}
+{% for message in messages %}
+<div class="alert text-center {% if message.level == 20 %}alert-info
+                              {% elif message.level == 25 %}alert-success
+                              {% elif message.level == 30 %}alert-warning
+                              {% elif message.level == 40 %}alert-danger
+                              {% endif %}" role="alert">
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<h1>{% translate 'Afstem indberetninger' %}</h1>
+<div class="row">
+    <div class="col-1">
+        <label for="periode">{% translate 'Afgiftsperiode' %}</label>
+    </div>
+    <div class="col-2">
+        <form method="get" data-autosubmit="true">
+        <select id="periode" name="periode" class="form-control">
+            {% for afgiftsperiode in afgiftsperioder %}
+            <option value="{{afgiftsperiode.pk}}" {% if afgiftsperiode == periode %}selected="selected"{% endif %}>{{ afgiftsperiode }}</option>
+            {% endfor %}
+        </select>
+        </form>
+    </div>
+</div>
+
+{{form.errors}}
+
+{% for virksomhed_item in data %}
+    {% with virksomhed=virksomhed_item.virksomhed %}
+    {% if virksomhed_item.produkttyper|length %}
+    <h2>{{ virksomhed }}</h2>
+    {% for produkttype_item in virksomhed_item.produkttyper.values %}
+        {% with produkttype=produkttype_item.produkttype %}
+        {% with sum=produkttype_item.sum %}
+        <h3>{{ produkttype }}</h3>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th class="col-1">{% translate 'Fangsttype' %}</th>
+                <th class="col-1">{% translate 'Fartøj' %}</th>
+                <th class="col-1">{% translate 'Indhandlingssted' %}</th>
+                <th class="col-1">{% translate 'Produktvægt (kg)' %}</th>
+                <th class="col-2">{% translate 'Levende vægt/helfisk mængde (kg)' %}</th>
+                <th class="col-2">{% translate 'Omsætning / Indhandlingsværdi (kr)' %}</th>
+                <th class="col-1">{% translate 'Afgiftssats' %}</th>
+                <th class="col-1">{% translate 'Beregnet afgift (kr)' %}</th>
+
+                <th class="col-1">{% translate 'Prisme-status' %}</th>
+                <th class="col-1">{% translate 'Handling' %}</th>
+            </tr>
+            </thead>
+            {% for faktura_item in produkttype_item.fakturaer.values %}
+                {% with faktura=faktura_item.faktura %}
+
+                {% for fangsttype, fangsttype_item in faktura_item.fangsttyper.items %}
+                    {% with linjer=fangsttype_item.linjer %}
+                        {% if linjer %}
+                            <tbody>
+                            {% with count=linjer|length %}
+                                {% for linje in linjer %}
+                                    <tr>
+                                        <td>
+                                            <input type="hidden" name="{{form.linjer.name}}" value="{{linje.pk}}"/>
+                                            {{linje.fangsttype_display}}
+                                        </td>
+                                        <td>{{linje.fartøj_navn|default_if_none:''}}</td>
+                                        <td>{{linje.indhandlingssted|default_if_none:''}}</td>
+                                        <td>{{linje.produktvægt}}</td>
+                                        <td>{{linje.levende_vægt}}</td>
+                                        <td>{{linje.salgspris}}</td>
+                                        <td>{{linje.fangstafgift.rate_string}}</td>
+                                        <td>{{linje.afgift}}</td>
+                                        {% if forloop.first %}
+                                            {% with faktura=faktura_item.faktura %}
+
+                                                {% if faktura_item.faktura %}
+                                                    <td rowspan="{{count}}">
+                                                        {% if faktura.bogført %}
+                                                        {% translate 'Bogført' %}
+                                                        {% else %}
+                                                        {{ faktura.batch.get_status_display }}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td rowspan="{{count}}">
+                                                        <a class="btn {% if faktura.batch.status == 'failed' %}btn-warning{% else %}btn-primary{% endif %}"
+                                                           href="{% url 'administration:faktura-detail' faktura.pk %}">{% translate 'Se detaljer' %}</a>
+                                                    </td>
+                                                {% else %}
+                                                    <td rowspan="{{count}}">
+                                                        {% translate 'Ikke godkendt' %}
+                                                    </td>
+                                                    <td rowspan="{{count}}">
+                                                        <button type="submit" class="btn btn-success" form="linjeform">{% translate 'Opret faktura' %}</button>
+                                                    </td>
+                                                {% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                            {% endwith %}
+
+                            {% with sum=fangsttype_item.sum %}
+                                <tr>
+                                    <td colspan="3"><strong>{% translate 'I alt' %}</strong></td>
+                                    <td>{{ sum.produktvægt }}</td>
+                                    <td>{{ sum.levende_vægt }}</td>
+                                    <td>{{ sum.salgspris }}</td>
+                                    <td></td>
+                                    <td>{{ sum.afgift }}</td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            {% endwith %}
+
+                            </tbody>
+                        {% endif %}
+                    {% endwith %}
+                {% endfor %}
+            {% endwith %}
+            {% endfor %}
+        </table>
+        {% endwith %}
+        {% endwith %}
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+{% endfor %}
+
+<form method="post" id="linjeform">
+    {% csrf_token %}
+</form>
+<script>
+    $('table button[type="submit"]').on('click', function() {
+        $("#linjeform").append($(this).parents('tbody').find('input'));
+    });
+    $(function () {
+        $("[data-autosubmit]").find("input,select").on("change", function () {
+            $(this).parents("form").first().submit();
+        });
+    });
+</script>
+{% endblock %}

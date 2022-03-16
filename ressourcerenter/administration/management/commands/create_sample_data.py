@@ -8,6 +8,7 @@ from indberetning.models import Indberetning, Virksomhed, IndberetningLinje, Ind
 from decimal import Decimal
 
 import datetime
+import random
 
 
 class Command(BaseCommand):
@@ -64,13 +65,15 @@ class Command(BaseCommand):
 
                         for fiskeart in skematype.fiskeart_set.all():
                             for produkttype in fiskeart.produkttype_set.all():
-                                IndberetningLinje.objects.create(indberetning=indberetning,
-                                                                 fartøj_navn=fartoej,
-                                                                 produktvægt=10,
-                                                                 levende_vægt=20,
-                                                                 salgspris=400,
-                                                                 kommentar='Her er en lang kommentar som er meget lang for at demonstrere hvordan vi håndtererer en lang kommentar som bliver bred på siden',
-                                                                 produkttype=produkttype)
+                                for i in range(1, random.randint(1, 10)):
+                                    x = random.randint(10, 50)
+                                    IndberetningLinje.objects.create(indberetning=indberetning,
+                                                                     fartøj_navn=fartoej,
+                                                                     produktvægt=x,
+                                                                     levende_vægt=2*x,
+                                                                     salgspris=40*x,
+                                                                     kommentar='Her er en lang kommentar som er meget lang for at demonstrere hvordan vi håndtererer en lang kommentar som bliver bred på siden',
+                                                                     produkttype=produkttype)
 
                     if skematype.id == 2:
                         # Two types of product types, identified by pelagisk true/false
@@ -94,14 +97,16 @@ class Command(BaseCommand):
 
                             for fiskeart in fiskeart_qs:
                                 for produkttype in fiskeart.produkttype_set.all():
-                                    IndberetningLinje.objects.create(indberetning=indberetning,
-                                                                     fartøj_navn=fartoej_navn,
-                                                                     indhandlingssted=indhandlingssted,
-                                                                     produktvægt=10,
-                                                                     levende_vægt=20,
-                                                                     salgspris=400,
-                                                                     kommentar='Her er en lang kommentar som er meget lang for at demonstrere hvordan vi håndtererer en lang kommentar som bliver bred på siden',
-                                                                     produkttype=produkttype)
+                                    for i in range(1, random.randint(1, 10)):
+                                        x = random.randint(10, 50)
+                                        IndberetningLinje.objects.create(indberetning=indberetning,
+                                                                         fartøj_navn=fartoej_navn,
+                                                                         indhandlingssted=indhandlingssted,
+                                                                         produktvægt=x,
+                                                                         levende_vægt=2*x,
+                                                                         salgspris=40*x,
+                                                                         kommentar='Her er en lang kommentar som er meget lang for at demonstrere hvordan vi håndtererer en lang kommentar som bliver bred på siden',
+                                                                         produkttype=produkttype)
 
                     if skematype.id == 3:
                         sted = indhandlingssteder[2]
@@ -116,10 +121,12 @@ class Command(BaseCommand):
 
                         for fiskeart in skematype.fiskeart_set.all():
                             for produkttype in fiskeart.produkttype_set.all():
-                                IndberetningLinje.objects.create(indberetning=indberetning,
-                                                                 indhandlingssted=sted,
-                                                                 produktvægt=10,
-                                                                 levende_vægt=20,
-                                                                 salgspris=400,
-                                                                 kommentar='Her er en lang kommentar som er meget lang for at demonstrere hvordan vi håndtererer en lang kommentar som bliver bred på siden',
-                                                                 produkttype=produkttype)
+                                for i in range(1, random.randint(1, 10)):
+                                    x = random.randint(10, 50)
+                                    IndberetningLinje.objects.create(indberetning=indberetning,
+                                                                     indhandlingssted=sted,
+                                                                     produktvægt=x,
+                                                                     levende_vægt=2*x,
+                                                                     salgspris=40*x,
+                                                                     kommentar='Her er en lang kommentar som er meget lang for at demonstrere hvordan vi håndtererer en lang kommentar som bliver bred på siden',
+                                                                     produkttype=produkttype)

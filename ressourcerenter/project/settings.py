@@ -127,6 +127,10 @@ UPLOAD_PATH = '/uploads'
 MEDIA_ROOT = "/srv/media/"
 MEDIA_URL = "/media/"
 
+
+# Don't limit the number of fields in form submission (e.g. a large number of checkboxes)
+DATA_UPLOAD_MAX_NUMBER_FIELDS = None
+
 # URLS for django login/logout used by administrators.
 LOGIN_URL = 'administration:login'
 
@@ -160,6 +164,42 @@ DAFO = {
     'client_header': os.environ.get('PITU_UXP_CLIENT'),
     'url': os.environ.get('PITU_URL'),
 }
+
+
+PRISME = {
+    'wsdl_file': os.environ.get('PRISME_WSDL', ''),
+    'auth': {
+        'basic': {
+            'username': os.environ.get('PRISME_USERNAME', ''),
+            'domain': os.environ.get('PRISME_DOMAIN', ''),
+            'password': os.environ.get('PRISME_PASSWORD', '')
+        }
+    },
+    'proxy': {
+        'socks': os.environ.get('PRISME_SOCKS_PROXY')
+    }
+}
+
+PRISME_PUSH = {
+    'host': os.environ['PRISME_PUSH_HOST'],
+    'port': int(os.environ.get('PRISME_PUSH_PORT') or 22),
+    'username': os.environ['PRISME_PUSH_USERNAME'],
+    'password': os.environ['PRISME_PUSH_PASSWORD'],
+    'known_hosts': os.environ.get('PRISME_PUSH_KNOWN_HOSTS') or None,
+    'dirs': {
+        '10q_production': os.environ['PRISME_PUSH_DEST_PROD_PATH'],
+        '10q_development': os.environ['PRISME_PUSH_DEST_TEST_PATH'],
+    },
+    'destinations_available': {
+        '10q_production': strtobool(os.environ['PRISME_PUSH_DEST_PROD_AVAILABLE']),
+        '10q_development': strtobool(os.environ['PRISME_PUSH_DEST_TEST_AVAILABLE']),
+    },
+    # System-identificerende streng der kommer på transaktioner i Prisme
+    # Max 4 tegn
+    'project_id': os.environ['PRISME_PUSH_PROJECT_ID'],
+    'do_send': strtobool(os.environ.get('PRISME_PUSH_DO_SEND', 'True')),  # Make it possible for dev deployments to avoid sending
+}
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
