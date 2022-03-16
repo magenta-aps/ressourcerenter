@@ -48,6 +48,7 @@ from administration.models import Faktura, Prisme10QBatch
 from administration.forms import FakturaForm
 
 
+
 class FrontpageView(TemplateView):
     # TODO can be replaced, just needed a landing page.
     template_name = 'administration/frontpage.html'
