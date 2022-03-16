@@ -48,7 +48,6 @@ from administration.models import Faktura, Prisme10QBatch
 from administration.forms import FakturaForm
 
 
-
 class FrontpageView(TemplateView):
     # TODO can be replaced, just needed a landing page.
     template_name = 'administration/frontpage.html'
@@ -566,7 +565,9 @@ class IndberetningsLinjeListView(FormView):
         linjer = form.cleaned_data['linjer']
         betalingsdato = date.today() + timedelta(days=14)  # form.cleaned_data['betalingsdato']
         batch = Prisme10QBatch.objects.create(oprettet_af=self.request.user)
-        fakturaer = Faktura.opret_fakturaer(linjer, self.request.user, betalingsdato, batch)
+        fakturaer = []
+        for linje in linjer:
+            fakturaer.append(Faktura.from_linje(linje, self.request.user, betalingsdato, batch))
         message = _('Faktura oprettet') if len(fakturaer) == 1 else _('%(antal)s fakturaer oprettet') % {'antal': len(fakturaer)}
         messages.add_message(self.request, messages.INFO, message)
         destination = '10q_development'
