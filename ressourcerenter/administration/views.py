@@ -604,7 +604,11 @@ class FakturaCreateView(CreateView):
             messages.add_message(self.request, messages.INFO, _('Faktura oprettet og afsendt'))
         except Exception as e:
             # Exception message has been saved to batch.fejlbesked
-            messages.add_message(self.request, messages.INFO, _('Faktura oprettet, men afsendelse fejlede: {error}').format(error=str(e)))
+            messages.add_message(
+                self.request,
+                messages.INFO,
+                _('Faktura oprettet, men afsendelse fejlede: {error}').format(error=str(e))
+            )
 
         return super().form_valid(form)
 
@@ -635,30 +639,8 @@ class FakturaSendView(SingleObjectMixin, BaseFormView):
         return reverse('administration:faktura-detail', kwargs={'pk': self.get_object().pk})
 
 
-class IndberetningsLinjeListView(FormView):
+class IndberetningsLinjeListView(TemplateView):
     template_name = 'administration/indberetning_afstem.html'
-    model = Faktura
-    form_class = FakturaForm
-
-    def get_success_url(self):
-        url = reverse('administration:indberetningslinje-list')
-        periode = self.request.GET.get('periode')
-        if periode:
-            url += "?periode=" + periode
-        return url
-
-    def form_valid(self, form):
-        linjer = form.cleaned_data['linjer']
-        betalingsdato = date.today() + timedelta(days=14)  # form.cleaned_data['betalingsdato']
-        batch = Prisme10QBatch.objects.create(oprettet_af=self.request.user)
-        fakturaer = []
-        for linje in linjer:
-            fakturaer.append(Faktura.from_linje(linje, self.request.user, betalingsdato, batch))
-        message = _('Faktura oprettet') if len(fakturaer) == 1 else _('%(antal)s fakturaer oprettet') % {'antal': len(fakturaer)}
-        messages.add_message(self.request, messages.INFO, message)
-        destination = '10q_development'
-        batch.send(destination, self.request.user)
-        return super().form_valid(form)
 
     @cached_property
     def periode(self):
@@ -675,7 +657,6 @@ class IndberetningsLinjeListView(FormView):
         # Opret et træ som grupperer indberetningslinjer i:
         # * Virksomheder
         # * Produkttyper
-        # * Fakturaer
         # * Fangsttyper
         virksomheder = []
         sum_fields = {'produktvægt', 'levende_vægt', 'salgspris', 'afgift'}

@@ -272,6 +272,7 @@ class FakturaForm(BootstrapForm, forms.ModelForm):
         required=False
     )
 
+
 class BatchSendForm(forms.Form):
 
     destination = forms.ChoiceField(

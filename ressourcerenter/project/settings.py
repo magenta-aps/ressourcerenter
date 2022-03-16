@@ -197,9 +197,9 @@ PRISME_PUSH = {
     'fielddata': {
         # System-identificerende streng der kommer på transaktioner i Prisme. Max 4 tegn
         'project_id': os.environ['PRISME_PUSH_PROJECT_ID'],
-         # Brugernummer der kommer på transaktioner i Prisme. Max 4 tegn
+        # Brugernummer der kommer på transaktioner i Prisme. Max 4 tegn
         'user_number': os.environ['PRISME_PUSH_USER_NUMBER'],
-         # Betalingsart der kommer på transaktioner i Prisme. Max 3 tegn
+        # Betalingsart der kommer på transaktioner i Prisme. Max 3 tegn
         'payment_type': os.environ['PRISME_PUSH_PAYMENT_TYPE'],
     },
     'do_send': strtobool(os.environ.get('PRISME_PUSH_DO_SEND', 'True')),  # Make it possible for dev deployments to avoid sending

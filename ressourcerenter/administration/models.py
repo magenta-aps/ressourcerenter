@@ -470,6 +470,7 @@ class Prisme10QBatch(models.Model):
 
     def send(self, destination, user, callback=None):
         try:
+            self.fejlbesked = ''
             # Extra check for chosen destination
             b = list(Prisme10QBatch.destinations_available)
             available = {destination_id for destination_id, label in b}
@@ -488,18 +489,15 @@ class Prisme10QBatch(models.Model):
                 'password': settings.PRISME_PUSH['password'],
                 'known_hosts': settings.PRISME_PUSH['known_hosts'],
             }
-
-            print(f"content: {content}")
-
             if settings.PRISME_PUSH['do_send']:
                 with tempfile.NamedTemporaryFile(mode='w') as batchfile:
                     batchfile.write(content)
                     batchfile.flush()
                     put_file_in_prisme_folder(connection_settings, batchfile.name, destination_folder, filename, callback)
+                self.leveret_af = user
+                self.leveret_tidspunkt = timezone.now()
 
             self.status = Prisme10QBatch.completion_statuses[destination]
-            self.leveret_af = user
-            self.leveret_tidspunkt = timezone.now()
         except Exception as e:
             self.status = Prisme10QBatch.STATUS_DELIVERY_FAILED
             self.fejlbesked = str(e)
@@ -560,15 +558,15 @@ class Faktura(models.Model):
 
     @property
     def prisme10Q_content(self):
-        static_data = settings.TENQ['fielddata']
+        static_data = settings.PRISME_PUSH['fielddata']
         return TenQTransactionWriter(
             due_date=self.betalingsdato,
-            creation_date=self.indberetninglinje.indberetningstidspunkt,
+            creation_date=self.linje.indberetningstidspunkt,
             year=self.periode.dato_fra.year,  # Bruges i paalign_aar,
             periode_fra=self.periode.dato_fra,
             periode_til=self.periode.dato_til,
             faktura_no=self.id,
-            leverandoer_ident=static_data['provider_id'],
+            leverandoer_ident=static_data['project_id'],
             bruger_nummer=static_data['user_number'],
             betal_art=static_data['payment_type'],
         ).serialize_transaction(
@@ -577,16 +575,14 @@ class Faktura(models.Model):
             afstem_noegle=str(self.pk),
             rate_text=self.text,
             rate_nummer=self.periode.kvartal_nummer,
-            leverandoer_ident=settings.PRISME_PUSH['project_id']
         )
 
     @property
     def text(self):
         # Type afgift og hvilke kvartal, hvis det er indhandling, så skal der stå indhandlingssted og rederiets navn (60 tegn pr. linje)
-        textparts = ['Ressourcerenter', self.periode, f'({self.linje.produkttype})']
+        textparts = ['Ressourcerenter', str(self.periode), f'({self.linje.produkttype})']
         if self.linje.indhandlingssted:
             textparts.append(self.linje.indhandlingssted)
-        # TODO: Rederiets navn?
         return ' '.join(textparts)
 
     def __str__(self):
