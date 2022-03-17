@@ -560,8 +560,8 @@ class StatistikView(ExcelMixin, GetFormView):
 
 class FakturaCreateView(CreateView):
     form_class = FakturaForm
-    model = Faktura
     template_name = 'administration/faktura_form.html'
+    model = IndberetningLinje
 
     def get_success_url(self):
         return reverse('administration:indberetningslinje-list')
@@ -577,7 +577,7 @@ class FakturaCreateView(CreateView):
         )
 
     def form_valid(self, form):
-        linje = get_object_or_404(IndberetningLinje, pk=self.kwargs['pk'])
+        linje = self.get_object()
         batch = Prisme10QBatch.objects.create(oprettet_af=self.request.user)
         faktura = form.save(commit=False)
         faktura.kode = linje.debitorgruppekode
@@ -598,7 +598,6 @@ class FakturaCreateView(CreateView):
 
         try:
             batch.send(destination, self.request.user)
-            messages.add_message(self.request, messages.INFO, _('Faktura oprettet og afsendt'))
         except Exception as e:
             # Exception message has been saved to batch.fejlbesked
             messages.add_message(
@@ -606,6 +605,8 @@ class FakturaCreateView(CreateView):
                 messages.INFO,
                 _('Faktura oprettet, men afsendelse fejlede: {error}').format(error=str(e))
             )
+        else:
+            messages.add_message(self.request, messages.INFO, _('Faktura oprettet og afsendt'))
 
         return super().form_valid(form)
 
@@ -618,10 +619,11 @@ class FakturaSendView(SingleObjectMixin, BaseFormView):
     def form_valid(self, form):
         try:
             self.get_object().batch.send(form.cleaned_data['destination'], self.request.user)
-            messages.add_message(self.request, messages.INFO, _('Faktura afsendt'))
         except Exception as e:
             # Exception message has been saved to batch.fejlbesked
             messages.add_message(self.request, messages.INFO, _('Afsendelse fejlede: {error}').format(error=str(e)))
+        else:
+            messages.add_message(self.request, messages.INFO, _('Faktura afsendt'))
         return super().form_valid(form)
 
     def form_invalid(self, form):
