@@ -578,15 +578,16 @@ class FakturaCreateView(CreateView):
 
     def form_valid(self, form):
         linje = self.get_object()
-        batch = Prisme10QBatch.objects.create(oprettet_af=self.request.user)
-        faktura = form.save(commit=False)
-        faktura.kode = linje.debitorgruppekode
-        faktura.periode = linje.indberetning.afgiftsperiode
-        faktura.opretter = self.request.user
-        faktura.virksomhed = linje.indberetning.virksomhed
-        faktura.batch = batch
-        faktura.beløb = linje.afgift
-        faktura.save()
+        print(linje.debitorgruppekode)
+        faktura = Faktura.objects.create(
+            kode=linje.debitorgruppekode,
+            periode=linje.indberetning.afgiftsperiode,
+            virksomhed=linje.indberetning.virksomhed,
+            beløb=linje.afgift,
+            opretter=self.request.user,
+            batch=Prisme10QBatch.objects.create(oprettet_af=self.request.user),
+            betalingsdato=form.cleaned_data['betalingsdato'],
+        )
         linje.faktura = faktura
         linje.save(update_fields=('faktura',))
 
@@ -597,7 +598,7 @@ class FakturaCreateView(CreateView):
             else '10q_development'
 
         try:
-            batch.send(destination, self.request.user)
+            faktura.batch.send(destination, self.request.user)
         except Exception as e:
             # Exception message has been saved to batch.fejlbesked
             messages.add_message(
@@ -608,7 +609,7 @@ class FakturaCreateView(CreateView):
         else:
             messages.add_message(self.request, messages.INFO, _('Faktura oprettet og afsendt'))
 
-        return super().form_valid(form)
+        return redirect(self.get_success_url())
 
 
 class FakturaSendView(SingleObjectMixin, BaseFormView):
