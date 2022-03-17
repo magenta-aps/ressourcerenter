@@ -48,9 +48,7 @@ from indberetning.models import Virksomhed
 from administration.forms import VirksomhedForm
 
 from administration.models import Faktura, Prisme10QBatch
-from administration.forms import FakturaForm
-
-from administration.forms import BatchSendForm
+from administration.forms import FakturaForm, BatchSendForm
 
 
 class FrontpageView(TemplateView):
