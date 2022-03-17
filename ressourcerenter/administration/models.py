@@ -591,21 +591,3 @@ class Faktura(models.Model):
 
     def __str__(self):
         return f"Faktura (kode={self.kode}, periode={self.periode}, beløb={self.beløb})"
-
-    @staticmethod
-    def from_linje(linje, opretter, betalingsdato, batch=None):
-        kode = linje.debitorgruppekode  # Kode er unik for fiskeart/fangststed
-
-        faktura = Faktura.objects.create(
-            kode=kode,
-            periode=linje.indberetning.afgiftsperiode,
-            opretter=opretter,
-            virksomhed=linje.indberetning.virksomhed,
-            betalingsdato=betalingsdato,
-            batch=batch,
-            beløb=linje.afgift
-        )
-
-        linje.faktura = faktura
-        linje.save(update_fields=['faktura'])
-        return faktura
