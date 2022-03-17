@@ -61,51 +61,7 @@ class FakturaTestCase(TransactionTestCase):
         self.virksomhed = Virksomhed.objects.create(cvr=1234)
         self.user = get_user_model().objects.create(username="TestUser")
 
-    def test_create_fakturaer(self):
-        betalingsdato = date(2022, 1, 1)
-        # Opret et antal indberetningslinjer på forskellige produkttyper, og tjek at de rigtige fakturaer genereres
-        indberetning1 = Indberetning.objects.create(afgiftsperiode=self.periode, skematype=self.skematyper[1], virksomhed=self.virksomhed)
-        indberetning2 = Indberetning.objects.create(afgiftsperiode=self.periode, skematype=self.skematyper[2], virksomhed=self.virksomhed)
-
-        linje1a = IndberetningLinje.objects.create(indberetning=indberetning1, produkttype=ProduktType.objects.get(navn_dk='Makrel, ikke-grønlandsk fartøj'), levende_vægt=1000, salgspris=10000)
-        faktura1a = self.faktura_from_linje(linje1a, self.user, betalingsdato)
-        self.assertEquals(faktura1a.beløb, Decimal(1000))
-        self.assertEquals(faktura1a.virksomhed, self.virksomhed)
-
-        linje1b = IndberetningLinje.objects.create(indberetning=indberetning1, produkttype=ProduktType.objects.get(navn_dk='Torsk - Hel fisk'), levende_vægt=2000, salgspris=20000)
-        faktura1b = self.faktura_from_linje(linje1b, self.user, betalingsdato)
-        self.assertEquals(faktura1b.beløb, Decimal(1000))
-
-        linje1c = IndberetningLinje.objects.create(indberetning=indberetning1, produkttype=ProduktType.objects.get(navn_dk='Torsk - Filet'), levende_vægt=3000, salgspris=30000)
-        faktura1c = self.faktura_from_linje(linje1c, self.user, betalingsdato)
-        self.assertEquals(faktura1c.beløb, Decimal(1500))
-
-        linje1d = IndberetningLinje.objects.create(indberetning=indberetning1, produkttype=ProduktType.objects.get(navn_dk='Reje - havgående licens - Råfrosne skalrejer'), levende_vægt=4000, salgspris=40000)
-        faktura1d = self.faktura_from_linje(linje1d, self.user, betalingsdato)
-        self.assertEquals(faktura1d.beløb, Decimal(2000))
-
-        linje2a = IndberetningLinje.objects.create(indberetning=indberetning2, produkttype=ProduktType.objects.get(navn_dk='Makrel, ikke-grønlandsk fartøj'), levende_vægt=1000, salgspris=10000)
-        faktura2a = self.faktura_from_linje(linje2a, self.user, betalingsdato)
-        self.assertEquals(faktura2a.beløb, Decimal(1000))
-
-        linje2b = IndberetningLinje.objects.create(indberetning=indberetning2, produkttype=ProduktType.objects.get(navn_dk='Makrel, ikke-grønlandsk fartøj'), levende_vægt=500, salgspris=5000)
-        faktura2b = self.faktura_from_linje(linje2b, self.user, betalingsdato)
-        self.assertEquals(faktura2b.beløb, Decimal(500))
-
-        linje2c = IndberetningLinje.objects.create(indberetning=indberetning2, produkttype=ProduktType.objects.get(navn_dk='Torsk - Hel fisk'), levende_vægt=2000, salgspris=20000)
-        faktura2c = self.faktura_from_linje(linje2c, self.user, betalingsdato)
-        self.assertEquals(faktura2c.beløb, Decimal(1000))
-
-        linje2d = IndberetningLinje.objects.create(indberetning=indberetning2, produkttype=ProduktType.objects.get(navn_dk='Torsk - Filet'), levende_vægt=3000, salgspris=30000)
-        faktura2d = self.faktura_from_linje(linje2d, self.user, betalingsdato)
-        self.assertEquals(faktura2d.beløb, Decimal(1500))
-
-        linje2e = IndberetningLinje.objects.create(indberetning=indberetning2, produkttype=ProduktType.objects.get(navn_dk='Reje - kystnær licens - Industrirejer-sækkerejer'), levende_vægt=4000, salgspris=40000)
-        faktura2e = self.faktura_from_linje(linje2e, self.user, betalingsdato)
-        self.assertEquals(faktura2e.beløb, Decimal(2000))
-
     def test_fiskeart_debitorgruppenummer(self):
-
         reje = FiskeArt.objects.get(navn_dk='Reje - havgående licens')
         for id in self.skematyper:
             self.assertEquals(reje.get_debitorgruppekode(self.skematyper[id]), 107)
@@ -126,18 +82,6 @@ class FakturaTestCase(TransactionTestCase):
         GetAccountDataCommand().handle()
         faktura1.refresh_from_db()
         self.assertEquals(faktura1.bogført, dato)
-
-    @staticmethod
-    def faktura_from_linje(linje, opretter, betalingsdato, batch=None):
-        return Faktura(
-            kode=linje.debitorgruppekode,
-            periode=linje.indberetning.afgiftsperiode,
-            opretter=opretter,
-            virksomhed=linje.indberetning.virksomhed,
-            betalingsdato=betalingsdato,
-            batch=batch,
-            beløb=linje.afgift
-        )
 
     def test_text(self):
         periode = Afgiftsperiode(navn_dk='x'*200, dato_fra=date(2000, 1, 1), dato_til=date(2000, 3, 31))

@@ -34,7 +34,19 @@
     {% endif %}
 
     <div class="row justify-content-center mt-2">
-        {% block alert %}{% endblock %}
+        {% block alert %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert text-center {% if message.level == 20 %}alert-info
+                                  {% elif message.level == 25 %}alert-success
+                                  {% elif message.level == 30 %}alert-warning
+                                  {% elif message.level == 40 %}alert-danger
+                                  {% endif %}" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endblock %}
     </div>
 
     <div class="container-fluid">
