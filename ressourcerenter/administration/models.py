@@ -498,7 +498,7 @@ class Prisme10QBatch(models.Model):
                 self.leveret_tidspunkt = timezone.now()
             else:
                 # Debugging on local environment, output contents to stdout
-                print(f"10Q contents: \n------------\n{content}\n------------")
+                print(f"10Q data som ville blive sendt til {destination}: \n------------\n{content}\n------------")
 
             self.status = Prisme10QBatch.completion_statuses[destination]
         except Exception as e:
@@ -585,7 +585,7 @@ class Faktura(models.Model):
         # Type afgift og hvilke kvartal, hvis det er indhandling, så skal der stå indhandlingssted og rederiets navn (60 tegn pr. linje)
         textparts = ['Ressourcerenter', str(self.periode), f'({self.linje.produkttype})']
         if self.linje.indhandlingssted:
-            textparts.append(self.linje.indhandlingssted)
+            textparts.append(str(self.linje.indhandlingssted))
         return ' '.join(textparts)
 
     def __str__(self):
