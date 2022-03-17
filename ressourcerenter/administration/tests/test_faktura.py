@@ -139,7 +139,6 @@ class FakturaTestCase(TransactionTestCase):
             beløb=linje.afgift
         )
 
-
     """
         Udeladt for nu; sender fil til prismes testsystem, så det skal vi ikke spamme dem med.
         Kan testes lokalt ved at sætte følgende i docker-compose.override.yml:
