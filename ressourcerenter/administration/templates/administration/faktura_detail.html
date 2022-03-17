@@ -108,8 +108,10 @@
                 <td>
                     <form action="{% url 'administration:faktura-send' object.batch.pk %}" method="post">
                         {% csrf_token %}
-                        {% if destinations_available.10q_production and object.batch.status == 'failed' %}
+                        {% if destinations_available.10q_production %}
+                        {% if object.batch.status == 'created' or object.batch.status == 'failed' %}
                         <button class="btn btn-sm btn-success" type="submit" name="destination" value="10q_production">{% translate 'Send til produktion' %}</button>
+                        {% endif %}
                         {% endif %}
                         {% if destinations_available.10q_development %}
                         <button class="btn btn-sm btn-success" type="submit" name="destination" value="10q_development">{% translate 'Send til uddannelsesmiljø' %}</button>

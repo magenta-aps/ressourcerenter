@@ -465,7 +465,7 @@ class Prisme10QBatch(models.Model):
     ))
     completion_statuses = {
         '10q_production': STATUS_DELIVERED,
-        '10q_development': STATUS_CREATED
+        '10q_development': None
     }
 
     def send(self, destination, user, callback=None):
@@ -500,7 +500,8 @@ class Prisme10QBatch(models.Model):
                 # Debugging on local environment, output contents to stdout
                 print(f"10Q data som ville blive sendt til {destination}: \n------------\n{content}\n------------")
 
-            self.status = Prisme10QBatch.completion_statuses[destination]
+            if Prisme10QBatch.completion_statuses[destination]:
+                self.status = Prisme10QBatch.completion_statuses[destination]
         except Exception as e:
             self.status = Prisme10QBatch.STATUS_DELIVERY_FAILED
             self.fejlbesked = str(e)
