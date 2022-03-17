@@ -15,6 +15,7 @@ from tenQ.writer import TenQTransactionWriter
 from uuid import uuid4
 from math import ceil
 from itertools import chain
+from io import StringIO
 
 
 class NamedModel(models.Model):
@@ -491,10 +492,8 @@ class Prisme10QBatch(models.Model):
                 'known_hosts': settings.PRISME_PUSH['known_hosts'],
             }
             if settings.PRISME_PUSH['do_send']:
-                with tempfile.NamedTemporaryFile(mode='w') as batchfile:
-                    batchfile.write(content)
-                    batchfile.flush()
-                    put_file_in_prisme_folder(connection_settings, batchfile.name, destination_folder, filename, callback)
+                batchfile = StringIO(content)
+                put_file_in_prisme_folder(connection_settings, batchfile, destination_folder, filename, callback)
                 self.leveret_af = user
                 self.leveret_tidspunkt = timezone.now()
             else:
