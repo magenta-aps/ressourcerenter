@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.http import HttpResponseNotFound
 from django.views.generic import RedirectView
 from django.views.generic import TemplateView, ListView, DetailView
-from django.views.generic import CreateView, UpdateView, FormView
+from django.views.generic import CreateView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import BaseFormView
 from django.urls import reverse
@@ -19,7 +19,6 @@ from django.db.models.functions import Coalesce
 from datetime import timedelta
 import re
 from decimal import Decimal
-from datetime import date
 from itertools import chain
 
 from collections import OrderedDict

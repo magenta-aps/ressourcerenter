@@ -496,6 +496,9 @@ class Prisme10QBatch(models.Model):
                     put_file_in_prisme_folder(connection_settings, batchfile.name, destination_folder, filename, callback)
                 self.leveret_af = user
                 self.leveret_tidspunkt = timezone.now()
+            else:
+                # Debugging on local environment, output contents to stdout
+                print(f"10Q contents: \n------------\n{content}\n------------")
 
             self.status = Prisme10QBatch.completion_statuses[destination]
         except Exception as e:
