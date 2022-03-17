@@ -139,6 +139,14 @@ class FakturaTestCase(TransactionTestCase):
             beløb=linje.afgift
         )
 
+    def test_text(self):
+        periode = Afgiftsperiode(navn_dk='x'*200, dato_fra=date(2000, 1, 1), dato_til=date(2000, 3, 31))
+        indberetning = Indberetning(afgiftsperiode=periode, skematype=self.skematyper[1], virksomhed=self.virksomhed)
+        linje = IndberetningLinje(indberetning=indberetning, produkttype=ProduktType.objects.get(navn_dk='Makrel, ikke-grønlandsk fartøj'), levende_vægt=1000, salgspris=10000)
+        faktura = Faktura(virksomhed=self.virksomhed, beløb=Decimal(200), betalingsdato=date(2022, 7, 1), kode=123, opretter=self.user, periode=periode, linje=linje)
+        for line in faktura.text.splitlines():
+            self.assertFalse(len(line) > 60)
+
     """
         Udeladt for nu; sender fil til prismes testsystem, så det skal vi ikke spamme dem med.
         Kan testes lokalt ved at sætte følgende i docker-compose.override.yml:

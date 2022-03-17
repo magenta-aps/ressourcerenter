@@ -14,6 +14,7 @@ from tenQ.client import put_file_in_prisme_folder
 from tenQ.writer import TenQTransactionWriter
 from uuid import uuid4
 from math import ceil
+from itertools import chain
 
 
 class NamedModel(models.Model):
@@ -587,7 +588,32 @@ class Faktura(models.Model):
         textparts = ['Ressourcerenter', str(self.periode), f'({self.linje.produkttype})']
         if self.linje.indhandlingssted:
             textparts.append(str(self.linje.indhandlingssted))
-        return ' '.join(textparts)
+
+        # Split all parts so they're each <= 60 chars
+        splitted_textparts = [x for part in textparts for x in self._split(part)]
+
+        lines = ['']
+        for part in splitted_textparts:
+            last_line = lines[-1]
+            # Each part is known to be less than 60 chars, so append them to lines until a line reaches 60 chars
+            if len(last_line) + 1 + len(part) > 60:
+                # last_line + ' ' + part will be longer than 60, put part on new line
+                lines.append(part)
+            else:
+                if last_line != '':
+                    lines[-1] += ' '  # Add space if not the first word in line
+                lines[-1] += part
+        return '\r\n'.join(lines)
+
+    # Split a text into chunks with max length 60
+    # first split by words, and if any words are longer, split them too
+    def _split(self, text):
+        if len(text) <= 60:
+            return [text]
+        if ' ' in text:
+            return chain(*[self._split(p) for p in text.split(' ')])
+        halfpoint = int(len(text) / 2)
+        return chain(self._split(text[0:halfpoint]), self._split(text[halfpoint:]))
 
     def __str__(self):
         return f"Faktura (kode={self.kode}, periode={self.periode}, beløb={self.beløb})"
