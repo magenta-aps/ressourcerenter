@@ -31,7 +31,6 @@ class PrismeTestCase(TransactionTestCase):
         self.beregningsmodel = BeregningsModel2021.objects.create(navn='TestBeregningsModel')
         self.periode = Afgiftsperiode.objects.create(beregningsmodel=self.beregningsmodel, navn_dk='testperiode', dato_fra=date(2022, 1, 1), dato_til=date(2022, 3, 31))
 
-
     @override_settings(PRISME_PUSH={**settings.PRISME_PUSH, 'do_send': False})
     @patch.object(Prisme10QBatch, 'completion_statuses', {
         '10q_production': Prisme10QBatch.STATUS_DELIVERED,
@@ -54,7 +53,6 @@ class PrismeTestCase(TransactionTestCase):
 
         linje.refresh_from_db()
         self.assertEqual(linje.faktura.batch.status, 'delivered')
-
 
     @override_settings(PRISME_PUSH={**settings.PRISME_PUSH, 'do_send': False})
     @patch.object(Prisme10QBatch, 'completion_statuses', {
