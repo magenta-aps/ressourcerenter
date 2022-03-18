@@ -1,7 +1,7 @@
 from django import forms
 from django.conf import settings
 from django.db.models.query import prefetch_related_objects
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import redirect
 from django.contrib import messages
 from django.http import HttpResponseNotFound
 from django.views.generic import RedirectView

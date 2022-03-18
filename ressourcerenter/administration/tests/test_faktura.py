@@ -90,23 +90,3 @@ class FakturaTestCase(TransactionTestCase):
         faktura = Faktura(virksomhed=self.virksomhed, beløb=Decimal(200), betalingsdato=date(2022, 7, 1), kode=123, opretter=self.user, periode=periode, linje=linje)
         for line in faktura.text.splitlines():
             self.assertFalse(len(line) > 60)
-
-    """
-        Udeladt for nu; sender fil til prismes testsystem, så det skal vi ikke spamme dem med.
-        Kan testes lokalt ved at sætte følgende i docker-compose.override.yml:
-          - TENQ_HOST=172.17.0.1
-          - TENQ_PORT=2222
-          - TENQ_USER=<brugernavn fra bitwarden (Grønland/Skattestyrelsen/KAS Prisme 10Q password)>
-          - TENQ_PASSWORD=<password fra bitwarden>
-        ... samt åbne en tunnel med:
-            ssh -L 172.17.0.1:2222:sftp.erp.gl:22 larsp@10.240.76.76
-
-    def test_upload(self):
-        indberetning1 = Indberetning.objects.create(afgiftsperiode=self.periode, skematype=self.skematyper[1], virksomhed=self.virksomhed)
-        linje1 = IndberetningLinje.objects.create(indberetning=indberetning1, produkttype=ProduktType.objects.get(navn_dk='Makrel, ikke-grønlandsk fartøj'), levende_vægt=1000, salgspris=10000)
-        betalingsdato = date.today() + timedelta(days=7)
-        batch = Prisme10QBatch.objects.create(oprettet_af=self.user)
-        fakturaer = Faktura.opret_fakturaer([linje1], self.user, betalingsdato, batch)
-        batch.send('10q_development', self.user)
-        self.assertEquals(batch.status, Prisme10QBatch.STATUS_CREATED)
-    """
