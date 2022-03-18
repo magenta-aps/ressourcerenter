@@ -276,5 +276,5 @@ class FakturaForm(BootstrapForm, forms.ModelForm):
 class BatchSendForm(forms.Form):
 
     destination = forms.ChoiceField(
-        choices=[(key, key) for key, value in settings.PRISME_PUSH['destinations_available'].items() if value]
+        choices=lambda: [(key, key) for key, value in settings.PRISME_PUSH['destinations_available'].items() if value]
     )

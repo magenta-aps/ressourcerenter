@@ -578,7 +578,6 @@ class FakturaCreateView(CreateView):
 
     def form_valid(self, form):
         linje = self.get_object()
-        print(linje.debitorgruppekode)
         faktura = Faktura.objects.create(
             kode=linje.debitorgruppekode,
             periode=linje.indberetning.afgiftsperiode,
