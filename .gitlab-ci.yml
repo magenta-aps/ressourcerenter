@@ -76,6 +76,7 @@ Aalisakkat Unittest:
     POSTGRES_DB: ressourcerenter
     POSTGRES_HOST: ressourcerenter-db
     # No fiddling with sftp server during testing
+    LOGIN_MOCK: cvr
     PRISME_PUSH_HOST: ""
     PRISME_PUSH_PORT: 22
     PRISME_PUSH_USERNAME: ""
