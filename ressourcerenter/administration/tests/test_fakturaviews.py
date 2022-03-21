@@ -1,4 +1,3 @@
-from administration.management.commands.create_initial_dataset import Command as CreateInitialDatasetCommand
 from administration.models import Afgiftsperiode, ProduktType, SkemaType, Faktura
 from administration.models import BeregningsModel2021
 from administration.models import Prisme10QBatch
@@ -7,6 +6,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from django.core import management
 from django.test import TransactionTestCase
 from django.test import override_settings
 from django.urls import reverse
@@ -17,7 +17,7 @@ from unittest.mock import patch
 class PrismeTestCase(TransactionTestCase):
 
     def setUp(self) -> None:
-        CreateInitialDatasetCommand().handle()
+        management.call_command('create_initial_dataset')
         self.username = 'test'
         self.user = get_user_model().objects.create_user(username=self.username)
         self.password = 'test'
@@ -57,7 +57,7 @@ class PrismeTestCase(TransactionTestCase):
 
     @override_settings(PRISME_PUSH={**settings.PRISME_PUSH, 'mock': True})
     def test_fakturasendview_notloggedin(self):
-        CreateInitialDatasetCommand().handle()
+        management.call_command('create_initial_dataset')
 
         indberetning = Indberetning.objects.create(afgiftsperiode=self.periode, skematype=self.skematyper[1], virksomhed=self.virksomhed)
         linje = IndberetningLinje.objects.create(indberetning=indberetning, produkttype=ProduktType.objects.get(navn_dk='Makrel, ikke-grønlandsk fartøj'), levende_vægt=1000, salgspris=10000)
@@ -76,7 +76,7 @@ class PrismeTestCase(TransactionTestCase):
         '10q_development': Prisme10QBatch.STATUS_DELIVERED
     })
     def test_fakturasendview(self):
-        CreateInitialDatasetCommand().handle()
+        management.call_command('create_initial_dataset')
 
         indberetning = Indberetning.objects.create(afgiftsperiode=self.periode, skematype=self.skematyper[1], virksomhed=self.virksomhed)
         linje = IndberetningLinje.objects.create(indberetning=indberetning, produkttype=ProduktType.objects.get(navn_dk='Makrel, ikke-grønlandsk fartøj'), levende_vægt=1000, salgspris=10000)
