@@ -14,6 +14,8 @@ import os
 from pathlib import Path
 from distutils.util import strtobool
 from django.utils.translation import gettext_lazy as _
+import sys
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -181,28 +183,28 @@ PRISME = {
 }
 
 PRISME_PUSH = {
-    'host': os.environ['PRISME_PUSH_HOST'],
+    'mock': strtobool(os.environ.get('PRISME_PUSH_MOCK', 'false')),
+    'host': os.environ.get('PRISME_PUSH_HOST'),
     'port': int(os.environ.get('PRISME_PUSH_PORT') or 22),
-    'username': os.environ['PRISME_PUSH_USERNAME'],
-    'password': os.environ['PRISME_PUSH_PASSWORD'],
+    'username': os.environ.get('PRISME_PUSH_USERNAME'),
+    'password': os.environ.get('PRISME_PUSH_PASSWORD'),
     'known_hosts': os.environ.get('PRISME_PUSH_KNOWN_HOSTS') or None,
     'dirs': {
-        '10q_production': os.environ['PRISME_PUSH_DEST_PROD_PATH'],
-        '10q_development': os.environ['PRISME_PUSH_DEST_TEST_PATH'],
+        '10q_production': os.environ.get('PRISME_PUSH_DEST_PROD_PATH'),
+        '10q_development': os.environ.get('PRISME_PUSH_DEST_TEST_PATH'),
     },
     'destinations_available': {
-        '10q_production': strtobool(os.environ['PRISME_PUSH_DEST_PROD_AVAILABLE']),
-        '10q_development': strtobool(os.environ['PRISME_PUSH_DEST_TEST_AVAILABLE']),
+        '10q_production': strtobool(os.environ.get('PRISME_PUSH_DEST_PROD_AVAILABLE', 'false')),
+        '10q_development': strtobool(os.environ.get('PRISME_PUSH_DEST_TEST_AVAILABLE', 'true')),
     },
     'fielddata': {
         # System-identificerende streng der kommer på transaktioner i Prisme. Max 4 tegn
-        'project_id': os.environ['PRISME_PUSH_PROJECT_ID'],
+        'project_id': os.environ.get('PRISME_PUSH_PROJECT_ID'),
         # Brugernummer der kommer på transaktioner i Prisme. Max 4 tegn
-        'user_number': os.environ['PRISME_PUSH_USER_NUMBER'],
+        'user_number': os.environ.get('PRISME_PUSH_USER_NUMBER'),
         # Betalingsart der kommer på transaktioner i Prisme. Max 3 tegn
-        'payment_type': os.environ['PRISME_PUSH_PAYMENT_TYPE'],
+        'payment_type': os.environ.get('PRISME_PUSH_PAYMENT_TYPE'),
     },
-    'do_send': strtobool(os.environ.get('PRISME_PUSH_DO_SEND', 'True')),  # Make it possible for dev deployments to avoid sending
 }
 
 
@@ -220,3 +222,31 @@ WHITENOISE_USE_FINDERS = True
 
 # Skip health_check for cache layer since we are not using it
 WATCHMAN_CHECKS = ('watchman.checks.databases', 'watchman.checks.storage')
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'gunicorn': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['gunicorn'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['gunicorn'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}

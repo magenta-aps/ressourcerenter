@@ -15,6 +15,10 @@ from uuid import uuid4
 from math import ceil
 from itertools import chain
 from io import StringIO
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class NamedModel(models.Model):
@@ -485,25 +489,26 @@ class Prisme10QBatch(models.Model):
                 available_csep = ', '.join(available)
                 raise ValueError(f"Kan ikke sende batch til {destination}, det er kun {available_csep} der er tilgængelig på dette system")
 
-            destination_folder = settings.PRISME_PUSH['dirs'][destination]
             # When sending to development environment, only send 100 entries
             content = self.get_prisme10Q_content(100 if destination == '10q_development' else None)
-            filename = "KAS_10Q_export_{}.10q".format(timezone.now().strftime('%Y-%m-%dT%H-%M-%S'))
-            connection_settings = {
-                'host': settings.PRISME_PUSH['host'],
-                'port': settings.PRISME_PUSH['port'],
-                'username': settings.PRISME_PUSH['username'],
-                'password': settings.PRISME_PUSH['password'],
-                'known_hosts': settings.PRISME_PUSH['known_hosts'],
-            }
-            if settings.PRISME_PUSH['do_send']:
+
+            if settings.PRISME_PUSH['mock']:
+                # Debugging on local environment, output contents to stdout
+                logger.info(f"10Q data som ville blive sendt til {destination}: \n------------\n{content}\n------------")
+            else:
+                destination_folder = settings.PRISME_PUSH['dirs'][destination]
+                filename = "KAS_10Q_export_{}.10q".format(timezone.now().strftime('%Y-%m-%dT%H-%M-%S'))
+                connection_settings = {
+                    'host': settings.PRISME_PUSH['host'],
+                    'port': settings.PRISME_PUSH['port'],
+                    'username': settings.PRISME_PUSH['username'],
+                    'password': settings.PRISME_PUSH['password'],
+                    'known_hosts': settings.PRISME_PUSH['known_hosts'],
+                }
                 batchfile = StringIO(content)
                 put_file_in_prisme_folder(connection_settings, batchfile, destination_folder, filename, callback)
                 self.leveret_af = user
                 self.leveret_tidspunkt = timezone.now()
-            else:
-                # Debugging on local environment, output contents to stdout
-                print(f"10Q data som ville blive sendt til {destination}: \n------------\n{content}\n------------")
 
             if Prisme10QBatch.completion_statuses[destination]:
                 self.status = Prisme10QBatch.completion_statuses[destination]
@@ -567,7 +572,14 @@ class Faktura(models.Model):
 
     @property
     def prisme10Q_content(self):
-        static_data = settings.PRISME_PUSH['fielddata']
+        if settings.PRISME_PUSH['mock']:
+            static_data = {
+                'project_id': 'ALIS',
+                'user_number': 0,
+                'payment_type': 0,
+            }
+        else:
+            static_data = settings.PRISME_PUSH['fielddata']
         return TenQTransactionWriter(
             due_date=self.betalingsdato,
             creation_date=self.linje.indberetningstidspunkt,

@@ -37,9 +37,9 @@
         </span>
     </nav>
     <hr class="p-0 m-0">
+    {% block alert %}
+    {% if messages %}
     <div class="row justify-content-center mt-2">
-        {% block alert %}
-        {% if messages %}
         {% for message in messages %}
         <div class="alert text-center {% if message.level == 20 %}alert-info
                                   {% elif message.level == 25 %}alert-success
@@ -49,9 +49,9 @@
             {{ message }}
         </div>
         {% endfor %}
-        {% endif %}
-        {% endblock %}
     </div>
+    {% endif %}
+    {% endblock %}
     <div class="container-fluid">
         {% block content %}{% endblock %}
     </div>
