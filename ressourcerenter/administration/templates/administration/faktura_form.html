@@ -19,14 +19,14 @@
     </div>
     {% if send_to_test_available %}
     <div class="form-row form-check">
-        <div class="col-2">
+        <div class="col-6">
+            <label class="form-check-label" for="{{ form.send_to_test.id_for_label }}">
             {{ form.send_to_test }}
-        </div>
-        <div class="col-4">
-            <label class="form-check-label" for="{{ form.sent_to_test.id_for_label }}">{% translate 'Send til testsystem' %}</label>
+            {% translate 'Send til testsystem' %}
+            </label>
         </div>
         <div class="col-6">
-            {{ form.betalingsdato.errors }}
+            {{ form.send_to_test.errors }}
         </div>
     </div>
     {% endif %}

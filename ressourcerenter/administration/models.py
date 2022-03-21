@@ -469,8 +469,14 @@ class Prisme10QBatch(models.Model):
         '10q_development': None
     }
 
-    def send(self, destination, user, callback=None):
+    def send(self, user, force_send_to_test=False, callback=None):
         try:
+            destinations_available = settings.PRISME_PUSH['destinations_available']
+            # Send to prod if it is available, fall back to dev
+            destination = '10q_production' \
+                if destinations_available['10q_production'] and not force_send_to_test else \
+                '10q_development'
+
             self.fejlbesked = ''
             # Extra check for chosen destination
             b = list(Prisme10QBatch.destinations_available)

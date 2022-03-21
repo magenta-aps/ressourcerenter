@@ -590,14 +590,8 @@ class FakturaCreateView(CreateView):
         linje.faktura = faktura
         linje.save(update_fields=('faktura',))
 
-        destinations_available = settings.PRISME_PUSH['destinations_available']
-        # Send to prod if it is available, fall back to dev
-        destination = '10q_production'\
-            if destinations_available['10q_production'] and not form.cleaned_data['send_to_test']\
-            else '10q_development'
-
         try:
-            faktura.batch.send(destination, self.request.user)
+            faktura.batch.send(self.request.user, form.cleaned_data['send_to_test'])
         except Exception as e:
             # Exception message has been saved to batch.fejlbesked
             messages.add_message(
@@ -618,7 +612,7 @@ class FakturaSendView(SingleObjectMixin, BaseFormView):
 
     def form_valid(self, form):
         try:
-            self.get_object().batch.send(form.cleaned_data['destination'], self.request.user)
+            self.get_object().batch.send(self.request.user, form.cleaned_data['destination'] == '10q_development')
         except Exception as e:
             # Exception message has been saved to batch.fejlbesked
             messages.add_message(self.request, messages.INFO, _('Afsendelse fejlede: {error}').format(error=str(e)))
