@@ -22,3 +22,8 @@ def janej(item):
 @register.filter
 def list_sum_attr(itemlist, attribute):
     return sum([getattr(item, attribute) for item in itemlist])
+
+
+@register.filter
+def has_group(user, group_name):
+    return user.groups.filter(name=group_name).exists()

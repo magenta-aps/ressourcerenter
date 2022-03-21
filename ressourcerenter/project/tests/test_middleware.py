@@ -50,7 +50,7 @@ class AdministratorTestCase(TestCase):
         Logged in user tries to access the statistics page.
         """
         self.client.login(username=self.username, password=self.password)
-        r = self.client.get(reverse('statistik:statistik'))
+        r = self.client.get(reverse('statistik:frontpage'))
         self.assertEqual(r.status_code, 200)
 
     def test_not_existing(self):
@@ -84,7 +84,7 @@ class StatistikTestCase(TestCase):
         Logged in user tries to access the statistics page.
         """
         self.client.login(username=self.username, password=self.password)
-        r = self.client.get(reverse('statistik:statistik'))
+        r = self.client.get(reverse('statistik:frontpage'))
         self.assertEqual(r.status_code, 200)
 
     def test_not_existing(self):

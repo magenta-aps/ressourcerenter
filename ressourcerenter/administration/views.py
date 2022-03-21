@@ -48,6 +48,15 @@ from administration.models import Faktura, Prisme10QBatch
 from administration.forms import FakturaForm
 
 
+class PostLoginView(RedirectView):
+    # Viderestiller til forsiden af den app man har adgang til
+    def get_redirect_url(self):
+        for app_name in ('administration', 'statistik'):
+            if self.request.user.groups.filter(name=app_name).exists():
+                return reverse(f'{app_name}:frontpage')
+        return reverse('indberetning:frontpage')
+
+
 class FrontpageView(TemplateView):
     # TODO can be replaced, just needed a landing page.
     template_name = 'administration/frontpage.html'

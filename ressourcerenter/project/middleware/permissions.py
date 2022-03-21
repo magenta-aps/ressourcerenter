@@ -11,6 +11,8 @@ class PermissionMiddleware:
         self.get_response = get_response
         self._administrator_login_url = reverse(settings.LOGIN_URL)
         self._indberetning_login_url = reverse('indberetning:login')
+        self._administrator_logout_url = reverse('administration:logout')
+        self._administrator_postlogin_url = reverse('administration:postlogin')
         self._indberetning_callback_url = reverse('indberetning:login-callback')
         login_provider = import_string(settings.LOGIN_PROVIDER_CLASS)
         self._login_provider = login_provider.from_settings()
@@ -25,7 +27,10 @@ class PermissionMiddleware:
         # never redirect if we hit either login page:
         if request.path in (self._administrator_login_url,
                             self._indberetning_login_url,
-                            self._indberetning_callback_url):
+                            self._indberetning_callback_url,
+                            self._administrator_logout_url,
+                            self._administrator_postlogin_url,
+                            ):
             return None
 
         app_name = request.resolver_match.app_name

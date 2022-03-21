@@ -9,10 +9,12 @@ from administration.views import ProduktTypeListView, ProduktTypeCreateView, Pro
 from administration.views import IndberetningDetailView, IndberetningListView, IndberetningAfstemFormView
 from administration.views import VirksomhedListView, VirksomhedCreateView, VirksomhedUpdateView, VirksomhedRepræsentantView, VirksomhedRepræsentantStopView
 from administration.views import IndberetningsLinjeListView, FakturaDetailView
+from administration.views import PostLoginView
 
 app_name = AdministrationConfig.name
 
 urlpatterns = [
+    path('postlogin/', PostLoginView.as_view(), name='postlogin'),
     path('', FrontpageView.as_view(), name='frontpage'),
     path('login/', LoginView.as_view(template_name='administration/login.html'), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),

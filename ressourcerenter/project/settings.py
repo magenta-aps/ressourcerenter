@@ -135,7 +135,7 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 LOGIN_URL = 'administration:login'
 
 LOGOUT_REDIRECT_URL = 'administration:login'
-LOGIN_REDIRECT_URL = 'administration:frontpage'
+LOGIN_REDIRECT_URL = 'administration:postlogin'
 LOGIN_PROVIDER_CLASS = 'indberetning.login.openid.OpenId'
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True

@@ -17,21 +17,8 @@
 <body>
 <main role="main">
 
-    {% if user.is_authenticated %}
-    <nav class="nav navbar navbar-light navbar-expand-lg" style="background-color: #e3f2fd;">
-        <a class="navbar-brand" href="{% url 'administration:frontpage' %}">{% translate 'Administration' %}</a>
-        <div class="navbar-nav">
-            <a class="nav-item nav-link" href="{% url 'administration:indberetning-list' %}">{% translate 'Indberetninger' %}</a>
-            <a class="nav-item nav-link" href="{% url 'administration:virksomhed-list' %}">{% translate 'Virksomheder' %}</a>
-            <a class="nav-item nav-link" href="{% url 'administration:afgiftsperiode-list' %}">{% translate 'Afgiftsperioder' %}</a>
-            <a class="nav-item nav-link" href="{% url 'administration:fiskeart-list' %}">{% translate 'Fiskearter' %}</a>
-            <a class="nav-item nav-link" href="{% url 'administration:produkttype-list' %}">{% translate 'Produkttyper' %}</a>
-            <a class="nav-item nav-link" href="{% url 'statistik:statistik' %}">{% translate 'Statistik' %}</a>
-            <a class="nav-item nav-link" href="{% url 'administration:faktura-create' %}">{% translate 'Fakturaer' %}</a>
-        </div>
-    </nav>
-    <hr class="p-0 m-0">
-    {% endif %}
+    {% translate 'Administration' as administration %}
+    {% include 'administration/navigation.html' with app_name=administration %}
 
     <div class="row justify-content-center mt-2">
         {% block alert %}{% endblock %}
