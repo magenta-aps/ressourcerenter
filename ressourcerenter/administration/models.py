@@ -1,3 +1,4 @@
+import logging
 from decimal import Decimal, ROUND_HALF_EVEN
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -7,16 +8,14 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.utils import timezone
 from django.utils.translation import gettext as _, get_language
-
+from ftplib import all_errors as all_ftp_errors
+from io import StringIO
+from itertools import chain
+from math import ceil
 from simple_history.models import HistoricalRecords
 from tenQ.client import put_file_in_prisme_folder
 from tenQ.writer import TenQTransactionWriter
 from uuid import uuid4
-from math import ceil
-from itertools import chain
-from io import StringIO
-import logging
-
 
 logger = logging.getLogger(__name__)
 
@@ -515,7 +514,7 @@ class Prisme10QBatch(models.Model):
 
             if Prisme10QBatch.completion_statuses[destination]:
                 self.status = Prisme10QBatch.completion_statuses[destination]
-        except Exception as e:
+        except all_ftp_errors as e:
             self.status = Prisme10QBatch.STATUS_DELIVERY_FAILED
             self.fejlbesked = str(e)
             raise
