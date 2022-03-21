@@ -1,3 +1,4 @@
+{% extends 'administration/base.html' %}
 {% load static %}
 {% load i18n %}
 <!doctype html>
@@ -11,10 +12,10 @@
 </head>
 <body>
 <main role="main">
-    <div class="container-fluid">
-        <h1>{% trans 'Ingen adgang' %}</h1>
+    {% block content %}
+        <h1>{% translate 'Ingen adgang' %}</h1>
         <p>{% translate 'Du har ikke adgang til denne side' %}</p>
-    </div>
+    {% endblock %}
 </main>
 </body>
 </html>

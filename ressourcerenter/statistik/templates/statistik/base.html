@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/select2.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/select2-bootstrap4.min.css' %}">
-    <link rel="stylesheet" href="{% static "css/ressourcerenter.css" %}">
+    <link rel="stylesheet" href="{% static 'css/ressourcerenter.css' %}">
     <script src="{% static 'js/jquery.slim.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'js/select2.full.min.js' %}"></script>
@@ -16,6 +16,8 @@
 </head>
 <body>
 <main role="main">
+    {% translate 'Statistik' as statistik %}
+    {% include 'administration/navigation.html' with app_name=statistik %}
     <div class="container-fluid">
     {% block content %}{% endblock %}
     </div>
