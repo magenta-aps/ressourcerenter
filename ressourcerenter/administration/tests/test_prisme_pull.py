@@ -1,9 +1,9 @@
-from administration.management.commands.get_account_data import Command as GetAccountDataCommand
 from administration.models import Faktura
 from administration.prisme import Prisme, PrismeSELAccountResponse
 from datetime import date
 from decimal import Decimal
 from django.contrib.auth import get_user_model
+from django.core import management
 from django.test import TransactionTestCase
 from indberetning.models import Virksomhed
 from unittest.mock import patch
@@ -62,6 +62,6 @@ class PrismeTestCase(TransactionTestCase):
         )
         dato = date(2021, 5, 1)
         get_account_data_mock.return_value = [prisme_sel_mock(faktura.id, dato)]
-        GetAccountDataCommand().handle()
+        management.call_command('get_account_data')
         faktura.refresh_from_db()
         self.assertEquals(faktura.bogført, dato)

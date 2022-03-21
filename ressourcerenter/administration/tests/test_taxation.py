@@ -1,12 +1,12 @@
+from administration.models import Afgiftsperiode, SatsTabelElement, ProduktType, BeregningsModel2021, FiskeArt, \
+    SkemaType
+from datetime import date
+from decimal import Decimal
+from django.core import management
 from django.db import IntegrityError
 from django.test import TransactionTestCase
-from administration.models import Afgiftsperiode, SatsTabelElement, ProduktType, BeregningsModel2021, FiskeArt, SkemaType
 from indberetning.models import Virksomhed, Indberetning, IndberetningLinje
-from decimal import Decimal
-from datetime import date
 from uuid import uuid4
-
-from administration.management.commands.create_initial_dataset import Command
 
 
 class AfgiftTestCase(TransactionTestCase):
@@ -23,7 +23,7 @@ class AfgiftTestCase(TransactionTestCase):
     def setUp(self):
         super().setUpClass()
 
-        Command().handle()
+        management.call_command('create_initial_dataset')
 
         self.periode = Afgiftsperiode.objects.get(dato_fra=date(2021, 1, 1))
 

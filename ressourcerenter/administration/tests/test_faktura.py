@@ -1,8 +1,8 @@
-from administration.management.commands.create_initial_dataset import Command as CreateInitialDatasetCommand
 from administration.models import Afgiftsperiode, FiskeArt, ProduktType, SkemaType, Faktura
 from datetime import date
 from decimal import Decimal
 from django.contrib.auth import get_user_model
+from django.core import management
 from django.test import TransactionTestCase
 from indberetning.models import Virksomhed, Indberetning, IndberetningLinje
 
@@ -11,7 +11,7 @@ class FakturaTestCase(TransactionTestCase):
 
     def setUp(self):
         super().setUpClass()
-        CreateInitialDatasetCommand().handle()
+        management.call_command('create_initial_dataset')
         self.skematyper = {s.id: s for s in SkemaType.objects.all()}
         self.user = get_user_model().objects.create(username="TestUser")
 
