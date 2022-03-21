@@ -614,7 +614,7 @@ class FakturaSendView(SingleObjectMixin, BaseFormView):
     def form_valid(self, form):
         try:
             self.get_object().batch.send(self.request.user, form.cleaned_data['destination'] == '10q_development')
-        except Exception as e:
+        except all_ftp_errors as e:
             # Exception message has been saved to batch.fejlbesked
             messages.add_message(self.request, messages.INFO, _('Afsendelse fejlede: {error}').format(error=str(e)))
         else:
