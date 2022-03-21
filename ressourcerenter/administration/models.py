@@ -1,4 +1,3 @@
-from decimal import Decimal, ROUND_HALF_EVEN
 import logging
 from decimal import Decimal, ROUND_HALF_EVEN
 from django.conf import settings
