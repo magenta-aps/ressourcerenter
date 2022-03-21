@@ -57,6 +57,7 @@ class PrismeTestCase(TransactionTestCase):
             virksomhed=self.virksomhed,
             beløb=Decimal(200),
             betalingsdato=date(2022, 7, 1),
+            opkrævningsdato=date(2022, 7, 1),
             kode=123,
             opretter=self.user
         )

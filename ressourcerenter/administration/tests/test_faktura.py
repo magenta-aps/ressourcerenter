@@ -33,6 +33,9 @@ class FakturaTestCase(TransactionTestCase):
         periode = Afgiftsperiode(navn_dk='x'*200, dato_fra=date(2000, 1, 1), dato_til=date(2000, 3, 31))
         indberetning = Indberetning(afgiftsperiode=periode, skematype=self.skematyper[1], virksomhed=virksomhed)
         linje = IndberetningLinje(indberetning=indberetning, produkttype=ProduktType.objects.get(navn_dk='Makrel, ikke-grønlandsk fartøj'), levende_vægt=1000, salgspris=10000)
-        faktura = Faktura(virksomhed=virksomhed, beløb=Decimal(200), betalingsdato=date(2022, 7, 1), kode=123, opretter=self.user, periode=periode, linje=linje)
+        faktura = Faktura(
+            virksomhed=virksomhed, beløb=Decimal(200), betalingsdato=date(2022, 7, 1), opkrævningsdato=date(2022, 7, 1),
+            kode=123, opretter=self.user, periode=periode, linje=linje
+        )
         for line in faktura.text.splitlines():
             self.assertFalse(len(line) > 60)

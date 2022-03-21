@@ -79,6 +79,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('beløb', models.DecimalField(decimal_places=2, default=Decimal('0.0'), max_digits=12)),
                 ('betalingsdato', models.DateField()),
+                ('opkrævningsdato', models.DateField()),
                 ('oprettet', models.DateTimeField(auto_now_add=True)),
                 ('bogført', models.DateField(null=True)),
                 ('kode', models.PositiveSmallIntegerField()),

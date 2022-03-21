@@ -48,7 +48,7 @@ class PrismeTestCase(TransactionTestCase):
         indberetning = Indberetning.objects.create(afgiftsperiode=self.periode, skematype=self.skematyper[1], virksomhed=self.virksomhed)
         linje = IndberetningLinje.objects.create(indberetning=indberetning, produkttype=ProduktType.objects.get(navn_dk='Makrel, ikke-grønlandsk fartøj'), levende_vægt=1000, salgspris=10000)
         self.assertTrue(self.client.login(username=self.username, password=self.password))
-        response = self.client.post(reverse('administration:faktura-create', kwargs={'pk': linje.pk}), {'betalingsdato': '2022-03-18'})
+        response = self.client.post(reverse('administration:faktura-create', kwargs={'pk': linje.pk}), {'betalingsdato': '2022-03-18', 'opkrævningsdato': '2022-03-18'})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('administration:indberetningslinje-list'))
 
@@ -62,7 +62,17 @@ class PrismeTestCase(TransactionTestCase):
         indberetning = Indberetning.objects.create(afgiftsperiode=self.periode, skematype=self.skematyper[1], virksomhed=self.virksomhed)
         linje = IndberetningLinje.objects.create(indberetning=indberetning, produkttype=ProduktType.objects.get(navn_dk='Makrel, ikke-grønlandsk fartøj'), levende_vægt=1000, salgspris=10000)
         batch = Prisme10QBatch.objects.create(oprettet_af=self.user)
-        faktura = Faktura.objects.create(batch=batch, virksomhed=self.virksomhed, beløb=Decimal(200), betalingsdato=date(2022, 7, 1), kode=123, opretter=self.user, periode=self.periode, linje=linje,)
+        faktura = Faktura.objects.create(
+            batch=batch,
+            virksomhed=self.virksomhed,
+            beløb=Decimal(200),
+            betalingsdato=date(2022, 7, 1),
+            opkrævningsdato=date(2022, 7, 1),
+            kode=123,
+            opretter=self.user,
+            periode=self.periode,
+            linje=linje,
+        )
         linje.faktura = faktura
         linje.save()
 
@@ -81,8 +91,17 @@ class PrismeTestCase(TransactionTestCase):
         indberetning = Indberetning.objects.create(afgiftsperiode=self.periode, skematype=self.skematyper[1], virksomhed=self.virksomhed)
         linje = IndberetningLinje.objects.create(indberetning=indberetning, produkttype=ProduktType.objects.get(navn_dk='Makrel, ikke-grønlandsk fartøj'), levende_vægt=1000, salgspris=10000)
         batch = Prisme10QBatch.objects.create(oprettet_af=self.user)
-        faktura = Faktura.objects.create(batch=batch, virksomhed=self.virksomhed, beløb=Decimal(200), betalingsdato=date(2022, 7, 1), kode=123, opretter=self.user, periode=self.periode, linje=linje,)
-
+        faktura = Faktura.objects.create(
+            batch=batch,
+            virksomhed=self.virksomhed,
+            beløb=Decimal(200),
+            betalingsdato=date(2022, 7, 1),
+            opkrævningsdato=date(2022, 7, 1),
+            kode=123,
+            opretter=self.user,
+            periode=self.periode,
+            linje=linje,
+        )
         linje.faktura = faktura
         linje.save()
 

@@ -1,3 +1,4 @@
+from decimal import Decimal, ROUND_HALF_EVEN
 import logging
 from decimal import Decimal, ROUND_HALF_EVEN
 from django.conf import settings
@@ -12,6 +13,7 @@ from ftplib import all_errors as all_ftp_errors
 from io import StringIO
 from itertools import chain
 from math import ceil
+from project.dateutil import quarter_number, month_last_date, quarter_last_month
 from simple_history.models import HistoricalRecords
 from tenQ.client import put_file_in_prisme_folder
 from tenQ.writer import TenQTransactionWriter
@@ -540,6 +542,10 @@ class Faktura(models.Model):
         null=False
     )
 
+    opkrævningsdato = models.DateField(
+        null=False
+    )
+
     periode = models.ForeignKey(
         Afgiftsperiode,
         on_delete=models.SET_NULL,
@@ -584,6 +590,7 @@ class Faktura(models.Model):
             static_data = settings.PRISME_PUSH['fielddata']
         return TenQTransactionWriter(
             due_date=self.betalingsdato,
+            last_payment_date=self.betalingsdato,
             creation_date=self.linje.indberetningstidspunkt,
             year=self.periode.dato_fra.year,  # Bruges i paalign_aar,
             periode_fra=self.periode.dato_fra,
@@ -635,3 +642,10 @@ class Faktura(models.Model):
 
     def __str__(self):
         return f"Faktura (kode={self.kode}, periode={self.periode}, beløb={self.beløb})"
+
+    @staticmethod
+    def get_betalingsdato(dato):
+        # find slutningen af måneden efter kvartalet
+        # month_last_date wrapper måneder, så 2022, 13 bliver til 2023, 1
+        return month_last_date(dato.year, quarter_last_month(quarter_number(dato)) + 1)
+

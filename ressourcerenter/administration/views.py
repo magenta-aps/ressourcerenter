@@ -21,6 +21,7 @@ from ftplib import all_errors as all_ftp_errors
 import re
 from decimal import Decimal
 from itertools import chain
+from datetime import date
 
 from collections import OrderedDict
 
@@ -564,6 +565,15 @@ class FakturaCreateView(CreateView):
     template_name = 'administration/faktura_form.html'
     model = IndberetningLinje
 
+    def get_form_kwargs(self):
+        linje = self.get_object()
+        kwargs = super().get_form_kwargs()
+        kwargs['initial'] = {
+            'opkrævningsdato': linje.indberetning.indberetningstidspunkt.date(),
+            'betalingsdato': Faktura.get_betalingsdato(date.today())
+        }
+        return kwargs
+
     def get_success_url(self):
         return reverse('administration:indberetningslinje-list')
 
@@ -587,6 +597,7 @@ class FakturaCreateView(CreateView):
             opretter=self.request.user,
             batch=Prisme10QBatch.objects.create(oprettet_af=self.request.user),
             betalingsdato=form.cleaned_data['betalingsdato'],
+            opkrævningsdato=form.cleaned_data['opkrævningsdato'],
         )
         linje.faktura = faktura
         linje.save(update_fields=('faktura',))
