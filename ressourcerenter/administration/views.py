@@ -17,6 +17,7 @@ from django.db.models import F, Sum
 from django.db.models import Case, Value, When
 from django.db.models.functions import Coalesce
 from datetime import timedelta
+from ftplib import all_errors as all_ftp_errors
 import re
 from decimal import Decimal
 from itertools import chain
@@ -592,7 +593,7 @@ class FakturaCreateView(CreateView):
 
         try:
             faktura.batch.send(self.request.user, form.cleaned_data['send_to_test'])
-        except Exception as e:
+        except all_ftp_errors as e:
             # Exception message has been saved to batch.fejlbesked
             messages.add_message(
                 self.request,
