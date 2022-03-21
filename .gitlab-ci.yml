@@ -77,18 +77,7 @@ Aalisakkat Unittest:
     POSTGRES_HOST: ressourcerenter-db
     # No fiddling with sftp server during testing
     LOGIN_MOCK: cvr
-    PRISME_PUSH_HOST: ""
-    PRISME_PUSH_PORT: 22
-    PRISME_PUSH_USERNAME: ""
-    PRISME_PUSH_PASSWORD: ""
-    PRISME_PUSH_KNOWN_HOSTS: ""
-    PRISME_PUSH_PROJECT_ID: ALIS
-    PRISME_PUSH_USER_NUMBER: 0
-    PRISME_PUSH_PAYMENT_TYPE: 0
-    PRISME_PUSH_DEST_PROD_PATH: "/nanoq/prod/q"
-    PRISME_PUSH_DEST_TEST_PATH: "/nanoq/uddannelse/KAS"
-    PRISME_PUSH_DEST_PROD_AVAILABLE: "false"
-    PRISME_PUSH_DEST_TEST_AVAILABLE: "true"
+    PRISME_PUSH_MOCK: "true"
   script:
     - cd /app && python manage.py test
 

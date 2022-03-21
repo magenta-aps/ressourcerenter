@@ -475,7 +475,10 @@ class Prisme10QBatch(models.Model):
 
     def send(self, user, force_send_to_test=False, callback=None):
         try:
-            destinations_available = settings.PRISME_PUSH['destinations_available']
+            if settings.PRISME_PUSH['mock']:
+                destinations_available = {'10q_production': False, '10q_development': True}
+            else:
+                destinations_available = settings.PRISME_PUSH['destinations_available']
             # Send to prod if it is available, fall back to dev
             destination = '10q_production' \
                 if destinations_available['10q_production'] and not force_send_to_test else \
