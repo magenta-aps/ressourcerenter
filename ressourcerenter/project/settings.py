@@ -14,7 +14,6 @@ import os
 from pathlib import Path
 from distutils.util import strtobool
 from django.utils.translation import gettext_lazy as _
-import sys
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
