@@ -1,10 +1,12 @@
 from django import forms
+from django.conf import settings
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 from administration.models import Afgiftsperiode, SatsTabelElement, BeregningsModel
 from administration.models import FiskeArt
 from administration.models import SkemaType
 from administration.models import ProduktType
+from administration.models import Faktura
 from project.forms_mixin import BootstrapForm
 from project.form_fields import DateInput
 from indberetning.models import Indberetning, Indhandlingssted
@@ -257,8 +259,22 @@ class StatistikForm(BootstrapForm):
         super(StatistikForm, self).__init__(*args, **kwargs)
 
 
-class FakturaForm(BootstrapForm):
-    linjer = forms.ModelMultipleChoiceField(
-        queryset=IndberetningLinje.objects.all(),
-        widget=forms.MultipleHiddenInput
+class FakturaForm(BootstrapForm, forms.ModelForm):
+
+    class Meta:
+        model = Faktura
+        fields = ('betalingsdato',)
+        widgets = {
+            'betalingsdato': DateInput()
+        }
+
+    send_to_test = forms.BooleanField(
+        required=False
+    )
+
+
+class BatchSendForm(forms.Form):
+
+    destination = forms.ChoiceField(
+        choices=lambda: [(key, key) for key, value in settings.PRISME_PUSH['destinations_available'].items() if value]
     )

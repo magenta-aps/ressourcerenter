@@ -1,0 +1,36 @@
+{% extends 'administration/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% translate 'Opret Faktura' %}</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+        <div class="col-2">
+            <label for="{{ form.betalingsdato.id_for_label }}">{% translate 'Betalingsdato:' %}</label>
+        </div>
+        <div class="col-4">
+            {{ form.betalingsdato }}
+        </div>
+        <div class="col-6">
+            {{ form.betalingsdato.errors }}
+        </div>
+    </div>
+    {% if send_to_test_available %}
+    <div class="form-row form-check">
+        <div class="col-6">
+            <label class="form-check-label" for="{{ form.send_to_test.id_for_label }}">
+            {{ form.send_to_test }}
+            {% translate 'Send til testsystem' %}
+            </label>
+        </div>
+        <div class="col-6">
+            {{ form.send_to_test.errors }}
+        </div>
+    </div>
+    {% endif %}
+    <button type="submit" class="btn btn-primary">{% translate 'Opret og send' %}</button>
+</form>
+
+{% endblock %}

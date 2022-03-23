@@ -121,11 +121,13 @@ class IndberetningLinje(models.Model):
 
     debitorgruppekode = models.PositiveSmallIntegerField(default=0)
 
-    faktura = models.ForeignKey(
+    indberetningstidspunkt = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    faktura = models.OneToOneField(
         'administration.Faktura',
         null=True,
         on_delete=models.SET_NULL,
-        related_name='linjer'
+        related_name='linje'
     )
 
     @property

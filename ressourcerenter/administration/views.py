@@ -1,11 +1,14 @@
 from django import forms
 from django.conf import settings
 from django.db.models.query import prefetch_related_objects
+from django.shortcuts import redirect
 from django.contrib import messages
 from django.http import HttpResponseNotFound
 from django.views.generic import RedirectView
 from django.views.generic import TemplateView, ListView, DetailView
-from django.views.generic import CreateView, UpdateView, FormView
+from django.views.generic import CreateView, UpdateView
+from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.edit import BaseFormView
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.utils.functional import cached_property
@@ -14,9 +17,10 @@ from django.db.models import F, Sum
 from django.db.models import Case, Value, When
 from django.db.models.functions import Coalesce
 from datetime import timedelta
+from tenQ.client import ClientException
 import re
 from decimal import Decimal
-from datetime import date
+from itertools import chain
 
 from collections import OrderedDict
 
@@ -45,7 +49,7 @@ from indberetning.models import Virksomhed
 from administration.forms import VirksomhedForm
 
 from administration.models import Faktura, Prisme10QBatch
-from administration.forms import FakturaForm
+from administration.forms import FakturaForm, BatchSendForm
 
 
 class PostLoginView(RedirectView):
@@ -309,6 +313,12 @@ class FakturaDetailView(DetailView):
     template_name = 'administration/faktura_detail.html'
     model = Faktura
 
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**{
+            **kwargs,
+            'destinations_available': settings.PRISME_PUSH['destinations_available']
+        })
+
 
 class VirksomhedListView(ListView):
     model = Virksomhed
@@ -558,28 +568,83 @@ class StatistikView(ExcelMixin, GetFormView):
         return self.render_to_response(context)
 
 
-class IndberetningsLinjeListView(FormView):
-    template_name = 'administration/indberetning_afstem.html'
-    model = Faktura
+class FakturaCreateView(CreateView):
     form_class = FakturaForm
+    template_name = 'administration/faktura_form.html'
+    model = IndberetningLinje
 
     def get_success_url(self):
-        url = reverse('administration:faktura-create')
-        periode = self.request.GET.get('periode')
-        if periode:
-            url += "?periode=" + periode
-        return url
+        return reverse('administration:indberetningslinje-list')
+
+    def get_context_data(self, **kwargs):
+        destinations_available = settings.PRISME_PUSH['destinations_available']
+        return super().get_context_data(
+            **{
+                **kwargs,
+                # Option to send to test is only avaliable when both are possible
+                'send_to_test_available': destinations_available['10q_production'] and destinations_available['10q_development']
+            }
+        )
 
     def form_valid(self, form):
-        linjer = form.cleaned_data['linjer']
-        betalingsdato = date.today() + timedelta(days=14)  # form.cleaned_data['betalingsdato']
-        batch = Prisme10QBatch.objects.create(oprettet_af=self.request.user)
-        fakturaer = Faktura.opret_fakturaer(linjer, self.request.user, betalingsdato, batch)
-        message = _('Faktura oprettet') if len(fakturaer) == 1 else _('%(antal)s fakturaer oprettet') % {'antal': len(fakturaer)}
-        messages.add_message(self.request, messages.INFO, message)
-        destination = '10q_development'
-        batch.send(destination, self.request.user)
+        linje = self.get_object()
+        faktura = Faktura.objects.create(
+            kode=linje.debitorgruppekode,
+            periode=linje.indberetning.afgiftsperiode,
+            virksomhed=linje.indberetning.virksomhed,
+            beløb=linje.afgift,
+            opretter=self.request.user,
+            batch=Prisme10QBatch.objects.create(oprettet_af=self.request.user),
+            betalingsdato=form.cleaned_data['betalingsdato'],
+        )
+        linje.faktura = faktura
+        linje.save(update_fields=('faktura',))
+
+        try:
+            faktura.batch.send(self.request.user, form.cleaned_data['send_to_test'])
+        except ClientException as e:
+            # Exception message has been saved to batch.fejlbesked
+            messages.add_message(
+                self.request,
+                messages.INFO,
+                _('Faktura oprettet, men afsendelse fejlede: {error}').format(error=str(e))
+            )
+            raise
+        else:
+            messages.add_message(self.request, messages.INFO, _('Faktura oprettet og afsendt'))
+
+        return redirect(self.get_success_url())
+
+
+class FakturaSendView(SingleObjectMixin, BaseFormView):
+
+    form_class = BatchSendForm
+    model = Faktura
+
+    def form_valid(self, form):
+        try:
+            self.get_object().batch.send(self.request.user, form.cleaned_data['destination'] == '10q_development')
+        except ClientException as e:
+            # Exception message has been saved to batch.fejlbesked
+            messages.add_message(self.request, messages.INFO, _('Afsendelse fejlede: {error}').format(error=str(e)))
+        else:
+            messages.add_message(self.request, messages.INFO, _('Faktura afsendt'))
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.add_message(
+            self.request,
+            messages.INFO,
+            _('Afsendelse fejlede: {error}').format(error=', '.join(chain(*form.errors.values())))
+        )
+        return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse('administration:faktura-detail', kwargs={'pk': self.get_object().pk})
+
+
+class IndberetningsLinjeListView(TemplateView):
+    template_name = 'administration/indberetning_afstem.html'
 
     @cached_property
     def periode(self):
@@ -596,7 +661,6 @@ class IndberetningsLinjeListView(FormView):
         # Opret et træ som grupperer indberetningslinjer i:
         # * Virksomheder
         # * Produkttyper
-        # * Fakturaer
         # * Fangsttyper
         virksomheder = []
         sum_fields = {'produktvægt', 'levende_vægt', 'salgspris', 'afgift'}
@@ -616,25 +680,17 @@ class IndberetningsLinjeListView(FormView):
                     if produkttype.uuid not in virksomhed_data['produkttyper']:
                         virksomhed_data['produkttyper'][produkttype.uuid] = {
                             'produkttype': produkttype,
-                            'fakturaer': {},
+                            'fangsttyper': {}
                         }
                     produkttype_item = virksomhed_data['produkttyper'][produkttype.uuid]
 
-                    faktura_id = linje.faktura.id if linje.faktura else None
-                    if faktura_id not in produkttype_item['fakturaer']:
-                        produkttype_item['fakturaer'][faktura_id] = {
-                            'faktura': linje.faktura,
-                            'fangsttyper': {}
-                        }
-                    faktura_item = produkttype_item['fakturaer'][faktura_id]
-
                     fangsttype = linje.fangsttype
-                    if fangsttype not in faktura_item['fangsttyper']:
-                        faktura_item['fangsttyper'][fangsttype] = {
+                    if fangsttype not in produkttype_item['fangsttyper']:
+                        produkttype_item['fangsttyper'][fangsttype] = {
                             'sum': {key: 0 for key in sum_fields},
                             'linjer': []
                         }
-                    fangsttype_item = faktura_item['fangsttyper'][fangsttype]
+                    fangsttype_item = produkttype_item['fangsttyper'][fangsttype]
 
                     for key in sum_fields:
                         fangsttype_item['sum'][key] += getattr(linje, key)

@@ -1,20 +1,6 @@
 {% extends 'administration/base.html' %}
 {% load i18n %}
 
-{% block alert %}
-{% if messages %}
-{% for message in messages %}
-<div class="alert text-center {% if message.level == 20 %}alert-info
-                              {% elif message.level == 25 %}alert-success
-                              {% elif message.level == 30 %}alert-warning
-                              {% elif message.level == 40 %}alert-danger
-                              {% endif %}" role="alert">
-    {{ message }}
-</div>
-{% endfor %}
-{% endif %}
-{% endblock %}
-
 {% block content %}
 <h1>{% translate 'Afstem indberetninger' %}</h1>
 <div class="row">
@@ -58,10 +44,7 @@
                 <th class="col-1">{% translate 'Handling' %}</th>
             </tr>
             </thead>
-            {% for faktura_item in produkttype_item.fakturaer.values %}
-                {% with faktura=faktura_item.faktura %}
-
-                {% for fangsttype, fangsttype_item in faktura_item.fangsttyper.items %}
+                {% for fangsttype, fangsttype_item in produkttype_item.fangsttyper.items %}
                     {% with linjer=fangsttype_item.linjer %}
                         {% if linjer %}
                             <tbody>
@@ -79,31 +62,29 @@
                                         <td>{{linje.salgspris}}</td>
                                         <td>{{linje.fangstafgift.rate_string}}</td>
                                         <td>{{linje.afgift}}</td>
-                                        {% if forloop.first %}
-                                            {% with faktura=faktura_item.faktura %}
+                                            {% with faktura=linje.faktura %}
 
-                                                {% if faktura_item.faktura %}
-                                                    <td rowspan="{{count}}">
+                                                {% if faktura %}
+                                                    <td>
                                                         {% if faktura.bogført %}
                                                         {% translate 'Bogført' %}
                                                         {% else %}
                                                         {{ faktura.batch.get_status_display }}
                                                         {% endif %}
                                                     </td>
-                                                    <td rowspan="{{count}}">
+                                                    <td>
                                                         <a class="btn {% if faktura.batch.status == 'failed' %}btn-warning{% else %}btn-primary{% endif %}"
                                                            href="{% url 'administration:faktura-detail' faktura.pk %}">{% translate 'Se detaljer' %}</a>
                                                     </td>
                                                 {% else %}
-                                                    <td rowspan="{{count}}">
+                                                    <td>
                                                         {% translate 'Ikke godkendt' %}
                                                     </td>
-                                                    <td rowspan="{{count}}">
-                                                        <button type="submit" class="btn btn-success" form="linjeform">{% translate 'Opret faktura' %}</button>
+                                                    <td>
+                                                        <a class="btn btn-success" href="{% url 'administration:faktura-create' linje.pk %}">{% translate 'Opret faktura' %}</a>
                                                     </td>
                                                 {% endif %}
                                             {% endwith %}
-                                        {% endif %}
                                     </tr>
                                 {% endfor %}
                             {% endwith %}
@@ -124,8 +105,6 @@
                         {% endif %}
                     {% endwith %}
                 {% endfor %}
-            {% endwith %}
-            {% endfor %}
         </table>
         {% endwith %}
         {% endwith %}
