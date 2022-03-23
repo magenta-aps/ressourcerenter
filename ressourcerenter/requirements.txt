@@ -11,4 +11,4 @@ zeep>=3.4.0
 xmltodict>=0.12.0
 dict2xml>=1.6.1
 requests[socks]
-tenQ @ git+https://github.com/magenta-aps/10Q.git@master
+tenQ @ git+https://github.com/magenta-aps/10Q.git@0.0.3

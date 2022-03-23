@@ -1,4 +1,4 @@
-import tempfile
+import logging
 from decimal import Decimal, ROUND_HALF_EVEN
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -8,10 +8,15 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.utils import timezone
 from django.utils.translation import gettext as _, get_language
+from io import StringIO
+from itertools import chain
+from math import ceil
 from simple_history.models import HistoricalRecords
-from tenQ.client import put_file_in_prisme_folder
+from tenQ.client import put_file_in_prisme_folder, ClientException
 from tenQ.writer import TenQTransactionWriter
 from uuid import uuid4
+
+logger = logging.getLogger(__name__)
 
 
 class NamedModel(models.Model):
@@ -179,6 +184,10 @@ class Afgiftsperiode(NamedModel):
             return self.entries.get(ressource__fiskeart=fiskeart, ressource__fangsttype=fangsttype)
         except SatsTabelElement.DoesNotExist:
             return None
+
+    @property
+    def kvartal_nummer(self):
+        return ceil(self.dato_fra.month / 3)
 
 
 class SatsTabelElement(models.Model):
@@ -459,13 +468,21 @@ class Prisme10QBatch(models.Model):
     ))
     completion_statuses = {
         '10q_production': STATUS_DELIVERED,
-        '10q_development': STATUS_CREATED
+        '10q_development': None
     }
 
-    def send(self, destination, user, callback=None):
-        if not settings.PRISME_PUSH['do_send']:
-            return
+    def send(self, user, force_send_to_test=False, callback=None):
         try:
+            if settings.PRISME_PUSH['mock']:
+                destinations_available = {'10q_production': False, '10q_development': True}
+            else:
+                destinations_available = settings.PRISME_PUSH['destinations_available']
+            # Send to prod if it is available, fall back to dev
+            destination = '10q_production' \
+                if destinations_available['10q_production'] and not force_send_to_test else \
+                '10q_development'
+
+            self.fejlbesked = ''
             # Extra check for chosen destination
             b = list(Prisme10QBatch.destinations_available)
             available = {destination_id for destination_id, label in b}
@@ -473,29 +490,32 @@ class Prisme10QBatch(models.Model):
                 available_csep = ', '.join(available)
                 raise ValueError(f"Kan ikke sende batch til {destination}, det er kun {available_csep} der er tilgængelig på dette system")
 
-            destination_folder = settings.PRISME_PUSH['dirs'][destination]
             # When sending to development environment, only send 100 entries
             content = self.get_prisme10Q_content(100 if destination == '10q_development' else None)
-            filename = "KAS_10Q_export_{}.10q".format(timezone.now().strftime('%Y-%m-%dT%H-%M-%S'))
-            connection_settings = {
-                'host': settings.PRISME_PUSH['host'],
-                'port': settings.PRISME_PUSH['port'],
-                'username': settings.PRISME_PUSH['username'],
-                'password': settings.PRISME_PUSH['password'],
-                'known_hosts': settings.PRISME_PUSH['known_hosts'],
-            }
 
-            with tempfile.NamedTemporaryFile(mode='w') as batchfile:
-                batchfile.write(content)
-                batchfile.flush()
-                put_file_in_prisme_folder(connection_settings, batchfile.name, destination_folder, filename, callback)
+            if settings.PRISME_PUSH['mock']:
+                # Debugging on local environment, output contents to stdout
+                logger.info(f"10Q data som ville blive sendt til {destination}: \n------------\n{content}\n------------")
+            else:
+                destination_folder = settings.PRISME_PUSH['dirs'][destination]
+                filename = "KAS_10Q_export_{}.10q".format(timezone.now().strftime('%Y-%m-%dT%H-%M-%S'))
+                connection_settings = {
+                    'host': settings.PRISME_PUSH['host'],
+                    'port': settings.PRISME_PUSH['port'],
+                    'username': settings.PRISME_PUSH['username'],
+                    'password': settings.PRISME_PUSH['password'],
+                    'known_hosts': settings.PRISME_PUSH['known_hosts'],
+                }
+                batchfile = StringIO(content)
+                put_file_in_prisme_folder(connection_settings, batchfile, destination_folder, filename, callback)
+                self.leveret_af = user
+                self.leveret_tidspunkt = timezone.now()
 
-            self.status = Prisme10QBatch.completion_statuses[destination]
-            self.leveret_af = user
-            self.leveret_tidspunkt = timezone.now()
-        except Exception as e:
+            if Prisme10QBatch.completion_statuses[destination]:
+                self.status = Prisme10QBatch.completion_statuses[destination]
+        except ClientException as e:
             self.status = Prisme10QBatch.STATUS_DELIVERY_FAILED
-            self.delivery_error = str(e)
+            self.fejlbesked = str(e)
             raise
         finally:
             self.save()
@@ -553,56 +573,64 @@ class Faktura(models.Model):
 
     @property
     def prisme10Q_content(self):
+        if settings.PRISME_PUSH['mock']:
+            static_data = {
+                'project_id': 'ALIS',
+                'user_number': 0,
+                'payment_type': 0,
+            }
+        else:
+            static_data = settings.PRISME_PUSH['fielddata']
         return TenQTransactionWriter(
             due_date=self.betalingsdato,
+            creation_date=self.linje.indberetningstidspunkt,
             year=self.periode.dato_fra.year,  # Bruges i paalign_aar,
             periode_fra=self.periode.dato_fra,
-            periode_til=self.periode.dato_til
+            periode_til=self.periode.dato_til,
+            faktura_no=self.id,
+            leverandoer_ident=static_data['project_id'],
+            bruger_nummer=static_data['user_number'],
+            betal_art=static_data['payment_type'],
         ).serialize_transaction(
             cpr_nummer=self.virksomhed.cvr,
             amount_in_dkk=self.beløb,
             afstem_noegle=str(self.pk),
             rate_text=self.text,
-            leverandoer_ident=settings.PRISME_PUSH['project_id']
+            rate_nummer=self.periode.kvartal_nummer,
         )
 
     @property
     def text(self):
-        linje = self.linjer.first()
-        # Vil blive trunkeret til 60 chars i 10Q
-        return f"Ressourcerenter {self.periode} ({linje.produkttype})"
+        # Type afgift og hvilke kvartal, hvis det er indhandling, så skal der stå indhandlingssted og rederiets navn (60 tegn pr. linje)
+        textparts = ['Ressourcerenter', str(self.periode), f'({self.linje.produkttype})']
+        if self.linje.indhandlingssted:
+            textparts.append(str(self.linje.indhandlingssted))
+
+        # Split all parts so they're each <= 60 chars
+        splitted_textparts = [x for part in textparts for x in self._split(part)]
+
+        lines = ['']
+        for part in splitted_textparts:
+            last_line = lines[-1]
+            # Each part is known to be less than 60 chars, so append them to lines until a line reaches 60 chars
+            if len(last_line) + 1 + len(part) > 60:
+                # last_line + ' ' + part will be longer than 60, put part on new line
+                lines.append(part)
+            else:
+                if last_line != '':
+                    lines[-1] += ' '  # Add space if not the first word in line
+                lines[-1] += part
+        return '\r\n'.join(lines)
+
+    # Split a text into chunks with max length 60
+    # first split by words, and if any words are longer, split them too
+    def _split(self, text):
+        if len(text) <= 60:
+            return [text]
+        if ' ' in text:
+            return chain(*[self._split(p) for p in text.split(' ')])
+        halfpoint = int(len(text) / 2)
+        return chain(self._split(text[0:halfpoint]), self._split(text[halfpoint:]))
 
     def __str__(self):
         return f"Faktura (kode={self.kode}, periode={self.periode}, beløb={self.beløb})"
-
-    @staticmethod
-    def opret_fakturaer(linjer, opretter, betalingsdato, batch=None):
-        map = {}
-        for linje in linjer:
-            uuid = linje.indberetning.virksomhed.uuid
-            kode = linje.debitorgruppekode  # Kode er unik for fiskeart/fangststed
-            if uuid not in map:
-                map[uuid] = {}
-            if kode not in map[uuid]:
-                # Der findes ikke allerede en faktura der passer - opret én
-                map[uuid][kode] = Faktura(
-                    kode=kode,
-                    periode=linje.indberetning.afgiftsperiode,  # Perioden er den samme for alle linjer i en indberetning
-                    opretter=opretter,
-                    virksomhed=linje.indberetning.virksomhed,
-                    betalingsdato=betalingsdato,
-                    batch=batch
-                )
-
-            faktura = map[uuid][kode]
-            faktura.beløb += linje.afgift
-
-        fakturaer = [y for x in map.values() for y in x.values()]
-        for faktura in fakturaer:
-            faktura.save()
-        for linje in linjer:
-            uuid = linje.indberetning.virksomhed.uuid
-            kode = linje.debitorgruppekode  # Kode er unik for fiskeart/fangststed
-            linje.faktura = map[uuid][kode]
-            linje.save(update_fields=['faktura'])
-        return fakturaer

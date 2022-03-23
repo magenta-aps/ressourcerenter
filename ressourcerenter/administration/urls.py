@@ -8,8 +8,9 @@ from administration.views import FiskeArtListView, FiskeArtCreateView, FiskeArtU
 from administration.views import ProduktTypeListView, ProduktTypeCreateView, ProduktTypeUpdateView, ProduktTypeHistoryView
 from administration.views import IndberetningDetailView, IndberetningListView, IndberetningAfstemFormView
 from administration.views import VirksomhedListView, VirksomhedCreateView, VirksomhedUpdateView, VirksomhedRepræsentantView, VirksomhedRepræsentantStopView
-from administration.views import IndberetningsLinjeListView, FakturaDetailView
+from administration.views import IndberetningsLinjeListView, FakturaDetailView, FakturaCreateView
 from administration.views import PostLoginView
+from administration.views import FakturaSendView
 
 app_name = AdministrationConfig.name
 
@@ -40,8 +41,11 @@ urlpatterns = [
     path('indberetning/<uuid:pk>/', IndberetningDetailView.as_view(), name='indberetning-detail'),
     path('indberetning/<uuid:pk>/afstem', IndberetningAfstemFormView.as_view(), name='indberetning-afstem'),
 
-    path('faktura/create', IndberetningsLinjeListView.as_view(), name='faktura-create'),
+    path('indberetningslinje/afstem', IndberetningsLinjeListView.as_view(), name='indberetningslinje-list'),
+
+    path('faktura/create/<uuid:pk>', FakturaCreateView.as_view(), name='faktura-create'),
     path('faktura/<int:pk>', FakturaDetailView.as_view(), name='faktura-detail'),
+    path('faktura/<int:pk>/send', FakturaSendView.as_view(), name='faktura-send'),
 
     path('virksomhed/', VirksomhedListView.as_view(), name='virksomhed-list'),
     path('virksomhed/create', VirksomhedCreateView.as_view(), name='virksomhed-create'),
