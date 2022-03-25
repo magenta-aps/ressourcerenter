@@ -6,6 +6,10 @@ from django.utils import timezone
 
 from administration.models import SkemaType, FiskeArt, ProduktType, Afgiftsperiode, SatsTabelElement
 
+from project.dafo import DatafordelerClient
+
+from indberetning.models import Indhandlingssted
+
 
 class Command(BaseCommand):
     help = 'Create basic data'
@@ -34,7 +38,18 @@ class Command(BaseCommand):
             produkttype = ProduktType.objects.get(fiskeart=fiskeart, navn_dk=navn_dk, fartoej_groenlandsk=fartoej_groenlandsk)
         return produkttype
 
+    def populate_indberetningssteder(self):
+        client = DatafordelerClient()
+        steder = client.get_stedkoder()
+        for sted in steder:
+            if 'lokalitetskode' in sted and 'navn' in sted:
+                kode = sted['lokalitetskode']
+                navn = sted['navn'][0]
+                Indhandlingssted.objects.update_or_create(stedkode=kode, defaults={'navn': navn})
+
     def handle(self, *args, **options):
+
+        self.populate_indberetningssteder()
 
         self.skematyper = {}
         if not SkemaType.objects.exists():

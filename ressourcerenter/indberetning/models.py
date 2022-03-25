@@ -33,7 +33,7 @@ class Indhandlingssted(models.Model):
     stedkode = models.CharField(max_length=8)
 
     def __str__(self):
-        return self.navn
+        return f"{self.navn} ({self.stedkode})"
 
     class Meta:
         ordering = ('navn',)

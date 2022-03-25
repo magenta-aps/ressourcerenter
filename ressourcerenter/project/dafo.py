@@ -80,6 +80,12 @@ class DatafordelerClient(object):
         else:
             return self._get(cpr, self._uxp_service_owned_by)
 
+    def get_stedkoder(self):
+        url = 'https://dafo.test.data.gl/geo/locality/1/rest/search?pageSize=1000'
+        response = self._session.get(url, timeout=self._timeout, headers={'Accept': "application/json"})
+        response.raise_for_status()
+        return response.json()['results']
+
     def _get(self, number, service_header):
         url = urljoin(self._url, number)
         r = self._session.get(url, cert=self._cert, verify=self._root_ca, timeout=self._timeout,
