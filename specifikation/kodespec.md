@@ -8,7 +8,8 @@ Ved at afsætte 2 cifte til dette har vi plads til 100 fiskearter, hvilket burde
 rigeligt.
 
 ### aktivitet
-
+Aktiviteter såsom hvor fisk er fanget (havgående, kystnært, barentshavet). Vi har under ti af disse,
+så det kan repræsenteres med ét ciffer.
 
 ### skatteår
 To cifre burde være tilstrækkeligt, da vi tidligst kommer ind i en Y2K-situation i år 2100 
