@@ -73,6 +73,7 @@
             {% if skematype_id == 1 or skematype_id == 2 %}
             <th>{% translate 'Fartøj' %}</th>
             {% endif %}
+            <th>{% translate 'Dato/tid' %}</th>
             <th>{% translate 'Produktvægt (kg)' %}</th>
             <th>{% translate 'Levende vægt/helfisk mængde (kg)' %}</th>
             <th>{% translate 'Omsætning / Indhandlingsværdi (kr)' %}</th>
@@ -91,6 +92,7 @@
                 {% if skematype_id == 1 or skematype_id == 2 %}
                 <td>{{ linje.fartøj_navn|default_if_none:'' }}</td>
                 {% endif %}
+                <td class="text-right">{{ linje.indberetningstidspunkt }}</td>
                 <td class="text-right">{{ linje.produktvægt }}</td>
                 <td class="text-right">{{ linje.levende_vægt }}</td>
                 <td class="text-right">{{ linje.salgspris }}</td>
@@ -106,7 +108,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td {% if skematype_id == 2 %}colspan="2"{% endif %}><strong>{% translate 'I alt' %}</strong></td>
+                <td colspan="{% if skematype_id == 2 %}3{% else %}2{% endif %}"><strong>{% translate 'I alt' %}</strong></td>
 
                 <td class="text-right">
                     {{group.instances|list_sum_attr:'produktvægt'}}

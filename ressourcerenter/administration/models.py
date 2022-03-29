@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MaxValueValidator
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import pre_save, post_save
 from django.utils import timezone
 from django.utils.translation import gettext as _, get_language
 from io import StringIO
@@ -18,6 +18,7 @@ from tenQ.client import put_file_in_prisme_folder, ClientException
 from tenQ.writer import G69TransactionWriter
 from tenQ.writer import TenQTransactionWriter
 from uuid import uuid4
+from django.db.models import Max
 
 logger = logging.getLogger(__name__)
 
@@ -88,6 +89,7 @@ class FiskeArt(NamedModel):
     debitorgruppekode_havgående = models.PositiveSmallIntegerField(validators=[MaxValueValidator(999)], null=True)
     history = HistoricalRecords()
     debitorgruppekode_use_skematype = models.BooleanField(default=True)
+    kode = models.PositiveSmallIntegerField(null=True, validators=[MaxValueValidator(999)])
 
     def get_fangsttype(self, skematype):
         if self.debitorgruppekode_use_skematype:
@@ -113,6 +115,30 @@ class FiskeArt(NamedModel):
             return self.debitorgruppekode_indhandling
         elif fangsttype == 'kystnært':
             return self.debitorgruppekode_kystnært
+
+    @staticmethod
+    def create_satstabelelementer(sender, instance, created, raw, using, update_fields, **kwargs):
+        # Hvis fiskearten har opdateret f.eks. skematyper, kan det være relevant at oprette satstabelementer
+        if not created:  # Kun relevant når fiskearten har produkttyper associeret, og de oprettes _efter_ fiskearten
+            for produkttype in instance.produkttype_set.all():
+                for periode in Afgiftsperiode.objects.all():
+                    for skematype in instance.skematype.all():
+                        SatsTabelElement.objects.get_or_create(
+                            skematype=skematype,
+                            fiskeart=instance,
+                            periode=periode,
+                            fartoej_groenlandsk=produkttype.fartoej_groenlandsk
+                        )
+
+    @staticmethod
+    def increment_fiskeart_kode(sender, instance, **kwargs):
+        if instance.kode is None:
+            current_max = FiskeArt.objects.aggregate(Max('kode'))['kode__max'] or 0
+            instance.kode = current_max + 1
+
+
+post_save.connect(FiskeArt.create_satstabelelementer, FiskeArt, dispatch_uid='create_satstabel_for_fiskeart')
+pre_save.connect(FiskeArt.increment_fiskeart_kode, FiskeArt, dispatch_uid='set_kode_for_fiskeart')
 
 
 class ProduktType(NamedModel):
@@ -140,6 +166,8 @@ class ProduktType(NamedModel):
         on_delete=models.SET_NULL,
     )
 
+    history = HistoricalRecords()
+
     @staticmethod
     def sort_in_groups(produkttyper):
         groups = {}
@@ -153,6 +181,22 @@ class ProduktType(NamedModel):
             else:
                 non_group_items[str(item)] = (str(item.pk), str(item))
         return [groups[x] for x in sorted(groups)] + [non_group_items[x] for x in sorted(non_group_items)]
+
+    @staticmethod
+    def create_satstabelelementer(sender, instance, created, raw, using, update_fields, **kwargs):
+        # Opret de relevante satstabelelementer for produkttypen på alle perioder. Eksisterende elementer overskrives ikke
+        fiskeart = instance.fiskeart
+        for periode in Afgiftsperiode.objects.all():
+            for skematype in fiskeart.skematype.all():
+                SatsTabelElement.objects.get_or_create(
+                    skematype=skematype,
+                    fiskeart=fiskeart,
+                    periode=periode,
+                    fartoej_groenlandsk=instance.fartoej_groenlandsk,
+                )
+
+
+post_save.connect(ProduktType.create_satstabelelementer, ProduktType, dispatch_uid='create_satstabel_for_produkttype')
 
 
 class Afgiftsperiode(NamedModel):

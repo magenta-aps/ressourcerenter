@@ -19,7 +19,7 @@ class Command(BaseCommand):
             print('DEBUG needs to be True (dev-environment)')
             return
 
-        virksomhed, _ = Virksomhed.objects.get_or_create(cvr='12345678')
+        virksomhed, _ = Virksomhed.objects.update_or_create(cvr='12345678', defaults={'navn': 'Testvirksomhed'})
 
         try:
             beregningsmodel = BeregningsModel2021.objects.create(

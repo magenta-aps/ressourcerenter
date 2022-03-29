@@ -39,7 +39,7 @@ class FiskeArtForm(forms.ModelForm, BootstrapForm):
 
     class Meta:
         model = FiskeArt
-        fields = ('navn_dk', 'navn_gl', 'beskrivelse',)
+        fields = ('navn_dk', 'navn_gl', 'beskrivelse', 'skematype', 'pelagisk')
 
         widgets = {
             'navn_dk': forms.TextInput(),
@@ -47,8 +47,10 @@ class FiskeArtForm(forms.ModelForm, BootstrapForm):
             'beskrivelse': forms.TextInput(),
         }
 
+    pelagisk = forms.ChoiceField(choices=((True, _('Ja')), (False, _('Nej'))))
 
-class ProduktTypeForm(forms.ModelForm, BootstrapForm):
+
+class ProduktTypeCreateForm(forms.ModelForm, BootstrapForm):
 
     class Meta:
         model = ProduktType
@@ -58,7 +60,29 @@ class ProduktTypeForm(forms.ModelForm, BootstrapForm):
             'navn_dk': forms.TextInput(),
             'navn_gl': forms.TextInput(),
             'beskrivelse': forms.TextInput(),
-            'fartoej_groenlandsk': forms.CheckboxInput(),
+            'fartoej_groenlandsk': forms.Select(choices=(
+                (True, _('Grønlandsk fartøj')),
+                (False, _('Ikke-grønlandsk fartøj')),
+                (None, _('Ikke relevant'))
+            )),
+        }
+
+
+class ProduktTypeUpdateForm(forms.ModelForm, BootstrapForm):
+
+    class Meta:
+        model = ProduktType
+        fields = ('navn_dk', 'navn_gl', 'beskrivelse', 'fartoej_groenlandsk')
+
+        widgets = {
+            'navn_dk': forms.TextInput(),
+            'navn_gl': forms.TextInput(),
+            'beskrivelse': forms.TextInput(),
+            'fartoej_groenlandsk': forms.Select(choices=(
+                (True, _('Grønlandsk fartøj')),
+                (False, _('Ikke-grønlandsk fartøj')),
+                (None, _('Ikke relevant'))
+            )),
         }
 
 
@@ -149,21 +173,25 @@ class IndberetningLinjeKommentarFormSet(forms.BaseInlineFormSet):
         by_produkttype = {}
         for produkttype in ProduktType.objects.all():
             by_produkttype[produkttype.uuid] = {'forms': [], 'produkttype': produkttype, 'instances': [], 'afgift_sum': 0}
-        for form in self.forms:
+        forms = self.forms
+        forms.sort(key=lambda f: f.instance.indberetningstidspunkt, reverse=True)
+        for form in forms:
             form_produkttype = form.instance.produkttype if form.instance else form.data.get('produkttype')
             if form_produkttype:
                 group = by_produkttype[form_produkttype.uuid]
                 group['forms'].append(form)
                 group['instances'].append(form.instance)
+        by_produkttype = {key: value for key, value in by_produkttype.items() if len(value['forms'])}
         return by_produkttype.values()
 
 
 class VirksomhedForm(forms.ModelForm, BootstrapForm):
     class Meta:
         model = Virksomhed
-        fields = ('cvr', 'kontakt_person', 'kontakt_email', 'kontakts_phone_nr')
+        fields = ('cvr', 'navn', 'kontakt_person', 'kontakt_email', 'kontakts_phone_nr')
         widgets = {
             'cvr': forms.TextInput(),
+            'navn': forms.TextInput(),
             'kontakt_person': forms.TextInput(),
             'kontakt_email': forms.TextInput(),
             'kontakts_phone_nr': forms.TextInput(),

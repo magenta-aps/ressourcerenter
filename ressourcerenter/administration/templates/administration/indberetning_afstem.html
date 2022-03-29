@@ -111,6 +111,11 @@
     {% endfor %}
     {% endif %}
     {% endwith %}
+{% empty %}
+<p>
+    {% translate 'Der er ingen indberetningslinier for perioden' %}
+</p>
+
 {% endfor %}
 
 <form method="post" id="linjeform">
