@@ -39,10 +39,26 @@
 
     <div class="form-row">
         <div class="col-2">
+            <label for="{{ form.fartoej_groenlandsk.id_for_label }}">{% translate 'Grønlandsk fartøj:' %}</label>
+        </div>
+        <div class="col-4">
+            {{ form.fartoej_groenlandsk }}
+        </div>
+        <div class="col-6">
+            {{ form.fartoej_groenlandsk.errors }}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="col-2">
             <label for="{{ form.fiskeart.id_for_label }}">{% translate 'Fiskeart:' %}</label>
         </div>
         <div class="col-4">
+            {% if form.fiskeart %}
             {{ form.fiskeart }}
+            {% else %}
+            {{ object.fiskeart }}
+            {% endif %}
         </div>
         <div class="col-6">
             {{ form.fiskeart.errors }}

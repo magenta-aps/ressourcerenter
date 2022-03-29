@@ -10,6 +10,7 @@
     <thead>
         <tr>
             <th class="col-2">{% translate 'CVR-nummer' %}</th>
+            <th class="col-2">{% translate 'Navn' %}</th>
             <th class="col-2">{% translate 'Kontaktperson' %}</th>
             <th class="col-2">{% translate 'Email' %}</th>
             <th class="col-2">{% translate 'Telefonnummer' %}</th>
@@ -21,6 +22,9 @@
         <tr {% if request.session.impersonating and request.session.cvr == object.cvr %}class="table-primary"{% endif %}>
             <td>
                 {{ object.cvr }}
+            </td>
+            <td>
+                {{ object.navn|default_if_none:'' }}
             </td>
             <td>
                 {{ object.kontakt_person }}

@@ -34,7 +34,7 @@ from administration.models import Afgiftsperiode, SatsTabelElement
 from administration.forms import FiskeArtForm
 from administration.models import FiskeArt
 
-from administration.forms import ProduktTypeForm
+from administration.forms import ProduktTypeCreateForm, ProduktTypeUpdateForm
 from administration.models import ProduktType
 
 from administration.forms import StatistikForm
@@ -98,7 +98,7 @@ class AfgiftsperiodeHistoryView(HistoryMixin, DetailView):
     model = Afgiftsperiode
 
     def get_fields(self, **kwargs):
-        return ('navn', 'vis_i_indberetning', 'beregningsmodel')
+        return ('navn_dk', 'navn_gl', 'vis_i_indberetning', 'beregningsmodel')
 
     def get_back_url(self):
         return reverse('administration:afgiftsperiode-list')
@@ -190,7 +190,7 @@ class FiskeArtHistoryView(HistoryMixin, DetailView):
     model = FiskeArt
 
     def get_fields(self, **kwargs):
-        return ('navn', 'beskrivelse',)
+        return ('navn_dk', 'navn_gl', 'beskrivelse',)
 
 # endregion
 
@@ -200,7 +200,7 @@ class FiskeArtHistoryView(HistoryMixin, DetailView):
 class ProduktTypeCreateView(CreateView):
 
     model = ProduktType
-    form_class = ProduktTypeForm
+    form_class = ProduktTypeCreateForm
 
     def get_success_url(self):
         return reverse('administration:produkttype-list')
@@ -215,7 +215,7 @@ class ProduktTypeCreateView(CreateView):
 class ProduktTypeUpdateView(UpdateView):
 
     model = ProduktType
-    form_class = ProduktTypeForm
+    form_class = ProduktTypeUpdateForm
 
     def get_success_url(self):
         return reverse('administration:produkttype-list')
@@ -231,7 +231,7 @@ class ProduktTypeHistoryView(HistoryMixin, DetailView):
     model = ProduktType
 
     def get_fields(self, **kwargs):
-        return ('navn', 'beskrivelse',)
+        return ('navn_dk', 'navn_gl', 'beskrivelse', 'fiskeart', 'fartoej_groenlandsk')
 
 
 class IndberetningDetailView(UpdateView):
@@ -299,6 +299,7 @@ class IndberetningListView(ExcelMixin, ListView):
                 qs = qs.filter(virksomhed__cvr__contains=re.sub(r'[^\d]', '', data['cvr']))
             if data['produkttype']:
                 qs = qs.filter(linjer__produkttype=data['produkttype'])
+            qs = qs.order_by('-indberetningstidspunkt')
         return qs
 
     def get_context_data(self, **kwargs):
