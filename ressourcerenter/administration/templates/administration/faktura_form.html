@@ -17,6 +17,17 @@
             {{ form.betalingsdato.errors }}
         </div>
     </div>
+    <div class="form-row">
+        <div class="col-2">
+            <label for="{{ form.opkrævningsdato.id_for_label }}">{% translate 'Opkrævningsdato:' %}</label>
+        </div>
+        <div class="col-4">
+            {{ form.opkrævningsdato }}
+        </div>
+        <div class="col-6">
+            {{ form.opkrævningsdato.errors }}
+        </div>
+    </div>
     {% if send_to_test_available %}
     <div class="form-row form-check">
         <div class="col-6">

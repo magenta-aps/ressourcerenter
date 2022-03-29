@@ -1,4 +1,5 @@
 import logging
+from datetime import date
 from decimal import Decimal, ROUND_HALF_EVEN
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -11,8 +12,10 @@ from django.utils.translation import gettext as _, get_language
 from io import StringIO
 from itertools import chain
 from math import ceil
+from project.dateutil import quarter_number, month_last_date, quarter_last_month
 from simple_history.models import HistoricalRecords
 from tenQ.client import put_file_in_prisme_folder, ClientException
+from tenQ.writer import G69TransactionWriter
 from tenQ.writer import TenQTransactionWriter
 from uuid import uuid4
 
@@ -451,11 +454,21 @@ class Prisme10QBatch(models.Model):
         max_length=15
     )
 
-    def get_prisme10Q_content(self, max_entries=None):
-        qs = self.fakturaer.filter(bogført__isnull=True)
+    g69transactionwriter = G69TransactionWriter(registreringssted=0, organisationsenhed=0)
+
+    def get_prisme10Q_content(self, max_entries=None, fakturaer=None):
+        if fakturaer is None:
+            fakturaer = self.fakturaer.filter(bogført__isnull=True)
         if max_entries is not None:
-            qs = qs[:max_entries]
-        return '\r\n'.join([faktura.prisme10Q_content for faktura in qs])
+            fakturaer = fakturaer[:max_entries]
+        return '\r\n'.join([faktura.prisme10Q_content for faktura in fakturaer])
+
+    def get_prismeG69_content(self, max_entries=None, fakturaer=None):
+        if fakturaer is None:
+            fakturaer = self.fakturaer.filter(bogført__isnull=True)
+        if max_entries is not None:
+            fakturaer = fakturaer[:max_entries]
+        return '\r\n'.join([faktura.prismeG69_content(self.g69transactionwriter) for faktura in fakturaer])
 
     destinations_all = (
         ('10q_development', _('Undervisningssystem')),
@@ -484,21 +497,25 @@ class Prisme10QBatch(models.Model):
 
             self.fejlbesked = ''
             # Extra check for chosen destination
-            b = list(Prisme10QBatch.destinations_available)
-            available = {destination_id for destination_id, label in b}
+            available = {destination_id for destination_id, label in list(Prisme10QBatch.destinations_available)}
             if destination not in available:
                 available_csep = ', '.join(available)
                 raise ValueError(f"Kan ikke sende batch til {destination}, det er kun {available_csep} der er tilgængelig på dette system")
 
+            fakturaer = self.fakturaer.filter(bogført__isnull=True)
+
+            destination_folder = settings.PRISME_PUSH['dirs'][destination]
             # When sending to development environment, only send 100 entries
-            content = self.get_prisme10Q_content(100 if destination == '10q_development' else None)
+            max_entries = 100 if destination == '10q_development' else None
+
+            content_10q = self.get_prisme10Q_content(max_entries=max_entries, fakturaer=fakturaer)
+            content_g69 = self.get_prismeG69_content(max_entries=max_entries, fakturaer=fakturaer)
 
             if settings.PRISME_PUSH['mock']:
                 # Debugging on local environment, output contents to stdout
-                logger.info(f"10Q data som ville blive sendt til {destination}: \n------------\n{content}\n------------")
+                logger.info(f"10Q data som ville blive sendt til {destination}: \n------------\n{content_10q}\n------------")
+                logger.info(f"G69 data som ville blive sendt til {destination}: \n------------\n{content_g69}\n------------")
             else:
-                destination_folder = settings.PRISME_PUSH['dirs'][destination]
-                filename = "KAS_10Q_export_{}.10q".format(timezone.now().strftime('%Y-%m-%dT%H-%M-%S'))
                 connection_settings = {
                     'host': settings.PRISME_PUSH['host'],
                     'port': settings.PRISME_PUSH['port'],
@@ -506,8 +523,10 @@ class Prisme10QBatch(models.Model):
                     'password': settings.PRISME_PUSH['password'],
                     'known_hosts': settings.PRISME_PUSH['known_hosts'],
                 }
-                batchfile = StringIO(content)
-                put_file_in_prisme_folder(connection_settings, batchfile, destination_folder, filename, callback)
+                filename_10q = "KAS_10Q_export_{}.10q".format(timezone.now().strftime('%Y-%m-%dT%H-%M-%S'))
+                filename_g69 = "KAS_G69_export_{}.g69".format(timezone.now().strftime('%Y-%m-%dT%H-%M-%S'))
+                put_file_in_prisme_folder(connection_settings, StringIO(content_10q), destination_folder, filename_10q)
+                put_file_in_prisme_folder(connection_settings, StringIO(content_g69), destination_folder, filename_g69)
                 self.leveret_af = user
                 self.leveret_tidspunkt = timezone.now()
 
@@ -537,6 +556,10 @@ class Faktura(models.Model):
 
     betalingsdato = models.DateField(
         null=False
+    )
+
+    opkrævningsdato = models.DateField(
+        null=True
     )
 
     periode = models.ForeignKey(
@@ -583,6 +606,7 @@ class Faktura(models.Model):
             static_data = settings.PRISME_PUSH['fielddata']
         return TenQTransactionWriter(
             due_date=self.betalingsdato,
+            last_payment_date=self.betalingsdato,
             creation_date=self.linje.indberetningstidspunkt,
             year=self.periode.dato_fra.year,  # Bruges i paalign_aar,
             periode_fra=self.periode.dato_fra,
@@ -591,12 +615,47 @@ class Faktura(models.Model):
             leverandoer_ident=static_data['project_id'],
             bruger_nummer=static_data['user_number'],
             betal_art=static_data['payment_type'],
+            opkraev_date=self.opkrævningsdato or self.betalingsdato,
         ).serialize_transaction(
             cpr_nummer=self.virksomhed.cvr,
             amount_in_dkk=self.beløb,
             afstem_noegle=str(self.pk),
             rate_text=self.text,
             rate_nummer=self.periode.kvartal_nummer,
+        )
+
+    def prismeG69_content(self, writer):
+        # Writer indeholder en tilstand som opdateres når Fakturaer udskrives. Basically en counter
+        linje = self.linje
+        if settings.PRISME_PUSH['mock']:
+            static_data = {
+                'project_id': 'ALIS',
+                'user_number': 0,
+                'payment_type': 0,
+                'account_number': 0,
+            }
+        else:
+            static_data = settings.PRISME_PUSH['fielddata']
+        tidtekst = _('{kvartal}. kvartal').format(kvartal=linje.indberetning.afgiftsperiode.kvartal_nummer)
+        tekst = "Afgift for " + ', '.join(filter(None, [
+            str(linje.produkttype.fiskeart),
+            str(linje.indhandlingssted) if linje.indhandlingssted else None,
+            tidtekst
+        ]))
+        # den dato rederiet indberetter i web-siden for 1, 2, 3 kvartal,
+        # hvis det er 4 kvartal, så skal dato være 31.12.2022
+        posteringsdato = self.opkrævningsdato or self.betalingsdato
+
+        return writer.serialize_transaction_pair(
+            maskinnr=int(static_data['user_number']),
+            eks_løbenr=self.id,
+            post_dato=posteringsdato,
+            kontonr=int(static_data['account_number']),
+            beløb=self.beløb,
+            is_cvr=True,
+            ydelse_modtager=int(linje.indberetning.virksomhed.cvr),
+            posteringstekst=tekst,
+            ekstern_reference=str(self.id),
         )
 
     @property
@@ -634,3 +693,16 @@ class Faktura(models.Model):
 
     def __str__(self):
         return f"Faktura (kode={self.kode}, periode={self.periode}, beløb={self.beløb})"
+
+    @staticmethod
+    def get_betalingsdato(dato):
+        # find slutningen af måneden efter kvartalet
+        # month_last_date wrapper måneder, så 2022, 13 bliver til 2023, 1
+        return month_last_date(dato.year, quarter_last_month(quarter_number(dato)) + 1)
+
+    @staticmethod
+    def get_opkrævningsdato(dato):
+        # sæt til 31.12 hvis dato ligger i sidste kvartal
+        if dato.month >= 10:
+            return date(dato.year, 12, 31)
+        return dato

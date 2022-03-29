@@ -23,6 +23,10 @@
                 <td>{{ object.oprettet|default_if_none:'' }}</td>
             </tr>
             <tr>
+                <th>{% translate 'Opkrævningsdato' %}</th>
+                <td>{{ object.opkrævningsdato|default_if_none:object.betalingsdato }}</td>
+            </tr>
+            <tr>
                 <th>{% translate 'Betalingsdato' %}</th>
                 <td>{{ object.betalingsdato|default_if_none:'' }}</td>
             </tr>

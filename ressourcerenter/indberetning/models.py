@@ -121,6 +121,7 @@ class IndberetningLinje(models.Model):
 
     debitorgruppekode = models.PositiveSmallIntegerField(default=0)
 
+    # Nødvendig for at vi kan tracke linjer der oprettes senere end indberetningen
     indberetningstidspunkt = models.DateTimeField(auto_now_add=True, db_index=True)
 
     faktura = models.OneToOneField(
