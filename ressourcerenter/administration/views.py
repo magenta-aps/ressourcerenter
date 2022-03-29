@@ -686,7 +686,7 @@ class IndberetningsLinjeListView(TemplateView):
             virksomhed_data = {'virksomhed': virksomhed, 'produkttyper': {}}
             virksomheder.append(virksomhed_data)
             for indberetning in virksomhed.indberetning_set.filter(afgiftsperiode=self.periode):
-                for linje in indberetning.linjer.all().select_related('faktura', 'produkttype'):
+                for linje in indberetning.linjer.all().order_by('produkttype', '-indberetningstidspunkt', 'uuid').select_related('faktura', 'produkttype'):
 
                     produkttype = linje.produkttype
                     if produkttype.uuid not in virksomhed_data['produkttyper']:
