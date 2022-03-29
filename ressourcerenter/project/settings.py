@@ -200,9 +200,11 @@ PRISME_PUSH = {
         # System-identificerende streng der kommer på transaktioner i Prisme. Max 4 tegn
         'project_id': os.environ.get('PRISME_PUSH_PROJECT_ID'),
         # Brugernummer der kommer på transaktioner i Prisme. Max 4 tegn
-        'user_number': os.environ.get('PRISME_PUSH_USER_NUMBER'),
+        'user_number': int(os.environ.get('PRISME_PUSH_USER_NUMBER') or 0),
         # Betalingsart der kommer på transaktioner i Prisme. Max 3 tegn
-        'payment_type': os.environ.get('PRISME_PUSH_PAYMENT_TYPE'),
+        'payment_type': int(os.environ.get('PRISME_PUSH_PAYMENT_TYPE') or 0),
+        # Kontonummer der danner bro i Prisme SEL
+        'account_number': int(os.environ.get('PRISME_PUSH_ACCOUNT_NUMBER') or 0),
     },
 }
 

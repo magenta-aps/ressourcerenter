@@ -263,9 +263,10 @@ class FakturaForm(BootstrapForm, forms.ModelForm):
 
     class Meta:
         model = Faktura
-        fields = ('betalingsdato',)
+        fields = ('betalingsdato', 'opkrævningsdato')
         widgets = {
-            'betalingsdato': DateInput()
+            'betalingsdato': DateInput(),
+            'opkrævningsdato': DateInput(),
         }
 
     send_to_test = forms.BooleanField(
