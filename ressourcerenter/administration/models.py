@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MaxValueValidator
 from django.db import models
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import pre_save, post_save, m2m_changed
 from django.utils import timezone
 from django.utils.translation import gettext as _, get_language
 from io import StringIO
@@ -117,18 +117,17 @@ class FiskeArt(NamedModel):
             return self.debitorgruppekode_kystnært
 
     @staticmethod
-    def create_satstabelelementer(sender, instance, created, raw, using, update_fields, **kwargs):
+    def create_satstabelelementer(sender, instance, **kwargs):
         # Hvis fiskearten har opdateret f.eks. skematyper, kan det være relevant at oprette satstabelementer
-        if not created:  # Kun relevant når fiskearten har produkttyper associeret, og de oprettes _efter_ fiskearten
-            for produkttype in instance.produkttype_set.all():
-                for periode in Afgiftsperiode.objects.all():
-                    for skematype in instance.skematype.all():
-                        SatsTabelElement.objects.get_or_create(
-                            skematype=skematype,
-                            fiskeart=instance,
-                            periode=periode,
-                            fartoej_groenlandsk=produkttype.fartoej_groenlandsk
-                        )
+        for produkttype in instance.produkttype_set.all():
+            for periode in Afgiftsperiode.objects.all():
+                for skematype in instance.skematype.all():
+                    SatsTabelElement.objects.get_or_create(
+                        skematype=skematype,
+                        fiskeart=instance,
+                        periode=periode,
+                        fartoej_groenlandsk=produkttype.fartoej_groenlandsk
+                    )
 
     @staticmethod
     def increment_fiskeart_kode(sender, instance, **kwargs):
@@ -137,7 +136,7 @@ class FiskeArt(NamedModel):
             instance.kode = current_max + 1
 
 
-post_save.connect(FiskeArt.create_satstabelelementer, FiskeArt, dispatch_uid='create_satstabel_for_fiskeart')
+m2m_changed.connect(FiskeArt.create_satstabelelementer, FiskeArt.skematype.through, dispatch_uid='create_satstabel_for_fiskeart_m2m')
 pre_save.connect(FiskeArt.increment_fiskeart_kode, FiskeArt, dispatch_uid='set_kode_for_fiskeart')
 
 
@@ -681,7 +680,7 @@ class Faktura(models.Model):
         else:
             static_data = settings.PRISME_PUSH['fielddata']
         tidtekst = _('{kvartal}. kvartal').format(kvartal=linje.indberetning.afgiftsperiode.kvartal_nummer)
-        tekst = "Afgift for " + ', '.join(filter(None, [
+        tekst = ', '.join(filter(None, [
             str(linje.produkttype.fiskeart),
             str(linje.indhandlingssted) if linje.indhandlingssted else None,
             tidtekst
@@ -698,7 +697,7 @@ class Faktura(models.Model):
             beløb=self.beløb,
             is_cvr=True,
             ydelse_modtager=int(linje.indberetning.virksomhed.cvr),
-            posteringstekst=tekst,
+            posteringstekst=tekst[:35],
             ekstern_reference=str(self.id),
         )
 
