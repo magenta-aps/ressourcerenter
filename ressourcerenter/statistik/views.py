@@ -73,8 +73,8 @@ class StatistikView(ExcelMixin, GetFormView):
 
         if form.cleaned_data['indberetningstype']:
             qs = qs.annotate(indberetningstype=Case(
-                When(indberetning__skematype__id=2, then=Value('Indhandling')),  # Values skal matche form.indberetningstype.choices
-                default=Value('Eksport'),
+                When(indberetning__skematype__id=1, then=Value('Eksport')),  # Values skal matche form.indberetningstype.choices
+                default=Value('Indhandling'),
             ))
             grouping_fields['indberetningstype'] = 'indberetningstype'
             qs = qs.filter(indberetningstype__in=form.cleaned_data['indberetningstype'])

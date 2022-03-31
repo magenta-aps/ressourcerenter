@@ -4,6 +4,7 @@
 {% block content %}
 <h1>{% translate 'Afgiftsperioder' %}</h1>
 
+<a class="btn btn-success" href="{% url 'administration:afgiftsperiode-create' %}">{% translate 'Opret ny' %}</a>
 <table class="table">
     <thead>
         <tr>
@@ -38,6 +39,5 @@
     {% endfor %}
     </tbody>
 </table>
-<a class="btn btn-primary" href="{% url 'administration:afgiftsperiode-create' %}">{% translate 'Opret ny' %}</a>
 
 {% endblock %}

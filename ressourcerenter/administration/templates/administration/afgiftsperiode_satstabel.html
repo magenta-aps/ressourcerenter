@@ -17,16 +17,16 @@
     <table id="satstabel" class="table">
         <thead>
             <tr>
-                <th>{% translate 'Fiskeart' %}</th>
-                <th>{% translate 'Grønlandsk fartøj' %}</th>
-                <th>{% translate 'Afgift, kr pr. kg' %}</th>
-                <th>{% translate 'Afgift, procent af salgspris' %}</th>
-                <th></th>
+                <th class="col-3">{% translate 'Fiskeart' %}</th>
+                <th class="col-2">{% translate 'Grønlandsk fartøj' %}</th>
+                <th class="col-2">{% translate 'Afgiftstype' %}</th>
+                <th class="col-2">{% translate 'Afgift, kr pr. kg' %}</th>
+                <th class="col-2">{% translate 'Afgift, procent af salgspris' %}</th>
+                <th class="col-1"></th>
             </tr>
         </thead>
         <tbody>
         {% for subform in subforms %}
-        {{subform.errors}}
         {% with instance=subform.instance %}
             <tr>
                 <td>
@@ -39,6 +39,12 @@
                     {{ subform.fartoej_groenlandsk }}
                     {{ instance.fartoej_groenlandsk|janej|default_if_none:''|capfirst }}
                 </td>
+                <td>
+                    <select class="type_select form-control">
+                        <option value="prkg">{% translate 'Pr. kg.' %}</option>
+                        <option value="pct">{% translate 'Procent' %}</option>
+                    </select>
+                </td>
                 <td class="switchcolumn prkg">{{ subform.rate_pr_kg }}</td>
                 <td class="switchcolumn pct">{{ subform.rate_procent }}</td>
                 <td>
@@ -49,6 +55,16 @@
                     {% endif %}
                 </td>
             </tr>
+            {% if subform.non_field_errors %}
+            <tr>
+                <td colspan="2"></td>
+                <td colspan="3">
+                    <div class="invalid-feedback d-block">
+                    {{subform.non_field_errors}}
+                    </div>
+                </td>
+            </tr>
+            {% endif %}
         {% endwith %}
         {% endfor %}
         </tbody>
@@ -73,7 +89,7 @@
     });
     $("#satstabel tbody tr").each(function(){
         const tr = $(this);
-        const types = ['prkg_indhandling_export', 'prkg_groenland_udenlandsk', 'pct_indhandling_export'];
+        const types = ['prkg', 'pct'];
         const select = tr.find(".type_select");
         let found = false;
         types.forEach(function(type){
