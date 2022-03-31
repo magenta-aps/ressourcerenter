@@ -1,17 +1,18 @@
+from administration.models import Afgiftsperiode, SatsTabelElement, BeregningsModel
+from administration.models import Faktura
+from administration.models import FiskeArt
+from administration.models import ProduktType
+from administration.models import SkemaType
 from django import forms
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
-from administration.models import Afgiftsperiode, SatsTabelElement, BeregningsModel
-from administration.models import FiskeArt
-from administration.models import SkemaType
-from administration.models import ProduktType
-from administration.models import Faktura
-from project.forms_mixin import BootstrapForm
-from project.form_fields import DateInput
 from indberetning.models import Indberetning, Indhandlingssted
 from indberetning.models import IndberetningLinje
 from indberetning.models import Virksomhed
+from project.form_fields import DateInput
+from project.forms_mixin import BootstrapForm
 
 
 class AfgiftsperiodeForm(forms.ModelForm, BootstrapForm):
@@ -123,6 +124,12 @@ class SatsTabelElementForm(forms.ModelForm, BootstrapForm):
             'rate_procent': forms.NumberInput(),
             'fartoej_groenlandsk': forms.HiddenInput(),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data['rate_pr_kg'] and cleaned_data['rate_procent']:
+            raise ValidationError(_('Der må ikke angives både afgift pr. kg og afgift i procent'))
+        return cleaned_data
 
 
 class IndberetningSearchForm(BootstrapForm):

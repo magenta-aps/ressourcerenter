@@ -2,20 +2,21 @@
 {% load i18n %}
 {% load administration_tags %}
 <nav class="nav navbar navbar-light navbar-expand-lg" style="background-color: #e3f2fd;">
-    <a class="navbar-brand" href="{% url 'administration:frontpage' %}">{{ app_name }}</a>
     <div class="navbar-nav mr-auto">
         {% if user.is_authenticated and request.user|has_group:'administration' %}
+        <a class="nav-item nav-link" href="{% url 'administration:frontpage' %}">{% translate 'Forside' %}</a>
         <a class="nav-item nav-link" href="{% url 'administration:indberetning-list' %}">{% translate 'Indberetninger' %}</a>
         <a class="nav-item nav-link" href="{% url 'administration:virksomhed-list' %}">{% translate 'Virksomheder' %}</a>
         <a class="nav-item nav-link" href="{% url 'administration:afgiftsperiode-list' %}">{% translate 'Afgiftsperioder' %}</a>
         <a class="nav-item nav-link" href="{% url 'administration:fiskeart-list' %}">{% translate 'Fiskearter' %}</a>
         <a class="nav-item nav-link" href="{% url 'administration:produkttype-list' %}">{% translate 'Produkttyper' %}</a>
         <a class="nav-item nav-link" href="{% url 'administration:indberetningslinje-list' %}">{% translate 'Fakturaer' %}</a>
-        {% endif %}
         {% if user.is_authenticated and request.user|has_group:'statistik' %}
         <a class="nav-item nav-link" href="{% url 'statistik:frontpage' %}">{% translate 'Statistik' %}</a>
         {% endif %}
+        {% endif %}
     </div>
+
     <div class="navbar-nav">
         {% if user.is_authenticated %}
         <a class="nav-item nav-link" href="{% url 'administration:logout' %}">{% translate 'Log ud' %}</a>

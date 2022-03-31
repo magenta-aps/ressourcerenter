@@ -2,7 +2,7 @@
 {% load i18n %}
 {% block content %}
 <div class="row justify-content-center">
-    <form method="POST", action=".">
+    <form method="POST" action=".">
         {% csrf_token %}
         <div class="form-group mt-2">
             <label for="{{ form.skema.id_for_label }}">{% translate 'Type af indberetning' %}</label>
