@@ -47,7 +47,7 @@ class FakturaTestCase(TransactionTestCase):
         virksomhed = Virksomhed.objects.create(cvr=1234)
         betalingsdato = date(2022, 1, 1)
         beregningsmodel = BeregningsModel2021.objects.create(navn='TestBeregningsModel')
-        periode = Afgiftsperiode.objects.first()
+        periode = Afgiftsperiode.objects.get(dato_fra=date(2022, 1, 1))
         periode.beregningsmodel = beregningsmodel
         indberetning = Indberetning.objects.create(
             afgiftsperiode=periode,
