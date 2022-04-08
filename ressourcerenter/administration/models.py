@@ -84,37 +84,8 @@ class FiskeArt(NamedModel):
 
     pelagisk = models.BooleanField(default=False)
     skematype = models.ManyToManyField(SkemaType)
-    debitorgruppekode_indhandling = models.PositiveSmallIntegerField(validators=[MaxValueValidator(999)], null=True)
-    debitorgruppekode_kystnært = models.PositiveSmallIntegerField(validators=[MaxValueValidator(999)], null=True)
-    debitorgruppekode_havgående = models.PositiveSmallIntegerField(validators=[MaxValueValidator(999)], null=True)
     history = HistoricalRecords()
-    debitorgruppekode_use_skematype = models.BooleanField(default=True)
     kode = models.PositiveSmallIntegerField(null=True, validators=[MaxValueValidator(999)])
-
-    def get_fangsttype(self, skematype):
-        if self.debitorgruppekode_use_skematype:
-            if skematype.id == 1:
-                return 'havgående'
-            elif skematype.id == 2:
-                return 'indhandling'
-            elif skematype.id == 3:
-                return 'kystnært'
-        else:
-            if self.debitorgruppekode_indhandling:
-                return 'indhandling'
-            elif self.debitorgruppekode_kystnært:
-                return 'kystnært'
-            elif self.debitorgruppekode_havgående:
-                return 'havgående'
-
-    def get_debitorgruppekode(self, skematype):
-        fangsttype = self.get_fangsttype(skematype)
-        if fangsttype == 'havgående':
-            return self.debitorgruppekode_havgående
-        elif fangsttype == 'indhandling':
-            return self.debitorgruppekode_indhandling
-        elif fangsttype == 'kystnært':
-            return self.debitorgruppekode_kystnært
 
     @staticmethod
     def create_satstabelelementer(sender, instance, **kwargs):
@@ -164,6 +135,46 @@ class ProduktType(NamedModel):
         related_name='subtyper',
         on_delete=models.SET_NULL,
     )
+
+    # Eksplicit fangsttype. Hvis null, brug skematypen
+    # Det vi normalt kun være rejer der bruger dette felt
+    fangsttype = models.CharField(
+        null=True,
+        default=None,
+        max_length=11,
+        choices=((x, x) for x in ('havgående', 'indhandling', 'kystnært', 'svalbard')),
+    )
+    aktivitetskode_indhandling = models.PositiveIntegerField(
+        null=True,
+        validators=[MaxValueValidator(999999)]
+    )
+    aktivitetskode_havgående = models.PositiveIntegerField(
+        null=True,
+        validators=[MaxValueValidator(999999)]
+    )
+    aktivitetskode_kystnært = models.PositiveIntegerField(
+        null=True,
+        validators=[MaxValueValidator(999999)]
+    )
+    aktivitetskode_svalbard = models.PositiveIntegerField(
+        null=True,
+        validators=[MaxValueValidator(999999)]
+    )
+
+    def get_aktivitetskode(self, fangsttype):
+        if fangsttype == 'havgående':
+            kode = self.aktivitetskode_havgående
+        elif fangsttype == 'indhandling':
+            kode = self.aktivitetskode_indhandling
+        elif fangsttype == 'kystnært':
+            kode = self.aktivitetskode_kystnært
+        elif fangsttype == 'svalbard':
+            kode = self.aktivitetskode_svalbard
+        else:
+            kode = None
+        if kode is None and self.gruppe is not None:
+            return self.gruppe.get_aktivitetskode(fangsttype)
+        return kode
 
     history = HistoricalRecords()
 
@@ -749,3 +760,58 @@ class Faktura(models.Model):
         if dato.month >= 10:
             return date(dato.year, 12, 31)
         return dato
+
+
+class G69Code(models.Model):
+    år = models.PositiveSmallIntegerField(
+        null=False
+    )
+    produkttype = models.ForeignKey(
+        ProduktType,
+        null=False,
+        on_delete=models.PROTECT,
+    )
+    sted = models.ForeignKey(
+        'indberetning.Indhandlingssted',
+        null=False,
+        on_delete=models.PROTECT,
+    )
+    fangsttype = models.CharField(
+        null=False,
+        default='indhandling',
+        max_length=11,
+        choices=((x, x) for x in ('havgående', 'indhandling', 'kystnært', 'svalbard')),
+    )
+    kode = models.CharField(
+        max_length=15
+    )
+
+    class Meta:
+        unique_together = ['år', 'produkttype', 'sted', 'fangsttype']
+
+    def update_kode(self):
+        self.kode = (''.join([
+            str(self.år).zfill(2)[-2:],
+            str(self.sted.stedkode).zfill(4),
+            str(self.produkttype.fiskeart.kode).zfill(2),
+            str(self.produkttype.get_aktivitetskode(self.fangsttype)).zfill(6),
+        ])).zfill(15)
+
+    @staticmethod
+    def update_kode_signal(sender, instance, **kwargs):
+        instance.update_kode()
+
+    @staticmethod
+    def find_by_indberetningslinje(indberetningslinje):
+        sted = indberetningslinje.indhandlingssted
+        if sted is None:
+            sted = indberetningslinje.indberetning.virksomhed.sted  # TODO: find ud fra CVR
+        return G69Code.objects.get(
+            år=indberetningslinje.indberetningstidspunkt.year,
+            produkttype=indberetningslinje.produkttype,
+            sted=sted,
+            fangsttype=indberetningslinje.fangsttype,
+        )
+
+
+pre_save.connect(G69Code.update_kode_signal, G69Code, dispatch_uid='G69_update_kode_signal')
