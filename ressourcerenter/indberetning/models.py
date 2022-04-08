@@ -4,7 +4,7 @@ from uuid import uuid4
 from django.contrib.auth import get_user_model
 from django.db import models, IntegrityError
 from django.db.models import Sum
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext as _
 
@@ -19,6 +19,9 @@ class Virksomhed(models.Model):
     kontakt_email = models.EmailField(default='', blank=True, verbose_name=_('Kontaktperson email'))
     kontakts_phone_nr = models.TextField(default='', blank=True, verbose_name=_('Kontaktperson telefonnr'))
     navn = models.TextField(verbose_name=_('Navn'), null=True)
+
+    # TODO: Find stedkode ud fra cvr
+    sted = None
 
     def __str__(self):
         if self.navn:
@@ -144,7 +147,19 @@ class IndberetningLinje(models.Model):
 
     @property
     def fangsttype(self):
-        return self.produkttype.fiskeart.get_fangsttype(self.indberetning.skematype)
+        # For de fleste fiskearter er fangsttypen (havgående, kystnær, indhandling) dikteret af skematypen
+        produkttype = self.produkttype
+        while produkttype.gruppe is not None:
+            produkttype = produkttype.gruppe
+        if produkttype.fangsttype:
+            return produkttype.fangsttype
+        skematype = self.indberetning.skematype
+        if skematype.id == 1:
+            return 'havgående'
+        elif skematype.id == 2:
+            return 'indhandling'
+        elif skematype.id == 3:
+            return 'kystnært'
 
     @property
     def fangsttype_display(self):
@@ -155,20 +170,11 @@ class IndberetningLinje(models.Model):
             return _('Kystnært')
         if fangsttype == 'indhandling':
             return _('Indhandling')
+        if fangsttype == 'svalbard':
+            return _('Svalbard og Barentshavet')
 
     class Meta:
         ordering = ('produkttype__navn_dk',)
-
-
-@receiver(pre_save, sender=IndberetningLinje, dispatch_uid='indberetningslinje_set_debitorgruppekode')
-def set_debitorgruppekode(sender, **kwargs):
-    update_fields = kwargs['update_fields']
-    # Only set debitorgruppekode if it can have changed
-    if update_fields is None or ('produkttype' not in update_fields and 'indberetning' not in update_fields):
-        indberetningslinje = kwargs['instance']
-        indberetningslinje.debitorgruppekode = indberetningslinje.produkttype.fiskeart.get_debitorgruppekode(
-            indberetningslinje.indberetning.skematype
-        )
 
 
 @receiver(post_save, sender=IndberetningLinje, dispatch_uid='indberetninglinje_calculate_afgift')

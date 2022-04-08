@@ -1,4 +1,4 @@
-from administration.models import Afgiftsperiode, FiskeArt, ProduktType, SkemaType, Faktura
+from administration.models import Afgiftsperiode, ProduktType, SkemaType, Faktura
 from administration.models import BeregningsModel2021
 from datetime import date
 from datetime import datetime
@@ -17,19 +17,6 @@ class FakturaTestCase(TransactionTestCase):
         management.call_command('create_initial_dataset')
         self.skematyper = {s.id: s for s in SkemaType.objects.all()}
         self.user = get_user_model().objects.create(username="TestUser")
-
-    def test_fiskeart_debitorgruppenummer(self):
-        reje = FiskeArt.objects.get(navn_dk='Reje - havgående licens')
-        for id in self.skematyper:
-            self.assertEquals(reje.get_debitorgruppekode(self.skematyper[id]), 107)
-        reje = FiskeArt.objects.get(navn_dk='Reje - kystnær licens')
-        for id in self.skematyper:
-            self.assertEquals(reje.get_debitorgruppekode(self.skematyper[id]), 307)
-
-        makrel = FiskeArt.objects.get(navn_dk='Makrel')
-        self.assertEquals(makrel.get_debitorgruppekode(self.skematyper[1]), 106)
-        self.assertEquals(makrel.get_debitorgruppekode(self.skematyper[2]), 206)
-        self.assertEquals(makrel.get_debitorgruppekode(self.skematyper[3]), 306)
 
     def test_text_split(self):
         virksomhed = Virksomhed.objects.create(cvr=1234)
