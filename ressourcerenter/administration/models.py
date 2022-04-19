@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MaxValueValidator
 from django.db import models
+from django.db.models import Max
 from django.db.models.signals import pre_save, post_save, m2m_changed
 from django.utils import timezone
 from django.utils.translation import gettext as _, get_language
@@ -18,7 +19,6 @@ from tenQ.client import put_file_in_prisme_folder, ClientException
 from tenQ.writer import G69TransactionWriter
 from tenQ.writer import TenQTransactionWriter
 from uuid import uuid4
-from django.db.models import Max
 
 logger = logging.getLogger(__name__)
 
@@ -160,6 +160,15 @@ class ProduktType(NamedModel):
         null=True,
         validators=[MaxValueValidator(999999)]
     )
+
+    @property
+    def available_fangsttyper(self):
+        return filter(None, iter([
+            'havgående' if self.aktivitetskode_havgående else None,
+            'indhandling' if self.aktivitetskode_indhandling else None,
+            'kystnært' if self.aktivitetskode_kystnært else None,
+            'svalbard' if self.aktivitetskode_svalbard else None,
+        ]))
 
     def get_aktivitetskode(self, fangsttype):
         if fangsttype == 'havgående':
@@ -806,12 +815,29 @@ class G69Code(models.Model):
         sted = indberetningslinje.indhandlingssted
         if sted is None:
             sted = indberetningslinje.indberetning.virksomhed.sted  # TODO: find ud fra CVR
+        produkttype = indberetningslinje.produkttype
+        while produkttype.gruppe:
+            produkttype = produkttype.gruppe
         return G69Code.objects.get(
             år=indberetningslinje.indberetningstidspunkt.year,
-            produkttype=indberetningslinje.produkttype,
+            produkttype=produkttype,
             sted=sted,
             fangsttype=indberetningslinje.fangsttype,
         )
+
+    @staticmethod
+    def generate_for_year(år):
+        from indberetning.models import Indhandlingssted
+        for produkttype in ProduktType.objects.all():
+            fangsttyper = produkttype.available_fangsttyper
+            for sted in Indhandlingssted.objects.all():
+                for fangsttype in fangsttyper:
+                    G69Code.objects.get_or_create(
+                        år=år,
+                        produkttype=produkttype,
+                        fangsttype=fangsttype,
+                        sted=sted
+                    )
 
 
 pre_save.connect(G69Code.update_kode_signal, G69Code, dispatch_uid='G69_update_kode_signal')

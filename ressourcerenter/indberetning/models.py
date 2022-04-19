@@ -21,7 +21,7 @@ class Virksomhed(models.Model):
     navn = models.TextField(verbose_name=_('Navn'), null=True)
 
     # TODO: Find stedkode ud fra cvr
-    sted = None
+    sted = models.ForeignKey('Indhandlingssted', null=True, on_delete=models.PROTECT)
 
     def __str__(self):
         if self.navn:
@@ -32,8 +32,8 @@ class Virksomhed(models.Model):
 
 class Indhandlingssted(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid4)
-    navn = models.TextField(null=False)
-    stedkode = models.CharField(max_length=8)
+    navn = models.TextField(null=False, unique=True)
+    stedkode = models.CharField(max_length=8, unique=True)
 
     def __str__(self):
         return self.navn
