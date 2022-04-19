@@ -1,14 +1,23 @@
+from administration.models import SkemaType, FiskeArt, ProduktType, Afgiftsperiode, SatsTabelElement
+from datetime import date
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db.utils import IntegrityError
-from datetime import date
-
 from django.utils import timezone
-
-from administration.models import SkemaType, FiskeArt, ProduktType, Afgiftsperiode, SatsTabelElement
+from indberetning.models import Indhandlingssted
+from administration.models import G69Code
 
 
 class Command(BaseCommand):
     help = 'Create basic data'
+
+    def handle(self, *args, **options):
+        self.create_skematyper()
+        self.create_fiskearter()
+        self.create_produkttyper()
+        self.create_afgiftsperioder()
+        self.create_indhandlingssteder()
+        self.create_g69_koder()
 
     def create_fiskeart(self, navn_dk, navn_gl, pelagisk, skematype_ids):
         try:
@@ -47,8 +56,7 @@ class Command(BaseCommand):
             gruppe=parent,
         )
 
-    def handle(self, *args, **options):
-
+    def create_skematyper(self):
         self.skematyper = {}
         if not SkemaType.objects.exists():
             for id, navn in [
@@ -58,167 +66,186 @@ class Command(BaseCommand):
             ]:
                 self.skematyper[id] = SkemaType.objects.create(id=id, navn_dk=navn, navn_gl=navn)
 
+    def create_fiskearter(self):
         if not FiskeArt.objects.exists():
-            makrel = self.create_fiskeart('Makrel', 'Makrel', True, [1, 2])
-            sild = self.create_fiskeart('Sild', 'Sild', True, [1, 2])
-            lodde = self.create_fiskeart('Lodde', 'Lodde', True, [1, 2])
-            blåhvilling = self.create_fiskeart('Blåhvilling', 'Blåhvilling', True, [1, 2])
-            guldlaks = self.create_fiskeart('Guldlaks', 'Guldlaks', True, [1, 2])
-            hellefisk = self.create_fiskeart('Hellefisk', 'Hellefisk', False, [1, 2, 3])
-            torsk = self.create_fiskeart('Torsk', 'Torsk', False, [1, 2])
-            kuller = self.create_fiskeart('Kuller', 'Kuller', False, [1, 2])
-            sej = self.create_fiskeart('Sej', 'Sej', False, [1, 2])
-            rødfisk = self.create_fiskeart('Rødfisk', 'Rødfisk', False, [1, 2])
-            reje_havgående = self.create_fiskeart('Reje - havgående licens', 'Reje - havgående licens', False, [1, 2])
-            reje_kystnært = self.create_fiskeart('Reje - kystnær licens', 'Reje - kystnær licens', False, [1, 2])
-            reje_svalbard = self.create_fiskeart('Reje - Svalbard og Barentshavet', 'Reje - Svalbard og Barentshavet', False, [1, 2])
+            self.create_fiskeart('Makrel', 'Makrel', True, [1, 2])
+            self.create_fiskeart('Sild', 'Sild', True, [1, 2])
+            self.create_fiskeart('Lodde', 'Lodde', True, [1, 2])
+            self.create_fiskeart('Blåhvilling', 'Blåhvilling', True, [1, 2])
+            self.create_fiskeart('Guldlaks', 'Guldlaks', True, [1, 2])
+            self.create_fiskeart('Hellefisk', 'Hellefisk', False, [1, 2, 3])
+            self.create_fiskeart('Torsk', 'Torsk', False, [1, 2])
+            self.create_fiskeart('Kuller', 'Kuller', False, [1, 2])
+            self.create_fiskeart('Sej', 'Sej', False, [1, 2])
+            self.create_fiskeart('Rødfisk', 'Rødfisk', False, [1, 2])
+            self.create_fiskeart('Reje - havgående licens', 'Reje - havgående licens', False, [1, 2])
+            self.create_fiskeart('Reje - kystnær licens', 'Reje - kystnær licens', False, [1, 2])
+            self.create_fiskeart('Reje - Svalbard og Barentshavet', 'Reje - Svalbard og Barentshavet', False, [1, 2])
 
-            self.create_produkttype(
-                makrel,
-                f"{makrel.navn_dk}, grønlandsk fartøj", f"{makrel.navn_gl}, grønlandsk fartøj",
-                fartoej_groenlandsk=True,
-                aktivitetskode_alle=10021,
-            )
-            self.create_produkttype(
-                makrel,
-                f"{makrel.navn_dk}, ikke-grønlandsk fartøj", f"{makrel.navn_gl}, ikke-grønlandsk fartøj",
-                fartoej_groenlandsk=False,
-                aktivitetskode_alle=10022,
-            )
+    def create_produkttyper(self):
+        makrel = FiskeArt.objects.get(navn_dk='Makrel')
+        self.create_produkttype(
+            makrel,
+            f"{makrel.navn_dk}, grønlandsk fartøj", f"{makrel.navn_gl}, grønlandsk fartøj",
+            fartoej_groenlandsk=True,
+            aktivitetskode_alle=10021,
+        )
+        self.create_produkttype(
+            makrel,
+            f"{makrel.navn_dk}, ikke-grønlandsk fartøj", f"{makrel.navn_gl}, ikke-grønlandsk fartøj",
+            fartoej_groenlandsk=False,
+            aktivitetskode_alle=10022,
+        )
 
-            self.create_produkttype(
-                sild,
-                f"{sild.navn_dk}, grønlandsk fartøj", f"{sild.navn_gl}, grønlandsk fartøj",
-                fartoej_groenlandsk=True,
-                aktivitetskode_alle=10023,
-            )
-            self.create_produkttype(
-                sild,
-                f"{sild.navn_dk}, ikke-grønlandsk fartøj", f"{sild.navn_gl}, ikke-grønlandsk fartøj",
-                fartoej_groenlandsk=False,
-                aktivitetskode_alle=10024
-            )
-            self.create_produkttype(
-                lodde,
-                f"{lodde.navn_dk}, grønlandsk fartøj", f"{lodde.navn_gl}, grønlandsk fartøj",
-                fartoej_groenlandsk=True,
-                aktivitetskode_alle=10025
-            )
-            self.create_produkttype(
-                lodde,
-                f"{lodde.navn_dk}, ikke-grønlandsk fartøj", f"{lodde.navn_gl}, ikke-grønlandsk fartøj",
-                fartoej_groenlandsk=False,
-                aktivitetskode_alle=10026
-            )
-            self.create_produkttype(
-                blåhvilling,
-                f"{blåhvilling.navn_dk}, ikke-grønlandsk fartøj", f"{blåhvilling.navn_gl}, ikke-grønlandsk fartøj",
-                fartoej_groenlandsk=False,
-                aktivitetskode_alle=10038
-            )
-            self.create_produkttype(
-                blåhvilling,
-                f"{blåhvilling.navn_dk}, grønlandsk fartøj", f"{blåhvilling.navn_gl}, grønlandsk fartøj",
-                fartoej_groenlandsk=True,
-                aktivitetskode_alle=10039
-            )
-            self.create_produkttype(
-                guldlaks,
-                f"{guldlaks.navn_dk}, ikke-grønlandsk fartøj", f"{guldlaks.navn_gl}, ikke-grønlandsk fartøj",
-                fartoej_groenlandsk=False,
-                aktivitetskode_alle=10040
-            )
-            self.create_produkttype(
-                guldlaks,
-                f"{guldlaks.navn_dk}, grønlandsk fartøj", f"{guldlaks.navn_gl}, grønlandsk fartøj",
-                fartoej_groenlandsk=True,
-                aktivitetskode_alle=10041
-            )
+        sild = FiskeArt.objects.get(navn_dk='Sild')
+        self.create_produkttype(
+            sild,
+            f"{sild.navn_dk}, grønlandsk fartøj", f"{sild.navn_gl}, grønlandsk fartøj",
+            fartoej_groenlandsk=True,
+            aktivitetskode_alle=10023,
+        )
+        self.create_produkttype(
+            sild,
+            f"{sild.navn_dk}, ikke-grønlandsk fartøj", f"{sild.navn_gl}, ikke-grønlandsk fartøj",
+            fartoej_groenlandsk=False,
+            aktivitetskode_alle=10024
+        )
 
-            hellefisk_produkt = self.create_produkttype(
-                hellefisk,
-                hellefisk.navn_dk, hellefisk.navn_gl,
-                aktivitetskode_havgående=10011,
-                aktivitetskode_kystnært=10012,
-                aktivitetskode_indhandling=10013,
-            )
-            self.create_produkttype_subtype(hellefisk_produkt, 'Hel fisk', 'Hel fisk')
-            self.create_produkttype_subtype(hellefisk_produkt, 'Filet', 'Filet')
-            self.create_produkttype_subtype(hellefisk_produkt, 'Biprodukter', 'Biprodukter')
+        lodde = FiskeArt.objects.get(navn_dk='Lodde')
+        self.create_produkttype(
+            lodde,
+            f"{lodde.navn_dk}, grønlandsk fartøj", f"{lodde.navn_gl}, grønlandsk fartøj",
+            fartoej_groenlandsk=True,
+            aktivitetskode_alle=10025
+        )
+        self.create_produkttype(
+            lodde,
+            f"{lodde.navn_dk}, ikke-grønlandsk fartøj", f"{lodde.navn_gl}, ikke-grønlandsk fartøj",
+            fartoej_groenlandsk=False,
+            aktivitetskode_alle=10026
+        )
 
-            torsk_produkt = self.create_produkttype(
-                torsk,
-                torsk.navn_dk, torsk.navn_gl,
-                aktivitetskode_havgående=10027,
-                aktivitetskode_indhandling=10028,
-            )
-            self.create_produkttype_subtype(torsk_produkt, 'Hel fisk', 'Hel fisk')
-            self.create_produkttype_subtype(torsk_produkt, 'Filet', 'Filet')
-            self.create_produkttype_subtype(torsk_produkt, 'Biprodukter', 'Biprodukter')
+        blåhvilling = FiskeArt.objects.get(navn_dk='Blåhvilling')
+        self.create_produkttype(
+            blåhvilling,
+            f"{blåhvilling.navn_dk}, grønlandsk fartøj", f"{blåhvilling.navn_gl}, grønlandsk fartøj",
+            fartoej_groenlandsk=True,
+            aktivitetskode_alle=10038
+        )
+        self.create_produkttype(
+            blåhvilling,
+            f"{blåhvilling.navn_dk}, ikke-grønlandsk fartøj", f"{blåhvilling.navn_gl}, ikke-grønlandsk fartøj",
+            fartoej_groenlandsk=False,
+            aktivitetskode_alle=10039
+        )
 
-            kuller_produkt = self.create_produkttype(
-                kuller,
-                kuller.navn_dk, kuller.navn_gl,
-                aktivitetskode_havgående=10031,
-                aktivitetskode_indhandling=10032
-            )
-            self.create_produkttype_subtype(kuller_produkt, 'Hel fisk', 'Hel fisk')
-            self.create_produkttype_subtype(kuller_produkt, 'Filet', 'Filet')
-            self.create_produkttype_subtype(kuller_produkt, 'Biprodukter', 'Biprodukter')
+        guldlaks = FiskeArt.objects.get(navn_dk='Guldlaks')
+        self.create_produkttype(
+            guldlaks,
+            f"{guldlaks.navn_dk}, grønlandsk fartøj", f"{guldlaks.navn_gl}, grønlandsk fartøj",
+            fartoej_groenlandsk=True,
+            aktivitetskode_alle=10040
+        )
+        self.create_produkttype(
+            guldlaks,
+            f"{guldlaks.navn_dk}, ikke-grønlandsk fartøj", f"{guldlaks.navn_gl}, ikke-grønlandsk fartøj",
+            fartoej_groenlandsk=False,
+            aktivitetskode_alle=10041
+        )
 
-            sej_produkt = self.create_produkttype(
-                sej,
-                sej.navn_dk, sej.navn_gl,
-                aktivitetskode_havgående=10033,
-                aktivitetskode_indhandling=10034
-            )
-            self.create_produkttype_subtype(sej_produkt, 'Hel fisk', 'Hel fisk')
-            self.create_produkttype_subtype(sej_produkt, 'Filet', 'Filet')
-            self.create_produkttype_subtype(sej_produkt, 'Biprodukter', 'Biprodukter')
+        hellefisk = FiskeArt.objects.get(navn_dk='Hellefisk')
+        hellefisk_produkt = self.create_produkttype(
+            hellefisk,
+            hellefisk.navn_dk, hellefisk.navn_gl,
+            aktivitetskode_havgående=10011,
+            aktivitetskode_kystnært=10012,
+            aktivitetskode_indhandling=10013,
+        )
+        self.create_produkttype_subtype(hellefisk_produkt, 'Hel fisk', 'Hel fisk')
+        self.create_produkttype_subtype(hellefisk_produkt, 'Filet', 'Filet')
+        self.create_produkttype_subtype(hellefisk_produkt, 'Biprodukter', 'Biprodukter')
 
-            rødfisk_produkt = self.create_produkttype(
-                rødfisk,
-                rødfisk.navn_dk, rødfisk.navn_gl,
-                aktivitetskode_havgående=10029,
-                aktivitetskode_indhandling=10030,
-            )
-            self.create_produkttype_subtype(rødfisk_produkt, 'Hel fisk', 'Hel fisk')
-            self.create_produkttype_subtype(rødfisk_produkt, 'Filet', 'Filet')
-            self.create_produkttype_subtype(rødfisk_produkt, 'Biprodukter', 'Biprodukter')
+        torsk = FiskeArt.objects.get(navn_dk='Torsk')
+        torsk_produkt = self.create_produkttype(
+            torsk,
+            torsk.navn_dk, torsk.navn_gl,
+            aktivitetskode_havgående=10027,
+            aktivitetskode_indhandling=10028,
+        )
+        self.create_produkttype_subtype(torsk_produkt, 'Hel fisk', 'Hel fisk')
+        self.create_produkttype_subtype(torsk_produkt, 'Filet', 'Filet')
+        self.create_produkttype_subtype(torsk_produkt, 'Biprodukter', 'Biprodukter')
 
-            reje_havgående_produkt = self.create_produkttype(
-                reje_havgående,
-                'Reje - havgående licens', 'Reje - havgående licens',
-                aktivitetskode_havgående=10011,
-                fangsttype='havgående',
-            )
-            self.create_produkttype_subtype(reje_havgående_produkt, 'Råfrosne skalrejer', 'Råfrosne skalrejer')
-            self.create_produkttype_subtype(reje_havgående_produkt, 'Søkogte skalrejer', 'Søkogte skalrejer')
-            self.create_produkttype_subtype(reje_havgående_produkt, 'Industrirejer-sækkerejer', 'Industrirejer-sækkerejer')
-            self.create_produkttype_subtype(reje_havgående_produkt, 'Biprodukter', 'Biprodukter')
+        kuller = FiskeArt.objects.get(navn_dk='Kuller')
+        kuller_produkt = self.create_produkttype(
+            kuller,
+            kuller.navn_dk, kuller.navn_gl,
+            aktivitetskode_havgående=10031,
+            aktivitetskode_indhandling=10032
+        )
+        self.create_produkttype_subtype(kuller_produkt, 'Hel fisk', 'Hel fisk')
+        self.create_produkttype_subtype(kuller_produkt, 'Filet', 'Filet')
+        self.create_produkttype_subtype(kuller_produkt, 'Biprodukter', 'Biprodukter')
 
-            reje_kystnært_produkt = self.create_produkttype(
-                reje_kystnært,
-                'Reje - kystnær licens', 'Reje - kystnær licens',
-                aktivitetskode_kystnært=10012,
-                fangsttype='kystnært',
-            )
-            self.create_produkttype_subtype(reje_kystnært_produkt, 'Råfrosne skalrejer', 'Råfrosne skalrejer')
-            self.create_produkttype_subtype(reje_kystnært_produkt, 'Søkogte skalrejer', 'Søkogte skalrejer')
-            self.create_produkttype_subtype(reje_kystnært_produkt, 'Industrirejer-sækkerejer', 'Industrirejer-sækkerejer')
-            self.create_produkttype_subtype(reje_kystnært_produkt, 'Biprodukter', 'Biprodukter')
+        sej = FiskeArt.objects.get(navn_dk='Sej')
+        sej_produkt = self.create_produkttype(
+            sej,
+            sej.navn_dk, sej.navn_gl,
+            aktivitetskode_havgående=10033,
+            aktivitetskode_indhandling=10034
+        )
+        self.create_produkttype_subtype(sej_produkt, 'Hel fisk', 'Hel fisk')
+        self.create_produkttype_subtype(sej_produkt, 'Filet', 'Filet')
+        self.create_produkttype_subtype(sej_produkt, 'Biprodukter', 'Biprodukter')
 
-            reje_svalbard_produkt = self.create_produkttype(
-                reje_svalbard,
-                'Reje - Svalbard og Barentshavet', 'Reje - Svalbard og Barentshavet',
-                aktivitetskode_svalbard=10014,
-                fangsttype='svalbard',
-            )
-            self.create_produkttype_subtype(reje_svalbard_produkt, 'Råfrosne skalrejer', 'Råfrosne skalrejer')
-            self.create_produkttype_subtype(reje_svalbard_produkt, 'Søkogte skalrejer', 'Søkogte skalrejer')
-            self.create_produkttype_subtype(reje_svalbard_produkt, 'Industrirejer-sækkerejer', 'Industrirejer-sækkerejer')
-            self.create_produkttype_subtype(reje_svalbard_produkt, 'Biprodukter', 'Biprodukter')
+        rødfisk = FiskeArt.objects.get(navn_dk='Rødfisk')
+        rødfisk_produkt = self.create_produkttype(
+            rødfisk,
+            rødfisk.navn_dk, rødfisk.navn_gl,
+            aktivitetskode_havgående=10029,
+            aktivitetskode_indhandling=10030,
+        )
+        self.create_produkttype_subtype(rødfisk_produkt, 'Hel fisk', 'Hel fisk')
+        self.create_produkttype_subtype(rødfisk_produkt, 'Filet', 'Filet')
+        self.create_produkttype_subtype(rødfisk_produkt, 'Biprodukter', 'Biprodukter')
 
+        reje_havgående = FiskeArt.objects.get(navn_dk='Reje - havgående licens')
+        reje_havgående_produkt = self.create_produkttype(
+            reje_havgående,
+            reje_havgående.navn_dk, reje_havgående.navn_gl,
+            aktivitetskode_havgående=10011,
+            fangsttype='havgående',
+        )
+        self.create_produkttype_subtype(reje_havgående_produkt, 'Råfrosne skalrejer', 'Råfrosne skalrejer')
+        self.create_produkttype_subtype(reje_havgående_produkt, 'Søkogte skalrejer', 'Søkogte skalrejer')
+        self.create_produkttype_subtype(reje_havgående_produkt, 'Industrirejer-sækkerejer', 'Industrirejer-sækkerejer')
+        self.create_produkttype_subtype(reje_havgående_produkt, 'Biprodukter', 'Biprodukter')
+
+        reje_kystnært = FiskeArt.objects.get(navn_dk='Reje - kystnær licens')
+        reje_kystnært_produkt = self.create_produkttype(
+            reje_kystnært,
+            reje_kystnært.navn_dk, reje_kystnært.navn_gl,
+            aktivitetskode_kystnært=10012,
+            fangsttype='kystnært',
+        )
+        self.create_produkttype_subtype(reje_kystnært_produkt, 'Råfrosne skalrejer', 'Råfrosne skalrejer')
+        self.create_produkttype_subtype(reje_kystnært_produkt, 'Søkogte skalrejer', 'Søkogte skalrejer')
+        self.create_produkttype_subtype(reje_kystnært_produkt, 'Industrirejer-sækkerejer', 'Industrirejer-sækkerejer')
+        self.create_produkttype_subtype(reje_kystnært_produkt, 'Biprodukter', 'Biprodukter')
+
+        reje_svalbard = FiskeArt.objects.get(navn_dk='Reje - Svalbard og Barentshavet')
+        reje_svalbard_produkt = self.create_produkttype(
+            reje_svalbard,
+            reje_svalbard.navn_dk, reje_svalbard.navn_gl,
+            aktivitetskode_svalbard=10014,
+            fangsttype='svalbard',
+        )
+        self.create_produkttype_subtype(reje_svalbard_produkt, 'Råfrosne skalrejer', 'Råfrosne skalrejer')
+        self.create_produkttype_subtype(reje_svalbard_produkt, 'Søkogte skalrejer', 'Søkogte skalrejer')
+        self.create_produkttype_subtype(reje_svalbard_produkt, 'Industrirejer-sækkerejer', 'Industrirejer-sækkerejer')
+        self.create_produkttype_subtype(reje_svalbard_produkt, 'Biprodukter', 'Biprodukter')
+
+    def create_afgiftsperioder(self):
         perioder = []
         if not Afgiftsperiode.objects.exists():
             today = timezone.now().date()
@@ -304,3 +331,22 @@ class Command(BaseCommand):
                     sats.rate_procent = rate_procent
                     sats.rate_pr_kg = rate_pr_kg
                     sats.save()
+
+    def create_indhandlingssteder(self):
+        if settings.DAFO['mock']:
+            for navn, stedkode in (
+                ('Nuuk', 600),
+                ('Qeqertat', 1707),
+                ('Innaarsuit', 1607)
+            ):
+                Indhandlingssted.objects.update_or_create(
+                    navn=navn,
+                    defaults={'stedkode': stedkode}
+                )
+        else:
+            pass
+            # TODO: fetch from DAFO
+
+    def create_g69_koder(self):
+        for år in range(2020, 2025):
+            G69Code.generate_for_year(år)
