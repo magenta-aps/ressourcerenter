@@ -153,7 +153,6 @@ Update test server version:
     - Release dev image
   variables:
     ENDPOINT: ressourcerenter/update-test
-    CONFIG_UPDATER_USERNAME: aalisakkat
 
 Deploy test:
   # Automatic deployment of branch master to test
