@@ -32,7 +32,7 @@ class Command(BaseCommand):
             beregningsmodel.save()
 
         indhandlingssteder = []
-        for navn, stedkode in (('Nuuk', '1111'), ('Sisimiut', '2222'), ('Ilulissat', '3333')):
+        for navn, stedkode in (('Nuuk', 1111), ('Sisimiut', 2222), ('Ilulissat', 3333)):
             try:
                 sted = Indhandlingssted.objects.get(navn=navn)
             except Indhandlingssted.DoesNotExist:

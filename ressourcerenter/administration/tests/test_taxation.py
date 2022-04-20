@@ -72,7 +72,7 @@ class AfgiftTestCase(TransactionTestCase):
             sats.rate_pr_kg = rate_pr_kg
             sats.save()
 
-        self.virksomhed = Virksomhed.objects.create(cvr=1234)
+        self.virksomhed, _ = Virksomhed.objects.get_or_create(cvr=1234)
 
     def _calculate(self, skematype_id=1, fiskeart=None, salgspris=0, levende_vaegt=0, salgsvaegt=0, fartoej_groenlandsk=None):
         indberetning = Indberetning.objects.create(

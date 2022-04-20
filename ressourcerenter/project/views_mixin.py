@@ -3,6 +3,7 @@ from django.utils.formats import date_format
 from django.views.generic import FormView
 from openpyxl import Workbook
 from datetime import date
+from tempfile import NamedTemporaryFile
 
 
 class GetFormView(FormView):
@@ -50,10 +51,16 @@ class ExcelMixin(object):
                     row[i] = date_format(value, format='SHORT_DATE_FORMAT', use_l10n=True)
             ws.append(row)
 
-        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = f'attachment; filename={self.filename_base}.xlsx'
-        wb.save(response)
-        return response
+        with NamedTemporaryFile() as tmp:
+            wb.save(tmp.name)
+            tmp.seek(0)
+            stream = tmp.read()
+            response = HttpResponse(
+                content=stream,
+                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
+            response['Content-Disposition'] = f'attachment; filename={self.filename_base}.xlsx'
+            return response
 
     def headers(self, form):
         for header_name, data_path in self.excel_fields:

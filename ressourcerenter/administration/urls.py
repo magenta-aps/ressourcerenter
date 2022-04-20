@@ -1,16 +1,20 @@
 from administration.apps import AdministrationConfig
-from django.urls import path
-from django.contrib.auth.views import LoginView, LogoutView
-from administration.views import FrontpageView
-from administration.views import AfgiftsperiodeCreateView, AfgiftsperiodeUpdateView, AfgiftsperiodeListView, AfgiftsperiodeHistoryView, AfgiftsperiodeSatsTabelUpdateView
-from administration.views import SatsTabelElementHistoryView
+from administration.views import AfgiftsperiodeCreateView, AfgiftsperiodeUpdateView, AfgiftsperiodeListView, \
+    AfgiftsperiodeHistoryView, AfgiftsperiodeSatsTabelUpdateView
+from administration.views import FakturaSendView
 from administration.views import FiskeArtListView, FiskeArtCreateView, FiskeArtUpdateView, FiskeArtHistoryView
-from administration.views import ProduktTypeListView, ProduktTypeCreateView, ProduktTypeUpdateView, ProduktTypeHistoryView
+from administration.views import FrontpageView
+from administration.views import G69ExcelView
 from administration.views import IndberetningDetailView, IndberetningListView, IndberetningAfstemFormView
-from administration.views import VirksomhedListView, VirksomhedCreateView, VirksomhedUpdateView, VirksomhedRepræsentantView, VirksomhedRepræsentantStopView
 from administration.views import IndberetningsLinjeListView, FakturaDetailView, FakturaCreateView
 from administration.views import PostLoginView
-from administration.views import FakturaSendView
+from administration.views import ProduktTypeListView, ProduktTypeCreateView, ProduktTypeUpdateView, \
+    ProduktTypeHistoryView
+from administration.views import SatsTabelElementHistoryView
+from administration.views import VirksomhedListView, VirksomhedCreateView, VirksomhedUpdateView, \
+    VirksomhedRepræsentantView, VirksomhedRepræsentantStopView
+from django.contrib.auth.views import LoginView, LogoutView
+from django.urls import path
 
 app_name = AdministrationConfig.name
 
@@ -53,5 +57,5 @@ urlpatterns = [
     path('virksomhed/repræsenter/stop/', VirksomhedRepræsentantStopView.as_view(), name='virksomhed-represent-stop'),
     path('virksomhed/<uuid:pk>/repræsenter/', VirksomhedRepræsentantView.as_view(), name='virksomhed-represent'),
 
-
+    path('g69kode/', G69ExcelView.as_view(), name='g69-download'),
 ]

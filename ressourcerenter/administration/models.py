@@ -13,6 +13,7 @@ from django.utils.translation import gettext as _, get_language
 from io import StringIO
 from itertools import chain
 from math import ceil
+from openpyxl import Workbook
 from project.dateutil import quarter_number, month_last_date, quarter_last_month
 from simple_history.models import HistoricalRecords
 from tenQ.client import put_file_in_prisme_folder, ClientException
@@ -810,6 +811,14 @@ class G69Code(models.Model):
     def update_kode_signal(sender, instance, **kwargs):
         instance.update_kode()
 
+    @property
+    def aktivitetskode(self):
+        return str(self.produkttype.get_aktivitetskode(self.fangsttype)).zfill(6)
+
+    @property
+    def fiskeart(self):
+        return self.produkttype.fiskeart
+
     @staticmethod
     def find_by_indberetningslinje(indberetningslinje):
         sted = indberetningslinje.indhandlingssted
@@ -839,5 +848,82 @@ class G69Code(models.Model):
                         sted=sted
                     )
 
+    @staticmethod
+    def get_spreadsheet_headers():
+        return [
+            ("kode", _('G69-Kode')),
+            ("skatteår", _('År')),
+            ("fangsttype", _('Fangsttype')),
+            ("aktivitet_kode", _('Aktivitetskode')),
+            ("fiskeart_navn", _('Fiskeart')),
+            ("fiskeart_kode", _('Fiskeart kode')),
+            ("sted_navn", _('Sted')),
+            ("sted_kode", _('Stedkode')),
+            ("grønlandsk", _('Grønlandsk fartøj'))
+        ]
+
+    @staticmethod
+    def get_spreadsheet_raw(år, collapse=False):
+        data = []
+        collapsed_data = {}
+        for item in G69Code.objects.filter(år=år):
+            row = {
+                "kode": item.kode,
+                "skatteår": item.år,
+                "fangsttype": item.fangsttype,
+                "aktivitet_kode": item.aktivitetskode,
+                "fiskeart_navn": item.produkttype.fiskeart.navn_dk,
+                "fiskeart_kode": item.produkttype.fiskeart.kode,
+                "sted_navn": item.sted.navn,
+                "sted_kode": item.sted.stedkode,
+                "grønlandsk": G69Code._yesnoblank(item.produkttype.fartoej_groenlandsk)
+            }
+            if collapse:
+                if row['kode'] not in collapsed_data:
+                    collapsed_data[row['kode']] = row
+                else:
+                    collapsed_data[row['kode']]['fangsttype'] = ''
+            else:
+                data.append(row)
+
+        return {
+            'headers': G69Code.get_spreadsheet_headers(),
+            'data': collapsed_data.values() if collapse else data
+        }
+
+    @staticmethod
+    def _yesnoblank(value):
+        if value is True:
+            return _('Ja')
+        if value is False:
+            return _('Nej')
+        return ''
+
 
 pre_save.connect(G69Code.update_kode_signal, G69Code, dispatch_uid='G69_update_kode_signal')
+
+
+def g69_export_filepath(instance, filename):
+    return 'g69export/{år}/{filename}'.format(år=instance.år, filename=filename)
+
+
+class G69CodeExport(models.Model):
+
+    år = models.PositiveSmallIntegerField(
+        null=False,
+    )
+
+    excel_file = models.FileField(
+        upload_to=g69_export_filepath
+    )
+
+    def generate_spreadsheet_excel(self):
+        raw_data = G69Code.get_spreadsheet_raw(self.år)
+        wb = Workbook(write_only=True)
+        ws = wb.create_sheet()
+
+        ws.append([header[1] for header in raw_data['headers']])
+
+        for row in raw_data['data']:
+            ws.append([row[header[0]] for header in raw_data['headers']])
+        wb.save(self.excel_file)
