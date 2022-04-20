@@ -143,6 +143,9 @@ Release prod image:
 
 Update test server version:
   stage: deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'master'
+  when: manual
   extends:
     - .release-to-test
   needs:
