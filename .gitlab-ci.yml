@@ -3,6 +3,7 @@ stages:
   - build
   - test
   - release
+  - configure
   - deploy
 
 
@@ -140,7 +141,7 @@ Release aalisakkat prod image:
 ##############
 
 Configure test:
-  stage: deploy
+  stage: configure
   extends: .release-to-test
   when: manual
   needs: ["Release aalisakkat dev image"]
