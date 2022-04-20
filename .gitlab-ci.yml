@@ -3,7 +3,6 @@ stages:
   - build
   - test
   - release
-  - configure
   - deploy
 
 
@@ -74,10 +73,11 @@ Build ressourcerenter image:
   tags:
     - docker
 
-Aalisakkat Unittest:
+Unittest:
   extends:
     - .test-default
-  needs: ["Build ressourcerenter image"]
+  needs:
+    - Build ressourcerenter image
   image: ${IMAGE_SHA}
   services:
     - name: postgres:13
@@ -102,7 +102,8 @@ Aalisakkat Unittest:
 .release-aalisakkat:
   stage: release
   image: alpine
-  needs: ["Aalisakkat Unittest"]
+  needs:
+    - Unittest
   variables:
     GIT_STRATEGY: none # We do not need the source code
   dependencies: []
@@ -112,7 +113,7 @@ Aalisakkat Unittest:
     # install skopeo
     - apk add skopeo
 
-Release aalisakkat dev image:
+Release dev image:
   extends:
     - .release-aalisakkat
   only:
@@ -125,7 +126,7 @@ Release aalisakkat dev image:
       "docker://${IMAGE_SHA}"
       "docker://${IMAGE_DEV}"
 
-Release aalisakkat prod image:
+Release prod image:
   extends:
     - .release-aalisakkat
     - .rules:semver-all
@@ -140,23 +141,25 @@ Release aalisakkat prod image:
 # Deploy stage
 ##############
 
-Configure test:
-  stage: configure
-  extends: .release-to-test
-  when: manual
-  needs: ["Release aalisakkat dev image"]
+Update test server version:
+  stage: deploy
+  extends:
+    - .release-to-test
+  needs:
+    - Release dev image
   variables:
     ENDPOINT: ressourcerenter/update-test
 
 Deploy test:
   # Automatic deployment of branch master to test
   stage: deploy
-  extends:
-    - .saltbert
-  needs: ["Release aalisakkat dev image", "Configure test"]
   only:
     refs:
       - master
+  extends:
+    - .saltbert
+  needs:
+    - Update test server version
   variables:
     SALTBERT_ORCHESTRATION: ressourcerenter.service-test
     SALTBERT_URL: https://ctrldev1.magenta-aps.dk
