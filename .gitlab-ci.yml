@@ -152,7 +152,7 @@ Update test server version:
   needs:
     - Release dev image
   variables:
-    ENDPOINT: ressourcerenter/update-test
+    ENDPOINT: ressourcerenter/salt/update-test
 
 Deploy test:
   # Automatic deployment of branch master to test
