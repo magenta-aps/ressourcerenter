@@ -1,0 +1,23 @@
+{% extends 'administration/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% translate 'Hent G69-kodefil' %}</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+        <div class="col-2">
+            <label for="{{ form.år.id_for_label }}">{% translate 'År:' %}</label>
+        </div>
+        <div class="col-4">
+            {{ form.år }}
+        </div>
+        <div class="col-6">
+            {{ form.år.errors }}
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">{% translate 'Download' %}</button>
+</form>
+
+{% endblock %}

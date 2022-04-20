@@ -20,7 +20,8 @@ class TestDafoConnection(TestCase):
             "adresse": "Imaneq 32A, 3.",
             "postnummer": 3900,
             "bynavn": "Nuuk",
-            "landekode": "GL"
+            "landekode": "GL",
+            "stedkode": 600,
         }, result)
 
     def test_lookup_person_info(self):

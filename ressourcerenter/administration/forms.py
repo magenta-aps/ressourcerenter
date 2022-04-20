@@ -3,6 +3,7 @@ from administration.models import Faktura
 from administration.models import FiskeArt
 from administration.models import ProduktType
 from administration.models import SkemaType
+from datetime import date
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -195,13 +196,14 @@ class IndberetningLinjeKommentarFormSet(forms.BaseInlineFormSet):
 class VirksomhedForm(forms.ModelForm, BootstrapForm):
     class Meta:
         model = Virksomhed
-        fields = ('cvr', 'navn', 'kontakt_person', 'kontakt_email', 'kontakts_phone_nr')
+        fields = ('cvr', 'navn', 'kontakt_person', 'kontakt_email', 'kontakts_phone_nr', 'stedkode')
         widgets = {
             'cvr': forms.TextInput(),
             'navn': forms.TextInput(),
             'kontakt_person': forms.TextInput(),
             'kontakt_email': forms.TextInput(),
             'kontakts_phone_nr': forms.TextInput(),
+            'stedkode': forms.NumberInput(),
         }
 
 
@@ -313,4 +315,11 @@ class BatchSendForm(forms.Form):
 
     destination = forms.ChoiceField(
         choices=lambda: [(key, key) for key, value in settings.PRISME_PUSH['destinations_available'].items() if value]
+    )
+
+
+class G69KodeForm(BootstrapForm):
+
+    år = forms.ChoiceField(
+        choices=((år, str(år)) for år in range(date.today().year, date.today().year-10, -1)),
     )

@@ -8,7 +8,7 @@ class DatafordelerClient(object):
 
     def __init__(self, mock=None, client_header=None, service_header_cvr=None,
                  service_header_cpr=None, uxp_service_owned_by=None,
-                 certificate=None, private_key=None, url=None, root_ca=True, timeout=60):
+                 certificate=None, private_key=None, url=None, root_ca=True, timeout=10):
 
         self._mock = mock
 
@@ -46,10 +46,11 @@ class DatafordelerClient(object):
                 "adresse": "Imaneq 32A, 3.",
                 "postnummer": 3900,
                 "bynavn": "Nuuk",
-                "landekode": "GL"
+                "landekode": "GL",
+                "stedkode": 600,
             }
         else:
-            return self._get(cvr, self._service_header_cvr)
+            return self._get(str(cvr).zfill(8), self._service_header_cvr)
 
     def get_person_information(self, cpr):
         """
@@ -67,7 +68,7 @@ class DatafordelerClient(object):
                 "landekode": "GL"
             }
         else:
-            return self._get(cpr, self._service_header_cpr)
+            return self._get(str(cpr).zfill(10), self._service_header_cpr)
 
     def get_owner_information(self, cpr):
         """

@@ -52,6 +52,9 @@ from administration.forms import VirksomhedForm
 from administration.models import Faktura, Prisme10QBatch
 from administration.forms import FakturaForm, BatchSendForm
 
+from administration.forms import G69KodeForm
+from administration.models import G69Code
+
 
 class PostLoginView(RedirectView):
     # Viderestiller til forsiden af den app man har adgang til
@@ -716,3 +719,31 @@ class IndberetningsLinjeListView(TemplateView):
             'afgiftsperioder': Afgiftsperiode.objects.all(),
             'periode': self.periode
         })
+
+
+class G69ExcelView(ExcelMixin, GetFormView):
+    form_class = G69KodeForm
+    template_name = 'administration/g69kode_form.html'
+    filename_base = 'g69_koder'
+
+    excel_fields = [
+        (_('G69-Kode'), "kode"),
+        (_('År'), "skatteår"),
+        (_('Fangsttype'), "fangsttype"),
+        (_('Aktivitetskode'), "aktivitet_kode"),
+        (_('Fiskeart'), "fiskeart_navn"),
+        (_('Fiskeart kode'), "fiskeart_kode"),
+        (_('Sted'), "sted_navn"),
+        (_('Stedkode'), "sted_kode"),
+    ]
+
+    def headers(self, form):
+        return [header_name for key, header_name in G69Code.get_spreadsheet_headers()]
+
+    def rows(self, form):
+        headers = G69Code.get_spreadsheet_headers()
+        data = G69Code.get_spreadsheet_raw(form.cleaned_data['år'], collapse=True)['data']
+        return [[item[key] for key, header_name in headers] for item in data]
+
+    def form_valid(self, form):
+        return self.render_excel_file({'form': form})
