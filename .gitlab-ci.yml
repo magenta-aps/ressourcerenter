@@ -3,7 +3,6 @@ stages:
   - build
   - test
   - release
-  - configure-version
   - deploy
 
 
@@ -142,28 +141,15 @@ Release prod image:
 # Deploy stage
 ##############
 
-Update test server version:
-  stage: configure-version
-  rules:
-    - if: $CI_COMMIT_BRANCH == 'master'
-  when: manual
-  extends:
-    - .release-to-test
-  needs:
-    - Release dev image
-  variables:
-    ENDPOINT: ressourcerenter/salt/update-test
-
 Deploy test:
   # Automatic deployment of branch master to test
   stage: deploy
+  when: manual
   only:
     refs:
       - master
   extends:
     - .saltbert
-  needs:
-    - Update test server version
   variables:
     SALTBERT_ORCHESTRATION: ressourcerenter.service-test
     SALTBERT_URL: https://ctrldev1.magenta-aps.dk
