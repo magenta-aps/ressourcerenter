@@ -2,7 +2,9 @@
 {% load i18n %}
 
 {% block content %}
-<h1>{% translate 'Hent G69-kodefil' %}</h1>
+<h1>
+    {% translate 'Hent kodefil for G69' %}
+</h1>
 
 <form method="post">
     {% csrf_token %}
@@ -17,7 +19,7 @@
             {{ form.år.errors }}
         </div>
     </div>
-    <button type="submit" class="btn btn-primary">{% translate 'Download' %}</button>
+    <button type="submit" class="btn btn-primary">{% translate 'Opret' %}</button>
 </form>
 
 {% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'administration/base.html' %}
+{% load i18n %}
+{% load l10n %}
+
+{% block content %}
+<h1>{% translate 'G69-exports' %}</h1>
+
+<a class="btn btn-success" href="{% url 'administration:g69-create' %}">{% translate 'Opret ny' %}</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th class="col-4">{% translate 'År' %}</th>
+            <th class="col-4">{% translate 'Oprettet' %}</th>
+            <th class="col-4">{% translate 'Handlinger' %}</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for object in object_list %}
+        <tr>
+            <td>
+                {% localize off %}
+                {{ object.år }}
+                {% endlocalize %}
+            </td>
+            <td>
+                {{ object.created_date }}
+            </td>
+            <td>
+                <a class="btn btn-primary" href="{% url 'administration:g69-download' object.pk %}">{% translate 'Download' %}</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

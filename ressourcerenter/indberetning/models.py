@@ -220,7 +220,7 @@ def store_navne(sender, **kwargs):
     for navn, navnetype in ((instance.fartøj_navn, 'fartøj'), (instance.indhandlingssted, 'indhandlings_sted')):
         if navn is not None and navn != '':
             try:
-                Navne.objects.create(
+                Navne.objects.get_or_create(
                     virksomhed=instance.indberetning.virksomhed,
                     navn=navn,
                     type=navnetype

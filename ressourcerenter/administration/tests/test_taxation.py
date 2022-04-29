@@ -25,7 +25,7 @@ class AfgiftTestCase(TransactionTestCase):
 
         management.call_command('create_initial_dataset')
 
-        self.periode = Afgiftsperiode.objects.get(dato_fra=date(2021, 1, 1))
+        self.periode = Afgiftsperiode.objects.get(dato_fra=date(2022, 1, 1))
 
         try:
             beregningsmodel = BeregningsModel2021.objects.create(

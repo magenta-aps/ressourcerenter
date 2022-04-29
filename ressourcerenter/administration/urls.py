@@ -4,7 +4,7 @@ from administration.views import AfgiftsperiodeCreateView, AfgiftsperiodeUpdateV
 from administration.views import FakturaSendView
 from administration.views import FiskeArtListView, FiskeArtCreateView, FiskeArtUpdateView, FiskeArtHistoryView
 from administration.views import FrontpageView
-from administration.views import G69ExcelView
+from administration.views import G69ListView, G69CodeExportCreateView, G69DownloadView
 from administration.views import IndberetningDetailView, IndberetningListView, IndberetningAfstemFormView
 from administration.views import IndberetningsLinjeListView, FakturaDetailView, FakturaCreateView
 from administration.views import PostLoginView
@@ -57,5 +57,7 @@ urlpatterns = [
     path('virksomhed/repræsenter/stop/', VirksomhedRepræsentantStopView.as_view(), name='virksomhed-represent-stop'),
     path('virksomhed/<uuid:pk>/repræsenter/', VirksomhedRepræsentantView.as_view(), name='virksomhed-represent'),
 
-    path('g69kode/', G69ExcelView.as_view(), name='g69-download'),
+    path('g69kode/', G69ListView.as_view(), name='g69-list'),
+    path('g69kode/create/', G69CodeExportCreateView.as_view(), name='g69-create'),
+    path('g69kode/<uuid:pk>/', G69DownloadView.as_view(), name='g69-download'),
 ]

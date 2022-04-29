@@ -7,11 +7,12 @@ from django.http import HttpResponseNotFound
 from django.views.generic import RedirectView
 from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic import CreateView, UpdateView
-from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.detail import SingleObjectMixin, BaseDetailView
 from django.views.generic.edit import BaseFormView
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext as _
 from django.utils.functional import cached_property
+from django.http.response import FileResponse
 
 from django.db.models import F, Sum
 from django.db.models import Case, Value, When
@@ -19,9 +20,12 @@ from django.db.models.functions import Coalesce
 from datetime import timedelta
 from tenQ.client import ClientException
 import re
+from os import path
 from decimal import Decimal
 from itertools import chain
 from datetime import date
+from uuid import uuid4
+from django.core.files import File
 
 from collections import OrderedDict
 
@@ -54,6 +58,12 @@ from administration.forms import FakturaForm, BatchSendForm
 
 from administration.forms import G69KodeForm
 from administration.models import G69Code
+
+from administration.models import G69CodeExport
+
+from administration.models import g69_export_filepath
+
+from administration.forms import G69CodeExportForm
 
 
 class PostLoginView(RedirectView):
@@ -721,8 +731,7 @@ class IndberetningsLinjeListView(TemplateView):
         })
 
 
-class G69ExcelView(ExcelMixin, GetFormView):
-    form_class = G69KodeForm
+class G69ExcelView(ExcelMixin):
     template_name = 'administration/g69kode_form.html'
     filename_base = 'g69_koder'
 
@@ -745,5 +754,39 @@ class G69ExcelView(ExcelMixin, GetFormView):
         data = G69Code.get_spreadsheet_raw(form.cleaned_data['år'], collapse=True)['data']
         return [[item[key] for key, header_name in headers] for item in data]
 
+
+class G69DirectDownloadView(G69ExcelView, GetFormView):
+    form_class = G69KodeForm
+
     def form_valid(self, form):
         return self.render_excel_file({'form': form})
+
+
+class G69CodeExportCreateView(G69ExcelView, CreateView):
+    model = G69CodeExport
+    form_class = G69CodeExportForm
+    success_url = reverse_lazy('administration:g69-list')
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        filename = g69_export_filepath(self.object, uuid4())
+        full_path = path.join(settings.MEDIA_ROOT, filename)
+        self.create_excel_file({'form': form}, full_path)
+        with open(full_path, mode='rb') as f:
+            self.object.excel_file = File(f, name=f'export_{self.object.år}.xlsx')
+            self.object.save()
+        return super().form_valid(form)
+
+
+class G69ListView(ListView):
+    model = G69CodeExport
+    template_name = 'administration/g69kode_list.html'
+
+
+class G69DownloadView(BaseDetailView):
+    model = G69CodeExport
+
+    def render_to_response(self, context):
+        response = FileResponse(self.object.excel_file)
+        # response['Content-Disposition'] = f"attachment; filename={self.object.år}.xlsx"
+        return response

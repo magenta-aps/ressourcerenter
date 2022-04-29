@@ -4,6 +4,7 @@ from django.views.generic import FormView
 from openpyxl import Workbook
 from datetime import date
 from tempfile import NamedTemporaryFile
+import os
 
 
 class GetFormView(FormView):
@@ -18,7 +19,7 @@ class GetFormView(FormView):
             else:
                 return self.form_invalid(form)
         else:
-            return self.render_to_response(self.get_context_data())
+            return super().get(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -39,7 +40,7 @@ class ExcelMixin(object):
         })
         return ctx
 
-    def render_excel_file(self, context):
+    def create_workbook(self, context):
         wb = Workbook(write_only=True)
         ws = wb.create_sheet()
         form = context.get('form')
@@ -50,6 +51,10 @@ class ExcelMixin(object):
                 if isinstance(value, date):
                     row[i] = date_format(value, format='SHORT_DATE_FORMAT', use_l10n=True)
             ws.append(row)
+        return wb
+
+    def render_excel_file(self, context):
+        wb = self.create_workbook(context)
 
         with NamedTemporaryFile() as tmp:
             wb.save(tmp.name)
@@ -61,6 +66,13 @@ class ExcelMixin(object):
             )
             response['Content-Disposition'] = f'attachment; filename={self.filename_base}.xlsx'
             return response
+
+    def create_excel_file(self, context, filename):
+        wb = self.create_workbook(context)
+        folder = os.path.dirname(filename)
+        if not os.path.isdir(folder):
+            os.makedirs(folder)
+        wb.save(filename)
 
     def headers(self, form):
         for header_name, data_path in self.excel_fields:
