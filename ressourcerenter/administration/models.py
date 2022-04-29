@@ -866,7 +866,7 @@ class G69Code(models.Model):
     def get_spreadsheet_raw(år, collapse=False):
         data = []
         collapsed_data = {}
-        for item in G69Code.objects.filter(år=år):
+        for item in G69Code.objects.filter(år=år).order_by('kode', 'år', 'fangsttype'):
             row = {
                 "kode": item.kode,
                 "skatteår": item.år,

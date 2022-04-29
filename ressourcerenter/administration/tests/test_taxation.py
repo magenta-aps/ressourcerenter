@@ -2,8 +2,6 @@ from administration.models import Afgiftsperiode, SatsTabelElement, ProduktType,
     SkemaType
 from datetime import date
 from decimal import Decimal
-from django.core import management
-from django.db import IntegrityError
 from django.test import TransactionTestCase
 from indberetning.models import Virksomhed, Indberetning, IndberetningLinje
 from uuid import uuid4
@@ -22,25 +20,24 @@ class AfgiftTestCase(TransactionTestCase):
 
     def setUp(self):
         super().setUpClass()
+        self.periode = Afgiftsperiode.objects.create(
+            dato_fra=date(2021, 1, 1),
+            dato_til=date(2021, 3, 31)
+        )
 
-        management.call_command('create_initial_dataset')
-
-        self.periode = Afgiftsperiode.objects.get(dato_fra=date(2022, 1, 1))
-
-        try:
-            beregningsmodel = BeregningsModel2021.objects.create(
-                navn='TestBeregningsModel',
-                transport_afgift_rate=Decimal(1),
-            )
-        except IntegrityError:
-            beregningsmodel = BeregningsModel2021.objects.get(navn='TestBeregningsModel')
-            beregningsmodel.transport_afgift_rate = Decimal(1)
-            beregningsmodel.save()
+        beregningsmodel = BeregningsModel2021.objects.create(
+            navn='TestBeregningsModel',
+            transport_afgift_rate=Decimal(1),
+        )
 
         self.periode.beregningsmodel = beregningsmodel
         self.periode.save()
 
-        self.skematyper = {s.id: s for s in SkemaType.objects.all()}
+        self.skematyper = {
+            1: SkemaType.objects.create(id=1, navn_dk='Havgående'),
+            2: SkemaType.objects.create(id=2, navn_dk='Indhandlinger'),
+            3: SkemaType.objects.create(id=3, navn_dk='Kystnært')
+        }
 
         for navn, skematype_id, fartoej_groenlandsk, rate_procent, rate_pr_kg in [
             ('Reje - havgående licens', 1, None, 5, None),
@@ -61,13 +58,20 @@ class AfgiftTestCase(TransactionTestCase):
             ('Guldlaks', 1, True, None, 0.15),
             ('Guldlaks', 1, False, None, 0.7),
         ]:
-            fiskeart = FiskeArt.objects.get(navn_dk=navn)
+            fiskeart = FiskeArt.objects.create(navn_dk=navn)
+            skematype = self.skematyper[skematype_id]
+            fiskeart.skematype.set([skematype])
+            ProduktType.objects.create(
+                fiskeart=fiskeart,
+                fartoej_groenlandsk=fartoej_groenlandsk
+            )
             sats = SatsTabelElement.objects.get(
                 periode=self.periode,
-                skematype__id=skematype_id,
+                skematype=skematype,
                 fiskeart=fiskeart,
-                fartoej_groenlandsk=fartoej_groenlandsk,
+                fartoej_groenlandsk=fartoej_groenlandsk
             )
+
             sats.rate_procent = rate_procent
             sats.rate_pr_kg = rate_pr_kg
             sats.save()
