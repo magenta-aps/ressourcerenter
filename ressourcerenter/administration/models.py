@@ -86,7 +86,7 @@ class FiskeArt(NamedModel):
     pelagisk = models.BooleanField(default=False)
     skematype = models.ManyToManyField(SkemaType)
     history = HistoricalRecords()
-    kode = models.PositiveSmallIntegerField(null=True, validators=[MaxValueValidator(999)])
+    kode = models.PositiveSmallIntegerField(null=True, validators=[MaxValueValidator(99)])
 
     @staticmethod
     def create_satstabelelementer(sender, instance, **kwargs):
@@ -802,7 +802,7 @@ class G69Code(models.Model):
     def update_kode(self):
         self.kode = (''.join([
             str(self.år).zfill(2)[-2:],
-            str(self.sted.stedkode).zfill(4),
+            str(self.sted.stedkode)[-5:].zfill(5),
             str(self.produkttype.fiskeart.kode).zfill(2),
             str(self.produkttype.get_aktivitetskode(self.fangsttype)).zfill(6),
         ])).zfill(15)
@@ -909,6 +909,11 @@ def g69_export_filepath(instance, filename):
 
 class G69CodeExport(models.Model):
 
+    uuid = models.UUIDField(
+        primary_key=True,
+        default=uuid4
+    )
+
     år = models.PositiveSmallIntegerField(
         null=False,
     )
@@ -916,6 +921,13 @@ class G69CodeExport(models.Model):
     excel_file = models.FileField(
         upload_to=g69_export_filepath
     )
+
+    created_date = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        ordering = ('-år', '-created_date')
 
     def generate_spreadsheet_excel(self):
         raw_data = G69Code.get_spreadsheet_raw(self.år)

@@ -1,14 +1,12 @@
+import datetime
+import random
+from administration.models import Afgiftsperiode, BeregningsModel2021, SkemaType
+from decimal import Decimal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db.utils import IntegrityError
 from django.utils import timezone
-
-from administration.models import Afgiftsperiode, BeregningsModel2021, SkemaType
 from indberetning.models import Indberetning, Virksomhed, IndberetningLinje, Indhandlingssted
-from decimal import Decimal
-
-import datetime
-import random
 
 
 class Command(BaseCommand):
@@ -33,10 +31,7 @@ class Command(BaseCommand):
 
         indhandlingssteder = []
         for navn, stedkode in (('Nuuk', 1111), ('Sisimiut', 2222), ('Ilulissat', 3333)):
-            try:
-                sted = Indhandlingssted.objects.get(navn=navn)
-            except Indhandlingssted.DoesNotExist:
-                sted = Indhandlingssted.objects.create(navn=navn, stedkode=stedkode)
+            sted, _ = Indhandlingssted.objects.get_or_create(navn=navn, defaults={'stedkode': stedkode})
             indhandlingssteder.append(sted)
 
         indberetninger_exist = Indberetning.objects.exists()

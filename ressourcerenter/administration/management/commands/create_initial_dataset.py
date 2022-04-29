@@ -1,11 +1,9 @@
 from administration.models import SkemaType, FiskeArt, ProduktType, Afgiftsperiode, SatsTabelElement
-from datetime import date
-from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.db.utils import IntegrityError
 from django.utils import timezone
 from indberetning.models import Indhandlingssted
 from administration.models import G69Code
+from project.dateutil import quarter_first_date, quarter_last_date
 
 
 class Command(BaseCommand):
@@ -20,16 +18,15 @@ class Command(BaseCommand):
         self.create_g69_koder()
 
     def create_fiskeart(self, navn_dk, navn_gl, pelagisk, skematype_ids):
-        try:
-            fiskeart = FiskeArt.objects.create(
-                navn_dk=navn_dk,
-                navn_gl=navn_gl,
-                pelagisk=pelagisk,
-            )
-            fiskeart.skematype.set([self.skematyper[id] for id in skematype_ids])
-            fiskeart.save()
-        except IntegrityError:
-            fiskeart = FiskeArt.objects.get(navn_dk=navn_dk)
+        fiskeart, _ = FiskeArt.objects.update_or_create(
+            navn_dk=navn_dk,
+            defaults={
+                'navn_gl': navn_gl,
+                'pelagisk': pelagisk,
+            }
+        )
+        fiskeart.skematype.set([self.skematyper[id] for id in skematype_ids])
+        fiskeart.save()
         return fiskeart
 
     def create_produkttype(self, fiskeart, navn_dk, navn_gl, fartoej_groenlandsk=None, gruppe=None, aktivitetskode_alle=None, **kwargs):
@@ -64,7 +61,7 @@ class Command(BaseCommand):
                 (2, "Indhandlinger - Indberetninger fra fabrikkerne / Havgående fiskeri og kystnært fiskeri efter rejer"),
                 (3, "Kystnært fiskeri efter andre arter end rejer - indberetninger fra fabrikkerne"),
             ]:
-                self.skematyper[id] = SkemaType.objects.create(id=id, navn_dk=navn, navn_gl=navn)
+                self.skematyper[id], _ = SkemaType.objects.get_or_create(id=id, navn_dk=navn, navn_gl=navn)
 
     def create_fiskearter(self):
         if not FiskeArt.objects.exists():
@@ -249,31 +246,20 @@ class Command(BaseCommand):
         perioder = []
         if not Afgiftsperiode.objects.exists():
             today = timezone.now().date()
-            for year in (2020, 2021, 2022):
-                try:
-                    startdate = date(year, 1, 1)
+            for year in (2022,):
+                for kvartal, startmonth in ((1, 1), (2, 4), (3, 7), (4, 10)):
+                    startdate = quarter_first_date(year, kvartal)
                     if startdate < today:
-                        perioder.append(Afgiftsperiode.objects.create(navn_dk=f"1. kvartal {year}", navn_gl=f"1. kvartal {year}", dato_fra=startdate, dato_til=date(year, 3, 31), vis_i_indberetning=True))
-                except IntegrityError:
-                    pass
-                try:
-                    startdate = date(year, 4, 1)
-                    if startdate < today:
-                        perioder.append(Afgiftsperiode.objects.create(navn_dk=f"2. kvartal {year}", navn_gl=f"2. kvartal {year}", dato_fra=startdate, dato_til=date(year, 6, 30), vis_i_indberetning=True))
-                except IntegrityError:
-                    pass
-                try:
-                    startdate = date(year, 7, 1)
-                    if startdate < today:
-                        perioder.append(Afgiftsperiode.objects.create(navn_dk=f"3. kvartal {year}", navn_gl=f"3. kvartal {year}", dato_fra=startdate, dato_til=date(year, 9, 30), vis_i_indberetning=True))
-                except IntegrityError:
-                    pass
-                try:
-                    startdate = date(year, 10, 1)
-                    if startdate < today:
-                        perioder.append(Afgiftsperiode.objects.create(navn_dk=f"4. kvartal {year}", navn_gl=f"4. kvartal {year}", dato_fra=startdate, dato_til=date(year, 12, 31), vis_i_indberetning=True))
-                except IntegrityError:
-                    pass
+                        periode, _ = Afgiftsperiode.objects.get_or_create(
+                            navn_dk=f"{kvartal}. kvartal {year}",
+                            defaults={
+                                'navn_gl': f"1. kvartal {year}",
+                                'dato_fra': startdate,
+                                'dato_til': quarter_last_date(year, kvartal),
+                                'vis_i_indberetning': True
+                            }
+                        )
+                        perioder.append(periode)
 
             for navn, skematype_id, fartoej_groenlandsk, rate_procent, rate_pr_kg in [
                 ('Reje - havgående licens', 1, None, 5, None),
@@ -333,19 +319,52 @@ class Command(BaseCommand):
                     sats.save()
 
     def create_indhandlingssteder(self):
-        if settings.DAFO['mock']:
-            for navn, stedkode in (
-                ('Nuuk', 600),
-                ('Qeqertat', 1707),
-                ('Innaarsuit', 1607)
-            ):
-                Indhandlingssted.objects.update_or_create(
-                    navn=navn,
-                    defaults={'stedkode': stedkode}
-                )
-        else:
-            pass
-            # TODO: fetch from DAFO
+        for stedkode, navn in (
+            (10310, 'Nanortalik'),
+            (10312, 'Aappilattoq ved Nanortalik'),
+            (10320, 'Qaqortoq'),
+            (10330, 'Narsaq'),
+            (10331, 'Igaliku Kujalleq'),
+            (10450, 'Paamiut'),
+            (10451, 'Arsuk'),
+            (10460, 'Nuuk'),
+            (10461, 'Qeqertarsuatsiaat'),
+            (10486, 'Kuummiut / Kuummiit'),
+            (10570, 'Maniitsoq'),
+            (10571, 'Atammik'),
+            (10573, 'Kangaamiut'),
+            (10580, 'Sisimiut'),
+            (10583, 'Sarfannguaq / Sarfannguit'),
+            (10601, 'Aasiaat'),
+            (10603, 'Akunnaaq'),
+            (10610, 'Qasigiannguit'),
+            (10611, 'Ikamiut'),
+            (10640, 'Qeqertarsuaq'),
+            (10690, 'Kangaatsiaq'),
+            (10692, 'Attu'),
+            (10700, 'Avannaata Kommunia'),
+            (10720, 'Ilulissat'),
+            (10721, 'Oqaatsut'),
+            (10722, 'Qeqertaq'),
+            (10723, 'Saqqaq'),
+            (10750, 'Uummannaq'),
+            (10752, 'Qaarsut'),
+            (10753, 'Ikerasak'),
+            (10754, 'Saattut'),
+            (10755, 'Ukkusissat'),
+            (10760, 'Upernavik'),
+            (10763, 'Aappilattoq ved Upernavik'),
+            (10765, 'Tasiusaq-Nutaarmiut'),
+            (10766, 'Nuussuaq'),
+            (10767, 'Kullorsuaq'),
+            (10769, 'Innaarsuit'),
+            (10770, 'Qaanaaq'),
+            (10779, 'Nutaarmiut'),
+        ):
+            Indhandlingssted.objects.update_or_create(
+                stedkode=stedkode,
+                defaults={'navn': navn}
+            )
 
     def create_g69_koder(self):
         for år in range(2020, 2025):

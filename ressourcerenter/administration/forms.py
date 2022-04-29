@@ -1,6 +1,7 @@
 from administration.models import Afgiftsperiode, SatsTabelElement, BeregningsModel
 from administration.models import Faktura
 from administration.models import FiskeArt
+from administration.models import G69CodeExport
 from administration.models import ProduktType
 from administration.models import SkemaType
 from datetime import date
@@ -323,3 +324,9 @@ class G69KodeForm(BootstrapForm):
     år = forms.ChoiceField(
         choices=((år, str(år)) for år in range(date.today().year, date.today().year-10, -1)),
     )
+
+
+class G69CodeExportForm(G69KodeForm, forms.ModelForm):
+    class Meta:
+        model = G69CodeExport
+        fields = ('år',)
