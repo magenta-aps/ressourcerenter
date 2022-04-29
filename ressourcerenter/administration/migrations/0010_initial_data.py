@@ -70,22 +70,19 @@ def create_produkttype_subtype(apps, parent, navn_dk, navn_gl):
 
 
 def create_fiskearter(apps):
-
-    FiskeArt = apps.get_model('administration', 'FiskeArt')
-    if not FiskeArt.objects.exists():
-        create_fiskeart(apps, 'Makrel', 'Makrel', True, [1, 2])
-        create_fiskeart(apps, 'Sild', 'Sild', True, [1, 2])
-        create_fiskeart(apps, 'Lodde', 'Lodde', True, [1, 2])
-        create_fiskeart(apps, 'Blåhvilling', 'Blåhvilling', True, [1, 2])
-        create_fiskeart(apps, 'Guldlaks', 'Guldlaks', True, [1, 2])
-        create_fiskeart(apps, 'Hellefisk', 'Hellefisk', False, [1, 2, 3])
-        create_fiskeart(apps, 'Torsk', 'Torsk', False, [1, 2])
-        create_fiskeart(apps, 'Kuller', 'Kuller', False, [1, 2])
-        create_fiskeart(apps, 'Sej', 'Sej', False, [1, 2])
-        create_fiskeart(apps, 'Rødfisk', 'Rødfisk', False, [1, 2])
-        create_fiskeart(apps, 'Reje - havgående licens', 'Reje - havgående licens', False, [1, 2])
-        create_fiskeart(apps, 'Reje - kystnær licens', 'Reje - kystnær licens', False, [1, 2])
-        create_fiskeart(apps, 'Reje - Svalbard og Barentshavet', 'Reje - Svalbard og Barentshavet', False, [1, 2])
+    create_fiskeart(apps, 'Makrel', 'Makrel', True, [1, 2])
+    create_fiskeart(apps, 'Sild', 'Sild', True, [1, 2])
+    create_fiskeart(apps, 'Lodde', 'Lodde', True, [1, 2])
+    create_fiskeart(apps, 'Blåhvilling', 'Blåhvilling', True, [1, 2])
+    create_fiskeart(apps, 'Guldlaks', 'Guldlaks', True, [1, 2])
+    create_fiskeart(apps, 'Hellefisk', 'Hellefisk', False, [1, 2, 3])
+    create_fiskeart(apps, 'Torsk', 'Torsk', False, [1, 2])
+    create_fiskeart(apps, 'Kuller', 'Kuller', False, [1, 2])
+    create_fiskeart(apps, 'Sej', 'Sej', False, [1, 2])
+    create_fiskeart(apps, 'Rødfisk', 'Rødfisk', False, [1, 2])
+    create_fiskeart(apps, 'Reje - havgående licens', 'Reje - havgående licens', False, [1, 2])
+    create_fiskeart(apps, 'Reje - kystnær licens', 'Reje - kystnær licens', False, [1, 2])
+    create_fiskeart(apps, 'Reje - Svalbard og Barentshavet', 'Reje - Svalbard og Barentshavet', False, [1, 2])
 
 
 def create_produkttyper(apps):
