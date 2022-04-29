@@ -1,11 +1,9 @@
 import uuid
 from django.test import TestCase, override_settings
-from indberetning.forms import VirksomhedsAddressForm, IndberetningsLinjeBeregningForm, IndberetningsLinjeSkema1Form, IndberetningsLinjeSkema2Form, IndberetningsLinjeSkema3Form
-from indberetning.models import Afgiftsperiode, SkemaType, ProduktType, Indhandlingssted
 from indberetning.forms import IndberetningsTypeSelectForm
-
-from administration.management.commands.create_initial_dataset import Command as initial_data_command
-from django.core import management
+from indberetning.forms import VirksomhedsAddressForm, IndberetningsLinjeBeregningForm, IndberetningsLinjeSkema1Form, \
+    IndberetningsLinjeSkema2Form, IndberetningsLinjeSkema3Form
+from indberetning.models import Afgiftsperiode, SkemaType, ProduktType, Indhandlingssted
 
 
 class CompanyContactTestForm(TestCase):
@@ -34,7 +32,6 @@ class IndberetningSelectTestForm(TestCase):
     Simulating that OpenId was used to login
     """
     def setUp(self) -> None:
-        management.call_command(initial_data_command())
         self.periode = Afgiftsperiode.objects.get(navn_dk='4. kvartal 2021')
         self.skema = SkemaType.objects.get(navn_dk='Havgående fartøjer og kystnære rejefartøjer - producerende fartøjer')
 
@@ -75,8 +72,7 @@ class BeregningslinjeTests(TestCase):
     """
 
     def setUp(self) -> None:
-        management.call_command(initial_data_command())
-        self.produkttype = ProduktType.objects.get(navn_dk='Blåhvilling, grønlandsk fartøj')
+        self.produkttype = ProduktType.objects.create(navn_dk='Blåhvilling, grønlandsk fartøj')
 
     def test_all_values_is_None(self):
         # All values missing
@@ -133,7 +129,6 @@ class IndberetningerTests(TestCase):
     """
     def setUp(self) -> None:
         self.cvr = '12345678'
-        management.call_command(initial_data_command())
         Indhandlingssted.objects.create(navn='test')
 
 

@@ -787,6 +787,6 @@ class G69DownloadView(BaseDetailView):
     model = G69CodeExport
 
     def render_to_response(self, context):
-        response = FileResponse(self.object.excel_file)
+        response = FileResponse(self.object.excel_file, as_attachment=True, filename='g69_koder.xlsx')
         # response['Content-Disposition'] = f"attachment; filename={self.object.år}.xlsx"
         return response

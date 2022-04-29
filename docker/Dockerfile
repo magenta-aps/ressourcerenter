@@ -4,11 +4,12 @@ ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.
     SUPERCRONIC_SHA1SUM=048b95b48b708983effb2e5c935a1ef8483d9e3e\
     PYTHONUNBUFFERED=1
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN mkdir /app && \
+RUN mkdir /app && mkdir -p /srv/media && \
 #gid/uid from salt
 groupadd -g 75090 -r ressourcerenter && \
 groupadd -g 75100 -r certificate_exporter && \
-useradd -u 75090 --no-log-init -r -g ressourcerenter -G certificate_exporter ressourcerenter
+useradd -u 75090 --no-log-init -r -g ressourcerenter -G certificate_exporter ressourcerenter && \
+chown ressourcerenter:ressourcerenter /srv/media
 # hadolint ignore=DL3008
 RUN apt-get update && \
     apt-get install -y --no-install-recommends gettext && \
