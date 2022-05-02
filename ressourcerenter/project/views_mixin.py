@@ -92,6 +92,6 @@ class ExcelMixin(object):
             yield row
 
     def render_to_response(self, context, **response_kwargs):
-        if self.request.GET.get('format') == 'xlsx':
+        if 'xlsx' in (self.request.GET.get('format'), self.request.POST.get('format')):
             return self.render_excel_file(context)
         return super().render_to_response(context, **response_kwargs)
