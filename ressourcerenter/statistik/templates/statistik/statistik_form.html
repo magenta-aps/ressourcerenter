@@ -4,7 +4,8 @@
 {% block content %}
 <h1>{% trans 'Statistik' %}</h1>
 
-<form method="get">
+<form method="post">
+    {% csrf_token %}
     <div id="statistik-form" class="mb-3 collapse {% if not form.is_valid %}show{% endif %}">
         {{ form.non_field_errors }}
         {% for field in form %}

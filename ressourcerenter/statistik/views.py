@@ -1,3 +1,4 @@
+from administration.models import Afgiftsperiode, FiskeArt
 from collections import OrderedDict
 from decimal import Decimal
 from django.db.models import Case, Value, When
@@ -5,14 +6,13 @@ from django.db.models import F, Sum
 from django.db.models.functions import Coalesce
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
-
-from administration.models import Afgiftsperiode, FiskeArt
+from django.views.generic import FormView
 from indberetning.models import IndberetningLinje
-from project.views_mixin import ExcelMixin, GetFormView
+from project.views_mixin import ExcelMixin
 from statistik.forms import StatistikForm
 
 
-class StatistikView(ExcelMixin, GetFormView):
+class StatistikView(ExcelMixin, FormView):
     form_class = StatistikForm
     template_name = 'statistik/statistik_form.html'
     filename_base = 'statistik'
