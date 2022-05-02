@@ -23,30 +23,3 @@ class TestDafoConnection(TestCase):
             "landekode": "GL",
             "stedkode": 600,
         }, result)
-
-    def test_lookup_person_info(self):
-        """
-        Call the dafo-client to get a personinfo
-        """
-        dafo_client = DatafordelerClient.from_settings()
-        result = dafo_client.get_person_information('1111111111')
-        self.assertEqual({
-            "cprNummer": "1111111111",
-            "fornavn": "Anders",
-            "efternavn": "And",
-            "statsborgerskab": 5100,
-            "myndighedskode": 957,
-            "adresse": "Imaneq 32A, 3.",
-            "postnummer": 3900,
-            "landekode": "GL"
-        }, result)
-
-    def test_lookup_person_ownerinfo(self):
-        """
-        Call the dafo-client to get a personinfo
-        """
-        dafo_client = DatafordelerClient.from_settings()
-        result = dafo_client.get_owner_information('1234567890')
-        self.assertEqual([
-            12345678
-        ], result)

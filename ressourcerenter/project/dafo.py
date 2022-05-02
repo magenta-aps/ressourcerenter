@@ -7,7 +7,6 @@ class DatafordelerClient(object):
     combined_service_page_size = 400
 
     def __init__(self, mock=None, client_header=None, service_header_cvr=None,
-                 service_header_cpr=None, uxp_service_owned_by=None,
                  certificate=None, private_key=None, url=None, root_ca=True, timeout=10):
 
         self._mock = mock
@@ -15,8 +14,6 @@ class DatafordelerClient(object):
         if not self._mock:
             self._client_header = client_header
             self._service_header_cvr = service_header_cvr
-            self._service_header_cpr = service_header_cpr
-            self._uxp_service_owned_by = uxp_service_owned_by
             self._cert = (certificate, private_key)
             self._root_ca = root_ca
             self._url = url
@@ -51,35 +48,6 @@ class DatafordelerClient(object):
             }
         else:
             return self._get(str(cvr).zfill(8), self._service_header_cvr)
-
-    def get_person_information(self, cpr):
-        """
-        Lookup address information for cpr
-        """
-        if self._mock:
-            return {
-                "cprNummer": "1111111111",
-                "fornavn": "Anders",
-                "efternavn": "And",
-                "statsborgerskab": 5100,
-                "myndighedskode": 957,
-                "adresse": "Imaneq 32A, 3.",
-                "postnummer": 3900,
-                "landekode": "GL"
-            }
-        else:
-            return self._get(str(cpr).zfill(10), self._service_header_cpr)
-
-    def get_owner_information(self, cpr):
-        """
-        Lookup owner information for cpr
-        """
-        if self._mock:
-            return [
-                12345678
-            ]
-        else:
-            return self._get(cpr, self._uxp_service_owned_by)
 
     def _get(self, number, service_header):
         url = urljoin(self._url, number)
