@@ -2,7 +2,6 @@ import datetime
 import random
 from administration.models import Afgiftsperiode, BeregningsModel2021, SkemaType
 from decimal import Decimal
-from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db.utils import IntegrityError
 from django.utils import timezone
@@ -12,12 +11,12 @@ from indberetning.models import Indberetning, Virksomhed, IndberetningLinje, Ind
 class Command(BaseCommand):
     help = 'Create sample data only for development environments'
 
-    def handle(self, *args, **options):
-        if settings.DEBUG is False:
-            print('DEBUG needs to be True (dev-environment)')
-            return
+    def add_arguments(self, parser):
+        parser.add_argument('cvr', type=str)
 
-        virksomhed, _ = Virksomhed.objects.update_or_create(cvr='12345678', defaults={'navn': 'Testvirksomhed'})
+    def handle(self, *args, **options):
+
+        virksomhed, _ = Virksomhed.objects.get_or_create(cvr=options['cvr'], defaults={'navn': 'Testvirksomhed'})
 
         try:
             beregningsmodel = BeregningsModel2021.objects.create(
@@ -29,12 +28,8 @@ class Command(BaseCommand):
             beregningsmodel.transport_afgift_rate = Decimal(1)
             beregningsmodel.save()
 
-        indhandlingssteder = []
-        for navn, stedkode in (('Nuuk', 1111), ('Sisimiut', 2222), ('Ilulissat', 3333)):
-            sted, _ = Indhandlingssted.objects.get_or_create(navn=navn, defaults={'stedkode': stedkode})
-            indhandlingssteder.append(sted)
-
-        indberetninger_exist = Indberetning.objects.exists()
+        indhandlingssteder = Indhandlingssted.objects.all()
+        indberetninger_exist = virksomhed.indberetning_set.exists()
 
         for periode in Afgiftsperiode.objects.all():
             periode.beregningsmodel = beregningsmodel
@@ -74,8 +69,8 @@ class Command(BaseCommand):
                         # Two types of product types, identified by pelagisk true/false
                         # Two types of trading, identified by whether trading is done from a boat or on land
                         for indhandlingssted, fartoej_navn, pelagisk in (
-                            (indhandlingssteder[0], None, True),
-                            (indhandlingssteder[1], None, False),
+                            (random.choice(indhandlingssteder), None, True),
+                            (random.choice(indhandlingssteder), None, False),
                             (None, 'Systemoprettet fartøj', True),
                             (None, 'Systemoprettet fartøj', False),
                         ):
@@ -104,7 +99,7 @@ class Command(BaseCommand):
                                                                          produkttype=produkttype)
 
                     if skematype.id == 3:
-                        sted = indhandlingssteder[2]
+                        sted = random.choice(indhandlingssteder)
                         indberetning = Indberetning.objects.create(skematype=skematype,
                                                                    virksomhed=virksomhed,
                                                                    afgiftsperiode=periode,

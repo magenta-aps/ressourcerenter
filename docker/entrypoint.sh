@@ -26,7 +26,7 @@ if [ "$MAKE_MIGRATIONS" = true ] || [ "$MIGRATE" = true ] || [ "$ADMIN_USER" = t
   fi
   if [ "$SAMPLE_DATA" = true ]; then
     echo "Generating sample data"
-    python manage.py create_sample_data
+    python manage.py create_sample_data 12345678
   fi
 fi
 exec "$@"
