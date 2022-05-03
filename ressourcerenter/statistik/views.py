@@ -34,15 +34,13 @@ class StatistikView(ExcelMixin, FormView):
                 return x[1]
 
     def get_resultat(self, form):
-        # Output is a table containing a series of identifier colums with
+        # Output is a table containing a series of identifier columns with
         # search/grouping criteria and their values. The columns for year
         # and quarter will always be present, other identifier columns depend
         # on the user having picked at least one value for that field.
-        # The last two columns in the table will always be enhed/unit and
-        # værdi/value. The value column will contain the aggregated Sum of the
-        # value specified by the unit column, grouped over the identifying columns.
-        # Identifying columns will only output their value if it has changed from
-        # the previous row or if the column to the left of it has output a value.
+        # The last columns in the table will always be the selected values;
+        # ie. the aggregated Sum of the value specified by the unit column,
+        # grouped over the identifying columns.
         annotations = {}
 
         grouping_fields = OrderedDict()
@@ -110,8 +108,7 @@ class StatistikView(ExcelMixin, FormView):
             annotations['afgift_tkr'] = Sum('fangstafgift__afgift')
 
         headings = [form.fields[x].label for x in grouping_fields.keys()]
-        headings.append(form.fields['enhed'].label)
-        headings.append(_('Værdi'))
+        headings += [self.display_enhed(enhed) for enhed in enheder]
 
         qs = qs.values(*grouping_fields.values()).annotate(**annotations).order_by(
             *grouping_fields.values()
@@ -123,55 +120,25 @@ class StatistikView(ExcelMixin, FormView):
             'indberetning__afgiftsperiode__dato_fra__month': self.display_kvartal
         }
 
-        last_row = [''] * len(grouping_fields)
-
-        # Identifier value for "enhed" field
-        last_row.append('')
-
-        number_of_identifiers = len(last_row)
-
         result = []
 
         for db_row_dict in qs:
-            new_rows = []
 
             # Add values from grouping fields
             new_row_identifiers = []
             for key in grouping_fields.values():
                 value = db_row_dict.get(key)
-
                 if key in translators:
                     value = translators[key](value)
-
                 new_row_identifiers.append(value)
 
+            row = new_row_identifiers
             # Add value for selected enhed and the sum for that enhed/unit
-            for enhed in form.cleaned_data['enhed']:
+            for enhed in enheder:
                 value = db_row_dict.get(enhed) or 0
-                unit_and_value = [
-                    self.display_enhed(enhed),
-                    value/1000
-                ]
-                new_rows.append(new_row_identifiers + unit_and_value)
+                row.append(value/1000)
 
-            for new_row in new_rows:
-                output_rest_of_identifiers = False
-                output_values = []
-                # Set values to empty string if they are the same
-                # as in the previous row
-                for index in range(number_of_identifiers):
-                    value = new_row[index]
-                    if output_rest_of_identifiers or value != last_row[index]:
-                        output_values.append(value)
-                        output_rest_of_identifiers = True
-                    else:
-                        output_values.append('')
-
-                # Append the last column, containing the value
-                output_values.append(new_row[number_of_identifiers])
-
-                result.append(output_values)
-                last_row = new_row
+            result.append(row)
 
         return {
             'headings': headings,
