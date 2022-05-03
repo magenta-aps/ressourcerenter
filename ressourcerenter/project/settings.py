@@ -160,8 +160,6 @@ DAFO = {
     'private_key': '/ssl/kas+ressourcerenter.key',
     'root_ca': '/ssl/pitu_ca.cert',
     'service_header_cvr': os.environ.get('PITU_UXP_SERVICE_CVR'),
-    'service_header_cpr': os.environ.get('PITU_UXP_SERVICE_CPR'),
-    'uxp_service_owned_by': os.environ.get('PITU_UXP_SERVICE_OWNED_BY'),
     'client_header': os.environ.get('PITU_UXP_CLIENT'),
     'url': os.environ.get('PITU_URL'),
 }
