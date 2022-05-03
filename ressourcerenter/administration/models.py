@@ -10,7 +10,7 @@ from django.db.models import Max
 from django.db.models.signals import pre_save, post_save, m2m_changed
 from django.utils import timezone
 from django.utils.translation import gettext as _, get_language
-from io import StringIO
+from io import BytesIO
 from itertools import chain
 from math import ceil
 from openpyxl import Workbook
@@ -589,8 +589,8 @@ class Prisme10QBatch(models.Model):
                 }
                 filename_10q = "KAS_10Q_export_{}.10q".format(timezone.now().strftime('%Y-%m-%dT%H-%M-%S'))
                 filename_g69 = "KAS_G69_export_{}.g69".format(timezone.now().strftime('%Y-%m-%dT%H-%M-%S'))
-                put_file_in_prisme_folder(connection_settings, StringIO(content_10q), destination_folder, filename_10q)
-                put_file_in_prisme_folder(connection_settings, StringIO(content_g69), destination_folder, filename_g69)
+                put_file_in_prisme_folder(connection_settings, BytesIO(content_10q.encode('utf-8')), destination_folder, filename_10q)
+                put_file_in_prisme_folder(connection_settings, BytesIO(content_g69.encode('utf-8')), destination_folder, filename_g69)
                 self.leveret_af = user
                 self.leveret_tidspunkt = timezone.now()
 
@@ -841,12 +841,14 @@ class G69Code(models.Model):
             fangsttyper = produkttype.available_fangsttyper
             for sted in Indhandlingssted.objects.all():
                 for fangsttype in fangsttyper:
-                    G69Code.objects.get_or_create(
+                    code, _ = G69Code.objects.get_or_create(
                         år=år,
                         produkttype=produkttype,
                         fangsttype=fangsttype,
                         sted=sted
                     )
+                    code.update_kode()
+                    code.save()
 
     @staticmethod
     def get_spreadsheet_headers():
