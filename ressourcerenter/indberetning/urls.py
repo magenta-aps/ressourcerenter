@@ -2,7 +2,7 @@ from django.urls import path, include
 from indberetning.views import CreateIndberetningCreateView, IndberetningsListView, \
     SelectIndberetningsType, LoginView, LoginCallbackView, Frontpage, \
     LogoutView, LogoutCallback, VirksomhedUpdateView, UpdateIndberetningsView, BilagDownloadView, \
-    IndberetningCalculateJsonView
+    IndberetningCalculateJsonView, MetadataView
 from indberetning.apps import IndberetningConfig
 app_name = IndberetningConfig.name
 
@@ -21,6 +21,5 @@ urlpatterns = [
     path('login/callback/', LoginCallbackView.as_view(), name='login-callback'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('logout/callback/', LogoutCallback.as_view(), name='logout-callback'),
-
-    path('saml/', include('django_saml.urls')),
+    path('metadata/', MetadataView.as_view(), name='metadata'),
 ]

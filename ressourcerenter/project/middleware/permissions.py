@@ -14,6 +14,7 @@ class PermissionMiddleware:
         self._administrator_logout_url = reverse('administration:logout')
         self._administrator_postlogin_url = reverse('administration:postlogin')
         self._indberetning_callback_url = reverse('indberetning:login-callback')
+        self._indberetning_metadata_url = reverse('indberetning:metadata')
         login_provider = import_string(settings.LOGIN_PROVIDER_CLASS)
         self._login_provider = login_provider.from_settings()
 
@@ -28,13 +29,10 @@ class PermissionMiddleware:
         if request.path in (self._administrator_login_url,
                             self._indberetning_login_url,
                             self._indberetning_callback_url,
+                            self._indberetning_metadata_url,
                             self._administrator_logout_url,
                             self._administrator_postlogin_url,
                             ):
-            return None
-
-        print(request.path)
-        if request.path.startswith('/indberetning/saml/'):
             return None
 
         app_name = request.resolver_match.app_name

@@ -1,5 +1,7 @@
 <?php
-// These attributes mimic those of Azure AD.
+
+# Her opsættes demobrugere og deres data
+
 $test_user_base = array(
     'http://schemas.microsoft.com/identity/claims/tenantid' => 'ab4f07dc-b661-48a3-a173-d0103d6981b2',
     'http://schemas.microsoft.com/identity/claims/objectidentifier' => '',
@@ -15,7 +17,7 @@ $test_user_base = array(
 
 $config = array(
     'admin' => array(
-        'core:AdminPassword',
+        'core:AdminPassword',''
     ),
     'example-userpass' => array(
         'exampleauth:UserPass',
@@ -25,15 +27,26 @@ $config = array(
             'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress' => 'user1@example.com',
             'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname' => 'Taro',
             'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname' => 'User1',
-            'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name' => 'user1@example.com'
-        )),
-        'user2:password' => array_merge($test_user_base, array(
-            'http://schemas.microsoft.com/identity/claims/objectidentifier' => 'f2a94916-2fcb-4b68-9eb1-5436309006a3',
-            'http://schemas.microsoft.com/identity/claims/displayname' => 'User2 Taro',
-            'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress' => 'user2@example.com',
-            'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname' => 'Taro',
-            'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname' => 'User2',
-            'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name' => 'user2@example.com'
+            'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name' => 'user1@example.com',
+
+            # Claims fra OIOSAML
+            'https://data.gov.dk/model/core/specVersion' => 'OIO-SAML-3.0',
+            'https://data.gov.dk/concept/core/nsis/loa' => 'Substantial',
+            'https://data.gov.dk/concept/core/nsis/ial' => 'Substantial',
+            'https://data.gov.dk/concept/core/nsis/aal' => 'High',
+            'https://data.gov.dk/model/core/eid/fullName' => 'Anders And',
+            'https://data.gov.dk/model/core/eid/firstName' => 'Anders',
+            'https://data.gov.dk/model/core/eid/lastName' => 'And',
+            'https://data.gov.dk/model/core/eid/email' => 'anders@andeby.dk',
+            'https://data.gov.dk/model/core/eid/cprNumber' => '1234567890',
+            'https://data.gov.dk/model/core/eid/age' => '60',
+            'https://data.gov.dk/model/core/eid/cprUuid' => 'urn:uuid:323e4567-e89b-12d3-a456-
+426655440000',
+            'https://data.gov.dk/model/core/eid/professional/cvr' => '12345678',
+            'https://data.gov.dk/model/core/eid/professional/orgName' => 'Joakim von Ands pengetank',
+            'https://data.gov.dk/model/core/eid/professional/productionUnit' => '8888888888',
+            'https://data.gov.dk/model/core/eid/professional/seNumber' => '77777777',
+            'https://data.gov.dk/model/core/eid/professional/authorizedToRepresent' => '66666666',
         )),
     )
 );

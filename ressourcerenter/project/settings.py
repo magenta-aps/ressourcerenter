@@ -57,7 +57,6 @@ MIDDLEWARE = [
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
-    'django_saml.backends.SamlUserBackend',
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -143,7 +142,7 @@ LOGIN_URL = 'administration:login'
 
 LOGOUT_REDIRECT_URL = 'administration:login'
 LOGIN_REDIRECT_URL = 'administration:postlogin'
-LOGIN_PROVIDER_CLASS = 'indberetning.login.openid.OpenId'
+LOGIN_PROVIDER_CLASS = 'indberetning.login.saml.OIOSaml'
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
@@ -160,22 +159,25 @@ OPENID = {
     'login_callback_url': os.environ.get('OPENID_LOGIN_CALLBACK')
 }
 
-SAML_SP = {
-    "entityId": "http://localhost:8000/indberetning/saml/metadata/",
-    "assertionConsumerService": {
-        "url": "https://localhost:8000/indberetning/saml/acs/",
-        # DO NOT CHANGE THIS
-        "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
-    },
-    "singleLogoutService": {
-        "url": "http://localhost:8000/indberetning/saml/sls/",
-        # DO NOT CHANGE THIS
-        "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-    },
-    "NameIDFormat": "urn:oasis:names:tc:SAML:2.0:nameid-format:unspecified",
-    "x509cert": "/ssl/sp/certificate.pem",
-    "privateKey": "/ssl/sp/key.pem"
-}
+SAML = {}
+
+with open("/ssl/sp/certificate.pem", "r") as certfile, open("/ssl/sp/key.pem", "r") as keyfile:
+    SAML_SP = {
+        "entityId": "http://localhost:8000/indberetning/metadata/",
+        "assertionConsumerService": {
+            "url": "http://localhost:8000/indberetning/login/callback/",
+            # DO NOT CHANGE THIS
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+        },
+        "singleLogoutService": {
+            "url": "http://localhost:8000/indberetning/logout/callback/",
+            # DO NOT CHANGE THIS
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+        },
+        "NameIDFormat": "urn:oasis:names:tc:SAML:2.0:nameid-format:unspecified",
+        "x509cert": certfile.read(),
+        "privateKey": keyfile.read(),
+    }
 
 with open("/ssl/idp/server.crt", "r") as certfile:
     SAML_IDP = {
@@ -195,6 +197,9 @@ SAML_STRICT = False
 SAML_DEBUG = True
 SAML_CREATE_USER = True
 SAML_USERNAME_ATTR = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'
+SAML_DESTINATION_HOST = None
+SAML_DESTINATION_HTTPS = None
+SAML_DESTINATION_PORT = None
 
 
 DAFO = {

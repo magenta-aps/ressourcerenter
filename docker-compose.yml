@@ -16,10 +16,6 @@ services:
       - ./ressourcerenter/:/app
       - ./data/:/srv/media
       - ./dev-environment/cert:/ssl:ro
-      - ./dev-environment/override/auth.py:/usr/local/lib/python3.8/site-packages/onelogin/saml2/auth.py
-      - ./dev-environment/override/response.py:/usr/local/lib/python3.8/site-packages/onelogin/saml2/response.py
-      - ./dev-environment/override/backends.py:/usr/local/lib/python3.8/site-packages/django_saml/backends.py
-      - ./dev-environment/override/compiled:/usr/local/lib/python3.8/site-packages/onelogin/saml2/__pycache__
     environment:
       - MAKE_MIGRATIONS=true
     command: gunicorn --bind=0.0.0.0:8000 project.wsgi:application --reload --workers=1 --access-logfile - --error-logfile - --capture-output
@@ -56,10 +52,10 @@ services:
     ports:
       - "8888:8080"
     environment:
-      SIMPLESAMLPHP_SP_ENTITY_ID: http://localhost:8000/indberetning/saml/metadata/
+      SIMPLESAMLPHP_SP_ENTITY_ID: http://localhost:8000/indberetning/metadata/
       # SIMPLESAMLPHP_SP_ENTITY_ID: http://aalisakkat.aka.nanoq.gl
-      SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE: http://localhost:8000/indberetning/saml/acs
-      SIMPLESAMLPHP_SP_SINGLE_LOGOUT_SERVICE: http://localhost:8000/indberetning/saml/logout
+      SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE: http://localhost:8000/indberetning/login/callback/
+      SIMPLESAMLPHP_SP_SINGLE_LOGOUT_SERVICE: http://localhost:8000/indberetning/logout/callback/
       #SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE: http://localhost:8888/simplesaml/module.php/saml/sp/saml2-acs.php/example-userpass
       #SIMPLESAMLPHP_SP_SINGLE_LOGOUT_SERVICE: http://localhost:8888/simplesaml/module.php/saml/sp/saml2-logout.php/example-userpass
 
