@@ -12,7 +12,7 @@ useradd -u 75090 --no-log-init -r -g ressourcerenter -G certificate_exporter res
 chown ressourcerenter:ressourcerenter /srv/media
 # hadolint ignore=DL3008
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gettext && \
+    apt-get install -y --no-install-recommends gettext libxml2-dev libxmlsec1-dev libxmlsec1-openssl && \
     apt-get clean && rm -rf /var/lib/apt/lists/* \
     && curl -fsSLO "$SUPERCRONIC_URL" \
     && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \

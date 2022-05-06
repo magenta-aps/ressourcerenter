@@ -33,6 +33,10 @@ class PermissionMiddleware:
                             ):
             return None
 
+        print(request.path)
+        if request.path.startswith('/indberetning/saml/'):
+            return None
+
         app_name = request.resolver_match.app_name
 
         if app_name == 'indberetning':

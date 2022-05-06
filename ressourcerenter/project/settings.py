@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'indberetning',
     'statistik',
     'watchman',
+    'django_saml'
 ]
 
 MIDDLEWARE = [
@@ -52,6 +53,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
+]
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'django_saml.backends.SamlUserBackend',
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -153,6 +159,43 @@ OPENID = {
     'post_logout_redirect_uri': os.environ.get('OPENID_POST_LOGOUT_REDIRECT_URI'),
     'login_callback_url': os.environ.get('OPENID_LOGIN_CALLBACK')
 }
+
+SAML_SP = {
+    "entityId": "http://localhost:8000/indberetning/saml/metadata/",
+    "assertionConsumerService": {
+        "url": "https://localhost:8000/indberetning/saml/acs/",
+        # DO NOT CHANGE THIS
+        "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+    },
+    "singleLogoutService": {
+        "url": "http://localhost:8000/indberetning/saml/sls/",
+        # DO NOT CHANGE THIS
+        "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+    },
+    "NameIDFormat": "urn:oasis:names:tc:SAML:2.0:nameid-format:unspecified",
+    "x509cert": "/ssl/sp/certificate.pem",
+    "privateKey": "/ssl/sp/key.pem"
+}
+
+with open("/ssl/idp/server.crt", "r") as certfile:
+    SAML_IDP = {
+        "entityId": "http://localhost:8888/simplesaml/saml2/idp/metadata.php",
+        "singleSignOnService": {
+            "url": "http://localhost:8888/simplesaml/saml2/idp/SSOService.php",
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+        },
+        "singleLogoutService": {
+            "url": "http://localhost:8888/simplesaml/saml2/idp/SingleLogoutService.php",
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+        },
+        "x509cert": certfile.read(),
+    }
+SAML_LOGIN_REDIRECT = '/indberetning/'
+SAML_STRICT = False
+SAML_DEBUG = True
+SAML_CREATE_USER = True
+SAML_USERNAME_ATTR = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'
+
 
 DAFO = {
     'mock': strtobool(os.environ.get('PITU_MOCK', 'False')),
