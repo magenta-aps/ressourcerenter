@@ -63,9 +63,9 @@ class Saml2:
             redirect_to = OneLogin_Saml2_Utils.get_self_url(req) + settings.SAML_LOGIN_REDIRECT
         url = saml_auth.login(redirect_to)
         request.session['AuthNRequestID'] = saml_auth.get_last_request_id()
-        return url
+        return HttpResponseRedirect(url)
 
-    def handle_login_callback(self, request):
+    def handle_login_callback(self, request, success_url, failure_url):
         """Handle an AuthenticationResponse from the IdP."""
         if request.method != 'POST':
             return HttpResponse('Method not allowed.', status=405)
@@ -100,7 +100,7 @@ class Saml2:
                     url = saml_auth.redirect_to(req['post_data']['RelayState'])
                     return HttpResponseRedirect(url)
                 else:
-                    return HttpResponseRedirect(settings.SAML_LOGIN_REDIRECT)
+                    return HttpResponseRedirect(success_url)
             logger.exception(saml_auth.get_last_error_reason())
             return HttpResponse(content="Invalid Response", status=400)
         except PermissionDenied:
@@ -127,7 +127,7 @@ class Saml2:
             return_to=OneLogin_Saml2_Utils.get_self_url(req) + settings.SAML_LOGOUT_REDIRECT
         )
         request.session['LogoutRequestID'] = saml_auth.get_last_request_id()
-        return url
+        return HttpResponseRedirect(url)
 
     def handle_logout_callback(self, request):
         """Handle a LogoutResponse from the IdP."""

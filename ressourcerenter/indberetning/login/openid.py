@@ -1,7 +1,7 @@
 import logging
-
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from jwkest.jwk import rsa_load
 from oic.oauth2 import ErrorResponse
@@ -95,7 +95,8 @@ class OpenId:
         request.session['oid_state'] = state
         request.session['oid_nonce'] = nonce
         auth_req = self._oic_client.construct_AuthorizationRequest(request_args=request_args)
-        return auth_req.request(self._oic_client.authorization_endpoint)
+        url = auth_req.request(self._oic_client.authorization_endpoint)
+        return HttpResponseRedirect(url)
 
     @staticmethod
     def _clear_secrets(session):
@@ -142,7 +143,7 @@ class OpenId:
             return None
         return access_token_dictionary
 
-    def handle_login_callback(self, request):
+    def handle_login_callback(self, request, success_url, failure_url):
         """
         Handle the oauth callback after the user logged in.
         Should populate the session with claims data such as cpr and cvr number.
@@ -167,7 +168,7 @@ class OpenId:
                     'nemid-login-id': '1f1738c6-90b4-4d81-8f0d-912f6c9c4f5b',
                     'sub': 'digitalimik:b6f68479-ece3-464c-a4f4-a8d32c3ab172'
                 }
-                return True
+                return HttpResponseRedirect(success_url)
 
             self._oic_client.store_registration_info({'client_id': self._client_id,
                                                       'token_endpoint_auth_method': 'private_key_jwt'})
@@ -197,9 +198,9 @@ class OpenId:
                     request.session['id_token'] = access_token_dictionary['id_token']
                     request.session['raw_id_token'] = access_token_response['id_token'].jwt
                     self._clear_secrets(request.session)
-                    return True
+                    return HttpResponseRedirect(success_url)
         self._clear_secrets(request.session)
-        return False
+        return HttpResponseRedirect(failure_url)
 
     def logout(self, request):
         if self._mock:
@@ -224,9 +225,9 @@ class OpenId:
             },
             id_token=request.session['id_token']
         )
-        logout_url = auth_req.request(self._logout_uri)
+        url = auth_req.request(self._logout_uri)
         self.clear_session(request.session)
-        return logout_url
+        return HttpResponseRedirect(url)
 
     def handle_logout_callback(self, request):
         if self._mock:
@@ -234,9 +235,14 @@ class OpenId:
         their_sid = request.GET.get('sid')
         our_sid = request.session.get('id_token', {}).get('sid', None)
         if their_sid is None or our_sid is None or their_sid != our_sid:
-            logger.error(SuspiciousOperation('sid for logout do not match our_sid: %s, their_sid: %s' % (our_sid,
-                                                                                                         their_sid)))
-            return
-        # according to the specs this is rendered in a iframe when the user triggers a logout from OP`s side
-        # do a total cleanup and delete everything related to openID
-        self.clear_session(request.session)
+            logger.error(
+                SuspiciousOperation('sid for logout do not match our_sid: %s, their_sid: %s' % (our_sid, their_sid))
+            )
+        else:
+            # according to the specs this is rendered in a iframe when the user triggers a logout from OP`s side
+            # do a total cleanup and delete everything related to openID
+            self.clear_session(request.session)
+        return HttpResponse("")
+
+    def metadata(self, request):
+        return HttpResponse("")

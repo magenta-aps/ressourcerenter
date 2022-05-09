@@ -354,31 +354,34 @@ class IndberetningCalculateJsonView(MultipleFormView):
 
 class LoginView(View):
     def get(self, request):
-        # Setup the oauth login url and redirect the browser to it.
         provider = LoginProvider.from_settings()
         request.session['login_method'] = provider.name
-        return HttpResponseRedirect(provider.login(request))
+        return provider.login(request)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class LoginCallbackView(View):
     def get(self, request):
         provider = LoginProvider.from_settings()
-        if provider.handle_login_callback(request=request):
-            # if the call back was successfully, redirect to frontpage
-            return HttpResponseRedirect(reverse('indberetning:frontpage'))
-        return HttpResponseRedirect(reverse('indberetning:login'))
+        return provider.handle_login_callback(
+            request=request,
+            success_url=reverse('indberetning:frontpage'),
+            failure_url=reverse('indberetning:login')
+        )
 
     def post(self, request, *args, **kwargs):
         provider = LoginProvider.from_settings()
-        response = provider.handle_login_callback(request=request)
-        return response
+        return provider.handle_login_callback(
+            request=request,
+            success_url=reverse('indberetning:frontpage'),
+            failure_url=reverse('indberetning:login')
+        )
 
 
 class LogoutView(View):
     def get(self, request):
         provider = LoginProvider.from_settings()
-        return HttpResponseRedirect(provider.logout(request))
+        return provider.logout(request)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -387,13 +390,11 @@ class LogoutCallback(View):
     @xframe_options_exempt
     def get(self, request):
         provider = LoginProvider.from_settings()
-        provider.handle_logout_callback(request)
-        return HttpResponse("")
+        return provider.handle_logout_callback(request)
 
     def post(self, request, *args, **kwargs):
         provider = LoginProvider.from_settings()
-        provider.handle_logout_callback(request)
-        return HttpResponse("")
+        return provider.handle_logout_callback(request)
 
 
 class MetadataView(View):
