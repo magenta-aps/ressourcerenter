@@ -150,13 +150,16 @@
             <td>{{form.empty_form.fartøj_navn}}</td>
             {% endif %}
             <td>{{form.empty_form.produkttype}}</td>
+            {% if skema.id != 3 %}
             <td>{{form.empty_form.produktvægt}}</td>
+            {% endif %}
             <td>{{form.empty_form.levende_vægt}}</td>
             <td>{{form.empty_form.salgspris}}</td>
             <td>
-                {% if form.empty_form.transporttillæg %}
+                {% if skema.id == 1 %}
                 {{form.empty_form.transporttillæg}}
-                {% elif form.empty_form.bonus %}
+                {% endif %}
+                {% if skema.id == 2 or skema.id == 3 %}
                 {{form.empty_form.bonus}}
                 {% endif %}
             </td>

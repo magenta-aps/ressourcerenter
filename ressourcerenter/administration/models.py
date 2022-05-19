@@ -164,12 +164,15 @@ class ProduktType(NamedModel):
 
     @property
     def available_fangsttyper(self):
-        return filter(None, iter([
+        fangsttyper = list(filter(None, iter([
             'havgående' if self.aktivitetskode_havgående else None,
             'indhandling' if self.aktivitetskode_indhandling else None,
             'kystnært' if self.aktivitetskode_kystnært else None,
             'svalbard' if self.aktivitetskode_svalbard else None,
-        ]))
+        ])))
+        if self.gruppe is not None:
+            fangsttyper += self.gruppe.available_fangsttyper
+        return fangsttyper
 
     def get_aktivitetskode(self, fangsttype):
         if fangsttype == 'havgående':
@@ -696,7 +699,6 @@ class Faktura(models.Model):
                 'project_id': 'ALIS',
                 'user_number': 0,
                 'payment_type': 0,
-                'account_number': 0,
             }
         else:
             static_data = settings.PRISME_PUSH['fielddata']
@@ -714,7 +716,7 @@ class Faktura(models.Model):
             maskinnr=int(static_data['user_number']),
             eks_løbenr=self.id,
             post_dato=posteringsdato,
-            kontonr=int(static_data['account_number']),
+            kontonr=G69Code.for_indberetningslinje(linje).kode_int,
             beløb=self.beløb,
             is_cvr=True,
             ydelse_modtager=int(linje.indberetning.virksomhed.cvr),
@@ -799,13 +801,22 @@ class G69Code(models.Model):
     class Meta:
         unique_together = ['år', 'produkttype', 'sted', 'fangsttype']
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.kode:
+            self.update_kode()
+
     def update_kode(self):
-        self.kode = (''.join([
+        self.kode = ''.join([
             str(self.år).zfill(2)[-2:],
-            str(self.sted.stedkode)[-5:].zfill(5),
-            str(self.produkttype.fiskeart.kode).zfill(2),
-            str(self.produkttype.get_aktivitetskode(self.fangsttype)).zfill(6),
-        ])).zfill(15)
+            str(self.sted.stedkode)[-6:].zfill(6),
+            str(self.produkttype.fiskeart.kode)[-2:].zfill(2),
+            str(self.produkttype.get_aktivitetskode(self.fangsttype))[-5:].zfill(5),
+        ])
+
+    @property
+    def kode_int(self):
+        return int(self.kode)
 
     @staticmethod
     def update_kode_signal(sender, instance, **kwargs):
@@ -820,14 +831,14 @@ class G69Code(models.Model):
         return self.produkttype.fiskeart
 
     @staticmethod
-    def find_by_indberetningslinje(indberetningslinje):
+    def for_indberetningslinje(indberetningslinje):
         sted = indberetningslinje.indhandlingssted
         if sted is None:
-            sted = indberetningslinje.indberetning.virksomhed.sted  # TODO: find ud fra CVR
+            sted = indberetningslinje.indberetning.virksomhed.sted
         produkttype = indberetningslinje.produkttype
         while produkttype.gruppe:
             produkttype = produkttype.gruppe
-        return G69Code.objects.get(
+        return G69Code(
             år=indberetningslinje.indberetningstidspunkt.year,
             produkttype=produkttype,
             sted=sted,
@@ -835,20 +846,23 @@ class G69Code(models.Model):
         )
 
     @staticmethod
-    def generate_for_year(år):
+    def for_year(år):
+        codes = []
         from indberetning.models import Indhandlingssted
         for produkttype in ProduktType.objects.all():
+            if produkttype.gruppe is not None:
+                continue
             fangsttyper = produkttype.available_fangsttyper
-            for sted in Indhandlingssted.objects.all():
-                for fangsttype in fangsttyper:
-                    code, _ = G69Code.objects.get_or_create(
-                        år=år,
-                        produkttype=produkttype,
-                        fangsttype=fangsttype,
-                        sted=sted
-                    )
-                    code.update_kode()
-                    code.save()
+            if len(fangsttyper):
+                for sted in Indhandlingssted.objects.all():
+                    for fangsttype in fangsttyper:
+                        codes.append(G69Code(
+                            år=år,
+                            produkttype=produkttype,
+                            fangsttype=fangsttype,
+                            sted=sted
+                        ))
+        return codes
 
     @staticmethod
     def get_spreadsheet_headers():
@@ -868,7 +882,8 @@ class G69Code(models.Model):
     def get_spreadsheet_raw(år, collapse=False):
         data = []
         collapsed_data = {}
-        for item in G69Code.objects.filter(år=år).order_by('kode', 'år', 'fangsttype'):
+        codes = G69Code.for_year(år)
+        for item in codes:
             row = {
                 "kode": item.kode,
                 "skatteår": item.år,
@@ -888,9 +903,13 @@ class G69Code(models.Model):
             else:
                 data.append(row)
 
+        if collapse:
+            data = list(collapsed_data.values())
+        data.sort(key=lambda c: (c['kode'], c['skatteår'], c['fangsttype']))
+
         return {
             'headers': G69Code.get_spreadsheet_headers(),
-            'data': collapsed_data.values() if collapse else data
+            'data': data
         }
 
     @staticmethod

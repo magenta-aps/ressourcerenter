@@ -6,12 +6,13 @@ from datetime import date
 from datetime import datetime
 from decimal import Decimal
 from django.contrib.auth import get_user_model
-from django.test import TransactionTestCase
+from django.test import TestCase
+from indberetning.models import Indhandlingssted
 from indberetning.models import Virksomhed, Indberetning, IndberetningLinje
 from tenQ.writer import G69TransactionWriter
 
 
-class FakturaTestCase(TransactionTestCase):
+class FakturaTestCase(TestCase):
 
     def setUp(self):
         super().setUp()
@@ -23,9 +24,10 @@ class FakturaTestCase(TransactionTestCase):
             fiskeart=self.fiskeart,
             fartoej_groenlandsk=False
         )
+        self.sted = Indhandlingssted.objects.get(navn='Nuuk')
 
     def test_text_split(self):
-        virksomhed = Virksomhed.objects.create(cvr=1234)
+        virksomhed = Virksomhed.objects.create(cvr=1234, sted=self.sted)
         periode = Afgiftsperiode(navn_dk='x'*200, dato_fra=date(2022, 1, 1), dato_til=date(2022, 3, 31))
         indberetning = Indberetning(afgiftsperiode=periode, skematype=self.skematype, virksomhed=virksomhed)
         linje = IndberetningLinje(
@@ -45,7 +47,7 @@ class FakturaTestCase(TransactionTestCase):
             self.assertFalse(len(line) > 60)
 
     def test_g69(self):
-        virksomhed = Virksomhed.objects.create(cvr=1234)
+        virksomhed = Virksomhed.objects.create(cvr=1234, sted=self.sted)
         betalingsdato = date(2022, 1, 1)
         beregningsmodel = BeregningsModel2021.objects.create(
             navn='FakturaTestBeregningsModel'
@@ -91,11 +93,8 @@ class FakturaTestCase(TransactionTestCase):
             periode=periode, linje=linje,
             opkrævningsdato=Faktura.get_opkrævningsdato(linje.indberetningstidspunkt.date())
         )
-        print("000G6900001000001NORFLYD&10300000&1040000001&11020220321&1110000000000&112000000100000 &113D&13203&1330000001234&153Makrel, 1. kvartal&2501\r\n"
-              "000G6900002000001NORFLYD&10300000&1040000001&11020220321&1110000000000&112000000100000 &113K&13203&1330000001234&153Makrel, 1. kvartal&2501"
-              )
         self.assertEquals(
             faktura.prismeG69_content(writer),
-            "000G6900001000001NORFLYD&10300000&1040000001&11020220321&1110000000000&112000000100000 &113D&13203&1330000001234&153Makrel, 1. kvartal&2501\r\n"
-            "000G6900002000001NORFLYD&10300000&1040000001&11020220321&1110000000000&112000000100000 &113K&13203&1330000001234&153Makrel, 1. kvartal&2501"
+            "000G6900001000001NORFLYD&10300000&1040000001&11020220321&111220104600110022&112000000100000 &113D&13203&1330000001234&153Makrel, 1. kvartal&2501\r\n"
+            "000G6900002000001NORFLYD&10300000&1040000001&11020220321&111220104600110022&112000000100000 &113K&13203&1330000001234&153Makrel, 1. kvartal&2501"
         )

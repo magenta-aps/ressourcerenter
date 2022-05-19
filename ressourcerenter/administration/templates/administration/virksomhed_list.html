@@ -14,6 +14,8 @@
             <th class="col-2">{% translate 'Kontaktperson' %}</th>
             <th class="col-2">{% translate 'Email' %}</th>
             <th class="col-2">{% translate 'Telefonnummer' %}</th>
+            <th class="col-2">{% translate 'Stedkode' %}</th>
+            <th class="col-2">{% translate 'Stednavn' %}</th>
             <th class="col-2"></th>
         </tr>
     </thead>
@@ -34,6 +36,12 @@
             </td>
             <td>
                 {{ object.kontakts_phone_nr }}
+            </td>
+            <td>
+                {{ object.sted.stedkode_str }}
+            </td>
+            <td>
+                {{ object.sted.navn }}
             </td>
             <td>
                 <a class="btn btn-primary" href="{% url 'administration:virksomhed-update' pk=object.pk %}">{% translate 'Redigér' %}</a>

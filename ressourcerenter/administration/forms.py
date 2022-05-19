@@ -194,18 +194,25 @@ class IndberetningLinjeKommentarFormSet(forms.BaseInlineFormSet):
         return by_produkttype.values()
 
 
+class StedkodeChoiceField(forms.ModelChoiceField):
+
+    def label_from_instance(self, sted):
+        return f"{sted.stedkode_str} - {sted.navn}"
+
+
 class VirksomhedForm(forms.ModelForm, BootstrapForm):
     class Meta:
         model = Virksomhed
-        fields = ('cvr', 'navn', 'kontakt_person', 'kontakt_email', 'kontakts_phone_nr', 'stedkode')
+        fields = ('cvr', 'navn', 'kontakt_person', 'kontakt_email', 'kontakts_phone_nr', 'sted')
         widgets = {
             'cvr': forms.TextInput(),
             'navn': forms.TextInput(),
             'kontakt_person': forms.TextInput(),
             'kontakt_email': forms.TextInput(),
             'kontakts_phone_nr': forms.TextInput(),
-            'stedkode': forms.NumberInput(),
         }
+
+    sted = StedkodeChoiceField(queryset=Indhandlingssted.objects.all().order_by('stedkode'))
 
 
 class StatistikForm(BootstrapForm):
