@@ -44,6 +44,14 @@ Lint Dockerfiles:
   script:
     - hadolint $CI_PROJECT_DIR/docker/Dockerfile
 
+Lint REUSE compliance:
+  extends: .lint-default
+  image:
+    name: fsfe/reuse:latest
+    entrypoint: [""]
+  script:
+    - reuse lint
+
 # Build stage
 #############
 
