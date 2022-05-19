@@ -79,8 +79,8 @@ class ExcelMixin(object):
             yield header_name
 
     def rows(self, form):
-        queryset = self.get_queryset().all()
-        for item in queryset:
+        items = self.get_queryset().all()
+        for item in items:
             row = []
             for header_name, data_path in self.excel_fields:
                 value = item

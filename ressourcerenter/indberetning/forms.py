@@ -118,7 +118,7 @@ class IndberetningsLinjeSkema2Form(NonPelagiskPrisRequired, IndberetningsLinjeFo
     bonus = LocalizedDecimalField(required=True)
     produktvægt = LocalizedDecimalField(required=True)
     fartøj_navn = CharField(widget=Select(attrs={'class': "js-boat-select form-control col-2 ", 'autocomplete': "off", 'style': 'width:100%'}))
-    indhandlingssted = ModelChoiceField(queryset=Indhandlingssted.objects.all())
+    indhandlingssted = ModelChoiceField(queryset=Indhandlingssted.objects.filter(aktiv_til_indhandling=True))
     kommentar = CharField(widget=Textarea(attrs={'class': 'single-line form-control'}), required=False)
 
     class Meta:
@@ -132,7 +132,7 @@ class IndberetningsLinjeSkema3Form(IndberetningsLinjeForm):
         required=True
     )
     bonus = LocalizedDecimalField(required=True)
-    indhandlingssted = ModelChoiceField(queryset=Indhandlingssted.objects.all())
+    indhandlingssted = ModelChoiceField(queryset=Indhandlingssted.objects.filter(aktiv_til_indhandling=True))
     kommentar = CharField(widget=Textarea(attrs={'class': 'single-line form-control'}), required=False)
 
     class Meta:

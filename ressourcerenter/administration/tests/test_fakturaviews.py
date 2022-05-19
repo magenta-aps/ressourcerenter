@@ -7,14 +7,15 @@ from decimal import Decimal
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from django.test import TransactionTestCase
+from django.test import TestCase
 from django.test import override_settings
 from django.urls import reverse
+from indberetning.models import Indhandlingssted
 from indberetning.models import Virksomhed, Indberetning, IndberetningLinje
 from unittest.mock import patch
 
 
-class PrismeTestCase(TransactionTestCase):
+class PrismeTestCase(TestCase):
 
     def setUp(self) -> None:
         self.username = 'test'
@@ -26,11 +27,12 @@ class PrismeTestCase(TransactionTestCase):
         self.user.groups.add(administration_group)
 
         self.skematyper = {
-            1: SkemaType.objects.create(id=1, navn_dk='Havgående'),
-            2: SkemaType.objects.create(id=2, navn_dk='Indhandlinger'),
-            3: SkemaType.objects.create(id=3, navn_dk='Kystnært')
+            1: SkemaType.objects.get(id=1),
+            2: SkemaType.objects.get(id=2),
+            3: SkemaType.objects.get(id=3)
         }
-        self.virksomhed = Virksomhed.objects.create(cvr=1234)
+        self.sted = Indhandlingssted.objects.get(navn='Nuuk')
+        self.virksomhed = Virksomhed.objects.create(cvr=1234, sted=self.sted)
         self.beregningsmodel = BeregningsModel2021.objects.create(navn='TestBeregningsModel')
         self.periode = Afgiftsperiode.objects.create(beregningsmodel=self.beregningsmodel, navn_dk='testperiode', dato_fra=date(2022, 1, 1), dato_til=date(2022, 3, 31))
 
@@ -53,13 +55,9 @@ class PrismeTestCase(TransactionTestCase):
             ('Guldlaks', 1, True, None, 0.15),
             ('Guldlaks', 1, False, None, 0.7),
         ]:
-            fiskeart = FiskeArt.objects.create(navn_dk=navn)
+            fiskeart = FiskeArt.objects.get(navn_dk=navn)
             skematype = self.skematyper[skematype_id]
             fiskeart.skematype.set([skematype])
-            ProduktType.objects.create(
-                fiskeart=fiskeart,
-                fartoej_groenlandsk=fartoej_groenlandsk
-            )
 
     @override_settings(PRISME_PUSH={**settings.PRISME_PUSH, 'mock': True})
     def test_fakturacreateview_notloggedin(self):

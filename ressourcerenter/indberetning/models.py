@@ -5,12 +5,10 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator
 from django.db import models, IntegrityError
 from django.db.models import Sum
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext as _
 from indberetning.validators import validate_cvr, validate_cpr
-from project.dafo import DatafordelerClient
-from requests.exceptions import ConnectTimeout
 from uuid import uuid4
 
 logger = logging.getLogger(__name__)
@@ -23,7 +21,7 @@ class Virksomhed(models.Model):
     kontakt_email = models.EmailField(default='', blank=True, verbose_name=_('Kontaktperson email'))
     kontakts_phone_nr = models.TextField(default='', blank=True, verbose_name=_('Kontaktperson telefonnr'))
     navn = models.TextField(verbose_name=_('Navn'), null=True)
-    stedkode = models.PositiveSmallIntegerField(null=True)
+    sted = models.ForeignKey('Indhandlingssted', null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         if self.navn:
@@ -31,37 +29,22 @@ class Virksomhed(models.Model):
         else:
             return f"CVR {self.cvr}"
 
-    def populate_stedkode(self, dafo_client=None, force_update=False):
-        if self.stedkode is None or force_update:
-            if dafo_client is None:
-                dafo_client = DatafordelerClient.from_settings()
-            result = dafo_client.get_company_information(self.cvr)
-            self.stedkode = result['stedkode']
-            return True
-
-    @staticmethod
-    def populate_stedkode_signal(sender, instance, **kwargs):
-        try:
-            instance.populate_stedkode()
-        except ConnectTimeout:
-            # Couldn't reach DAFO
-            logger.warn("Tried to update company from Dafo, got timeout")
-            pass
-
-
-pre_save.connect(Virksomhed.populate_stedkode_signal, Virksomhed, dispatch_uid='virksomhed_populate_stedkode')
-
 
 class Indhandlingssted(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid4)
     navn = models.TextField(null=False, unique=True)
-    stedkode = models.PositiveIntegerField(validators=[MaxValueValidator(99999)], unique=True)
+    stedkode = models.PositiveIntegerField(validators=[MaxValueValidator(999999)], unique=True)
+    aktiv_til_indhandling = models.BooleanField(default=True)
 
     def __str__(self):
         return self.navn
 
     class Meta:
         ordering = ('navn',)
+
+    @property
+    def stedkode_str(self):
+        return str(self.stedkode).zfill(6)
 
 
 navne_typer = (
