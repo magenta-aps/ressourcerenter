@@ -77,16 +77,17 @@
     const hide_text = "{% translate 'Skjul formular' %}";
     const toggle_button = $('#toggle-button');
     const form_button = $('#form-button');
-    $('#statistik-form').on('show.bs.collapse', function(e) {
+    const form = $('#statistik-form');
+    form.on('show.bs.collapse', function(e) {
         toggle_button.text(hide_text);
         form_button.show();
     })
-    $('#statistik-form').on('hide.bs.collapse', function(e) {
+    form.on('hide.bs.collapse', function(e) {
         toggle_button.text(show_text);
         form_button.hide();
     })
     const produkt_fiskeart_map = JSON.parse($('#produkt_fiskeart_map').text());
-    $('#statistik-form [name="fiskeart"]').on('change', function(){
+    const change_fiskeart = function(){
         const produkttyper = {};
         const fiskearter = $(this).val();
         for (let i in fiskearter) {
@@ -98,7 +99,15 @@
         }
         $('#statistik-form [name="produkttype"]').find('option').each(function (){
             $(this).toggle(this.value in produkttyper);
+            if (!(this.value in produkttyper)) {
+                $(this).prop("selected", false);
+            }
         });
+    };
+    fiskeart_field = $('#statistik-form [name="fiskeart"]');
+    fiskeart_field.on('change', change_fiskeart);
+    fiskeart_field.each(function() {
+        change_fiskeart.call(this);
     });
 </script>
 
