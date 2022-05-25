@@ -41,8 +41,11 @@ class PermissionMiddleware:
                 return redirect(self._indberetning_login_url)
         else:
             if not request.user.is_authenticated:
+                path = request.get_full_path()
+                if path == '/':
+                    path = reverse('administration:postlogin')
                 # user not logged in, but trying to access a page they must be logged in for.
-                return redirect_to_login(request.get_full_path(), self._administrator_login_url, 'next')
+                return redirect_to_login(path, self._administrator_login_url, 'next')
 
             if not request.user.groups.filter(name=request.resolver_match.app_name).exists():
                 # User is logged in, but has insufficient permissions
