@@ -1,9 +1,6 @@
 from administration.models import Afgiftsperiode, FiskeArt
-from collections import OrderedDict
-from decimal import Decimal
 from django.db.models import Case, Value, When
-from django.db.models import F, Sum
-from django.db.models.functions import Coalesce
+from django.db.models import Sum
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 from django.views.generic import FormView
@@ -43,9 +40,10 @@ class StatistikView(ExcelMixin, FormView):
         # grouped over the identifying columns.
         annotations = {}
 
-        grouping_fields = OrderedDict()
+        grouping_fields = {}
         grouping_fields['years'] = 'indberetning__afgiftsperiode__dato_fra__year'
         grouping_fields['quarter_starting_month'] = 'indberetning__afgiftsperiode__dato_fra__month'
+        ordering_fields = {}
 
         # Since year and quarter fields are required we can always filter on them
         perioder = Afgiftsperiode.objects.filter(
@@ -83,6 +81,7 @@ class StatistikView(ExcelMixin, FormView):
 
         if form.cleaned_data['produkttype']:
             grouping_fields['produkttype'] = 'produkttype__navn_dk'
+            ordering_fields['produkttype'] = 'produkttype__ordering'
             qs = qs.filter(produkttype__in=form.cleaned_data['produkttype'])
 
         qs = qs.select_related('produkttype', 'indberetning', 'indhandlingssted')
@@ -92,16 +91,12 @@ class StatistikView(ExcelMixin, FormView):
             annotations['levende_ton'] = Sum('levende_vægt')
         if 'produkt_ton' in enheder:
             annotations['produkt_ton'] = Sum('produktvægt')
-        if 'omsætning_m_transport_tkr' in enheder:
-            annotations['omsætning_m_transport_tkr'] = Sum(
-                Coalesce(F('salgspris'), Decimal('0.0')) + Coalesce(F('transporttillæg'), Decimal('0.0'))
-            )
-        if 'omsætning_m_bonus_tkr' in enheder:
-            annotations['omsætning_m_bonus_tkr'] = Sum(
-                Coalesce(F('salgspris'), Decimal('0.0')) + Coalesce(F('bonus'), Decimal('0.0'))
-            )
-        if 'omsætning_u_bonus_tkr' in enheder:
-            annotations['omsætning_u_bonus_tkr'] = Sum('salgspris')
+        if 'omsætning_tkr' in enheder:
+            annotations['omsætning_tkr'] = Sum('salgspris')
+        if 'transporttillæg_tkr' in enheder:
+            annotations['transporttillæg_tkr'] = Sum('transporttillæg')
+        if 'bonus_tkr' in enheder:
+            annotations['omsætning_m_bonus_tkr'] = Sum('bonus')
         if 'bonus_tkr' in enheder:
             annotations['bonus'] = Sum('bonus')
         if 'afgift_tkr' in enheder:
@@ -109,9 +104,12 @@ class StatistikView(ExcelMixin, FormView):
 
         headings = [form.fields[x].label for x in grouping_fields.keys()]
         headings += [self.display_enhed(enhed) for enhed in enheder]
+        for key, value in grouping_fields.items():
+            if key not in ordering_fields:
+                ordering_fields[key] = value
 
         qs = qs.values(*grouping_fields.values()).annotate(**annotations).order_by(
-            *grouping_fields.values()
+            *ordering_fields.values()
         )
 
         # Translators for transforming database values to human readable output
