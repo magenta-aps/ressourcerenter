@@ -1,6 +1,8 @@
 from administration.models import Afgiftsperiode, FiskeArt
 from django.db.models import Case, Value, When
+from django.db.models import Q
 from django.db.models import Sum
+from django.db.models import TextField
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 from django.views.generic import FormView
@@ -75,14 +77,40 @@ class StatistikView(ExcelMixin, FormView):
             grouping_fields['indberetningstype'] = 'indberetningstype'
             qs = qs.filter(indberetningstype__in=form.cleaned_data['indberetningstype'])
 
-        if form.cleaned_data['fiskeart']:
-            grouping_fields['fiskeart'] = 'produkttype__fiskeart__navn_dk'
-            qs = qs.filter(produkttype__fiskeart__in=form.cleaned_data['fiskeart'])
+        if form.cleaned_data['fiskeart_eksport'] or form.cleaned_data['fiskeart_indhandling']:
+            fiskeart_export_q = Q(indberetning__skematype__id=1)  # eksport
+            if form.cleaned_data['fiskeart_eksport']:
+                qs = qs.annotate(fiskeart_eksport=Case(
+                    When(indberetning__skematype__id=1, then='produkttype__fiskeart__navn_dk'),  # output-værdi under kolonnen 'fiskeart_eksport'
+                    default=Value(''),
+                    output_field=TextField(),
+                ))
+                grouping_fields['fiskeart_eksport'] = 'fiskeart_eksport'  # værdi passer med key i annotate-kaldet
+                fiskeart_export_q &= Q(produkttype__fiskeart__in=form.cleaned_data['fiskeart_eksport'])  # AND valgt produkttype
 
-        if form.cleaned_data['produkttype']:
-            grouping_fields['produkttype'] = 'produkttype__navn_dk'
+            fiskeart_indhandling_q = ~Q(indberetning__skematype__id=1)  # not export
+            if form.cleaned_data['fiskeart_indhandling']:
+                qs = qs.annotate(fiskeart_indhandling=Case(
+                    When(~Q(indberetning__skematype__id=1), then='produkttype__fiskeart__navn_dk'),  # output-værdi under kolonnen 'fiskeart_indhandling'
+                    default=Value(''),
+                    output_field=TextField(),
+                ))
+                grouping_fields['fiskeart_indhandling'] = 'fiskeart_indhandling'  # værdi passer med key i annotate-kaldet
+                fiskeart_indhandling_q &= Q(produkttype__fiskeart__in=form.cleaned_data['fiskeart_indhandling'])  # AND valgt produkttype
+
+            qs = qs.filter(fiskeart_export_q | fiskeart_indhandling_q)  # match export query OR indhandling query
+
+        if form.cleaned_data['produkttype_eksport']:
             ordering_fields['produkttype'] = 'produkttype__ordering'
-            qs = qs.filter(produkttype__in=form.cleaned_data['produkttype'])
+            qs = qs.annotate(produkttype_eksport=Case(
+                When(indberetning__skematype__id=1, then='produkttype__navn_dk'),
+                default=Value(''),
+                output_field=TextField(),
+            ))
+            grouping_fields['produkttype_eksport'] = 'produkttype_eksport'
+            qs = qs.filter(
+                Q(produkttype__in=form.cleaned_data['produkttype_eksport']) | ~Q(indberetning__skematype__id=1)  # match produkttype OR not export
+            )
 
         qs = qs.select_related('produkttype', 'indberetning', 'indhandlingssted')
 
@@ -96,8 +124,6 @@ class StatistikView(ExcelMixin, FormView):
         if 'transporttillæg_tkr' in enheder:
             annotations['transporttillæg_tkr'] = Sum('transporttillæg')
         if 'bonus_tkr' in enheder:
-            annotations['omsætning_m_bonus_tkr'] = Sum('bonus')
-        if 'bonus_tkr' in enheder:
             annotations['bonus'] = Sum('bonus')
         if 'afgift_tkr' in enheder:
             annotations['afgift_tkr'] = Sum('fangstafgift__afgift')
@@ -108,7 +134,11 @@ class StatistikView(ExcelMixin, FormView):
             if key not in ordering_fields:
                 ordering_fields[key] = value
 
-        qs = qs.values(*grouping_fields.values()).annotate(**annotations).order_by(
+        qs = qs.values(
+            *grouping_fields.values()
+        ).annotate(
+            **annotations
+        ).order_by(
             *ordering_fields.values()
         )
 
