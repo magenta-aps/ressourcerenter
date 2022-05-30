@@ -50,15 +50,21 @@ class StatistikForm(BootstrapForm):
         required=False,
     )
 
-    fiskeart = forms.ModelMultipleChoiceField(
-        label=_('Fiskeart'),
+    fiskeart_eksport = forms.ModelMultipleChoiceField(
+        label=_('Fiskeart (eksport)'),
         queryset=FiskeArt.objects.all(),
         required=False,
     )
 
-    produkttype = forms.ModelMultipleChoiceField(
-        label=_('Produkttype'),
+    produkttype_eksport = forms.ModelMultipleChoiceField(
+        label=_('Produkttype (eksport)'),
         queryset=ProduktType.objects.filter(gruppe__isnull=False),
+        required=False,
+    )
+
+    fiskeart_indhandling = forms.ModelMultipleChoiceField(
+        label=_('Fiskeart (indhandling)'),
+        queryset=FiskeArt.objects.all(),
         required=False,
     )
 
