@@ -74,8 +74,30 @@
     <a class="btn btn-secondary" href="{% url 'administration:afgiftsperiode-list' %}">
         {% translate 'Annullér' %}
     </a>
-    <button class="btn btn-primary" type="submit">{% translate 'Gem' %}</button>
+    <button type="submit" class="btn btn-primary" name="check_inputs">{% translate 'Gem' %}</button>
+
+    <div id="warningModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% translate 'Advarsel' %}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>{% translate 'Der er fiskearter hvor afgiftssatsen er nul. Disse fiskearter vil ikke blive afgiftsbelagt. Er du sikker på at det er meningen?' %}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" name="really_submit">{% translate 'Ja' %}</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{% translate 'Nej' %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </form>
+
 <script>
     $('.type_select').change(function (){
         const className = $(this).val();
@@ -105,6 +127,22 @@
         if (!found) {
             select.find("option[value='']").prop("selected", true);
             select.change();
+        }
+    });
+    $('form').on('submit', function(event){
+        if ($(event.originalEvent.submitter).attr('name') !== 'really_submit') {
+            let allSet = true;
+            $('form input:not(:disabled):not([type=hidden])').each(function () {
+                if (!parseFloat(this.value)) {
+                    allSet = false;
+                    return false;  // Break out of each()
+                }
+            });
+            if (!allSet) {
+                $('#warningModal').modal();
+                event.preventDefault();
+                return false;  // Exit submit event without submitting
+            }
         }
     });
 </script>

@@ -4,7 +4,7 @@ from decimal import Decimal, ROUND_HALF_EVEN
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.validators import MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models import Max
 from django.db.models.signals import pre_save, post_save, m2m_changed
@@ -309,6 +309,7 @@ class SatsTabelElement(models.Model):
         null=True,
         blank=True,
         verbose_name=_('Afgift, kr/kg'),
+        validators=[MinValueValidator(Decimal(0))]
     )
 
     rate_procent = models.DecimalField(
@@ -317,6 +318,7 @@ class SatsTabelElement(models.Model):
         null=True,
         blank=True,
         verbose_name=_('Afgift, procent af salgspris'),
+        validators=[MinValueValidator(Decimal(0))]
     )
 
     history = HistoricalRecords()
