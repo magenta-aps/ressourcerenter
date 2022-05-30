@@ -346,7 +346,7 @@ class VirksomhedCreateView(CreateView):
     template_name = 'administration/virksomhed_form.html'
 
     def get_success_url(self):
-        return reverse('administration:produkttype-list')
+        return reverse('administration:virksomhed-list')
 
 
 class VirksomhedUpdateView(UpdateView):

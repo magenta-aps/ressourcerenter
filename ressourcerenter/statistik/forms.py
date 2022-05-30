@@ -65,12 +65,11 @@ class StatistikForm(BootstrapForm):
     enhed = forms.MultipleChoiceField(
         label=_('Enhed'),
         choices=(
-            ('levende_ton', _('Levende vægt tons')),
             ('produkt_ton', _('Produkt vægt tons')),
-            ('omsætning_m_transport_tkr', _('Omsætning inkl. transporttillæg, tusinde kr.')),
-            ('omsætning_m_bonus_tkr', _('Omsætning inkl. bonus, tusinde kr.')),
-            ('omsætning_u_bonus_tkr', _('Omsætning ekskl. bonus, tusinde kr.')),
-            ('bonus_tkr', _('Bonus')),
+            ('levende_ton', _('Levende vægt tons')),
+            ('omsætning_tkr', _('Omsætning, tusinde kr.')),
+            ('transporttillæg_tkr', _('Transporttillæg, tusinde kr.')),
+            ('bonus_tkr', _('Bonus, tusinde kr.')),
             ('afgift_tkr', _('Beregnet afgiftsbetaling, tusinde kr.')),
         ),
         required=True,

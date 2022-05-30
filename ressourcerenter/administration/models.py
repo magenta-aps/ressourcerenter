@@ -56,6 +56,18 @@ class NamedModel(models.Model):
 
 class SkemaType(models.Model):
 
+    # Skematype 1
+    # Havgående fartøjer og kystnære rejefartøjer - producerende fartøjer
+    # Eksport
+
+    # Skematype 2
+    # Indhandlinger - Indberetninger fra fabrikkerne / Havgående fiskeri og kystnært fiskeri efter rejer
+    # Indhandling
+
+    # Skematype 3
+    # Kystnært fiskeri efter andre arter end rejer - indberetninger fra fabrikkerne
+    # Indhandling
+
     class Meta:
         ordering = ['id']
 
@@ -160,6 +172,9 @@ class ProduktType(NamedModel):
     aktivitetskode_svalbard = models.PositiveIntegerField(
         null=True,
         validators=[MaxValueValidator(999999)]
+    )
+    ordering = models.PositiveSmallIntegerField(
+        default=0
     )
 
     @property
