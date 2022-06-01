@@ -26,7 +26,7 @@ class VirksomhedsAddressForm(ModelForm):
 
 
 class IndberetningsTypeSelectForm(BootstrapForm):
-    skema = ModelChoiceField(queryset=SkemaType.objects.all(), required=True)
+    skema = ModelChoiceField(queryset=SkemaType.objects.filter(enabled=True), required=True)
     periode = ModelChoiceField(queryset=Afgiftsperiode.objects.filter(vis_i_indberetning=True),
                                required=True, empty_label=None)
 

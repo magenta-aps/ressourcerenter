@@ -96,14 +96,10 @@ class SatsTabelElementFormSet(forms.BaseInlineFormSet):
         if min_num is not None:
             self.min_num = min_num
 
-    def get_form_kwargs(self, index):
-        kwargs = super().get_form_kwargs(index)
-        return kwargs
-
     @cached_property
     def forms_by_skematype(self):
         by_skematype = {}
-        for skematype in SkemaType.objects.all():
+        for skematype in SkemaType.objects.filter(enabled=True):
             by_skematype[skematype.id] = {'forms': [], 'skematype': skematype}
         for form in self.forms:
             form_skematype_id = form.instance.skematype_id if form.instance else form.data.get('skematype')
