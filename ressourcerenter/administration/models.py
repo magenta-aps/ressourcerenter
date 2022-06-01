@@ -82,6 +82,10 @@ class SkemaType(models.Model):
         max_length=2048,
         verbose_name=_('Grønlandsk navn'),
     )
+    enabled = models.BooleanField(
+        default=True,
+        verbose_name=_('Aktiv'),
+    )
 
     def __str__(self):
         if get_language() == 'kl-GL':
