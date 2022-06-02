@@ -35,8 +35,11 @@ class StatistikBaseView(FormView):
             dato_fra__month__in=cleaned_data['quarter_starting_month'],
         )
 
+        skematyper = [3] if cleaned_data['skematype_3'] == '1' else [1, 2]
+
         qs = IndberetningLinje.objects.filter(
-            indberetning__afgiftsperiode__in=perioder
+            indberetning__afgiftsperiode__in=perioder,
+            indberetning__skematype_id__in=skematyper
         )
 
         if cleaned_data['virksomhed']:
@@ -240,7 +243,7 @@ class StatistikChoicesView(StatistikBaseView):
         data = {}
         eksport = Q(indberetning__skematype__id=1)
         indhandling = ~eksport
-        considered_fields = ['years', 'quarter_starting_month', 'virksomhed']
+        considered_fields = ['years', 'quarter_starting_month', 'virksomhed', 'skematype_3']
         # Eksport er valgt hvis form.cleaned_data['indberetningstype'] == ['Eksport'] eller == []
         indberetningstype = form.cleaned_data['indberetningstype']
         is_not_indhandling = len(indberetningstype) > 0 and "Indhandling" not in indberetningstype

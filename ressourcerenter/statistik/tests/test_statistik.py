@@ -57,6 +57,7 @@ class StatistikTestCase(TestCase):
 
     def get_form_result(self, **fields):
         form = StatistikForm(data={
+            'skematype_3': 0,
             'years': [2022],
             'quarter_starting_month': [1],
             'enhed': ['levende_ton'],
