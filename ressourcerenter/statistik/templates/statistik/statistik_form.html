@@ -9,8 +9,24 @@
     <div id="statistik-form" class="mb-3 collapse {% if not form.is_valid %}show{% endif %}">
         {{ form.non_field_errors }}
         {% for field in form %}
-        <div class="mb-3">
+        <div class="mb-3 fieldcontainer">
             {{ field.errors }}
+            {% if field.name == 'skematype_3' %}
+            <div class="row">
+                <div class="col-6 form-check">
+                    {% for value, label in field.field.choices %}
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="{{ field.name }}_{{ forloop.counter }}"
+                               name="{{field.name}}" class="custom-control-input" value="{{ value }}"
+                               {% if field.data|default_if_none:'0' == value %}checked="checked"{% endif %}/>
+                        <label class="custom-control-label" for="{{ field.name }}_{{forloop.counter}}">
+                            {{label}}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
             <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
             <div class="row">
                 <div class="col-6">{{ field }}</div>
@@ -19,6 +35,7 @@
                     <button class="btn btn-primary btn-sm select-none" data-target="{{ field.id_for_label }}">{% translate 'Fravælg alle' %}</button>
                 </div>
             </div>
+            {% endif %}
         </div>
         {% endfor %}
     </div>
@@ -121,10 +138,22 @@
         'fiskeart_indhandling': '#{{ form.fiskeart_indhandling.id_for_label }}',
         'fiskeart_eksport': '#{{ form.fiskeart_eksport.id_for_label }}',
         'produkttype_eksport': '#{{ form.produkttype_eksport.id_for_label }}',
-        'indhandlingssted': '#{{ form.indhandlingssted.id_for_label }}'
+        'indhandlingssted': '#{{ form.indhandlingssted.id_for_label }}',
+        'skematype_3': '[name="{{ form.skematype_3.name }}"]'
     };
 
-    const update_choices = function () {
+    const update_schematype = function() {
+        const use_skematype_3 = $(field_map['skematype_3']).filter(":checked").val() == '1';
+        const fields = $(field_map['fartoej']+','+field_map['indberetningstype']);
+        fields.parents('.fieldcontainer').toggle(!use_skematype_3);
+        if (use_skematype_3) {
+            fields.find('option').prop('selected', false);
+        }
+    };
+    $(field_map['skematype_3']).change(update_schematype);
+    update_schematype();
+
+    const update_choices = function() {
         const indberetningstype = $(field_map['indberetningstype']).val();
         if (indberetningstype.length) {
             if (indberetningstype.indexOf('Eksport') === -1) {
