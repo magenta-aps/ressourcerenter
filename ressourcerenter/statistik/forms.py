@@ -7,7 +7,12 @@ from indberetning.models import IndberetningLinje, Indhandlingssted, Virksomhed
 from project.forms_mixin import BootstrapForm
 
 
-class StatistikForm(BootstrapForm):
+class StatistikBaseForm(forms.Form):
+
+    MONTH_JANUAR = '1'
+    MONTH_APRIL = '4'
+    MONTH_JULI = '7'
+    MONTH_OKTOBER = '10'
 
     years = forms.MultipleChoiceField(
         label=_('År'),
@@ -18,10 +23,10 @@ class StatistikForm(BootstrapForm):
     quarter_starting_month = forms.MultipleChoiceField(
         label=_('Kvartal'),
         choices=(
-            (1, _('1. kvartal')),
-            (4, _('2. kvartal')),
-            (7, _('3. kvartal')),
-            (10, _('4. kvartal')),
+            (MONTH_JANUAR, _('1. kvartal')),
+            (MONTH_APRIL, _('2. kvartal')),
+            (MONTH_JULI, _('3. kvartal')),
+            (MONTH_OKTOBER, _('4. kvartal')),
         ),
         required=True,
     )
@@ -68,19 +73,6 @@ class StatistikForm(BootstrapForm):
         required=False,
     )
 
-    enhed = forms.MultipleChoiceField(
-        label=_('Enhed'),
-        choices=(
-            ('produkt_ton', _('Produkt vægt tons')),
-            ('levende_ton', _('Levende vægt tons')),
-            ('omsætning_tkr', _('Omsætning, tusinde kr.')),
-            ('transporttillæg_tkr', _('Transporttillæg, tusinde kr.')),
-            ('bonus_tkr', _('Bonus, tusinde kr.')),
-            ('afgift_tkr', _('Beregnet afgiftsbetaling, tusinde kr.')),
-        ),
-        required=True,
-    )
-
     def __init__(self, *args, **kwargs):
         # Years should be distinct years for known afgiftsperioder
         self.base_fields['years'].choices = [
@@ -98,4 +90,20 @@ class StatistikForm(BootstrapForm):
             ).order_by('fartøj_navn').distinct()
         ]
 
-        super(StatistikForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
+
+
+class StatistikForm(BootstrapForm, StatistikBaseForm):
+
+    enhed = forms.MultipleChoiceField(
+        label=_('Enhed'),
+        choices=(
+            ('produkt_ton', _('Produkt vægt tons')),
+            ('levende_ton', _('Levende vægt tons')),
+            ('omsætning_tkr', _('Omsætning, tusinde kr.')),
+            ('transporttillæg_tkr', _('Transporttillæg, tusinde kr.')),
+            ('bonus_tkr', _('Bonus, tusinde kr.')),
+            ('afgift_tkr', _('Beregnet afgiftsbetaling, tusinde kr.')),
+        ),
+        required=True,
+    )

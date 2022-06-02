@@ -4,7 +4,7 @@
 {% block content %}
 <h1>{% trans 'Statistik' %}</h1>
 
-<form method="post">
+<form method="post" id="statistikform">
     {% csrf_token %}
     <div id="statistik-form" class="mb-3 collapse {% if not form.is_valid %}show{% endif %}">
         {{ form.non_field_errors }}
@@ -46,7 +46,7 @@
         {% for row in resultat.rows %}
         <tr>
             {% for value in row %}
-                <td>{{ value }}</td>
+                <td>{{ value|default_if_none:'' }}</td>
             {% endfor %}
         </tr>
         {% empty %}
@@ -64,12 +64,14 @@
         e.preventDefault()
         let target_id = '#' + $(this).data('target');
         $(target_id + ' option').prop('selected', true);
+        update_choices();
         return false
     });
     $('button.select-none').on('click', function(e) {
         e.preventDefault();
         let target_id = '#' + $(this).data('target');
         $(target_id + ' option').prop('selected', false);
+        update_choices();
         return false;
     });
 
@@ -109,6 +111,74 @@
     fiskeart_field.each(function() {
         change_fiskeart.call(this);
     });
+
+    const field_map = {
+        'years': '#{{ form.years.id_for_label }}',
+        'quarter_starting_month': '#{{ form.quarter_starting_month.id_for_label }}',
+        'virksomhed': '#{{ form.virksomhed.id_for_label }}',
+        'fartoej': '#{{ form.fartoej.id_for_label }}',
+        'indberetningstype': '#{{ form.indberetningstype.id_for_label }}',
+        'fiskeart_indhandling': '#{{ form.fiskeart_indhandling.id_for_label }}',
+        'fiskeart_eksport': '#{{ form.fiskeart_eksport.id_for_label }}',
+        'produkttype_eksport': '#{{ form.produkttype_eksport.id_for_label }}',
+        'indhandlingssted': '#{{ form.indhandlingssted.id_for_label }}'
+    };
+
+    const update_choices = function () {
+        const indberetningstype = $(field_map['indberetningstype']).val();
+        if (indberetningstype.length) {
+            if (indberetningstype.indexOf('Eksport') === -1) {
+                $(field_map['fiskeart_eksport']+','+field_map['produkttype_eksport']).find('option').prop("selected", false);
+            }
+            if (indberetningstype.indexOf('Indhandling') === -1) {
+                $(field_map['fiskeart_indhandling']+','+field_map['indhandlingssted']).find('option').prop("selected", false);
+            }
+        }
+
+        if ($(field_map['years']).val() && $(field_map['quarter_starting_month']).val()) {
+            $.ajax({
+                type: 'POST',
+                url: '{% url "statistik:choices" %}',
+                data: $("#statistikform").serialize(),
+                dataType: 'json',
+                success: function (data) {
+                    // List of fields to be affected by selection
+                    const fields = [
+                        'fartoej',
+                        'indberetningstype',
+                        'fiskeart_indhandling',
+                        'fiskeart_eksport',
+                        'produkttype_eksport',
+                        'indhandlingssted'
+                    ];
+                    for (let i in fields) {
+                        const field = fields[i];
+                        if (field in data) {
+                            const values = data[field];
+                            const select = $(field_map[field]);
+                            select.find("option").hide();
+                            for (let j in values) {
+                                const value = values[j];
+                                select.find("option[value='" + value + "']").show();
+                            }
+                            select.find("option:hidden").prop("selected", false);
+                        }
+                    }
+                }
+            });
+        }
+    };
+    // List of fields that should affect others by selection
+    $([
+        field_map['years'],
+        field_map['quarter_starting_month'],
+        field_map['virksomhed'],
+        field_map['fartoej'],
+        field_map['indberetningstype'],
+        field_map['indhandlingssted'],
+        field_map['fiskeart_eksport']
+    ].join(',')).change(update_choices);
+    update_choices();
 </script>
 
 {% endblock %}
