@@ -259,14 +259,6 @@ class StatistikChoicesView(StatistikBaseView):
         if not form.cleaned_data['indberetningstype']:
             data['indberetningstype'] = self.get_data(form, 'indberetningstype', considered_fields)
 
-        considered_fields.append('indhandlingssted')
-        if is_not_indhandling:
-            # Indskrænk fuldstændigt hvis indhandling ikke er valgt
-            data['indhandlingssted'] = []
-        elif not form.cleaned_data['indhandlingssted']:
-            # Indskrænk hvis indhandlingssted ikke allerede er sat
-            data['indhandlingssted'] = self.get_data(form, 'indhandlingssted__uuid', considered_fields)
-
         considered_fields.append('fiskeart_indhandling')
         if is_not_indhandling:
             data['fiskeart_indhandling'] = []
@@ -286,5 +278,13 @@ class StatistikChoicesView(StatistikBaseView):
             # På denne måde bliver data['produkttype_eksport'] kun indskrænket af de andre felter,
             # ikke af feltet selv, også selvom det er sat
             data['produkttype_eksport'] = self.get_data(form, 'produkttype__uuid', considered_fields, eksport)
+
+        considered_fields.append('indhandlingssted')
+        if is_not_indhandling:
+            # Indskrænk fuldstændigt hvis indhandling ikke er valgt
+            data['indhandlingssted'] = []
+        elif not form.cleaned_data['indhandlingssted']:
+            # Indskrænk hvis indhandlingssted ikke allerede er sat
+            data['indhandlingssted'] = self.get_data(form, 'indhandlingssted__uuid', considered_fields)
 
         return HttpResponse(json.dumps(data))

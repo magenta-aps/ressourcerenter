@@ -51,13 +51,7 @@ class StatistikBaseForm(forms.Form):
 
     indberetningstype = forms.MultipleChoiceField(
         label=_('Indberetningstype'),
-        choices=[(x, x) for x in ('Indhandling', 'Eksport')],
-        required=False,
-    )
-
-    indhandlingssted = forms.ModelMultipleChoiceField(
-        label=_('Indhandlingssted'),
-        queryset=Indhandlingssted.objects.all(),
+        choices=[(x, x) for x in ('Eksport', 'Indhandling')],
         required=False,
     )
 
@@ -76,6 +70,12 @@ class StatistikBaseForm(forms.Form):
     fiskeart_indhandling = forms.ModelMultipleChoiceField(
         label=_('Fiskeart (indhandling)'),
         queryset=FiskeArt.objects.all(),
+        required=False,
+    )
+
+    indhandlingssted = forms.ModelMultipleChoiceField(
+        label=_('Indhandlingssted'),
+        queryset=Indhandlingssted.objects.all(),
         required=False,
     )
 
