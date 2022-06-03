@@ -1,5 +1,7 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from django.forms.widgets import TextInput
+from django.utils.translation import gettext as _
 
 
 class LocalizedDecimalField(forms.DecimalField):
@@ -11,6 +13,11 @@ class LocalizedDecimalField(forms.DecimalField):
                                                     max_digits=max_digits,
                                                     decimal_places=decimal_places,
                                                     **kwargs)
+
+    def to_python(self, value):
+        if '.' in str(value):
+            raise ValidationError(_('Tallet må ikke indeholde punktum, kun komma'), code='invalid')
+        return super().to_python(value)
 
 
 class DateInput(forms.DateInput):

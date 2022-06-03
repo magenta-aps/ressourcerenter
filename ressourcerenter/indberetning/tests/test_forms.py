@@ -191,12 +191,6 @@ class Indberetninger1Tests(IndberetningerTests):
         self.assertTrue(form.is_valid())
 
     def test_decimal_numbers(self):
-        # Add decimal number
-        form_data = {'fartøj_navn': 'test', 'produkttype': self.first_ex_producttype.uuid, 'levende_vægt': 5.5, 'transporttillæg': 5.5, 'produktvægt': 5.5, 'salgspris': 5.5, 'indhandlingssted': self.first_example_indhandlingssted.uuid}
-        form = IndberetningsLinjeSkema1Form(cvr=self.cvr, data=form_data)
-        self.assertTrue(form.is_valid())
-
-    def test_decimal_numbers_as_string(self):
         # Add decimal number as string
         form_data = {'fartøj_navn': 'test', 'produkttype': self.first_ex_producttype.uuid, 'levende_vægt': '5.5', 'transporttillæg': '5.5', 'produktvægt': '5.5', 'salgspris': '5.5', 'indhandlingssted': self.first_example_indhandlingssted.uuid}
         form = IndberetningsLinjeSkema1Form(cvr=self.cvr, data=form_data)
