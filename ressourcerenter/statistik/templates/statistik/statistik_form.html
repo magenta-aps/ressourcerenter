@@ -146,7 +146,7 @@
 
     const update_schematype = function() {
         const use_skematype_3 = $(field_map['skematype_3']).filter(":checked").val() == '1';
-        const fields = $(field_map['fartoej']+','+field_map['indberetningstype']);
+        const fields = $([field_map['fartoej'], field_map['indberetningstype'], field_map['fiskeart_eksport'], field_map['produkttype_eksport']].join(','));
         fields.parents('.fieldcontainer').toggle(!use_skematype_3);
         if (use_skematype_3) {
             fields.find('option').prop('selected', false);
