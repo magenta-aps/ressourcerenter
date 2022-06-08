@@ -77,6 +77,21 @@
 
 {{ produkt_fiskeart_map|json_script:"produkt_fiskeart_map" }}
 <script>
+
+    const field_map = {
+        'years': '#{{ form.years.id_for_label }}',
+        'quarter_starting_month': '#{{ form.quarter_starting_month.id_for_label }}',
+        'virksomhed': '#{{ form.virksomhed.id_for_label }}',
+        'fartoej': '#{{ form.fartoej.id_for_label }}',
+        'indberetningstype': '#{{ form.indberetningstype.id_for_label }}',
+        'fiskeart_indhandling': '#{{ form.fiskeart_indhandling.id_for_label }}',
+        'fiskeart_eksport': '#{{ form.fiskeart_eksport.id_for_label }}',
+        'produkttype_eksport': '#{{ form.produkttype_eksport.id_for_label }}',
+        'indhandlingssted': '#{{ form.indhandlingssted.id_for_label }}',
+        'skematype_3': '[name="{{ form.skematype_3.name }}"]',
+        'enhed': '#{{ form.enhed.id_for_label }}'
+    };
+
     $('button.select-all').on('click', function(e) {
         e.preventDefault()
         let target_id = '#' + $(this).data('target');
@@ -116,31 +131,18 @@
                 produkttyper[produkttype] = 1;
             }
         }
-        $('#statistik-form [name="produkttype"]').find('option').each(function (){
+        $(field_map['produkttype_eksport']).find('option').each(function (){
             $(this).toggle(this.value in produkttyper);
             if (!(this.value in produkttyper)) {
                 $(this).prop("selected", false);
             }
         });
     };
-    fiskeart_field = $('#statistik-form [name="fiskeart"]');
+    fiskeart_field = $(field_map['fiskeart_eksport']);
     fiskeart_field.on('change', change_fiskeart);
     fiskeart_field.each(function() {
         change_fiskeart.call(this);
     });
-
-    const field_map = {
-        'years': '#{{ form.years.id_for_label }}',
-        'quarter_starting_month': '#{{ form.quarter_starting_month.id_for_label }}',
-        'virksomhed': '#{{ form.virksomhed.id_for_label }}',
-        'fartoej': '#{{ form.fartoej.id_for_label }}',
-        'indberetningstype': '#{{ form.indberetningstype.id_for_label }}',
-        'fiskeart_indhandling': '#{{ form.fiskeart_indhandling.id_for_label }}',
-        'fiskeart_eksport': '#{{ form.fiskeart_eksport.id_for_label }}',
-        'produkttype_eksport': '#{{ form.produkttype_eksport.id_for_label }}',
-        'indhandlingssted': '#{{ form.indhandlingssted.id_for_label }}',
-        'skematype_3': '[name="{{ form.skematype_3.name }}"]'
-    };
 
     const update_schematype = function() {
         const use_skematype_3 = $(field_map['skematype_3']).filter(":checked").val() == '1';
@@ -178,7 +180,8 @@
                         'fiskeart_indhandling',
                         'fiskeart_eksport',
                         'produkttype_eksport',
-                        'indhandlingssted'
+                        'indhandlingssted',
+                        'enhed',
                     ];
                     for (let i in fields) {
                         const field = fields[i];

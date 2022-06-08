@@ -15,7 +15,7 @@ from django.utils.translation import gettext as _
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.generic import RedirectView, ListView, FormView, View, DetailView, UpdateView
 
-from administration.models import Afgiftsperiode, SkemaType
+from administration.models import Afgiftsperiode, SkemaType, FiskeArt, ProduktType
 from indberetning.forms import IndberetningsTypeSelectForm, VirksomhedsAddressForm, BilagsFormSet, \
     IndberetningsLinjeSkema1Form, IndberetningsLinjeSkema2Form, IndberetningsLinjeSkema3Form, IndberetningBeregningForm, \
     IndberetningsLinjeBeregningForm, IndberetningSearchForm
@@ -141,6 +141,14 @@ class IndberetningsLinjebilagFormsetMixin:
                                                     queryset=Bilag.objects.none())
         ctx = super(IndberetningsLinjebilagFormsetMixin, self).get_context_data(**kwargs)
         ctx['indberetning'] = self.get_indberetning_instance()
+        ctx['pelagiske_fiskearter'] = [
+            str(uuid)
+            for uuid in FiskeArt.objects.filter(pelagisk=True).values_list('uuid', flat=True)
+        ]
+        ctx['pelagiske_produkttyper'] = [
+            str(uuid)
+            for uuid in ProduktType.objects.filter(fiskeart__pelagisk=True).values_list('uuid', flat=True)
+        ]
         return ctx
 
     def post(self, request, *args, **kwargs):

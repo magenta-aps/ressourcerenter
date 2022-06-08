@@ -287,4 +287,14 @@ class StatistikChoicesView(StatistikBaseView):
             # Indskrænk hvis indhandlingssted ikke allerede er sat
             data['indhandlingssted'] = self.get_data(form, 'indhandlingssted__uuid', considered_fields)
 
+        all_fiskearter = set(list(form.cleaned_data['fiskeart_eksport']) + list(form.cleaned_data['fiskeart_indhandling']))
+        all_value_choices = [value for value, label in StatistikForm().fields['enhed'].choices]
+        pelagisk_exception = {'omsætning_tkr', 'transporttillæg_tkr'}  # Disse felter skal skjules hvis der kun er valgt pelagiske fiskearter
+        if len(all_fiskearter) > 0:
+            if all([fiskeart.pelagisk for fiskeart in all_fiskearter]):
+                # Alle valgte fiskearter er pelagiske
+                data['enhed'] = list(set(all_value_choices) - pelagisk_exception)
+            else:
+                data['enhed'] = all_value_choices
+
         return HttpResponse(json.dumps(data))
