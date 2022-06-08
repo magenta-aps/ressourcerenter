@@ -183,6 +183,8 @@
 </div>
 
 {{indberetning.to_json|json_script:'indberetning'}}
+{{pelagiske_fiskearter|json_script:'pelagiske_fiskearter'}}
+{{pelagiske_produkttyper|json_script:'pelagiske_produkttyper'}}
 <script src="{% static 'js/cookie.js' %}"></script>
 <script>
     const boat_placeholder = "{% translate 'Vælg eller opret nyt fartøj' %}";
@@ -192,6 +194,8 @@
     $(document).ready(function() {
         const afgift_endpoint = $('#afgift_column').data('endpoint');
         const indberetning = JSON.parse($("#indberetning").text());
+        const pelagiske_fiskearter = JSON.parse($("#pelagiske_fiskearter").text());
+        const pelagiske_produkttyper = JSON.parse($("#pelagiske_produkttyper").text());
         const calculate_afgift = function() {
             const row = $(this).parents('tr');
             const prefix = row.data('prefix') + '-';
@@ -235,6 +239,17 @@
         };
         $(".autocalc-afgift input, .autocalc-afgift select").on('change', calculate_afgift);
 
+        const togglePelagisk = function(){
+            const row = $(this).parents('tr');
+            const prefix = row.data('prefix') + '-';
+            const selected_produkttype = row.find('select[name="'+prefix+'produkttype"]').val();
+            const pelagisk_selected = (pelagiske_produkttyper.indexOf(selected_produkttype) !== -1);
+            row.find('[name*="salgspris"],[name*="transporttillæg"]').toggle(!pelagisk_selected);
+        };
+        const produkttype_selects = $('select[name*="produkttype"]');
+        produkttype_selects.on('change', togglePelagisk);
+        produkttype_selects.each(togglePelagisk);
+
         const deleteRow = function() {
             const prefix = $(this).data('delete')
             $("tr[data-prefix='"+prefix+"']").remove();
@@ -256,7 +271,14 @@
             allowClear: true,
             selectOnClose: true
         });
-        $('#js-product-table select.js-boat-select, #js-product-table select.js-place-select').val(null).change();
+        $('#js-product-table select.js-boat-select, #js-product-table select.js-place-select').each(function(){
+            // Select2 has a tendency to autoselect the first option, even though the server hasn't set a selected option
+            // Clear selection in that case
+            const $this = $(this);
+            if ($this.val() && !$this.find('option[selected]').length) {
+                $this.val(null).change();
+            }
+        });
         // Focus text field on open
         // https://github.com/select2/select2/issues/5993#issuecomment-800927000
         // Deferred with a setTimeout because 'open' events are fired before 'close' events,
@@ -290,6 +312,7 @@
             });
             newRow.find('select.js-boat-select, select.js-place-select').val(null).change();
             newRow.find("input, select").on('change', calculate_afgift);
+            newRow.find('select[name*="produkttype"]').on('change', togglePelagisk);
             newRow.find('button[data-delete]').on('click', deleteRow);
         });
         $('input#js-add-bilag-button').on('click', function() {
