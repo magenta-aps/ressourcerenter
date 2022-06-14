@@ -188,12 +188,12 @@
                         if (field in data) {
                             const values = data[field];
                             const select = $(field_map[field]);
-                            select.find("option").hide();
+                            let shown = $();
                             for (let j in values) {
-                                const value = values[j];
-                                select.find("option[value='" + value + "']").show();
+                                shown = shown.add(select.find("option[value='" + values[j] + "']"));
                             }
-                            select.find("option:hidden").prop("selected", false);
+                            shown.show();
+                            select.find("option").not(shown).hide().prop("selected", false);
                         }
                     }
                 }
