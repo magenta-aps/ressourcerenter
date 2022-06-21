@@ -125,7 +125,7 @@ class SatsTabelElementForm(forms.ModelForm, BootstrapForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        if cleaned_data['rate_pr_kg'] and cleaned_data['rate_procent']:
+        if cleaned_data.get('rate_pr_kg') and cleaned_data.get('rate_procent'):
             raise ValidationError(_('Der må ikke angives både afgift pr. kg og afgift i procent'))
         return cleaned_data
 
