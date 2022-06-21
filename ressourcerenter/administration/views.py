@@ -125,7 +125,7 @@ class AfgiftsperiodeSatsTabelUpdateView(UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        qs = self.object.entries.order_by(
+        qs = self.object.entries.filter(skematype__enabled=True).order_by(
             'skematype__navn_dk',
             'fiskeart__navn_dk',
             'fartoej_groenlandsk'
