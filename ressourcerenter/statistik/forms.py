@@ -1,8 +1,8 @@
-from django import forms
-from django.utils.translation import gettext as _
-
 from administration.models import FiskeArt, Afgiftsperiode
 from administration.models import ProduktType
+from django import forms
+from django.db.models import Q
+from django.utils.translation import gettext as _
 from indberetning.models import IndberetningLinje, Indhandlingssted, Virksomhed
 from project.forms_mixin import BootstrapForm
 
@@ -64,7 +64,7 @@ class StatistikBaseForm(forms.Form):
 
     produkttype_eksport = forms.ModelMultipleChoiceField(
         label=_('Produkttype (eksport)'),
-        queryset=ProduktType.objects.filter(gruppe__isnull=False),
+        queryset=ProduktType.objects.filter(Q(gruppe__isnull=False) | Q(fartoej_groenlandsk__isnull=False)),
         required=False,
     )
 
