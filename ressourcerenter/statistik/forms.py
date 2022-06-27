@@ -14,11 +14,12 @@ class StatistikBaseForm(forms.Form):
     MONTH_JULI = '7'
     MONTH_OKTOBER = '10'
 
-    skematype_3 = forms.ChoiceField(
-        choices=(('0', 'Fra fartøj'), ('1', 'Fra fabrik')),
-        required=True,
-        widget=forms.RadioSelect()
-    )
+    # Deaktiveret jf. #51072, men skal aktiveres senere
+    # skematype_3 = forms.ChoiceField(
+    #     choices=(('0', 'Fra fartøj'), ('1', 'Fra fabrik')),
+    #     required=True,
+    #     widget=forms.RadioSelect()
+    # )
 
     years = forms.MultipleChoiceField(
         label=_('År'),

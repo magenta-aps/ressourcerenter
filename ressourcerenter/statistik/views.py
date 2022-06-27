@@ -35,7 +35,7 @@ class StatistikBaseView(FormView):
             dato_fra__month__in=cleaned_data['quarter_starting_month'],
         )
 
-        skematyper = [3] if cleaned_data['skematype_3'] == '1' else [1, 2]
+        skematyper = [3] if cleaned_data.get('skematype_3') == '1' else [1, 2]
 
         qs = IndberetningLinje.objects.filter(
             indberetning__afgiftsperiode__in=perioder,
@@ -243,7 +243,7 @@ class StatistikChoicesView(StatistikBaseView):
         data = {}
         eksport = Q(indberetning__skematype__id=1)
         indhandling = ~eksport
-        considered_fields = ['years', 'quarter_starting_month', 'virksomhed', 'skematype_3']
+        considered_fields = ['years', 'quarter_starting_month', 'skematype_3']
         # Eksport er valgt hvis form.cleaned_data['indberetningstype'] == ['Eksport'] eller == []
         indberetningstype = form.cleaned_data['indberetningstype']
         is_not_indhandling = len(indberetningstype) > 0 and "Indhandling" not in indberetningstype
@@ -251,6 +251,11 @@ class StatistikChoicesView(StatistikBaseView):
 
         # Opdatér et givet felt ud fra felterne ovenover (considered_fields), hvis feltet ikke er sat i formularen
         # Hvis feltet derimod er sat, skal der ikke indskrænkes på det, men feltet skal stadig komme i betragtning længere nede
+
+        considered_fields.append('virksomhed')
+        if not form.cleaned_data['virksomhed']:
+            data['virksomhed'] = self.get_data(form, 'indberetning__virksomhed', considered_fields)
+
         considered_fields.append('fartoej')
         if not form.cleaned_data['fartoej']:
             data['fartoej'] = self.get_data(form, 'fartøj_navn', considered_fields)
