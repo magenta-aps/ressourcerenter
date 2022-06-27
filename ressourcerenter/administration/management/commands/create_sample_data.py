@@ -62,6 +62,7 @@ class Command(BaseCommand):
                                                                      produktvægt=x,
                                                                      levende_vægt=2*x,
                                                                      salgspris=40*x,
+                                                                     transporttillæg=Decimal(100.0),
                                                                      kommentar='Her er en lang kommentar som er meget lang for at demonstrere hvordan vi håndtererer en lang kommentar som bliver bred på siden',
                                                                      produkttype=produkttype)
 

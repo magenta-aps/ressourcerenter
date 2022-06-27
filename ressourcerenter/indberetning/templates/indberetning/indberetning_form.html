@@ -5,7 +5,7 @@
 {% if edit_mode %}
 <h2>{% blocktranslate with tidspunkt=object.indberetningstidspunkt|date:"SHORT_DATE_FORMAT" %}Tidligere Indberetninger fra {{tidspunkt}}{% endblocktranslate %}</h2>
 <div class="table-responsive">
-    {% include 'indberetning/includes/linje_list.html' with object_list=object.linjer.all %}
+    {% include 'indberetning/includes/linje_list.html' with object_list=object.linjer.all skema_id=skema.id %}
 </div>
 <h2>{% translate 'Justerer indberetning' %}</h2>
 {% else %}
