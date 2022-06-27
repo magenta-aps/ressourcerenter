@@ -84,7 +84,7 @@ class NonPelagiskPrisRequired():
         cleaned_data = super().clean()
         produkttype = cleaned_data.get('produkttype')
         if produkttype and not produkttype.fiskeart.pelagisk:
-            for field in ('salgspris', 'transporttillæg'):
+            for field in self.required_for_pelagisk:
                 if cleaned_data.get(field) is None:
                     raise ValidationError({field: self.fields[field].error_messages['required']}, code='required')
         return cleaned_data
@@ -98,6 +98,8 @@ class IndberetningsLinjeSkema1Form(NonPelagiskPrisRequired, IndberetningsLinjeFo
     produktvægt = LocalizedDecimalField(required=True)
     fartøj_navn = CharField(widget=Select(attrs={'class': "js-boat-select form-control col-2 ", 'autocomplete': "off", 'style': 'width:100%'}))
     kommentar = CharField(widget=Textarea(attrs={'class': 'single-line form-control'}), required=False)
+
+    required_for_pelagisk = ('salgspris', 'transporttillæg')
 
     class Meta:
         model = IndberetningLinje
@@ -116,9 +118,11 @@ class IndberetningsLinjeSkema2Form(NonPelagiskPrisRequired, IndberetningsLinjeFo
     )
     bonus = LocalizedDecimalField(required=True)
     produktvægt = LocalizedDecimalField(required=True)
-    fartøj_navn = CharField(widget=Select(attrs={'class': "js-boat-select form-control col-2 ", 'autocomplete': "off", 'style': 'width:100%'}))
+    fartøj_navn = CharField(widget=Select(attrs={'class': "js-boat-select form-control col-2", 'autocomplete': "off", 'style': 'width:100%'}))
     indhandlingssted = ModelChoiceField(queryset=Indhandlingssted.objects.filter(aktiv_til_indhandling=True))
     kommentar = CharField(widget=Textarea(attrs={'class': 'single-line form-control'}), required=False)
+
+    required_for_pelagisk = ('salgspris',)
 
     class Meta:
         model = IndberetningLinje
