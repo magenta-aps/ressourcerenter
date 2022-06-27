@@ -314,6 +314,17 @@
             newRow.find("input, select").on('change', calculate_afgift);
             newRow.find('select[name*="produkttype"]').on('change', togglePelagisk);
             newRow.find('button[data-delete]').on('click', deleteRow);
+
+            newRow.find('select.js-boat-select').on('select2:open', () => {
+                setTimeout(() => {
+                    document.querySelector('.select2-search__field').focus();
+                }, 0);
+            });
+            newRow.find('select.js-place-select').on('select2:open', () => {
+                setTimeout(() => {
+                    document.querySelector('.select2-search__field').focus();
+                }, 0);
+            });
         });
         $('input#js-add-bilag-button').on('click', function() {
             let form_idx = $('input[name=bilag-TOTAL_FORMS]').val();
