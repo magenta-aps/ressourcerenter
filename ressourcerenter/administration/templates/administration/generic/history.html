@@ -29,7 +29,7 @@
             </td>
             {% for fieldname, field in fields %}
             <td>
-                {{ history_item|get:fieldname|default_if_none:''|janej }}
+                {{ history_item|get:fieldname|default_if_none:''|janej|capfirst }}
             </td>
             {% endfor %}
         </tr>
