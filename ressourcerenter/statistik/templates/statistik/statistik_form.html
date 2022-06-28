@@ -62,8 +62,14 @@
     <tbody class="text-right">
         {% for row in resultat.rows %}
         <tr>
-            {% for value in row %}
-                <td>{{ value|default_if_none:'' }}</td>
+            {% for item in row %}
+            <td>
+                {% if item.floatformat %}
+                    {{ item.value|default_if_none:''|floatformat:item.floatformat }}
+                {% else %}
+                    {{ item.value|default_if_none:'' }}
+                {% endif %}
+            </td>
             {% endfor %}
         </tr>
         {% empty %}

@@ -72,7 +72,7 @@ class StatistikTestCase(TestCase):
         resultat = self.view.get_resultat(form)
         return [
             {
-                resultat['headings'][i]: item
+                resultat['headings'][i]: item['value']
                 for i, item in enumerate(row)
             }
             for row in resultat['rows']
