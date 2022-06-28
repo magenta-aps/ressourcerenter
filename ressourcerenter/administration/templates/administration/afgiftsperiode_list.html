@@ -8,10 +8,11 @@
 <table class="table">
     <thead>
         <tr>
-            <th class="col-3">{% translate 'Dansk navn' %}</th>
-            <th class="col-3">{% translate 'Grønlandsk navn' %}</th>
+            <th class="col-2">{% translate 'Dansk navn' %}</th>
+            <th class="col-2">{% translate 'Grønlandsk navn' %}</th>
             <th class="col-2">{% translate 'Dato fra' %}</th>
             <th class="col-2">{% translate 'Dato til' %}</th>
+            <th class="col-1">{% translate 'Vis i indberetning' %}</th>
             <th class="col-2">{% translate 'Handlinger' %}</th>
         </tr>
     </thead>
@@ -29,6 +30,9 @@
             </td>
             <td>
                 {{ periode.dato_til }}
+            </td>
+            <td>
+                {{ periode.vis_i_indberetning|yesno|capfirst }}
             </td>
             <td>
                 <a class="btn btn-primary" href="{% url 'administration:afgiftsperiode-update' pk=periode.pk %}">{% translate 'Redigér' %}</a>
