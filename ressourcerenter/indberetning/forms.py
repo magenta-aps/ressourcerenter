@@ -53,7 +53,6 @@ class IndberetningsLinjeBeregningForm(ModelForm):
     salgspris = LocalizedDecimalField(required=False)
     transporttillæg = LocalizedDecimalField(required=False)
     bonus = LocalizedDecimalField(required=False)
-    pelagisk_nonrequired_fields = ()
 
     def clean(self):
         cleaned_data = super().clean()
@@ -73,6 +72,9 @@ class IndberetningsLinjeForm(BootstrapForm, IndberetningsLinjeBeregningForm):
         super().__init__(*args, **kwargs)
         if 'fartøj_navn' in self.fields:
             self.fields['fartøj_navn'].widget.choices = [(n.navn, n.navn) for n in Navne.objects.filter(virksomhed__cvr=self.cvr, type='fartøj')]
+        for field in self.fields.values():
+            if field.required:
+                field.widget.attrs['required'] = 'required'
 
     class Meta:
         model = IndberetningLinje
