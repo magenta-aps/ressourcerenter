@@ -39,7 +39,8 @@ class StatistikBaseView(FormView):
 
         qs = IndberetningLinje.objects.filter(
             indberetning__afgiftsperiode__in=perioder,
-            indberetning__skematype_id__in=skematyper
+            indberetning__skematype_id__in=skematyper,
+            indberetning__afstemt=True,
         )
 
         if cleaned_data['virksomhed']:

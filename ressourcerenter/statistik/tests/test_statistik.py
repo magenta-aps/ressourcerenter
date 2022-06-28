@@ -29,6 +29,7 @@ class StatistikTestCase(TestCase):
             virksomhed=virksomhed,
             skematype=SkemaType.objects.get(id=1),
             afgiftsperiode=afgiftsperiode,
+            afstemt=True,
         )
         IndberetningLinje.objects.create(
             indberetning=eksport_indberetning,
@@ -46,6 +47,7 @@ class StatistikTestCase(TestCase):
             virksomhed=virksomhed,
             skematype=SkemaType.objects.get(id=2),
             afgiftsperiode=afgiftsperiode,
+            afstemt=True,
         )
         IndberetningLinje.objects.create(
             indberetning=indhandling_indberetning,
