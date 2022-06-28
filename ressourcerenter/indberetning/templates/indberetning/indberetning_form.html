@@ -244,7 +244,7 @@
             const prefix = row.data('prefix') + '-';
             const selected_produkttype = row.find('select[name="'+prefix+'produkttype"]').val();
             const pelagisk_selected = (pelagiske_produkttyper.indexOf(selected_produkttype) !== -1);
-            row.find('[name*="salgspris"],[name*="transporttillæg"]').toggle(!pelagisk_selected);
+            row.find('[name*="salgspris"],[name*="transporttillæg"]').toggle(!pelagisk_selected).prop('required', !pelagisk_selected);
         };
         const produkttype_selects = $('select[name*="produkttype"]');
         produkttype_selects.on('change', togglePelagisk);
