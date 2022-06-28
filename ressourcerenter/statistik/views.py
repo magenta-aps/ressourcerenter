@@ -12,6 +12,7 @@ from indberetning.models import IndberetningLinje
 from project.views_mixin import ExcelMixin
 from statistik.forms import StatistikBaseForm
 from statistik.forms import StatistikForm
+from functools import lru_cache
 
 
 class StatistikBaseView(FormView):
@@ -121,6 +122,7 @@ class StatistikView(ExcelMixin, StatistikBaseView):
             if x[0] == value:
                 return x[1]
 
+    @lru_cache(maxsize=None)
     def get_resultat(self, form):
         # Output is a table containing a series of identifier columns with
         # search/grouping criteria and their values. The columns for year
@@ -178,13 +180,14 @@ class StatistikView(ExcelMixin, StatistikBaseView):
                 value = db_row_dict.get(key)
                 if key in translators:
                     value = translators[key](value)
-                new_row_identifiers.append(value)
+                new_row_identifiers.append({'value': value})
 
             row = new_row_identifiers
             # Add value for selected enhed and the sum for that enhed/unit
             for enhed in enheder:
                 value = db_row_dict.get(enhed) or 0
-                row.append(value/1000)
+                value = value/1000
+                row.append({'value': value, 'floatformat': '1g', 'excel_format': '#,##0.0'})
 
             result.append(row)
 

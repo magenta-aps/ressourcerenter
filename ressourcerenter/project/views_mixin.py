@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.utils.formats import date_format
 from django.views.generic import FormView
 from openpyxl import Workbook
+from openpyxl.cell import Cell
 from datetime import date
 from tempfile import NamedTemporaryFile
 import os
@@ -41,15 +42,26 @@ class ExcelMixin(object):
         return ctx
 
     def create_workbook(self, context):
-        wb = Workbook(write_only=True)
-        ws = wb.create_sheet()
+        wb = Workbook()
+        try:
+            ws = wb.worksheets[0]
+        except IndexError:
+            ws = wb.create_sheet()
         form = context.get('form')
         ws.append(self.headers(form))
 
         for row in self.rows(form):
-            for i, value in enumerate(row):
+            for i, item in enumerate(row):
+                value = item['value'] if type(item) == dict else item
+
                 if isinstance(value, date):
-                    row[i] = date_format(value, format='SHORT_DATE_FORMAT', use_l10n=True)
+                    value = date_format(value, format='SHORT_DATE_FORMAT', use_l10n=True)
+
+                if type(item) == dict and 'excel_format' in item:
+                    value = Cell(worksheet=ws, value=value)
+                    value.number_format = item['excel_format']
+
+                row[i] = value
             ws.append(row)
         return wb
 
