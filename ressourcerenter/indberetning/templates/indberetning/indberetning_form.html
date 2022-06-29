@@ -285,16 +285,31 @@
         // so if you have one select open and click on a second select, the second select would lose focus:
         //   selectB:open  gives focus to selectB
         //   selectA:close removes the focus again
-        $('#js-product-table select.js-boat-select').on('select2:open', () => {
+        const handleOpen = function () {
             setTimeout(() => {
                 document.querySelector('.select2-search__field').focus();
             }, 0);
-        });
-        $('#js-product-table select.js-place-select').on('select2:open', () => {
-            setTimeout(() => {
-                document.querySelector('.select2-search__field').focus();
-            }, 0);
-        });
+        }
+        $('#js-product-table select.js-boat-select').on('select2:open', handleOpen);
+        $('#js-product-table select.js-place-select').on('select2:open', handleOpen);
+
+        const handleBoatSelect = function () {
+            const items = {};
+            $('select.js-boat-select option').each(function (){
+                items[this.value] = 1;
+            });
+            $('select.js-boat-select').each(function () {
+                const missing = $.extend({}, items);
+                $(this).find("option").each(function (){
+                    delete missing[this.value];
+                })
+                for (let item in missing) {
+                    $(this).append(new Option(item, item, false, false)).trigger('change');
+                }
+            });
+        }
+        $('#js-product-table select.js-boat-select').on('select2:select', handleBoatSelect);
+
         $('input#js-add-product-button').on('click', function() {
             const form_idx = $('input[name=linje-TOTAL_FORMS]').val();
             $('table#js-product-table tbody').append($('tbody#js-initial-row').html().replace(/__prefix__/g, form_idx));
@@ -303,28 +318,22 @@
             newRow.find('select.js-boat-select').select2({
                 tags: true,
                 placeholder: boat_placeholder,
-                allowClear: true
+                allowClear: true,
+                selectOnClose: true
             });
             newRow.find('select.js-place-select').select2({
                 tags: true,
                 placeholder: place_placeholder,
-                allowClear: true
+                allowClear: true,
+                selectOnClose: true
             });
             newRow.find('select.js-boat-select, select.js-place-select').val(null).change();
             newRow.find("input, select").on('change', calculate_afgift);
             newRow.find('select[name*="produkttype"]').on('change', togglePelagisk);
             newRow.find('button[data-delete]').on('click', deleteRow);
 
-            newRow.find('select.js-boat-select').on('select2:open', () => {
-                setTimeout(() => {
-                    document.querySelector('.select2-search__field').focus();
-                }, 0);
-            });
-            newRow.find('select.js-place-select').on('select2:open', () => {
-                setTimeout(() => {
-                    document.querySelector('.select2-search__field').focus();
-                }, 0);
-            });
+            newRow.find('select.js-boat-select, select.js-place-select').on('select2:open', handleOpen);
+            newRow.find('select.js-boat-select').on('select2:select', handleBoatSelect);
         });
         $('input#js-add-bilag-button').on('click', function() {
             let form_idx = $('input[name=bilag-TOTAL_FORMS]').val();
