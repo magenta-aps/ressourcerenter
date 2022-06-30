@@ -48,11 +48,11 @@ class IndberetningsLinjeBeregningForm(ModelForm):
         model = IndberetningLinje
         fields = ('produkttype', 'produktvægt', 'levende_vægt', 'salgspris', 'transporttillæg', 'bonus')
 
-    produktvægt = LocalizedDecimalField(required=False)
-    levende_vægt = LocalizedDecimalField()
-    salgspris = LocalizedDecimalField(required=False)
-    transporttillæg = LocalizedDecimalField(required=False)
-    bonus = LocalizedDecimalField(required=False)
+    produktvægt = LocalizedDecimalField(required=False, clientside_formatting=True)
+    levende_vægt = LocalizedDecimalField(clientside_formatting=True)
+    salgspris = LocalizedDecimalField(required=False, clientside_formatting=True)
+    transporttillæg = LocalizedDecimalField(required=False, clientside_formatting=True)
+    bonus = LocalizedDecimalField(required=False, clientside_formatting=True)
 
     def clean(self):
         cleaned_data = super().clean()
@@ -97,7 +97,7 @@ class IndberetningsLinjeSkema1Form(NonPelagiskPrisRequired, IndberetningsLinjeFo
         queryset=ProduktType.objects.filter(fiskeart__skematype=1, subtyper=None).order_by('fiskeart__pelagisk', 'navn_dk'),
         required=True
     )
-    produktvægt = LocalizedDecimalField(required=True)
+    produktvægt = LocalizedDecimalField(required=True, clientside_formatting=True)
     fartøj_navn = CharField(widget=Select(attrs={'class': "js-boat-select form-control col-2 ", 'autocomplete': "off", 'style': 'width:100%'}))
     kommentar = CharField(widget=Textarea(attrs={'class': 'single-line form-control'}), required=False)
 
@@ -118,8 +118,8 @@ class IndberetningsLinjeSkema2Form(NonPelagiskPrisRequired, IndberetningsLinjeFo
         queryset=ProduktType.objects.filter(fiskeart__skematype=2, gruppe=None).order_by('fiskeart__pelagisk', 'navn_dk'),
         required=True
     )
-    bonus = LocalizedDecimalField(required=True)
-    produktvægt = LocalizedDecimalField(required=True)
+    bonus = LocalizedDecimalField(required=True, clientside_formatting=True)
+    produktvægt = LocalizedDecimalField(required=True, clientside_formatting=True)
     fartøj_navn = CharField(widget=Select(attrs={'class': "js-boat-select form-control col-2", 'autocomplete': "off", 'style': 'width:100%'}))
     indhandlingssted = ModelChoiceField(queryset=Indhandlingssted.objects.filter(aktiv_til_indhandling=True))
     kommentar = CharField(widget=Textarea(attrs={'class': 'single-line form-control'}), required=False)
@@ -136,7 +136,7 @@ class IndberetningsLinjeSkema3Form(IndberetningsLinjeForm):
         queryset=ProduktType.objects.filter(fiskeart__skematype=3, gruppe=None).order_by('fiskeart__pelagisk', 'navn_dk'),
         required=True
     )
-    bonus = LocalizedDecimalField(required=True)
+    bonus = LocalizedDecimalField(required=True, clientside_formatting=True)
     indhandlingssted = ModelChoiceField(queryset=Indhandlingssted.objects.filter(aktiv_til_indhandling=True))
     kommentar = CharField(widget=Textarea(attrs={'class': 'single-line form-control'}), required=False)
 
