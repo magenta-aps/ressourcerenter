@@ -191,6 +191,29 @@
     const place_placeholder = "{% translate 'Vælg eller opret nyt indhandlingssted' %}";
     const rate_prkg_string = "{% translate '{rate} kr/kg' %}";
     const rate_none = "{% translate 'Ingen afgift' %}";
+
+    const replace_repeat = function (subject, re, replacement) {
+        let old = null;
+        while (old !== subject) {
+            old = subject;
+            subject = subject.replace(re, replacement);
+        }
+        return subject;
+    };
+
+    const update_tsep = function() {
+        let value = this.value;
+        if (value !== '') {
+            value = replace_repeat(value, /(.)-/g, '$1');
+            value = value.replace(/--+/g, '-');
+            value = value.replace(/[^\d,\-]/g, '');  // Strip away all non-digits and non-commas (including dots)
+            parts = value.split(',', 1);
+            value = replace_repeat(value, /^(-?\d+)(\d\d\d)(\.|,|$)/, '$1.$2$3');
+            value = replace_repeat(value, /,([^,]+),/, ',$1');
+            this.value = value;
+        }
+    };
+
     $(document).ready(function() {
         const afgift_endpoint = $('#afgift_column').data('endpoint');
         const indberetning = JSON.parse($("#indberetning").text());
@@ -208,7 +231,10 @@
                 if (name.startsWith(prefix)) {
                     name = name.replace(prefix, '');
                 }
-                indberetninglinje[name] = $(this).val();
+                if ($(this).attr('data-input-tsep')) {
+                    update_tsep.call(this);
+                }
+                indberetninglinje[name] = this.value;
             });
             if (indberetninglinje['produkttype'] && (indberetninglinje['levende_vægt'] !== '' || indberetninglinje['salgspris'] !== '')) {
                 $.ajax({
@@ -233,6 +259,10 @@
                         } else {
                             field.text(rate_none);
                         }
+                    },
+                    'error': function () {
+                        const field = row.find('.autocalc-sats-dest');
+                        field.text('');
                     }
                 });
             }
@@ -310,6 +340,11 @@
         }
         $('#js-product-table select.js-boat-select').on('select2:select', handleBoatSelect);
 
+        $("input[data-input-tsep]").on('blur', update_tsep);
+        $('form').on('submit', function () {
+            $("input[data-input-tsep]").each(update_tsep);
+        });
+
         $('input#js-add-product-button').on('click', function() {
             const form_idx = $('input[name=linje-TOTAL_FORMS]').val();
             $('table#js-product-table tbody').append($('tbody#js-initial-row').html().replace(/__prefix__/g, form_idx));
@@ -334,6 +369,8 @@
 
             newRow.find('select.js-boat-select, select.js-place-select').on('select2:open', handleOpen);
             newRow.find('select.js-boat-select').on('select2:select', handleBoatSelect);
+
+            newRow.find("input[data-input-tsep]").on('blur', update_tsep);
         });
         $('input#js-add-bilag-button').on('click', function() {
             let form_idx = $('input[name=bilag-TOTAL_FORMS]').val();
