@@ -258,7 +258,7 @@ class G69KodeTestCase(G69TestCase):
         wb = load_workbook(filename=BytesIO(response.getvalue()))
         ws = wb.active
         self.assertEqual(ws.max_column, 9)
-        self.assertEqual(ws.max_row, 3145)
+        self.assertEqual(ws.max_row, 3121)
 
         # Koder er unikke og sorterede
         expected = [
