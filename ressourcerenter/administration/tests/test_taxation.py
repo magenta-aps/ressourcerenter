@@ -2,12 +2,12 @@ from administration.models import Afgiftsperiode, SatsTabelElement, ProduktType,
     SkemaType
 from datetime import date
 from decimal import Decimal
-from django.test import TransactionTestCase
+from django.test import TestCase
 from indberetning.models import Virksomhed, Indberetning, IndberetningLinje
 from uuid import uuid4
 
 
-class AfgiftTestCase(TransactionTestCase):
+class AfgiftTestCase(TestCase):
 
     '''
     §4
@@ -19,7 +19,7 @@ class AfgiftTestCase(TransactionTestCase):
     '''
 
     def setUp(self):
-        super().setUpClass()
+        super().setUp()
         self.periode = Afgiftsperiode.objects.create(
             dato_fra=date(2021, 1, 1),
             dato_til=date(2021, 3, 31)
@@ -32,12 +32,6 @@ class AfgiftTestCase(TransactionTestCase):
 
         self.periode.beregningsmodel = beregningsmodel
         self.periode.save()
-
-        self.skematyper = {
-            1: SkemaType.objects.create(id=1, navn_dk='Havgående'),
-            2: SkemaType.objects.create(id=2, navn_dk='Indhandlinger'),
-            3: SkemaType.objects.create(id=3, navn_dk='Kystnært')
-        }
 
         for navn, skematype_id, fartoej_groenlandsk, rate_procent, rate_pr_kg in [
             ('Reje - havgående licens', 1, None, 5, None),
@@ -58,13 +52,9 @@ class AfgiftTestCase(TransactionTestCase):
             ('Guldlaks', 1, True, None, 0.15),
             ('Guldlaks', 1, False, None, 0.7),
         ]:
-            fiskeart = FiskeArt.objects.create(navn_dk=navn)
-            skematype = self.skematyper[skematype_id]
+            fiskeart = FiskeArt.objects.get(navn_dk=navn)
+            skematype = SkemaType.objects.get(id=skematype_id)
             fiskeart.skematype.set([skematype])
-            ProduktType.objects.create(
-                fiskeart=fiskeart,
-                fartoej_groenlandsk=fartoej_groenlandsk
-            )
             sats = SatsTabelElement.objects.get(
                 periode=self.periode,
                 skematype=skematype,
@@ -82,7 +72,7 @@ class AfgiftTestCase(TransactionTestCase):
         indberetning = Indberetning.objects.create(
             afgiftsperiode=self.periode,
             virksomhed=self.virksomhed,
-            skematype=self.skematyper[skematype_id]
+            skematype=SkemaType.objects.get(id=skematype_id)
         )
         IndberetningLinje.objects.create(
             indberetning=indberetning,

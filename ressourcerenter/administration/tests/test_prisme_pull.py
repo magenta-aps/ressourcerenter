@@ -4,7 +4,7 @@ from datetime import date
 from decimal import Decimal
 from django.contrib.auth import get_user_model
 from django.core import management
-from django.test import TransactionTestCase
+from django.test import TestCase
 from indberetning.models import Virksomhed
 from unittest.mock import patch
 
@@ -44,10 +44,10 @@ def prisme_sel_mock(fakturanummer, bogføringsdato):
     return PrismeSELAccountResponse(None, xml)
 
 
-class PrismeTestCase(TransactionTestCase):
+class PrismeTestCase(TestCase):
 
     def setUp(self):
-        super().setUpClass()
+        super().setUp()
         self.virksomhed = Virksomhed.objects.create(cvr=1234)
         self.user = get_user_model().objects.create(username="TestUser")
 

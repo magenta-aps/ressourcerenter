@@ -8,6 +8,7 @@ from django.urls import reverse
 class PrismeTestCase(TestCase):
 
     def setUp(self) -> None:
+        super().setUp()
         self.username = 'test'
         self.user = get_user_model().objects.create_user(username=self.username)
         self.password = 'test'
