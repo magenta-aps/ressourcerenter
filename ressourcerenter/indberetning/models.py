@@ -14,6 +14,10 @@ from uuid import uuid4
 logger = logging.getLogger(__name__)
 
 
+def get_virksomhed_default_sted():
+    return Indhandlingssted.objects.get(navn='Nuuk').uuid
+
+
 class Virksomhed(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid4)
     cvr = models.TextField(unique=True, validators=[validate_cvr], verbose_name=_('CVR-nummer'), db_index=True)
@@ -21,7 +25,13 @@ class Virksomhed(models.Model):
     kontakt_email = models.EmailField(default='', blank=True, verbose_name=_('Kontaktperson email'))
     kontakts_phone_nr = models.TextField(default='', blank=True, verbose_name=_('Kontaktperson telefonnr'))
     navn = models.TextField(verbose_name=_('Navn'), null=True)
-    sted = models.ForeignKey('Indhandlingssted', null=True, on_delete=models.SET_NULL)
+    sted = models.ForeignKey(
+        'Indhandlingssted',
+        null=False,
+        blank=False,
+        on_delete=models.PROTECT,
+        default=get_virksomhed_default_sted
+    )
 
     def __str__(self):
         if self.navn:
