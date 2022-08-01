@@ -22,7 +22,7 @@ class VirksomhedsAddressForm(ModelForm):
 
     class Meta:
         model = Virksomhed
-        fields = ('kontakt_person', 'kontakt_email', 'kontakts_phone_nr')
+        fields = ('kontakt_person', 'kontakt_email', 'kontakts_phone_nr', 'sted')
 
 
 class IndberetningsTypeSelectForm(BootstrapForm):
