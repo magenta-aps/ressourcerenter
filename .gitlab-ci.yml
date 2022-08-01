@@ -164,3 +164,18 @@ Deploy test:
   environment:
     name: test
     url: "https://test.aalisakkat.aka.sullissivik.gl"
+
+
+Deploy prod:
+  stage: deploy
+  when: manual
+  extends:
+    - .saltbert
+    - .rules:semver-all
+  variables:
+    SALTBERT_ORCHESTRATION: ressourcerenter.service-prod
+    SALTBERT_URL: https://ctrl1.magenta-aps.dk
+  needs: ["Release prod image"]
+  environment:
+    name: production
+    url: "https://aalisakkat.aka.sullissivik.gl"
