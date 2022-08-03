@@ -15,6 +15,7 @@ services:
     volumes:
       - ./ressourcerenter/:/app
       - ./data/:/srv/media
+      - ./manual/:/srv/media/manual
     command: gunicorn --bind=0.0.0.0:8000 project.wsgi:application --reload --workers=1 --access-logfile - --error-logfile - --capture-output
 
   postgres:
@@ -41,6 +42,14 @@ services:
       - ./dev-environment/crontab:/crontab
     entrypoint: [ ]
     command: [ "supercronic", "/crontab" ]
+
+  manual:
+    container_name: ressourcerenter-manual
+    image: pandoc/latex
+    volumes:
+      - ./manual/:/data
+    # options for the -V parameter: https://pandoc.org/MANUAL.html#templates
+    command: [ "manual.md", "-V", "geometry:margin=30mm", "-o", "manual.pdf" ]
 
 volumes:
   ressourcerenter-postgres-data:

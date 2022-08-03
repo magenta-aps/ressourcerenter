@@ -4,6 +4,14 @@
 {% block content %}
 <h1>{% translate 'Indberetninger' %}</h1>
 
+<p class="help">
+    {% blocktranslate %}
+        Denne side viser en liste af alle indberetninger ud fra de angivne søgekriterier.
+        Hver indberetning kan foldes ud ved at klikke på den, hvorved de enkelte indberetningslinjer ses.
+        Der kan også trykkes på "Vis detaljer" for at komme til en side hvor indberetningen beskrives i flere detaljer.
+    {% endblocktranslate %}
+</p>
+
 <div class="container-fluid">
     <form method="get">
         <div class="row mb-3">
@@ -66,9 +74,11 @@
             <tbody class="collapse" id="collapse-{{object.uuid}}">
             {% for linje in object.linjer.all %}
             <tr class="subrow">
-                <td colspan="4"></td>
+                <td colspan="3"></td>
+                <td>{{ linje.indberetningstidspunkt }}</td>
                 <td>{{ linje.produkttype.fiskeart }}</td>
                 <td>{{ linje.kommentar }}</td>
+                <td>{{ linje.afgift }}</td>
                 <td colspan="2"></td>
             </tr>
             {% endfor %}

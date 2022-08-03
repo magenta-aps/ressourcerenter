@@ -10,6 +10,14 @@
     {% endif %}
 </h1>
 
+<p class="help">
+    {% blocktranslate %}
+    På denne side kan fiskearten specificeres.
+    Fiskearter bør kun redigeres når det er absolut nødvendigt.
+    Om en fiskeart er pelagisk har indflydelse på om salgsprisen er påkrævet ved indberetning, og hvilke enhedsfelter der kan vælges på statistik-siden.
+    {% endblocktranslate %}
+</p>
+
 <form method="post">
     {% csrf_token %}
 

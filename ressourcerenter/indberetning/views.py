@@ -188,7 +188,7 @@ class IndberetningsLinjebilagFormsetMixin:
 
 class CreateIndberetningCreateView(IndberetningsLinjebilagFormsetMixin, FormView):
     """
-    Creat view for kystnært (fartøj)/pelagisk (havgående) fiskeri og måske flere.
+    Create view for kystnært (fartøj)/pelagisk (havgående) fiskeri og måske flere.
     """
     template_name = 'indberetning/indberetning_form.html'
 

@@ -3,6 +3,15 @@
 
 {% block content %}
 <h1>{% blocktranslate with periode=periode %}Satstabel for Afgiftsperiode {{ periode }} {% endblocktranslate %}</h1>
+
+<p class="help">
+    {% blocktranslate %}
+        På denne side kan afgiftsperiodens satstabel defineres.
+        Hver linje viser en fiskeart, evt. opdelt i grønlandsk/ikke-grønlandsk fartøj, og der kan vælges enten en afgift i procent eller en afgift pr. kg.
+        Det er kun fiskearter med produkttyper hvor grønlandsk/ikke-grønlandsk fartøj er relevant, der opdeles i disse to kategorier her.
+    {% endblocktranslate %}
+</p>
+
 <form method="post">
     {% csrf_token %}
     {{ form.management_form }}

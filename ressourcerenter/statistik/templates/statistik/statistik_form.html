@@ -4,6 +4,14 @@
 {% block content %}
 <h1>{% trans 'Statistik' %}</h1>
 
+<p class="help">
+    {% blocktranslate %}
+        Denne side udtrækker opsummeringer af afstemte indberetninger ud fra kriterierne der er valgt i formularen.
+        Felterne bør udfyldes oppefra og ned, og deres valgmuligheder indsnævres så der kun optræder muligheder hvor der findes afstemte indberetninger.
+        Det sidste felt, Enheder, beskriver hvilke datakolonner der skal med i resultatet.
+    {% endblocktranslate %}
+</p>
+
 <form method="post" id="statistikform">
     {% csrf_token %}
     <div id="statistik-form" class="mb-3 collapse {% if not form.is_valid %}show{% endif %}">

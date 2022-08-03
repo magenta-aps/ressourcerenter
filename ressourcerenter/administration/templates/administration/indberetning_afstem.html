@@ -3,6 +3,15 @@
 
 {% block content %}
 <h1>{% translate 'Afstem indberetninger' %}</h1>
+
+<p class="help">
+    {% blocktranslate %}
+    Denne viser indberetningslinjer for en given afgiftsperiode, grupperet efter virksomhed, produkttype og fangsttype.
+    For hver linje kan der oprettes og afsendes en faktura til prisme-systemet.
+    Linjer der allerede har en faktura kan fremvise fakturaen, med detaljer om indberetningslinjen, virksomheden og overførsel til Prisme.
+    {% endblocktranslate %}
+</p>
+
 <div class="row">
     <div class="col-1">
         <label for="periode">{% translate 'Afgiftsperiode' %}</label>

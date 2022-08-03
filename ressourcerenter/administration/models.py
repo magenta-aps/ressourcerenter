@@ -856,6 +856,9 @@ class G69Code(models.Model):
         sted = indberetningslinje.indhandlingssted
         if sted is None:
             sted = indberetningslinje.indberetning.virksomhed.sted
+        if sted is None:
+            print("NO STED")
+            print(indberetningslinje.indberetning.virksomhed)
         produkttype = indberetningslinje.produkttype
         while produkttype.gruppe:
             produkttype = produkttype.gruppe

@@ -4,6 +4,16 @@
 {% block content %}
 <h1>{% translate 'Indberetning' %}</h1>
 
+<p class="help">
+    {% blocktranslate %}
+        Denne side viser detaljer for en enkelt indberetning, opdelt i flere indberetningslinjer.
+        Indberetninglinjerne er grupperede efter produkttype, og kommentarer om hver linje kan redigeres. Husk at trykke på "Gem kommentarer".
+        Hvis alt ser ud til at være i orden, kan indberetningen afstemmes.
+        TODO: Hvad betyder afstemning?
+        Det er kun afstemte indberetninger der dukker op i statistikken.
+    {% endblocktranslate %}
+</p>
+
 <table class="table table-bordered table-sm" style="width: auto;">
     <tbody>
     <tr>
@@ -48,19 +58,22 @@
     </tr>
     </tbody>
 </table>
+<form method="post">
+    {% csrf_token %}
 
-{% if not object.afstemt %}
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#afstemModal">
-    {% translate 'Afstem' %}
-</button>
-{% endif %}
+    {% if not object.afstemt %}
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#afstemModal">
+        {% translate 'Afstem' %}
+    </button>
+    {% endif %}
 
+    <button type="submit" class="btn btn-primary">
+        {% translate 'Gem kommentarer' %}
+    </button>
 <hr/>
 
 {% with skematype_id=object.skematype.id %}
-<form method="post">
 
-    {% csrf_token %}
     {{ form.management_form }}
     {% for group in form.forms_by_produkttype %}
     <h3>{{ group.produkttype }}</h3>
@@ -128,9 +141,6 @@
         </tfoot>
     </table>
     {% endfor %}
-    <button type="submit" class="btn btn-primary">
-        {% translate 'Gem kommentarer' %}
-    </button>
 </form>
 {% endwith %}
 

@@ -5,6 +5,14 @@
 {% block content %}
 <h1>{% translate 'G69-exports' %}</h1>
 
+<p class="help">
+    {% blocktranslate %}
+    Denne side viser en liste af oprettede G69-filer.
+    Hver fil er et regneark som indeholder, for et givet år, en række G69-koder og deres relaterede komponenter (fangsttype, aktivitetskode, fiskeart, sted og grønlandsk/ikke-grønlandsk).
+    Regnearkene skal bruges til at indstille Prisme-systemet til denne relation, så det kan forstå de G69-koder vi sender med fakturaerne.
+    {% endblocktranslate %}
+</p>
+
 <a class="btn btn-success" href="{% url 'administration:g69-create' %}">{% translate 'Opret ny' %}</a>
 <table class="table">
     <thead>
