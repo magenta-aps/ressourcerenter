@@ -4,6 +4,15 @@
 {% block content %}
 <h1>{% translate 'Afgiftsperioder' %}</h1>
 
+<p class="help">
+    {% blocktranslate %}
+        Denne side viser alle afgiftsperioder. Afgiftsperioder kan godt overlappe hinanden; indberetteren får mulighed for at vælge periode når der indberettes, men der kan kun vælges perioder hvor "Vis i indberetning" er sat.
+        Hver afgiftsperiode har en satstabel tilknyttet, der dikterer afgiftsatserne for indberetninger i perioden.
+        Satstabellerne kan redigeres ved tryk på "Satstabel"-knappen.
+        Når der oprettes en ny afgiftsperiode vil der automatisk blive åbnet for formularen til at redigere periodens satstabel.
+    {% endblocktranslate %}
+</p>
+
 <a class="btn btn-success" href="{% url 'administration:afgiftsperiode-create' %}">{% translate 'Opret ny' %}</a>
 <table class="table">
     <thead>

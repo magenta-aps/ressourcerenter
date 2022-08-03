@@ -35,7 +35,13 @@ class PermissionMiddleware:
 
         app_name = request.resolver_match.app_name
 
-        if app_name == 'indberetning':
+        if app_name == '':
+            if request.path.startswith('/media/'):
+                # User may access media files
+                return None
+            else:
+                raise PermissionDenied
+        elif app_name == 'indberetning':
             if self._login_provider.user_is_logged_in(request) is False:
                 # nemId user not logged in so redirect to login page
                 return redirect(self._indberetning_login_url)
@@ -46,7 +52,6 @@ class PermissionMiddleware:
                     path = reverse('administration:postlogin')
                 # user not logged in, but trying to access a page they must be logged in for.
                 return redirect_to_login(path, self._administrator_login_url, 'next')
-
             if not request.user.groups.filter(name=request.resolver_match.app_name).exists():
                 # User is logged in, but has insufficient permissions
                 raise PermissionDenied

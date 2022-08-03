@@ -58,7 +58,7 @@ class ProduktTypeCreateForm(forms.ModelForm, BootstrapForm):
 
     class Meta:
         model = ProduktType
-        fields = ('navn_dk', 'navn_gl', 'beskrivelse', 'fiskeart', 'fartoej_groenlandsk')
+        fields = ('navn_dk', 'navn_gl', 'beskrivelse', 'fiskeart', 'fartoej_groenlandsk', 'gruppe')
 
         widgets = {
             'navn_dk': forms.TextInput(),
@@ -76,7 +76,7 @@ class ProduktTypeUpdateForm(forms.ModelForm, BootstrapForm):
 
     class Meta:
         model = ProduktType
-        fields = ('navn_dk', 'navn_gl', 'beskrivelse', 'fartoej_groenlandsk')
+        fields = ('navn_dk', 'navn_gl', 'beskrivelse', 'fartoej_groenlandsk', 'gruppe')
 
         widgets = {
             'navn_dk': forms.TextInput(),

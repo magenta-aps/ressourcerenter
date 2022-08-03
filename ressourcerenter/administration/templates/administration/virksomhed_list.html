@@ -4,6 +4,14 @@
 {% block content %}
 <h1>{% translate 'Virksomheder' %}</h1>
 
+<p class="help">
+    {% blocktranslate %}
+        Denne side viser alle virksomheder i systemet med deres stamdata.
+        Stamdata kan redigeres for hver virksomhed ved tryk på "Redigér"-knappen.
+        Der kan foretages indberetninger på vegne af virksomheden ved tryk på "Repræsentér"; herved navigeres til den indberetningsside som virksomheden ser.
+    {% endblocktranslate %}
+</p>
+
 <a class="btn btn-success" href="{% url 'administration:virksomhed-create' %}">{% translate 'Opret ny' %}</a>
 
 <table class="table">

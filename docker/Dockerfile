@@ -12,7 +12,7 @@ useradd -u 75090 --no-log-init -r -g ressourcerenter -G certificate_exporter res
 chown ressourcerenter:ressourcerenter /srv/media
 # hadolint ignore=DL3008
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gettext && \
+    apt-get install -y --no-install-recommends gettext pandoc && \
     apt-get clean && rm -rf /var/lib/apt/lists/* \
     && curl -fsSLO "$SUPERCRONIC_URL" \
     && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
@@ -25,6 +25,7 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 COPY docker/crontab /crontab
 COPY ./docker/entrypoint.sh /entrypoint.sh
 COPY ./ressourcerenter /app
+# COPY ./manual.md /manual.md
 WORKDIR /app
 RUN django-admin compilemessages
 USER ressourcerenter

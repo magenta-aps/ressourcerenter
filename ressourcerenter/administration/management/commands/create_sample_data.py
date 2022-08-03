@@ -16,7 +16,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        virksomhed, _ = Virksomhed.objects.get_or_create(cvr=options['cvr'], defaults={'navn': 'Testvirksomhed'})
+        virksomhed, _ = Virksomhed.objects.get_or_create(
+            cvr=options['cvr'],
+            defaults={
+                'navn': 'Testvirksomhed',
+                'sted': Indhandlingssted.objects.get(navn='Nuuk')
+            }
+        )
 
         try:
             beregningsmodel = BeregningsModel2021.objects.create(

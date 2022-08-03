@@ -4,6 +4,12 @@
 {% block content %}
 <h1>{% translate 'Produkter' %}</h1>
 
+<p class="help">
+    {% blocktranslate %}
+    Denne side viser produkttyperne i systemet, hvor der kan tilføjes nye og redigeres eksisterende.
+    {% endblocktranslate %}
+</p>
+
 <a class="btn btn-success" href="{% url 'administration:produkttype-create' %}">{% translate 'Opret ny' %}</a>
 <table class="table">
     <thead>

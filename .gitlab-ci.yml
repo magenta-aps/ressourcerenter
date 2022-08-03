@@ -1,5 +1,6 @@
 stages:
   - lint
+  - document
   - build
   - test
   - release
@@ -103,6 +104,23 @@ Unittest:
     PITU_MOCK: "true"
   script:
     - cd /app && python manage.py test
+
+# Documentation stage
+#####################
+
+Generate documentation:
+  stage: document
+  needs: []
+  image:
+    name: pandoc/latex
+    entrypoint: ["/bin/sh", "-c"]
+  script:
+    - cd manual
+    - pandoc manual.md -V geometry:margin=30mm --output=manual.pdf
+  artifacts:
+    paths:
+      - manual/manual.pdf
+
 
 # Release stage
 ###############

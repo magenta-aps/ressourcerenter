@@ -4,6 +4,12 @@
 {% block content %}
 <h1>{% translate 'Fiskearter' %}</h1>
 
+<p class="help">
+    {% blocktranslate %}
+    Denne side viser fiskearterne i systemet, hvor der kan tilføjes nye og redigeres eksisterende.
+    {% endblocktranslate %}
+</p>
+
 <a class="btn btn-success" href="{% url 'administration:fiskeart-create' %}">{% translate 'Opret ny' %}</a>
 <table class="table">
     <thead>

@@ -340,6 +340,12 @@ class VirksomhedCreateView(CreateView):
     def get_success_url(self):
         return reverse('administration:virksomhed-list')
 
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**{
+            **kwargs,
+            'creating': True,
+        })
+
 
 class VirksomhedUpdateView(UpdateView):
     form_class = VirksomhedForm
@@ -467,6 +473,8 @@ class FakturaSendView(SingleObjectMixin, BaseFormView):
 
 class IndberetningsLinjeListView(TemplateView):
     template_name = 'administration/indberetning_afstem.html'
+
+    # TODO: Skal indberetninger være afstemt før vi kan lave en faktura?
 
     @cached_property
     def periode(self):
