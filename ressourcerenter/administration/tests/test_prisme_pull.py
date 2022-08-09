@@ -45,13 +45,12 @@ def prisme_sel_mock(fakturanummer, bogføringsdato):
 
 
 class PrismeTestCase(TestCase):
-
     def setUp(self):
         super().setUp()
         self.virksomhed = Virksomhed.objects.create(cvr=1234)
         self.user = get_user_model().objects.create(username="TestUser")
 
-    @patch.object(Prisme, 'get_account_data')
+    @patch.object(Prisme, "get_account_data")
     def test_kontoudtog(self, get_account_data_mock):
         faktura = Faktura.objects.create(
             virksomhed=self.virksomhed,
@@ -59,10 +58,10 @@ class PrismeTestCase(TestCase):
             betalingsdato=date(2022, 7, 1),
             opkrævningsdato=date(2022, 7, 1),
             kode=123,
-            opretter=self.user
+            opretter=self.user,
         )
         dato = date(2021, 5, 1)
         get_account_data_mock.return_value = [prisme_sel_mock(faktura.id, dato)]
-        management.call_command('get_account_data')
+        management.call_command("get_account_data")
         faktura.refresh_from_db()
         self.assertEquals(faktura.bogført, dato)

@@ -25,30 +25,26 @@ logger = logging.getLogger(__name__)
 
 
 class NamedModel(models.Model):
-
     class Meta:
         abstract = True
 
-    uuid = models.UUIDField(
-        primary_key=True,
-        default=uuid4
-    )
+    uuid = models.UUIDField(primary_key=True, default=uuid4)
     navn_dk = models.TextField(
         max_length=2048,
-        verbose_name=_('Dansk navn'),
+        verbose_name=_("Dansk navn"),
     )
     navn_gl = models.TextField(
         max_length=2048,
-        verbose_name=_('Grønlandsk navn'),
+        verbose_name=_("Grønlandsk navn"),
     )
     beskrivelse = models.TextField(
         blank=True,
         default="",
-        verbose_name=_('Beskrivelse'),
+        verbose_name=_("Beskrivelse"),
     )
 
     def __str__(self):
-        if get_language() == 'kl-GL':
+        if get_language() == "kl-GL":
             return self.navn_gl
         else:
             return self.navn_dk
@@ -69,40 +65,39 @@ class SkemaType(models.Model):
     # Indhandling
 
     class Meta:
-        ordering = ['id']
+        ordering = ["id"]
 
-    id = models.SmallIntegerField(
-        primary_key=True
-    )
+    id = models.SmallIntegerField(primary_key=True)
     navn_dk = models.TextField(
         max_length=2048,
-        verbose_name=_('Dansk navn'),
+        verbose_name=_("Dansk navn"),
     )
     navn_gl = models.TextField(
         max_length=2048,
-        verbose_name=_('Grønlandsk navn'),
+        verbose_name=_("Grønlandsk navn"),
     )
     enabled = models.BooleanField(
         default=True,
-        verbose_name=_('Aktiv'),
+        verbose_name=_("Aktiv"),
     )
 
     def __str__(self):
-        if get_language() == 'kl-GL':
+        if get_language() == "kl-GL":
             return self.navn_gl
         else:
             return self.navn_dk
 
 
 class FiskeArt(NamedModel):
-
     class Meta:
-        ordering = ['navn_dk']
+        ordering = ["navn_dk"]
 
     pelagisk = models.BooleanField(default=False)
     skematype = models.ManyToManyField(SkemaType)
     history = HistoricalRecords()
-    kode = models.PositiveSmallIntegerField(null=True, validators=[MaxValueValidator(99)])
+    kode = models.PositiveSmallIntegerField(
+        null=True, validators=[MaxValueValidator(99)]
+    )
 
     @staticmethod
     def create_satstabelelementer(sender, instance, **kwargs):
@@ -114,42 +109,41 @@ class FiskeArt(NamedModel):
                         skematype=skematype,
                         fiskeart=instance,
                         periode=periode,
-                        fartoej_groenlandsk=produkttype.fartoej_groenlandsk
+                        fartoej_groenlandsk=produkttype.fartoej_groenlandsk,
                     )
 
     @staticmethod
     def increment_fiskeart_kode(sender, instance, **kwargs):
         if instance.kode is None:
-            current_max = FiskeArt.objects.aggregate(Max('kode'))['kode__max'] or 0
+            current_max = FiskeArt.objects.aggregate(Max("kode"))["kode__max"] or 0
             instance.kode = current_max + 1
 
 
-m2m_changed.connect(FiskeArt.create_satstabelelementer, FiskeArt.skematype.through, dispatch_uid='create_satstabel_for_fiskeart_m2m')
-pre_save.connect(FiskeArt.increment_fiskeart_kode, FiskeArt, dispatch_uid='set_kode_for_fiskeart')
+m2m_changed.connect(
+    FiskeArt.create_satstabelelementer,
+    FiskeArt.skematype.through,
+    dispatch_uid="create_satstabel_for_fiskeart_m2m",
+)
+pre_save.connect(
+    FiskeArt.increment_fiskeart_kode, FiskeArt, dispatch_uid="set_kode_for_fiskeart"
+)
 
 
 class ProduktType(NamedModel):
-
     class Meta:
-        unique_together = ['fiskeart', 'navn_dk', 'fartoej_groenlandsk']
-        ordering = ('navn_dk',)
+        unique_together = ["fiskeart", "navn_dk", "fartoej_groenlandsk"]
+        ordering = ("navn_dk",)
 
-    fiskeart = models.ForeignKey(
-        FiskeArt,
-        on_delete=models.CASCADE,
-        null=False
-    )
+    fiskeart = models.ForeignKey(FiskeArt, on_delete=models.CASCADE, null=False)
 
-    fartoej_groenlandsk = models.BooleanField(
-        null=True
-    )
+    fartoej_groenlandsk = models.BooleanField(null=True)
     # Skematype 1's queryset skal være produkter som ikke har children
     # andre skematyper skal være produkter som ikke er children
     gruppe = models.ForeignKey(
-        'ProduktType',
+        "ProduktType",
         null=True,
         blank=True,
-        related_name='subtyper',
+        related_name="subtyper",
         on_delete=models.SET_NULL,
     )
 
@@ -159,48 +153,49 @@ class ProduktType(NamedModel):
         null=True,
         default=None,
         max_length=11,
-        choices=((x, x) for x in ('havgående', 'indhandling', 'kystnært', 'svalbard')),
+        choices=((x, x) for x in ("havgående", "indhandling", "kystnært", "svalbard")),
     )
     aktivitetskode_indhandling = models.PositiveIntegerField(
-        null=True,
-        validators=[MaxValueValidator(999999)]
+        null=True, validators=[MaxValueValidator(999999)]
     )
     aktivitetskode_havgående = models.PositiveIntegerField(
-        null=True,
-        validators=[MaxValueValidator(999999)]
+        null=True, validators=[MaxValueValidator(999999)]
     )
     aktivitetskode_kystnært = models.PositiveIntegerField(
-        null=True,
-        validators=[MaxValueValidator(999999)]
+        null=True, validators=[MaxValueValidator(999999)]
     )
     aktivitetskode_svalbard = models.PositiveIntegerField(
-        null=True,
-        validators=[MaxValueValidator(999999)]
+        null=True, validators=[MaxValueValidator(999999)]
     )
-    ordering = models.PositiveSmallIntegerField(
-        default=0
-    )
+    ordering = models.PositiveSmallIntegerField(default=0)
 
     @property
     def available_fangsttyper(self):
-        fangsttyper = list(filter(None, iter([
-            'havgående' if self.aktivitetskode_havgående else None,
-            'indhandling' if self.aktivitetskode_indhandling else None,
-            'kystnært' if self.aktivitetskode_kystnært else None,
-            'svalbard' if self.aktivitetskode_svalbard else None,
-        ])))
+        fangsttyper = list(
+            filter(
+                None,
+                iter(
+                    [
+                        "havgående" if self.aktivitetskode_havgående else None,
+                        "indhandling" if self.aktivitetskode_indhandling else None,
+                        "kystnært" if self.aktivitetskode_kystnært else None,
+                        "svalbard" if self.aktivitetskode_svalbard else None,
+                    ]
+                ),
+            )
+        )
         if self.gruppe is not None:
             fangsttyper += self.gruppe.available_fangsttyper
         return fangsttyper
 
     def get_aktivitetskode(self, fangsttype):
-        if fangsttype == 'havgående':
+        if fangsttype == "havgående":
             kode = self.aktivitetskode_havgående
-        elif fangsttype == 'indhandling':
+        elif fangsttype == "indhandling":
             kode = self.aktivitetskode_indhandling
-        elif fangsttype == 'kystnært':
+        elif fangsttype == "kystnært":
             kode = self.aktivitetskode_kystnært
-        elif fangsttype == 'svalbard':
+        elif fangsttype == "svalbard":
             kode = self.aktivitetskode_svalbard
         else:
             kode = None
@@ -222,10 +217,14 @@ class ProduktType(NamedModel):
                 groups[gruppenavn][1].append((str(item.pk), str(item)))
             else:
                 non_group_items[str(item)] = (str(item.pk), str(item))
-        return [groups[x] for x in sorted(groups)] + [non_group_items[x] for x in sorted(non_group_items)]
+        return [groups[x] for x in sorted(groups)] + [
+            non_group_items[x] for x in sorted(non_group_items)
+        ]
 
     @staticmethod
-    def create_satstabelelementer(sender, instance, created, raw, using, update_fields, **kwargs):
+    def create_satstabelelementer(
+        sender, instance, created, raw, using, update_fields, **kwargs
+    ):
         # Opret de relevante satstabelelementer for produkttypen på alle perioder. Eksisterende elementer overskrives ikke
         fiskeart = instance.fiskeart
         for periode in Afgiftsperiode.objects.all():
@@ -238,22 +237,20 @@ class ProduktType(NamedModel):
                 )
 
 
-post_save.connect(ProduktType.create_satstabelelementer, ProduktType, dispatch_uid='create_satstabel_for_produkttype')
+post_save.connect(
+    ProduktType.create_satstabelelementer,
+    ProduktType,
+    dispatch_uid="create_satstabel_for_produkttype",
+)
 
 
 class Afgiftsperiode(NamedModel):
-
     class Meta:
-        ordering = ['-dato_fra', '-dato_til']
+        ordering = ["-dato_fra", "-dato_til"]
 
-    uuid = models.UUIDField(
-        primary_key=True,
-        default=uuid4
-    )
+    uuid = models.UUIDField(primary_key=True, default=uuid4)
 
-    vis_i_indberetning = models.BooleanField(
-        default=False
-    )
+    vis_i_indberetning = models.BooleanField(default=False)
 
     dato_fra = models.DateField()
 
@@ -262,7 +259,7 @@ class Afgiftsperiode(NamedModel):
     history = HistoricalRecords()
 
     beregningsmodel = models.ForeignKey(
-        'BeregningsModel',
+        "BeregningsModel",
         on_delete=models.SET_NULL,
         null=True,
         default=None,
@@ -270,7 +267,9 @@ class Afgiftsperiode(NamedModel):
 
     def entry_for_resource(self, fiskeart, fangsttype):
         try:
-            return self.entries.get(ressource__fiskeart=fiskeart, ressource__fangsttype=fangsttype)
+            return self.entries.get(
+                ressource__fiskeart=fiskeart, ressource__fangsttype=fangsttype
+            )
         except SatsTabelElement.DoesNotExist:
             return None
 
@@ -280,29 +279,18 @@ class Afgiftsperiode(NamedModel):
 
 
 class SatsTabelElement(models.Model):
-
     class Meta:
-        unique_together = ['periode', 'skematype', 'fiskeart', 'fartoej_groenlandsk']
+        unique_together = ["periode", "skematype", "fiskeart", "fartoej_groenlandsk"]
 
     periode = models.ForeignKey(
-        Afgiftsperiode,
-        on_delete=models.CASCADE,
-        related_name='entries'
+        Afgiftsperiode, on_delete=models.CASCADE, related_name="entries"
     )
 
-    skematype = models.ForeignKey(
-        SkemaType,
-        on_delete=models.CASCADE
-    )
+    skematype = models.ForeignKey(SkemaType, on_delete=models.CASCADE)
 
-    fiskeart = models.ForeignKey(
-        FiskeArt,
-        on_delete=models.CASCADE
-    )
+    fiskeart = models.ForeignKey(FiskeArt, on_delete=models.CASCADE)
 
-    fartoej_groenlandsk = models.BooleanField(
-        null=True
-    )
+    fartoej_groenlandsk = models.BooleanField(null=True)
 
     def __str__(self):
         return f"{self.fiskeart} | {self.periode}"
@@ -312,8 +300,8 @@ class SatsTabelElement(models.Model):
         decimal_places=2,
         null=True,
         blank=True,
-        verbose_name=_('Afgift, kr/kg'),
-        validators=[MinValueValidator(Decimal(0))]
+        verbose_name=_("Afgift, kr/kg"),
+        validators=[MinValueValidator(Decimal(0))],
     )
 
     rate_procent = models.DecimalField(
@@ -321,34 +309,44 @@ class SatsTabelElement(models.Model):
         decimal_places=2,
         null=True,
         blank=True,
-        verbose_name=_('Afgift, procent af salgspris'),
-        validators=[MinValueValidator(Decimal(0))]
+        verbose_name=_("Afgift, procent af salgspris"),
+        validators=[MinValueValidator(Decimal(0))],
     )
 
     history = HistoricalRecords()
 
     @staticmethod
-    def create_for_period_from_resources(sender, instance, created, raw, using, update_fields, **kwargs):
+    def create_for_period_from_resources(
+        sender, instance, created, raw, using, update_fields, **kwargs
+    ):
         if created is True:
             for skematype in SkemaType.objects.all():
                 for fiskeart in skematype.fiskeart_set.all():
-                    for valuedict in fiskeart.produkttype_set.values('fartoej_groenlandsk').order_by('fartoej_groenlandsk').distinct('fartoej_groenlandsk'):
-                        fartoej_groenlandsk = valuedict['fartoej_groenlandsk']
+                    for valuedict in (
+                        fiskeart.produkttype_set.values("fartoej_groenlandsk")
+                        .order_by("fartoej_groenlandsk")
+                        .distinct("fartoej_groenlandsk")
+                    ):
+                        fartoej_groenlandsk = valuedict["fartoej_groenlandsk"]
                         SatsTabelElement.objects.create(
                             skematype=skematype,
                             fiskeart=fiskeart,
                             periode=instance,
-                            fartoej_groenlandsk=fartoej_groenlandsk
+                            fartoej_groenlandsk=fartoej_groenlandsk,
                         )
 
 
-post_save.connect(SatsTabelElement.create_for_period_from_resources, Afgiftsperiode, dispatch_uid='create_satstabel_for_period')
+post_save.connect(
+    SatsTabelElement.create_for_period_from_resources,
+    Afgiftsperiode,
+    dispatch_uid="create_satstabel_for_period",
+)
 
 
 class FangstAfgift(models.Model):
 
     indberetninglinje = models.OneToOneField(
-        'indberetning.IndberetningLinje',
+        "indberetning.IndberetningLinje",
         on_delete=models.CASCADE,
         null=True,
     )
@@ -356,11 +354,11 @@ class FangstAfgift(models.Model):
     afgift = models.DecimalField(
         max_digits=12,
         decimal_places=2,
-        default='0.0',
+        default="0.0",
     )
 
     beregningsmodel = models.ForeignKey(
-        'BeregningsModel',
+        "BeregningsModel",
         on_delete=models.SET_NULL,
         null=True,
         default=None,
@@ -385,20 +383,22 @@ class FangstAfgift(models.Model):
 
     def to_json(self):
         return {
-            'beregningsmodel': self.beregningsmodel.pk if self.beregningsmodel else None,
-            'rate_element': self.rate_element.pk if self.rate_element else None,
-            'afgift': str(self.afgift),
-            'rate_procent': str(self.rate_procent),
-            'rate_pr_kg': str(self.rate_pr_kg)
+            "beregningsmodel": self.beregningsmodel.pk
+            if self.beregningsmodel
+            else None,
+            "rate_element": self.rate_element.pk if self.rate_element else None,
+            "afgift": str(self.afgift),
+            "rate_procent": str(self.rate_procent),
+            "rate_pr_kg": str(self.rate_pr_kg),
         }
 
     def rate_string(self):
         lines = []
         if self.rate_pr_kg:
-            lines.append(_('%s kr/kg') % str(self.rate_pr_kg).replace('.', ','))
+            lines.append(_("%s kr/kg") % str(self.rate_pr_kg).replace(".", ","))
         if self.rate_procent:
-            lines.append(_('%s %%') % str(self.rate_procent).replace('.', ','))
-        return '+'.join(lines)
+            lines.append(_("%s %%") % str(self.rate_procent).replace(".", ","))
+        return "+".join(lines)
 
 
 class BeregningsModel(models.Model):
@@ -421,6 +421,7 @@ class BeregningsModel(models.Model):
     @property
     def specific(self):
         instance = self
+        # https://docs.python.org/3/whatsnew/3.8.html#assignment-expressions
         while (next := instance.subclass_instance) != instance:
             instance = next
         return instance
@@ -439,15 +440,15 @@ class BeregningsModel2021(BeregningsModel):
         on_delete=models.CASCADE,
         parent_link=True,
         primary_key=True,
-        related_name='subclass_instance',
+        related_name="subclass_instance",
     )
 
     transport_afgift_rate = models.DecimalField(
         max_digits=4,
         decimal_places=2,
-        verbose_name=_('Transportafgift i procent'),
+        verbose_name=_("Transportafgift i procent"),
         null=True,
-        default=None
+        default=None,
     )
 
     def get_satstabelelement(self, indberetninglinje):
@@ -474,7 +475,7 @@ class BeregningsModel2021(BeregningsModel):
         rate_procent = sats.rate_procent or 0
         rate_pr_kg = sats.rate_pr_kg or 0
         vaegt = indberetninglinje.levende_vægt or 0
-        pris = (indberetninglinje.salgspris or 0)
+        pris = indberetninglinje.salgspris or 0
         if indberetninglinje.transporttillæg:
             pris += indberetninglinje.transporttillæg
         elif indberetninglinje.bonus:
@@ -483,7 +484,7 @@ class BeregningsModel2021(BeregningsModel):
         # Hvis table_entry er korrekt konstrueret, vil kun ét af disse led være != 0
         afgift = (rate_pr_kg * vaegt) + (rate_procent * Decimal(0.01) * pris)
 
-        afgift_item.afgift = afgift.quantize(Decimal('.01'), rounding=ROUND_HALF_EVEN)
+        afgift_item.afgift = afgift.quantize(Decimal(".01"), rounding=ROUND_HALF_EVEN)
         afgift_item.calculation_model = self
         afgift_item.rate_element = sats
         afgift_item.rate_pr_kg = rate_pr_kg
@@ -494,9 +495,9 @@ class BeregningsModel2021(BeregningsModel):
 
 class Prisme10QBatch(models.Model):
     class Meta:
-        ordering = ['oprettet_tidspunkt']
-        verbose_name = _('prisme 10Q batch')
-        verbose_name_plural = _('prisme 10Q batches')
+        ordering = ["oprettet_tidspunkt"]
+        verbose_name = _("prisme 10Q batch")
+        verbose_name_plural = _("prisme 10Q batches")
 
     # When was the batch created
     oprettet_tidspunkt = models.DateTimeField(auto_now=True)
@@ -506,7 +507,7 @@ class Prisme10QBatch(models.Model):
         on_delete=models.PROTECT,
         null=True,
         blank=True,
-        related_name='created_prisme_batches',
+        related_name="created_prisme_batches",
     )
     # When was the batch delivered
     leveret_tidspunkt = models.DateTimeField(blank=True, null=True)
@@ -516,105 +517,144 @@ class Prisme10QBatch(models.Model):
         on_delete=models.PROTECT,
         null=True,
         blank=True,
-        related_name='prisme_batches',
+        related_name="prisme_batches",
     )
     # Any error encountered while trying to deliver the batch
-    fejlbesked = models.TextField(blank=True, default='')
+    fejlbesked = models.TextField(blank=True, default="")
 
     # Status for delivery
-    STATUS_CREATED = 'created'
-    STATUS_DELIVERING = 'delivering'
-    STATUS_DELIVERY_FAILED = 'failed'
-    STATUS_DELIVERED = 'delivered'
-    STATUS_CANCELLED = 'cancelled'
+    STATUS_CREATED = "created"
+    STATUS_DELIVERING = "delivering"
+    STATUS_DELIVERY_FAILED = "failed"
+    STATUS_DELIVERED = "delivered"
+    STATUS_CANCELLED = "cancelled"
 
     status_choices = (
-        (STATUS_CREATED, _('Ikke afsendt')),
-        (STATUS_DELIVERING, _('Afsender')),
-        (STATUS_DELIVERY_FAILED, _('Afsendelse fejlet')),
-        (STATUS_DELIVERED, _('Afsendt')),
-        (STATUS_CANCELLED, _('Annulleret'))
+        (STATUS_CREATED, _("Ikke afsendt")),
+        (STATUS_DELIVERING, _("Afsender")),
+        (STATUS_DELIVERY_FAILED, _("Afsendelse fejlet")),
+        (STATUS_DELIVERED, _("Afsendt")),
+        (STATUS_CANCELLED, _("Annulleret")),
     )
 
     status = models.CharField(
-        choices=status_choices,
-        default=STATUS_CREATED,
-        max_length=15
+        choices=status_choices, default=STATUS_CREATED, max_length=15
     )
 
-    g69transactionwriter = G69TransactionWriter(registreringssted=0, organisationsenhed=0)
+    g69transactionwriter = G69TransactionWriter(
+        registreringssted=0, organisationsenhed=0
+    )
 
     def get_prisme10Q_content(self, max_entries=None, fakturaer=None):
         if fakturaer is None:
             fakturaer = self.fakturaer.filter(bogført__isnull=True)
         if max_entries is not None:
             fakturaer = fakturaer[:max_entries]
-        return '\r\n'.join([faktura.prisme10Q_content for faktura in fakturaer])
+        return "\r\n".join([faktura.prisme10Q_content for faktura in fakturaer])
 
     def get_prismeG69_content(self, max_entries=None, fakturaer=None):
         if fakturaer is None:
             fakturaer = self.fakturaer.filter(bogført__isnull=True)
         if max_entries is not None:
             fakturaer = fakturaer[:max_entries]
-        return '\r\n'.join([faktura.prismeG69_content(self.g69transactionwriter) for faktura in fakturaer])
+        return "\r\n".join(
+            [
+                faktura.prismeG69_content(self.g69transactionwriter)
+                for faktura in fakturaer
+            ]
+        )
 
     destinations_all = (
-        ('10q_development', _('Undervisningssystem')),
-        ('10q_production', _('Produktionssystem')),
+        ("10q_development", _("Undervisningssystem")),
+        ("10q_production", _("Produktionssystem")),
     )
-    destinations_available = tuple((
-        (destination_id, label,)
-        for destination_id, label in destinations_all
-        if settings.PRISME_PUSH['destinations_available'][destination_id]
-    ))
-    completion_statuses = {
-        '10q_production': STATUS_DELIVERED,
-        '10q_development': None
-    }
+    destinations_available = tuple(
+        (
+            (
+                destination_id,
+                label,
+            )
+            for destination_id, label in destinations_all
+            if settings.PRISME_PUSH["destinations_available"][destination_id]
+        )
+    )
+    completion_statuses = {"10q_production": STATUS_DELIVERED, "10q_development": None}
 
     def send(self, user, force_send_to_test=False, callback=None):
         try:
-            if settings.PRISME_PUSH['mock']:
-                destinations_available = {'10q_production': False, '10q_development': True}
+            if settings.PRISME_PUSH["mock"]:
+                destinations_available = {
+                    "10q_production": False,
+                    "10q_development": True,
+                }
             else:
-                destinations_available = settings.PRISME_PUSH['destinations_available']
+                destinations_available = settings.PRISME_PUSH["destinations_available"]
             # Send to prod if it is available, fall back to dev
-            destination = '10q_production' \
-                if destinations_available['10q_production'] and not force_send_to_test else \
-                '10q_development'
+            destination = (
+                "10q_production"
+                if destinations_available["10q_production"] and not force_send_to_test
+                else "10q_development"
+            )
 
-            self.fejlbesked = ''
+            self.fejlbesked = ""
             # Extra check for chosen destination
-            available = {destination_id for destination_id, label in list(Prisme10QBatch.destinations_available)}
+            available = {
+                destination_id
+                for destination_id, label in list(Prisme10QBatch.destinations_available)
+            }
             if destination not in available:
-                available_csep = ', '.join(available)
-                raise ValueError(f"Kan ikke sende batch til {destination}, det er kun {available_csep} der er tilgængelig på dette system")
+                available_csep = ", ".join(available)
+                raise ValueError(
+                    f"Kan ikke sende batch til {destination}, det er kun {available_csep} der er tilgængelig på dette system"
+                )
 
             fakturaer = self.fakturaer.filter(bogført__isnull=True)
 
-            destination_folder = settings.PRISME_PUSH['dirs'][destination]
+            destination_folder = settings.PRISME_PUSH["dirs"][destination]
             # When sending to development environment, only send 100 entries
-            max_entries = 100 if destination == '10q_development' else None
+            max_entries = 100 if destination == "10q_development" else None
 
-            content_10q = self.get_prisme10Q_content(max_entries=max_entries, fakturaer=fakturaer)
-            content_g69 = self.get_prismeG69_content(max_entries=max_entries, fakturaer=fakturaer)
+            content_10q = self.get_prisme10Q_content(
+                max_entries=max_entries, fakturaer=fakturaer
+            )
+            content_g69 = self.get_prismeG69_content(
+                max_entries=max_entries, fakturaer=fakturaer
+            )
 
-            if settings.PRISME_PUSH['mock']:
+            if settings.PRISME_PUSH["mock"]:
                 # Debugging on local environment, output contents to stdout
-                logger.info(f"10Q data som ville blive sendt til {destination}: \n------------\n{content_10q}\n------------")
-                logger.info(f"G69 data som ville blive sendt til {destination}: \n------------\n{content_g69}\n------------")
+                logger.info(
+                    f"10Q data som ville blive sendt til {destination}: \n------------\n{content_10q}\n------------"
+                )
+                logger.info(
+                    f"G69 data som ville blive sendt til {destination}: \n------------\n{content_g69}\n------------"
+                )
             else:
                 connection_settings = {
-                    'host': settings.PRISME_PUSH['host'],
-                    'port': settings.PRISME_PUSH['port'],
-                    'username': settings.PRISME_PUSH['username'],
-                    'password': settings.PRISME_PUSH['password'],
-                    'known_hosts': settings.PRISME_PUSH['known_hosts'],
+                    "host": settings.PRISME_PUSH["host"],
+                    "port": settings.PRISME_PUSH["port"],
+                    "username": settings.PRISME_PUSH["username"],
+                    "password": settings.PRISME_PUSH["password"],
+                    "known_hosts": settings.PRISME_PUSH["known_hosts"],
                 }
-                filename_10q = "KAS_10Q_export_{}.10q".format(timezone.now().strftime('%Y-%m-%dT%H-%M-%S'))
-                filename_g69 = "KAS_G69_export_{}.g69".format(timezone.now().strftime('%Y-%m-%dT%H-%M-%S'))
-                put_file_in_prisme_folder(connection_settings, BytesIO(content_10q.encode('utf-8')), destination_folder, filename_10q)
-                put_file_in_prisme_folder(connection_settings, BytesIO(content_g69.encode('utf-8')), destination_folder, filename_g69)
+                filename_10q = "KAS_10Q_export_{}.10q".format(
+                    timezone.now().strftime("%Y-%m-%dT%H-%M-%S")
+                )
+                filename_g69 = "KAS_G69_export_{}.g69".format(
+                    timezone.now().strftime("%Y-%m-%dT%H-%M-%S")
+                )
+                put_file_in_prisme_folder(
+                    connection_settings,
+                    BytesIO(content_10q.encode("utf-8")),
+                    destination_folder,
+                    filename_10q,
+                )
+                put_file_in_prisme_folder(
+                    connection_settings,
+                    BytesIO(content_g69.encode("utf-8")),
+                    destination_folder,
+                    filename_g69,
+                )
                 self.leveret_af = user
                 self.leveret_tidspunkt = timezone.now()
 
@@ -631,30 +671,20 @@ class Prisme10QBatch(models.Model):
 class Faktura(models.Model):
 
     virksomhed = models.ForeignKey(
-        'indberetning.Virksomhed',
-        null=False,
-        on_delete=models.CASCADE
+        "indberetning.Virksomhed", null=False, on_delete=models.CASCADE
     )
 
     beløb = models.DecimalField(
         max_digits=12,
         decimal_places=2,
-        default=Decimal('0.0'),
+        default=Decimal("0.0"),
     )
 
-    betalingsdato = models.DateField(
-        null=False
-    )
+    betalingsdato = models.DateField(null=False)
 
-    opkrævningsdato = models.DateField(
-        null=True
-    )
+    opkrævningsdato = models.DateField(null=True)
 
-    periode = models.ForeignKey(
-        Afgiftsperiode,
-        on_delete=models.SET_NULL,
-        null=True
-    )
+    periode = models.ForeignKey(Afgiftsperiode, on_delete=models.SET_NULL, null=True)
 
     opretter = models.ForeignKey(
         get_user_model(),
@@ -667,31 +697,27 @@ class Faktura(models.Model):
         null=False,
     )
 
-    bogført = models.DateField(
-        null=True
-    )
+    bogført = models.DateField(null=True)
 
-    kode = models.PositiveSmallIntegerField(
-        null=False
-    )
+    kode = models.PositiveSmallIntegerField(null=False)
 
     batch = models.ForeignKey(
         Prisme10QBatch,
         null=True,
         on_delete=models.CASCADE,
-        related_name='fakturaer',
+        related_name="fakturaer",
     )
 
     @property
     def prisme10Q_content(self):
-        if settings.PRISME_PUSH['mock']:
+        if settings.PRISME_PUSH["mock"]:
             static_data = {
-                'project_id': 'ALIS',
-                'user_number': 0,
-                'payment_type': 0,
+                "project_id": "ALIS",
+                "user_number": 0,
+                "payment_type": 0,
             }
         else:
-            static_data = settings.PRISME_PUSH['fielddata']
+            static_data = settings.PRISME_PUSH["fielddata"]
         return TenQTransactionWriter(
             due_date=self.betalingsdato,
             last_payment_date=self.betalingsdato,
@@ -700,9 +726,9 @@ class Faktura(models.Model):
             periode_fra=self.periode.dato_fra,
             periode_til=self.periode.dato_til,
             faktura_no=self.id,
-            leverandoer_ident=static_data['project_id'],
-            bruger_nummer=static_data['user_number'],
-            betal_art=static_data['payment_type'],
+            leverandoer_ident=static_data["project_id"],
+            bruger_nummer=static_data["user_number"],
+            betal_art=static_data["payment_type"],
             opkraev_date=self.opkrævningsdato or self.betalingsdato,
         ).serialize_transaction(
             cpr_nummer=self.virksomhed.cvr,
@@ -715,26 +741,33 @@ class Faktura(models.Model):
     def prismeG69_content(self, writer):
         # Writer indeholder en tilstand som opdateres når Fakturaer udskrives. Basically en counter
         linje = self.linje
-        if settings.PRISME_PUSH['mock']:
+        if settings.PRISME_PUSH["mock"]:
             static_data = {
-                'project_id': 'ALIS',
-                'user_number': 0,
-                'payment_type': 0,
+                "project_id": "ALIS",
+                "user_number": 0,
+                "payment_type": 0,
             }
         else:
-            static_data = settings.PRISME_PUSH['fielddata']
-        tidtekst = _('{kvartal}. kvartal').format(kvartal=linje.indberetning.afgiftsperiode.kvartal_nummer)
-        tekst = ', '.join(filter(None, [
-            str(linje.produkttype.fiskeart),
-            str(linje.indhandlingssted) if linje.indhandlingssted else None,
-            tidtekst
-        ]))
+            static_data = settings.PRISME_PUSH["fielddata"]
+        tidtekst = _("{kvartal}. kvartal").format(
+            kvartal=linje.indberetning.afgiftsperiode.kvartal_nummer
+        )
+        tekst = ", ".join(
+            filter(
+                None,
+                [
+                    str(linje.produkttype.fiskeart),
+                    str(linje.indhandlingssted) if linje.indhandlingssted else None,
+                    tidtekst,
+                ],
+            )
+        )
         # den dato rederiet indberetter i web-siden for 1, 2, 3 kvartal,
         # hvis det er 4 kvartal, så skal dato være 31.12.2022
         posteringsdato = self.opkrævningsdato or self.betalingsdato
 
         return writer.serialize_transaction_pair(
-            maskinnr=int(static_data['user_number']),
+            maskinnr=int(static_data["user_number"]),
             eks_løbenr=self.id,
             post_dato=posteringsdato,
             kontonr=G69Code.for_indberetningslinje(linje).kode_int,
@@ -748,14 +781,18 @@ class Faktura(models.Model):
     @property
     def text(self):
         # Type afgift og hvilke kvartal, hvis det er indhandling, så skal der stå indhandlingssted og rederiets navn (60 tegn pr. linje)
-        textparts = ['Ressourcerenter', str(self.periode), f'({self.linje.produkttype})']
+        textparts = [
+            "Ressourcerenter",
+            str(self.periode),
+            f"({self.linje.produkttype})",
+        ]
         if self.linje.indhandlingssted:
             textparts.append(str(self.linje.indhandlingssted))
 
         # Split all parts so they're each <= 60 chars
         splitted_textparts = [x for part in textparts for x in self._split(part)]
 
-        lines = ['']
+        lines = [""]
         for part in splitted_textparts:
             last_line = lines[-1]
             # Each part is known to be less than 60 chars, so append them to lines until a line reaches 60 chars
@@ -763,18 +800,18 @@ class Faktura(models.Model):
                 # last_line + ' ' + part will be longer than 60, put part on new line
                 lines.append(part)
             else:
-                if last_line != '':
-                    lines[-1] += ' '  # Add space if not the first word in line
+                if last_line != "":
+                    lines[-1] += " "  # Add space if not the first word in line
                 lines[-1] += part
-        return '\r\n'.join(lines)
+        return "\r\n".join(lines)
 
     # Split a text into chunks with max length 60
     # first split by words, and if any words are longer, split them too
     def _split(self, text):
         if len(text) <= 60:
             return [text]
-        if ' ' in text:
-            return chain(*[self._split(p) for p in text.split(' ')])
+        if " " in text:
+            return chain(*[self._split(p) for p in text.split(" ")])
         halfpoint = int(len(text) / 2)
         return chain(self._split(text[0:halfpoint]), self._split(text[halfpoint:]))
 
@@ -796,31 +833,27 @@ class Faktura(models.Model):
 
 
 class G69Code(models.Model):
-    år = models.PositiveSmallIntegerField(
-        null=False
-    )
+    år = models.PositiveSmallIntegerField(null=False)
     produkttype = models.ForeignKey(
         ProduktType,
         null=False,
         on_delete=models.PROTECT,
     )
     sted = models.ForeignKey(
-        'indberetning.Indhandlingssted',
+        "indberetning.Indhandlingssted",
         null=False,
         on_delete=models.PROTECT,
     )
     fangsttype = models.CharField(
         null=False,
-        default='indhandling',
+        default="indhandling",
         max_length=11,
-        choices=((x, x) for x in ('havgående', 'indhandling', 'kystnært', 'svalbard')),
+        choices=((x, x) for x in ("havgående", "indhandling", "kystnært", "svalbard")),
     )
-    kode = models.CharField(
-        max_length=15
-    )
+    kode = models.CharField(max_length=15)
 
     class Meta:
-        unique_together = ['år', 'produkttype', 'sted', 'fangsttype']
+        unique_together = ["år", "produkttype", "sted", "fangsttype"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -828,12 +861,14 @@ class G69Code(models.Model):
             self.update_kode()
 
     def update_kode(self):
-        self.kode = ''.join([
-            str(self.år).zfill(2)[-2:],
-            str(self.sted.stedkode)[-6:].zfill(6),
-            str(self.produkttype.fiskeart.kode)[-2:].zfill(2),
-            str(self.produkttype.get_aktivitetskode(self.fangsttype))[-5:].zfill(5),
-        ])
+        self.kode = "".join(
+            [
+                str(self.år).zfill(2)[-2:],
+                str(self.sted.stedkode)[-6:].zfill(6),
+                str(self.produkttype.fiskeart.kode)[-2:].zfill(2),
+                str(self.produkttype.get_aktivitetskode(self.fangsttype))[-5:].zfill(5),
+            ]
+        )
 
     @property
     def kode_int(self):
@@ -873,6 +908,7 @@ class G69Code(models.Model):
     def for_year(år):
         codes = []
         from indberetning.models import Indhandlingssted
+
         for produkttype in ProduktType.objects.all():
             if produkttype.gruppe is not None:
                 continue
@@ -880,26 +916,28 @@ class G69Code(models.Model):
             if len(fangsttyper):
                 for sted in Indhandlingssted.objects.all():
                     for fangsttype in fangsttyper:
-                        codes.append(G69Code(
-                            år=år,
-                            produkttype=produkttype,
-                            fangsttype=fangsttype,
-                            sted=sted
-                        ))
+                        codes.append(
+                            G69Code(
+                                år=år,
+                                produkttype=produkttype,
+                                fangsttype=fangsttype,
+                                sted=sted,
+                            )
+                        )
         return codes
 
     @staticmethod
     def get_spreadsheet_headers():
         return [
-            ("kode", _('G69-Kode')),
-            ("skatteår", _('År')),
-            ("fangsttype", _('Fangsttype')),
-            ("aktivitet_kode", _('Aktivitetskode')),
-            ("fiskeart_navn", _('Fiskeart')),
-            ("fiskeart_kode", _('Fiskeart kode')),
-            ("sted_navn", _('Sted')),
-            ("sted_kode", _('Stedkode')),
-            ("grønlandsk", _('Grønlandsk fartøj'))
+            ("kode", _("G69-Kode")),
+            ("skatteår", _("År")),
+            ("fangsttype", _("Fangsttype")),
+            ("aktivitet_kode", _("Aktivitetskode")),
+            ("fiskeart_navn", _("Fiskeart")),
+            ("fiskeart_kode", _("Fiskeart kode")),
+            ("sted_navn", _("Sted")),
+            ("sted_kode", _("Stedkode")),
+            ("grønlandsk", _("Grønlandsk fartøj")),
         ]
 
     @staticmethod
@@ -917,70 +955,62 @@ class G69Code(models.Model):
                 "fiskeart_kode": item.produkttype.fiskeart.kode,
                 "sted_navn": item.sted.navn,
                 "sted_kode": item.sted.stedkode,
-                "grønlandsk": G69Code._yesnoblank(item.produkttype.fartoej_groenlandsk)
+                "grønlandsk": G69Code._yesnoblank(item.produkttype.fartoej_groenlandsk),
             }
             if collapse:
-                if row['kode'] not in collapsed_data:
-                    collapsed_data[row['kode']] = row
+                if row["kode"] not in collapsed_data:
+                    collapsed_data[row["kode"]] = row
                 else:
-                    collapsed_data[row['kode']]['fangsttype'] = ''
+                    collapsed_data[row["kode"]]["fangsttype"] = ""
             else:
                 data.append(row)
 
         if collapse:
             data = list(collapsed_data.values())
-        data.sort(key=lambda c: (c['kode'], c['skatteår'], c['fangsttype']))
+        data.sort(key=lambda c: (c["kode"], c["skatteår"], c["fangsttype"]))
 
-        return {
-            'headers': G69Code.get_spreadsheet_headers(),
-            'data': data
-        }
+        return {"headers": G69Code.get_spreadsheet_headers(), "data": data}
 
     @staticmethod
     def _yesnoblank(value):
         if value is True:
-            return _('Ja')
+            return _("Ja")
         if value is False:
-            return _('Nej')
-        return ''
+            return _("Nej")
+        return ""
 
 
-pre_save.connect(G69Code.update_kode_signal, G69Code, dispatch_uid='G69_update_kode_signal')
+pre_save.connect(
+    G69Code.update_kode_signal, G69Code, dispatch_uid="G69_update_kode_signal"
+)
 
 
 def g69_export_filepath(instance, filename):
-    return 'g69export/{år}/{filename}'.format(år=instance.år, filename=filename)
+    return "g69export/{år}/{filename}".format(år=instance.år, filename=filename)
 
 
 class G69CodeExport(models.Model):
 
-    uuid = models.UUIDField(
-        primary_key=True,
-        default=uuid4
-    )
+    uuid = models.UUIDField(primary_key=True, default=uuid4)
 
     år = models.PositiveSmallIntegerField(
         null=False,
     )
 
-    excel_file = models.FileField(
-        upload_to=g69_export_filepath
-    )
+    excel_file = models.FileField(upload_to=g69_export_filepath)
 
-    created_date = models.DateTimeField(
-        auto_now_add=True
-    )
+    created_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ('-år', '-created_date')
+        ordering = ("-år", "-created_date")
 
     def generate_spreadsheet_excel(self):
         raw_data = G69Code.get_spreadsheet_raw(self.år)
         wb = Workbook(write_only=True)
         ws = wb.create_sheet()
 
-        ws.append([header[1] for header in raw_data['headers']])
+        ws.append([header[1] for header in raw_data["headers"]])
 
-        for row in raw_data['data']:
-            ws.append([row[header[0]] for header in raw_data['headers']])
+        for row in raw_data["data"]:
+            ws.append([row[header[0]] for header in raw_data["headers"]])
         wb.save(self.excel_file)

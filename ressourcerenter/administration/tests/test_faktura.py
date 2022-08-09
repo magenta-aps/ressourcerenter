@@ -13,35 +13,44 @@ from tenQ.writer import G69TransactionWriter
 
 
 class FakturaTestCase(TestCase):
-
     def setUp(self):
         super().setUp()
         self.user = get_user_model().objects.create(username="TestUser")
-        self.skematype, _ = SkemaType.objects.get_or_create(id=1, defaults={'navn_dk': 'Havgående'})
-        self.fiskeart, _ = FiskeArt.objects.get_or_create(navn_dk='Makrel')
+        self.skematype, _ = SkemaType.objects.get_or_create(
+            id=1, defaults={"navn_dk": "Havgående"}
+        )
+        self.fiskeart, _ = FiskeArt.objects.get_or_create(navn_dk="Makrel")
         self.fiskeart.skematype.set([self.skematype])
         self.produkttype, _ = ProduktType.objects.get_or_create(
-            fiskeart=self.fiskeart,
-            fartoej_groenlandsk=False
+            fiskeart=self.fiskeart, fartoej_groenlandsk=False
         )
-        self.sted = Indhandlingssted.objects.get(navn='Nuuk')
+        self.sted = Indhandlingssted.objects.get(navn="Nuuk")
 
     def test_text_split(self):
         virksomhed = Virksomhed.objects.create(cvr=1234, sted=self.sted)
-        periode = Afgiftsperiode(navn_dk='x'*200, dato_fra=date(2022, 1, 1), dato_til=date(2022, 3, 31))
-        indberetning = Indberetning(afgiftsperiode=periode, skematype=self.skematype, virksomhed=virksomhed)
+        periode = Afgiftsperiode(
+            navn_dk="x" * 200, dato_fra=date(2022, 1, 1), dato_til=date(2022, 3, 31)
+        )
+        indberetning = Indberetning(
+            afgiftsperiode=periode, skematype=self.skematype, virksomhed=virksomhed
+        )
         linje = IndberetningLinje(
             indberetning=indberetning,
             produkttype=ProduktType.objects.get(
-                fiskeart__navn_dk='Makrel',
-                fartoej_groenlandsk=False
+                fiskeart__navn_dk="Makrel", fartoej_groenlandsk=False
             ),
             levende_vægt=1000,
-            salgspris=10000
+            salgspris=10000,
         )
         faktura = Faktura(
-            virksomhed=virksomhed, beløb=Decimal(200), betalingsdato=date(2022, 7, 1), opkrævningsdato=date(2022, 7, 1),
-            kode=123, opretter=self.user, periode=periode, linje=linje
+            virksomhed=virksomhed,
+            beløb=Decimal(200),
+            betalingsdato=date(2022, 7, 1),
+            opkrævningsdato=date(2022, 7, 1),
+            kode=123,
+            opretter=self.user,
+            periode=periode,
+            linje=linje,
         )
         for line in faktura.text.splitlines():
             self.assertFalse(len(line) > 60)
@@ -50,36 +59,33 @@ class FakturaTestCase(TestCase):
         virksomhed = Virksomhed.objects.create(cvr=1234, sted=self.sted)
         betalingsdato = date(2022, 1, 1)
         beregningsmodel = BeregningsModel2021.objects.create(
-            navn='FakturaTestBeregningsModel'
+            navn="FakturaTestBeregningsModel"
         )
         periode = Afgiftsperiode.objects.create(
             beregningsmodel=beregningsmodel,
-            navn_dk='testperiode',
+            navn_dk="testperiode",
             dato_fra=date(2022, 1, 1),
-            dato_til=date(2022, 3, 31)
+            dato_til=date(2022, 3, 31),
         )
         sats = SatsTabelElement.objects.get(
             periode=periode,
             skematype=self.skematype,
             fiskeart=self.fiskeart,
-            fartoej_groenlandsk=False
+            fartoej_groenlandsk=False,
         )
         sats.rate_procent = None
         sats.rate_pr_kg = 1
         sats.save()
         indberetning = Indberetning.objects.create(
-            afgiftsperiode=periode,
-            skematype=self.skematype,
-            virksomhed=virksomhed
+            afgiftsperiode=periode, skematype=self.skematype, virksomhed=virksomhed
         )
         linje = IndberetningLinje.objects.create(
             indberetning=indberetning,
             produkttype=ProduktType.objects.get(
-                fiskeart__navn_dk='Makrel',
-                fartoej_groenlandsk=False
+                fiskeart__navn_dk="Makrel", fartoej_groenlandsk=False
             ),
             levende_vægt=1000,
-            salgspris=10000
+            salgspris=10000,
         )
         linje.indberetningstidspunkt = datetime(2022, 3, 21, 12, 0, 0)
         linje.calculate_afgift()
@@ -90,11 +96,14 @@ class FakturaTestCase(TestCase):
             betalingsdato=betalingsdato,
             kode=123,
             opretter=self.user,
-            periode=periode, linje=linje,
-            opkrævningsdato=Faktura.get_opkrævningsdato(linje.indberetningstidspunkt.date())
+            periode=periode,
+            linje=linje,
+            opkrævningsdato=Faktura.get_opkrævningsdato(
+                linje.indberetningstidspunkt.date()
+            ),
         )
         self.assertEquals(
             faktura.prismeG69_content(writer),
             "000G6900001000001NORFLYD&10300000&1040000001&11020220321&111220104600110022&112000000100000 &113D&13203&1330000001234&153Makrel, 1. kvartal&2501\r\n"
-            "000G6900002000001NORFLYD&10300000&1040000001&11020220321&111220104600110022&112000000100000 &113K&13203&1330000001234&153Makrel, 1. kvartal&2501"
+            "000G6900002000001NORFLYD&10300000&1040000001&11020220321&111220104600110022&112000000100000 &113K&13203&1330000001234&153Makrel, 1. kvartal&2501",
         )

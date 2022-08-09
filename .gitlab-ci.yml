@@ -35,8 +35,10 @@ Lint Python:
     - .lint-default
   before_script:
     - pip3 install flake8
+    - pip3 install black
   script:
-    - flake8 --ignore E501,E226 ressourcerenter
+    - flake8 --ignore E501,E226,W503 ressourcerenter
+    - black --check --diff --exclude=migrations ressourcerenter/
 
 Lint Dockerfiles:
   extends:

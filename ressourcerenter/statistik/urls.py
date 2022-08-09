@@ -6,6 +6,6 @@ from statistik.views import StatistikView, StatistikChoicesView
 app_name = StatistikConfig.name
 
 urlpatterns = [
-    path('', StatistikView.as_view(), name='frontpage'),
-    path('choices', StatistikChoicesView.as_view(), name='choices'),
+    path("", StatistikView.as_view(), name="frontpage"),
+    path("choices", StatistikChoicesView.as_view(), name="choices"),
 ]

@@ -6,8 +6,17 @@ from django.conf import settings
 class DatafordelerClient(object):
     combined_service_page_size = 400
 
-    def __init__(self, mock=None, client_header=None, service_header_cvr=None,
-                 certificate=None, private_key=None, url=None, root_ca=True, timeout=10):
+    def __init__(
+        self,
+        mock=None,
+        client_header=None,
+        service_header_cvr=None,
+        certificate=None,
+        private_key=None,
+        url=None,
+        root_ca=True,
+        timeout=10,
+    ):
 
         self._mock = mock
 
@@ -20,10 +29,10 @@ class DatafordelerClient(object):
             self._root_ca = root_ca
             self._timeout = timeout
             self._session = Session()
-            self._session.headers.update({'Uxp-Client': client_header})
+            self._session.headers.update({"Uxp-Client": client_header})
 
     def __del__(self):
-        if hasattr(self, '_session'):
+        if hasattr(self, "_session"):
             self._session.close()
 
     @classmethod
@@ -51,7 +60,12 @@ class DatafordelerClient(object):
 
     def _get(self, number, service_header):
         url = urljoin(self._url, number)
-        r = self._session.get(url, cert=self._cert, verify=self._root_ca, timeout=self._timeout,
-                              headers={'Uxp-Service': service_header})
+        r = self._session.get(
+            url,
+            cert=self._cert,
+            verify=self._root_ca,
+            timeout=self._timeout,
+            headers={"Uxp-Service": service_header},
+        )
         r.raise_for_status()
         return r.json()
