@@ -6,10 +6,14 @@ from datetime import date
 
 
 class Command(BaseCommand):
-    help = 'Get Prisme Kontoudtog'
+    help = "Get Prisme Kontoudtog"
 
     def handle(self, *args, **options):
-        manglende_fakturaer = Faktura.objects.filter(bogført=None).order_by('oprettet').select_related('virksomhed')
+        manglende_fakturaer = (
+            Faktura.objects.filter(bogført=None)
+            .order_by("oprettet")
+            .select_related("virksomhed")
+        )
         by_cvr = {}
         for faktura in manglende_fakturaer:
             cvr = faktura.virksomhed.cvr
@@ -32,9 +36,12 @@ class Command(BaseCommand):
                 for transaction in response:
                     faktura_id = transaction.extern_invoice_number
                     if faktura_id is not None:
-                        bogført_dato = date.fromisoformat(transaction.accounting_date) \
-                            if transaction.accounting_date else date.today()
+                        bogført_dato = (
+                            date.fromisoformat(transaction.accounting_date)
+                            if transaction.accounting_date
+                            else date.today()
+                        )
                         faktura = by_cvr[cvr].get(int(faktura_id))
                         if faktura is not None:
                             faktura.bogført = bogført_dato
-                            faktura.save(update_fields=['bogført'])
+                            faktura.save(update_fields=["bogført"])

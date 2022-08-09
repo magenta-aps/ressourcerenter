@@ -9,19 +9,18 @@ from django.core.exceptions import ValidationError
 
 
 class TestLocalizedDecimalField(TestCase):
-
-    @translation.override('da-DK')
+    @translation.override("da-DK")
     def test_danish(self):
-        self.assertEqual('da-dk', translation.get_language())
-        self.assertEqual(get_format('DECIMAL_SEPARATOR'), ',')
-        self.assertEqual(get_format('THOUSAND_SEPARATOR'), '.')
+        self.assertEqual("da-dk", translation.get_language())
+        self.assertEqual(get_format("DECIMAL_SEPARATOR"), ",")
+        self.assertEqual(get_format("THOUSAND_SEPARATOR"), ".")
         field = LocalizedDecimalField()
-        self.assertEqual(field.clean('1200,25'), Decimal('1200.25'))
+        self.assertEqual(field.clean("1200,25"), Decimal("1200.25"))
         with self.assertRaises(ValidationError):
             # We disallow dot in numbers
-            field.clean('1.200,25')
+            field.clean("1.200,25")
 
-    @translation.override('kl')
+    @translation.override("kl")
     def test_greenlandic(self):
         """
         kl is not a language and therefore not a locale.
@@ -33,13 +32,13 @@ class TestLocalizedDecimalField(TestCase):
         # DECIMAL_SEPARATOR = ","
         # THOUSAND_SEPARATOR = '.'
         """
-        self.assertEqual('kl', translation.get_language())
+        self.assertEqual("kl", translation.get_language())
         field = LocalizedDecimalField()
-        self.assertEqual(get_format('DECIMAL_SEPARATOR'), ',')
-        self.assertEqual(get_format('THOUSAND_SEPARATOR'), '.')
-        self.assertEqual(field.clean('1200,25'), Decimal('1200.25'))
+        self.assertEqual(get_format("DECIMAL_SEPARATOR"), ",")
+        self.assertEqual(get_format("THOUSAND_SEPARATOR"), ".")
+        self.assertEqual(field.clean("1200,25"), Decimal("1200.25"))
         with self.assertRaises(ValidationError):
-            field.clean('1.200,25')
+            field.clean("1.200,25")
 
     # @translation.override('en')
     # def test_english(self):

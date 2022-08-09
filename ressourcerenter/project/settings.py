@@ -19,73 +19,73 @@ from django.utils.translation import gettext_lazy as _
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
-DEBUG = strtobool(os.environ.get('DJANGO_DEBUG', 'False'))
+SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
+DEBUG = strtobool(os.environ.get("DJANGO_DEBUG", "False"))
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'simple_history',
-    'administration',
-    'indberetning',
-    'statistik',
-    'watchman',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "simple_history",
+    "administration",
+    "indberetning",
+    "statistik",
+    "watchman",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'project.middleware.permissions.PermissionMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'simple_history.middleware.HistoryRequestMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "project.middleware.permissions.PermissionMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
-ROOT_URLCONF = 'project.urls'
+ROOT_URLCONF = "project.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'project.wsgi.application'
-ASGI_APPLICATION = 'project.asgi.application'
+WSGI_APPLICATION = "project.wsgi.application"
+ASGI_APPLICATION = "project.asgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ['POSTGRES_DB'],
-        'USER': os.environ['POSTGRES_USER'],
-        'PASSWORD': os.environ['POSTGRES_PASSWORD'],
-        'HOST': os.environ['POSTGRES_HOST'],
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": os.environ["POSTGRES_DB"],
+        "USER": os.environ["POSTGRES_USER"],
+        "PASSWORD": os.environ["POSTGRES_PASSWORD"],
+        "HOST": os.environ["POSTGRES_HOST"],
     },
 }
 
@@ -95,16 +95,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -112,19 +112,19 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 USE_TZ = True
-TIME_ZONE = os.environ['DJANGO_TIMEZONE']
-LANGUAGE_CODE = 'da-DK'
+TIME_ZONE = os.environ["DJANGO_TIMEZONE"]
+LANGUAGE_CODE = "da-DK"
 USE_I18N = True
 USE_L10N = True
 LANGUAGES = [
-    ('da', _('Danish')),
-    ('kl', _('Greenlandic')),
+    ("da", _("Danish")),
+    ("kl", _("Greenlandic")),
 ]
 DECIMAL_SEPARATOR = ","
-THOUSAND_SEPARATOR = '.'
+THOUSAND_SEPARATOR = "."
 USE_THOUSAND_SEPARATOR = True
 
-UPLOAD_PATH = '/uploads'
+UPLOAD_PATH = "/uploads"
 MEDIA_ROOT = "/srv/media/"
 MEDIA_URL = "/media/"
 
@@ -133,119 +133,121 @@ MEDIA_URL = "/media/"
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 
 # URLS for django login/logout used by administrators.
-LOGIN_URL = 'administration:login'
+LOGIN_URL = "administration:login"
 
-LOGOUT_REDIRECT_URL = 'administration:login'
-LOGIN_REDIRECT_URL = 'administration:postlogin'
-LOGIN_PROVIDER_CLASS = 'indberetning.login.openid.OpenId'
+LOGOUT_REDIRECT_URL = "administration:login"
+LOGIN_REDIRECT_URL = "administration:postlogin"
+LOGIN_PROVIDER_CLASS = "indberetning.login.openid.OpenId"
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 OPENID = {
-    'mock': os.environ.get('LOGIN_MOCK'),
-    'scope': os.environ.get('OPENID_SCOPE'),
-    'client_id': os.environ.get('OPENID_CLIENT_ID'),
-    'private_key': '/ssl/ressourcerenter_openid.key',
-    'certificate': '/ssl/ressourcerenter_openid.cert',
-    'issuer': os.environ.get('OPENID_ISSUER'),
-    'logout_uri': os.environ.get('OPENID_LOGOUT_URI'),
-    'front_channel_logout_uri': os.environ.get('OPENID_FRONT_CHANNEL_LOGOUT_URI'),
-    'post_logout_redirect_uri': os.environ.get('OPENID_POST_LOGOUT_REDIRECT_URI'),
-    'login_callback_url': os.environ.get('OPENID_LOGIN_CALLBACK')
+    "mock": os.environ.get("LOGIN_MOCK"),
+    "scope": os.environ.get("OPENID_SCOPE"),
+    "client_id": os.environ.get("OPENID_CLIENT_ID"),
+    "private_key": "/ssl/ressourcerenter_openid.key",
+    "certificate": "/ssl/ressourcerenter_openid.cert",
+    "issuer": os.environ.get("OPENID_ISSUER"),
+    "logout_uri": os.environ.get("OPENID_LOGOUT_URI"),
+    "front_channel_logout_uri": os.environ.get("OPENID_FRONT_CHANNEL_LOGOUT_URI"),
+    "post_logout_redirect_uri": os.environ.get("OPENID_POST_LOGOUT_REDIRECT_URI"),
+    "login_callback_url": os.environ.get("OPENID_LOGIN_CALLBACK"),
 }
 
 DAFO = {
-    'mock': strtobool(os.environ.get('PITU_MOCK', 'False')),
-    'certificate': '/ssl/kas+ressourcerenter.cert',
-    'private_key': '/ssl/kas+ressourcerenter.key',
-    'root_ca': '/ssl/pitu_ca.cert',
-    'service_header_cvr': os.environ.get('PITU_UXP_SERVICE_CVR'),
-    'client_header': os.environ.get('PITU_UXP_CLIENT'),
-    'url': os.environ.get('PITU_URL'),
+    "mock": strtobool(os.environ.get("PITU_MOCK", "False")),
+    "certificate": "/ssl/kas+ressourcerenter.cert",
+    "private_key": "/ssl/kas+ressourcerenter.key",
+    "root_ca": "/ssl/pitu_ca.cert",
+    "service_header_cvr": os.environ.get("PITU_UXP_SERVICE_CVR"),
+    "client_header": os.environ.get("PITU_UXP_CLIENT"),
+    "url": os.environ.get("PITU_URL"),
 }
 
 
 PRISME = {
-    'wsdl_file': os.environ.get('PRISME_WSDL', ''),
-    'auth': {
-        'basic': {
-            'username': os.environ.get('PRISME_USERNAME', ''),
-            'domain': os.environ.get('PRISME_DOMAIN', ''),
-            'password': os.environ.get('PRISME_PASSWORD', '')
+    "wsdl_file": os.environ.get("PRISME_WSDL", ""),
+    "auth": {
+        "basic": {
+            "username": os.environ.get("PRISME_USERNAME", ""),
+            "domain": os.environ.get("PRISME_DOMAIN", ""),
+            "password": os.environ.get("PRISME_PASSWORD", ""),
         }
     },
-    'proxy': {
-        'socks': os.environ.get('PRISME_SOCKS_PROXY')
-    }
+    "proxy": {"socks": os.environ.get("PRISME_SOCKS_PROXY")},
 }
 
 PRISME_PUSH = {
-    'mock': strtobool(os.environ.get('PRISME_PUSH_MOCK', 'false')),
-    'host': os.environ.get('PRISME_PUSH_HOST'),
-    'port': int(os.environ.get('PRISME_PUSH_PORT') or 22),
-    'username': os.environ.get('PRISME_PUSH_USERNAME'),
-    'password': os.environ.get('PRISME_PUSH_PASSWORD'),
-    'known_hosts': os.environ.get('PRISME_PUSH_KNOWN_HOSTS') or None,
-    'dirs': {
-        '10q_production': os.environ.get('PRISME_PUSH_DEST_PROD_PATH'),
-        '10q_development': os.environ.get('PRISME_PUSH_DEST_TEST_PATH'),
+    "mock": strtobool(os.environ.get("PRISME_PUSH_MOCK", "false")),
+    "host": os.environ.get("PRISME_PUSH_HOST"),
+    "port": int(os.environ.get("PRISME_PUSH_PORT") or 22),
+    "username": os.environ.get("PRISME_PUSH_USERNAME"),
+    "password": os.environ.get("PRISME_PUSH_PASSWORD"),
+    "known_hosts": os.environ.get("PRISME_PUSH_KNOWN_HOSTS") or None,
+    "dirs": {
+        "10q_production": os.environ.get("PRISME_PUSH_DEST_PROD_PATH"),
+        "10q_development": os.environ.get("PRISME_PUSH_DEST_TEST_PATH"),
     },
-    'destinations_available': {
-        '10q_production': strtobool(os.environ.get('PRISME_PUSH_DEST_PROD_AVAILABLE', 'false')),
-        '10q_development': strtobool(os.environ.get('PRISME_PUSH_DEST_TEST_AVAILABLE', 'true')),
+    "destinations_available": {
+        "10q_production": strtobool(
+            os.environ.get("PRISME_PUSH_DEST_PROD_AVAILABLE", "false")
+        ),
+        "10q_development": strtobool(
+            os.environ.get("PRISME_PUSH_DEST_TEST_AVAILABLE", "true")
+        ),
     },
-    'fielddata': {
+    "fielddata": {
         # System-identificerende streng der kommer på transaktioner i Prisme. Max 4 tegn
-        'project_id': os.environ.get('PRISME_PUSH_PROJECT_ID'),
+        "project_id": os.environ.get("PRISME_PUSH_PROJECT_ID"),
         # Brugernummer der kommer på transaktioner i Prisme. Max 4 tegn
-        'user_number': int(os.environ.get('PRISME_PUSH_USER_NUMBER') or 0),
+        "user_number": int(os.environ.get("PRISME_PUSH_USER_NUMBER") or 0),
         # Betalingsart der kommer på transaktioner i Prisme. Max 3 tegn
-        'payment_type': int(os.environ.get('PRISME_PUSH_PAYMENT_TYPE') or 0),
+        "payment_type": int(os.environ.get("PRISME_PUSH_PAYMENT_TYPE") or 0),
         # Kontonummer der danner bro i Prisme SEL
-        'account_number': int(os.environ.get('PRISME_PUSH_ACCOUNT_NUMBER') or 0),
+        "account_number": int(os.environ.get("PRISME_PUSH_ACCOUNT_NUMBER") or 0),
     },
 }
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'project/static')
-STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "project/static")
+STATIC_URL = "/static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 WHITENOISE_USE_FINDERS = True
 
 # Skip health_check for cache layer since we are not using it
-WATCHMAN_CHECKS = ('watchman.checks.databases', 'watchman.checks.storage')
+WATCHMAN_CHECKS = ("watchman.checks.databases", "watchman.checks.storage")
 
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
         },
     },
-    'handlers': {
-        'gunicorn': {
-            'class': 'logging.StreamHandler',
+    "handlers": {
+        "gunicorn": {
+            "class": "logging.StreamHandler",
         },
     },
-    'root': {
-        'handlers': ['gunicorn'],
-        'level': 'INFO',
+    "root": {
+        "handlers": ["gunicorn"],
+        "level": "INFO",
     },
-    'loggers': {
-        'django': {
-            'handlers': ['gunicorn'],
-            'level': 'INFO',
-            'propagate': False,
+    "loggers": {
+        "django": {
+            "handlers": ["gunicorn"],
+            "level": "INFO",
+            "propagate": False,
         },
     },
 }

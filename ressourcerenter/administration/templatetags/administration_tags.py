@@ -6,7 +6,7 @@ from django.utils.translation import gettext as _
 def get(item, attribute):
     if hasattr(item, attribute):
         return getattr(item, attribute)
-    if hasattr(item, 'get'):
+    if hasattr(item, "get"):
         return item.get(attribute)
     if isinstance(item, (tuple, list)):
         return item[int(attribute)]
@@ -15,7 +15,7 @@ def get(item, attribute):
 @register.filter
 def janej(item):
     if type(item) == bool:
-        return _('ja') if item else _('nej')
+        return _("ja") if item else _("nej")
     return item
 
 
