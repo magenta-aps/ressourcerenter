@@ -15,6 +15,7 @@ from indberetning.views import (
 )
 from indberetning.apps import IndberetningConfig
 
+
 app_name = IndberetningConfig.name
 
 urlpatterns = [
