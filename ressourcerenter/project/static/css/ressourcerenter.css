@@ -77,3 +77,26 @@ ul.errorlist {
 ul.errorlist li {
     list-style-type: none;
 }
+
+.locale-changer .option-kl,
+.locale-changer .option-da {
+    background-size: 1rem auto;
+    padding: 0 0 0 1.5rem;
+    cursor: pointer;
+    width: 1rem;
+    height: 1rem;
+    border: none;
+    vertical-align: middle;
+}
+
+
+.locale-changer .option-kl {
+    background: url(../img/flag_gl.svg) no-repeat 0 transparent;;
+}
+.locale-changer .option-da {
+    background: url(../img/flag_da.svg) no-repeat 0 transparent;
+}
+
+.locale-changer button[type=submit]:hover {
+    background-color: transparent;
+}

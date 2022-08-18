@@ -1,5 +1,7 @@
 {% load static %}
 {% load i18n %}
+{% load indberetning_tags %}
+{% get_current_language as LANGUAGE_CODE %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -33,6 +35,15 @@
                         {% blocktranslate with company=request.session.company cvr=request.session.user_info.OrganizationName %}Du er logget ind som <strong>{{company}} ({{cvr}})</strong>{% endblocktranslate %}
                     {% endif %}
                 {% endif %}
+            </span>
+            <span class="locale-changer navbar-text">
+                <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
+                    {% if LANGUAGE_CODE|split:'-'|first == 'kl' %}
+                        <button type="submit" name="language" value="da" class="option-da"></button>
+                    {% else %}
+                        <button type="submit" name="language" value="kl" class="option-kl"></button>
+                    {% endif %}
+                </form>
             </span>
         </span>
     </nav>

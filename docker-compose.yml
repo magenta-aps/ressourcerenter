@@ -16,7 +16,10 @@ services:
       - ./ressourcerenter/:/app
       - ./data/:/srv/media
       - ./manual/:/srv/media/manual
-    command: gunicorn --bind=0.0.0.0:8000 project.wsgi:application --reload --workers=1 --access-logfile - --error-logfile - --capture-output
+    command: bash -c "
+      django-admin compilemessages &&
+      gunicorn --bind=0.0.0.0:8000 project.wsgi:application --reload --workers=1 --access-logfile - --error-logfile - --capture-output
+      "
 
   postgres:
     container_name: ressourcerenter-db

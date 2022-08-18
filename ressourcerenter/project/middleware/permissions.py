@@ -40,6 +40,9 @@ class PermissionMiddleware:
             if request.path.startswith("/media/"):
                 # User may access media files
                 return None
+            if request.path.startswith("/i18n/"):
+                # User may access language functions
+                return None
             else:
                 raise PermissionDenied
         elif app_name == "indberetning":

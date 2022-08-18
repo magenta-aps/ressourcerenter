@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 from distutils.util import strtobool
 from django.utils.translation import gettext_lazy as _
+import django.conf.locale
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -45,6 +46,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -113,16 +115,27 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 USE_TZ = True
 TIME_ZONE = os.environ["DJANGO_TIMEZONE"]
-LANGUAGE_CODE = "da-DK"
+LANGUAGE_CODE = "da"
 USE_I18N = True
 USE_L10N = True
 LANGUAGES = [
     ("da", _("Danish")),
     ("kl", _("Greenlandic")),
 ]
+LANGUAGE_COOKIE_NAME = "Sullissivik.Portal.Lang"
+LANGUAGE_COOKIE_DOMAIN = os.environ["DJANGO_LANGUAGE_COOKIE_DOMAIN"]
+LOCALE_PATHS = [os.path.join(BASE_DIR, "locale")]
 DECIMAL_SEPARATOR = ","
 THOUSAND_SEPARATOR = "."
 USE_THOUSAND_SEPARATOR = True
+
+# Add custom languages not provided by Django
+django.conf.locale.LANG_INFO["kl"] = {
+    "bidi": False,
+    "code": "kl",
+    "name": "Greenlandic",
+    "name_local": "Kalaallisut",
+}
 
 UPLOAD_PATH = "/uploads"
 MEDIA_ROOT = "/srv/media/"
