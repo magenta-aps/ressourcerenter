@@ -155,10 +155,10 @@ Release dev image:
       "docker://${IMAGE_SHA}"
       "docker://${IMAGE_DEV}"
 
-Release prod image:
+Release production image:
   extends:
     - .release-aalisakkat
-    - .rules:semver-all
+    - .rules:semver-core
   script:
     - skopeo copy
       --src-creds=${CI_REGISTRY_USER}:${CI_BUILD_TOKEN}
@@ -169,6 +169,29 @@ Release prod image:
 
 # Deploy stage
 ##############
+
+# We roll master out to test, so no need to update config
+#Configure test:
+#  stage: deploy
+#  extends:
+#    - .rules:semver-all
+#    - .config:endpoint-with-tag
+#  needs: ["Release dev image"]
+#  variables:
+#    # Matches routing in config-updater/config_updater/ressourcerenter/main.py in salt repo
+#    ENDPOINT: ressourcerenter/salt/update-test
+
+
+Configure production:
+  stage: deploy
+  extends:
+    - .rules:semver-core
+    - .config:endpoint-with-tag
+  needs: ["Release production image"]
+  variables:
+    # Matches routing in config-updater/config_updater/ressourcerenter/main.py in salt repo
+    ENDPOINT: ressourcerenter/salt/update-production
+
 
 Deploy test:
   # Automatic deployment of branch master to test
@@ -187,16 +210,16 @@ Deploy test:
     url: "https://test.aalisakkat.aka.sullissivik.gl"
 
 
-Deploy prod:
+Deploy production:
   stage: deploy
   when: manual
   extends:
     - .saltbert
-    - .rules:semver-all
+    - .rules:semver-core
   variables:
     SALTBERT_ORCHESTRATION: ressourcerenter.service-prod
     SALTBERT_URL: https://ctrl1.magenta-aps.dk
-  needs: ["Release prod image"]
+  needs: ["Release production image", "Configure production"]
   environment:
     name: production
     url: "https://aalisakkat.aka.sullissivik.gl"
