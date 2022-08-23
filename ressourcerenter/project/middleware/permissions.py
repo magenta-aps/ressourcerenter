@@ -34,6 +34,10 @@ class PermissionMiddleware:
         ):
             return None
 
+        if request.path == "/":
+            # Redirects to indberetning (urls.py)
+            return None
+
         app_name = request.resolver_match.app_name
 
         if app_name == "":
@@ -52,8 +56,6 @@ class PermissionMiddleware:
         else:
             if not request.user.is_authenticated:
                 path = request.get_full_path()
-                if path == "/":
-                    path = reverse("administration:postlogin")
                 # user not logged in, but trying to access a page they must be logged in for.
                 return redirect_to_login(path, self._administrator_login_url, "next")
             if not request.user.groups.filter(
