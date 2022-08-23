@@ -24,6 +24,10 @@ stedkoder = (
 
 
 def apply_migration(apps, schema_editor):
+    Indberetning = apps.get_model('indberetning', 'Indberetning')
+    Indberetning.objects.filter(virksomhed__sted__stedkode__in=[kode[0] for kode in stedkoder]).delete()
+    Virksomhed = apps.get_model('indberetning', 'Virksomhed')
+    Virksomhed.objects.filter(sted__stedkode__in=[kode[0] for kode in stedkoder]).delete()
     Indhandlingssted = apps.get_model('indberetning', 'Indhandlingssted')
     Indhandlingssted.objects.filter(stedkode__in=[kode[0] for kode in stedkoder]).delete()
 
