@@ -12,6 +12,7 @@ from indberetning.views import (
     UpdateIndberetningsView,
     BilagDownloadView,
     IndberetningCalculateJsonView,
+    IndberetningListLinjeView,
 )
 from indberetning.apps import IndberetningConfig
 
@@ -24,6 +25,11 @@ urlpatterns = [
         "company/<uuid:pk>/edit/", VirksomhedUpdateView.as_view(), name="company-edit"
     ),
     path("list/", IndberetningsListView.as_view(), name="indberetning-list"),
+    path(
+        "indberetning/<uuid:pk>/linjer",
+        IndberetningListLinjeView.as_view(),
+        name="indberetning-linjer",
+    ),
     path("select/", SelectIndberetningsType.as_view(), name="type-select"),
     path(
         "indberetning/calculate",

@@ -22,7 +22,6 @@
 </form>
 
 {% for indberetning in object_list %}
-{% with skematype_id=indberetning.skematype.id %}
 
 <div class="table-bordered p-3 mb-3">
 
@@ -56,70 +55,19 @@
         </tr>
         <tr>
             <th class="col-2">{% translate 'Total beregnet afgift (kr)' %}</th>
-            <td class="col-4">{{ indberetning.afgift_sum|default_if_none:'' }}</td>
+            <td class="col-4">{{ indberetning.linjer_sum|default_if_none:'' }}{# annotation #}</td>
         </tr>
         </tbody>
     </table>
 </div>
-<button class="btn btn-link" data-toggle="collapse" data-target="#linjer-{{indberetning.pk}}" aria-expanded="true" aria-controls="linjer-{{indberetning.pk}}">
+<button class="btn btn-link" data-toggle="collapse" data-target="#linjer-{{indberetning.pk}}" aria-expanded="true" aria-controls="linjer-{{indberetning.pk}}"
+        hx-trigger="click once" hx-target="#linjer-{{indberetning.pk}}" hx-swap="innerHTML" hx-get="{% url 'indberetning:indberetning-linjer' indberetning.pk %}">
     {% translate 'Indberetningslinjer' %}
 </button>
 
 <div id="linjer-{{indberetning.pk}}" class="table-responsive col-12 collapse">
-    <table class="table text-center table-sm">
-        <thead>
-        <tr>
-            {% if skematype_id == 1 %}
-            <th class="col-2">{% translate 'Fartøjs navn '%}</th>
-            {% endif %}
-            {% if skematype_id == 2 %}
-            <th class="col-1">{% translate 'Fartøjs navn '%}</th>
-            <th class="col-1">{% translate 'Indhandlingssted '%}</th>
-            {% endif %}
-            {% if skematype_id == 3 %}
-            <th class="col-2">{% translate 'Indhandlingssted '%}</th>
-            {% endif %}
-            <th class="col-2">{% translate 'Produkttype'%}</th>
-            <th class="col-1">{% translate 'Produktvægt (kg)'%}</th>
-            <th class="col-1">{% translate 'Levende vægt (kg)'%}</th>
-            {% if skematype_id == 1 %}
-            <th class="col-1">{% translate 'Omsætning (kr)'%}</th>
-            <th class="col-1">{% translate 'Transporttillæg (kr)'%}</th>
-            {% elif skematype_id == 2 or skematype_id == 3 %}
-            <th class="col-1">{% translate 'Indhandlingsværdi (kr)'%}</th>
-            <th class="col-1">{% translate 'Bonus og andet vederlag (kr)'%}</th>
-            {% endif %}
-            <th class="col-1">{% translate 'Afgiftsats' %}</th>
-            <th class="col-1">{% translate 'Afgift (kr)' %}</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for object in indberetning.linjer.all %}
-        <tr>
-            {% if skematype_id == 1 or skematype_id == 2 %}
-            <td class="text-left">{{ object.fartøj_navn|default_if_none:'' }}</td>
-            {% endif %}
-            {% if skematype_id == 2 or skematype_id == 3 %}
-            <td class="text-left">{{ object.indhandlingssted|default_if_none:'' }}</td>
-            {% endif %}
-            <td class="text-left">{{ object.produkttype }}</td>
-            <td class="text-right">{{ object.produktvægt }}</td>
-            <td class="text-right">{{ object.levende_vægt }}</td>
-            <td class="text-right">{{ object.salgspris|default_if_none:'' }}</td>
-            {% if skematype_id == 1 %}
-            <td class="text-right">{{ object.transporttillæg|default_if_none:'' }}</td>
-            {% elif skematype_id == 2 or skematype_id == 3 %}
-            <td class="text-right">{{ object.bonus|default_if_none:'' }}</td>
-            {% endif %}
-            <td class="text-right">{{ object.fangstafgift.rate_string }}</td>
-            <td class="text-right">{{ object.afgift }}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
 </div>
 </div>
-{% endwith %}
 {% endfor %}
 <script>
     $(function () {
