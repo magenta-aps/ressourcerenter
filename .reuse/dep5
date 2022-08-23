@@ -25,3 +25,7 @@ License: MIT
 Files: ressourcerenter/project/static/js/cookie.js
 Copyright: Copyright (c) Django Software Foundation and individual contributors.
 License: BSD-3-Clause
+
+Files: ressourcerenter/project/static/js/htmx.min.js
+Copyright: Copyright (c) 2020, Big Sky Software
+License: BSD-2-Clause

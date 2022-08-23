@@ -1,9 +1,10 @@
 import json
 import mimetypes
-
+from administration.models import Afgiftsperiode, SkemaType, FiskeArt, ProduktType
 from django.conf import settings
 from django.contrib import messages
 from django.db import IntegrityError
+from django.db.models import Sum
 from django.db.models.query import prefetch_related_objects
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
@@ -21,8 +22,6 @@ from django.views.generic import (
     DetailView,
     UpdateView,
 )
-
-from administration.models import Afgiftsperiode, SkemaType, FiskeArt, ProduktType
 from indberetning.forms import (
     IndberetningsTypeSelectForm,
     VirksomhedsAddressForm,
@@ -89,6 +88,8 @@ class IndberetningsListView(ListView):
             data = form.cleaned_data
             if data["afgiftsperiode"]:
                 qs = qs.filter(afgiftsperiode=data["afgiftsperiode"])
+
+        qs = qs.annotate(linjer_sum=Sum("linjer__fangstafgift__afgift"))
         return qs
 
     def get_form(self):
@@ -103,13 +104,29 @@ class IndberetningsListView(ListView):
         for related in (
             "afgiftsperiode",
             "virksomhed",
-            "linjer__produkttype__fiskeart",
-            "linjer__fangstafgift",
             "skematype",
             "bilag",
         ):
             prefetch_related_objects(self.object_list, related)
         return super().get_context_data(**{**kwargs, "form": self.get_form()})
+
+
+class IndberetningListLinjeView(DetailView):
+    template_name = "indberetning/indberetning_list.htmx"
+    model = Indberetning
+    context_object_name = "indberetning"
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .prefetch_related(
+                "linjer__produkttype",
+                "linjer__produkttype__fiskeart",
+                "linjer__fangstafgift",
+                "linjer__indhandlingssted",
+            )
+        )
 
 
 class SelectIndberetningsType(FormView):

@@ -114,6 +114,12 @@ class Indberetning(models.Model):
     def get_all_comment_strings(self):
         return [linje.kommentar for linje in self.linjer.exclude(kommentar="")]
 
+    def get_first_comment(self):
+        for linje in self.linjer.all():
+            if linje.kommentar != "":
+                return linje.kommentar
+        return ""
+
     @property
     def afgift_sum(self):
         return self.linjer.aggregate(sum=Sum("fangstafgift__afgift"))["sum"]

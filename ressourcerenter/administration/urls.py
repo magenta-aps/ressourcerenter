@@ -22,6 +22,7 @@ from administration.views import (
 )
 from administration.views import (
     IndberetningsLinjeListView,
+    IndberetningListLinjeView,
     FakturaDetailView,
     FakturaCreateView,
 )
@@ -109,6 +110,11 @@ urlpatterns = [
         name="produkttype-history",
     ),
     path("indberetning/", IndberetningListView.as_view(), name="indberetning-list"),
+    path(
+        "indberetning/<uuid:pk>/linjer",
+        IndberetningListLinjeView.as_view(),
+        name="indberetning-linjer",
+    ),
     path(
         "indberetning/<uuid:pk>/",
         IndberetningDetailView.as_view(),

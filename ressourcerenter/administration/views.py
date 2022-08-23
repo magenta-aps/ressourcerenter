@@ -1,6 +1,7 @@
 from django import forms
 from django.conf import settings
 from django.db.models.query import prefetch_related_objects
+from django.db.models import Sum
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.http import HttpResponseNotFound
@@ -13,6 +14,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext as _
 from django.utils.functional import cached_property
 from django.http.response import FileResponse
+
 
 from datetime import timedelta
 from tenQ.client import ClientException
@@ -326,6 +328,7 @@ class IndberetningListView(ExcelMixin, ListView):
                 )
             if data["produkttype"]:
                 qs = qs.filter(linjer__produkttype=data["produkttype"])
+            qs = qs.annotate(linjer_sum=Sum("linjer__fangstafgift__afgift"))
             qs = qs.order_by("-indberetningstidspunkt")
         return qs
 
@@ -334,9 +337,26 @@ class IndberetningListView(ExcelMixin, ListView):
             "afgiftsperiode",
             "virksomhed",
             "linjer__produkttype__fiskeart",
+            "linjer",
         ):
             prefetch_related_objects(self.object_list, related)
         return super().get_context_data(**{**kwargs, "form": self.get_form()})
+
+
+class IndberetningListLinjeView(DetailView):
+    template_name = "administration/indberetning_list.htmx"
+    model = Indberetning
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .prefetch_related(
+                "linjer__produkttype",
+                "linjer__produkttype__fiskeart",
+                "linjer__fangstafgift",
+            )
+        )
 
 
 class FakturaDetailView(DetailView):
@@ -547,19 +567,24 @@ class IndberetningsLinjeListView(TemplateView):
         ]
         for virksomhed in Virksomhed.objects.filter(
             uuid__in=virksomheder_uuids
-        ).prefetch_related("indberetning_set"):
+        ).prefetch_related("indberetning_set", "indberetning_set__linjer"):
 
             virksomhed_data = {"virksomhed": virksomhed, "produkttyper": {}}
             virksomheder.append(virksomhed_data)
             for indberetning in virksomhed.indberetning_set.filter(
                 afgiftsperiode=self.periode
-            ):
+            ).select_related("skematype"):
                 for linje in (
                     indberetning.linjer.all()
+                    .select_related(
+                        "faktura",
+                        "produkttype",
+                        "fangstafgift",
+                        "produkttype__gruppe",
+                        "indhandlingssted",
+                    )
                     .order_by("produkttype", "-indberetningstidspunkt", "uuid")
-                    .select_related("faktura", "produkttype")
                 ):
-
                     produkttype = linje.produkttype
                     if produkttype.uuid not in virksomhed_data["produkttyper"]:
                         virksomhed_data["produkttyper"][produkttype.uuid] = {
