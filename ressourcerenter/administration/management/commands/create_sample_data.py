@@ -3,7 +3,6 @@ import random
 from administration.models import Afgiftsperiode, BeregningsModel2021, SkemaType
 from decimal import Decimal
 from django.core.management.base import BaseCommand
-from django.db.utils import IntegrityError
 from django.utils import timezone
 from indberetning.models import (
     Indberetning,
@@ -29,17 +28,9 @@ class Command(BaseCommand):
             },
         )
 
-        try:
-            beregningsmodel = BeregningsModel2021.objects.create(
-                navn="TestBeregningsModel",
-                transport_afgift_rate=Decimal(1),
-            )
-        except IntegrityError:
-            beregningsmodel = BeregningsModel2021.objects.get(
-                navn="TestBeregningsModel"
-            )
-            beregningsmodel.transport_afgift_rate = Decimal(1)
-            beregningsmodel.save()
+        beregningsmodel, _ = BeregningsModel2021.objects.get_or_create(
+            navn="TestBeregningsModel",
+        )
 
         indhandlingssteder = Indhandlingssted.objects.all()
         indberetninger_exist = virksomhed.indberetning_set.exists()

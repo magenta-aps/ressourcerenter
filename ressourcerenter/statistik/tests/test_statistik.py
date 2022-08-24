@@ -17,7 +17,6 @@ class StatistikTestCase(TestCase):
         virksomhed = Virksomhed.objects.create(cvr=12345678)
         beregningsmodel = BeregningsModel2021.objects.create(
             navn="TestBeregningsModel",
-            transport_afgift_rate=Decimal(1),
         )
         afgiftsperiode = Afgiftsperiode.objects.get(dato_fra=date(2022, 1, 1))
         afgiftsperiode.beregningsmodel = beregningsmodel

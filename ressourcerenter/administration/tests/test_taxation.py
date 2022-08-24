@@ -32,7 +32,6 @@ class AfgiftTestCase(TestCase):
 
         beregningsmodel = BeregningsModel2021.objects.create(
             navn="TestBeregningsModel",
-            transport_afgift_rate=Decimal(1),
         )
 
         self.periode.beregningsmodel = beregningsmodel

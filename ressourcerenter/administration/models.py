@@ -443,14 +443,6 @@ class BeregningsModel2021(BeregningsModel):
         related_name="subclass_instance",
     )
 
-    transport_afgift_rate = models.DecimalField(
-        max_digits=4,
-        decimal_places=2,
-        verbose_name=_("Transportafgift i procent"),
-        null=True,
-        default=None,
-    )
-
     def get_satstabelelement(self, indberetninglinje):
         return SatsTabelElement.objects.get(
             periode=indberetninglinje.indberetning.afgiftsperiode,
