@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import TemplateView
 from indberetning.views import (
     CreateIndberetningCreateView,
     IndberetningsListView,
@@ -26,23 +27,23 @@ urlpatterns = [
     ),
     path("list/", IndberetningsListView.as_view(), name="indberetning-list"),
     path(
-        "indberetning/<uuid:pk>/linjer",
+        "<uuid:pk>/linjer",
         IndberetningListLinjeView.as_view(),
         name="indberetning-linjer",
     ),
     path("select/", SelectIndberetningsType.as_view(), name="type-select"),
     path(
-        "indberetning/calculate",
+        "calculate",
         IndberetningCalculateJsonView.as_view(),
         name="indberetning-calculate",
     ),
     path(
-        "indberetning/<uuid:periode>/<int:skema>/create/",
+        "<uuid:periode>/<int:skema>/create/",
         CreateIndberetningCreateView.as_view(),
         name="indberetning-create",
     ),
     path(
-        "indberetning/<uuid:pk>/edit/",
+        "<uuid:pk>/edit/",
         UpdateIndberetningsView.as_view(),
         name="indberetning-edit",
     ),
@@ -51,4 +52,9 @@ urlpatterns = [
     path("login/callback/", LoginCallbackView.as_view(), name="login-callback"),
     path("logout/", LogoutView.as_view(), name="logout"),
     path("logout/callback/", LogoutCallback.as_view(), name="logout-callback"),
+    path(
+        "no_cvr",
+        TemplateView.as_view(template_name="indberetning/no_cvr.html"),
+        name="no-cvr",
+    ),
 ]

@@ -1,0 +1,9 @@
+{% extends "indberetning/base.html"%}
+{% load i18n %}
+{% load static %}
+{% block content %}
+<p>
+    {% translate 'Dette site fungerer kun for logins med et CVR-nummer' %}
+</p>
+<a class="btn btn-primary" href="{% url 'indberetning:logout' %}">{% translate 'Tilbage til login' %}</a>
+{% endblock %}
