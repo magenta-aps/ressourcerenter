@@ -64,7 +64,8 @@ class Frontpage(RedirectView):
                     "indberetning:company-edit", kwargs={"pk": virksomhed.uuid}
                 )
             return reverse("indberetning:indberetning-list")
-        return reverse("indberetning:login")
+        else:
+            return reverse("indberetning:no-cvr")
 
 
 class VirksomhedUpdateView(UpdateView):

@@ -52,7 +52,7 @@ class PermissionMiddleware:
         elif app_name == "djdt":
             return None
         elif app_name == "indberetning":
-            if self._login_provider.user_is_logged_in(request) is False:
+            if not self._login_provider.user_is_logged_in(request):
                 # nemId user not logged in so redirect to login page
                 return redirect(self._indberetning_login_url)
         else:
