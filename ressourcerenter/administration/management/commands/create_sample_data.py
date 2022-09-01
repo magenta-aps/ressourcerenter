@@ -137,7 +137,7 @@ class Command(BaseCommand):
                                     IndberetningLinje.objects.create(
                                         indberetning=indberetning,
                                         indhandlingssted=sted,
-                                        produktvægt=x,
+                                        produktvægt=None,  # Skematype 3 bruger ikke produktvægt jf. #48022
                                         levende_vægt=2 * x,
                                         salgspris=40 * x,
                                         kommentar="Her er en lang kommentar som er meget lang for at demonstrere hvordan vi håndtererer en lang kommentar som bliver bred på siden",

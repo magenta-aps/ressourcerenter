@@ -9,7 +9,9 @@
         <th>{% translate 'Fartøjs navn' %}</th>
         {% endif %}
         <th>{% translate 'Produkttype'%}</th>
+        {% if skema_id == 1 or skema_id == 2 %}
         <th>{% translate 'Produktvægt (kg)'%}</th>
+        {% endif %}
         <th>{% translate 'Levende vægt (kg)'%}</th>
         {% if skema.id == 1 %}
         <th>{% translate 'Omsætning (kr)'%}</th>
@@ -32,7 +34,9 @@
         <td>{{linje.fartøj_navn|default_if_none:''}}</td>
         {% endif %}
         <td>{{ linje.produkttype }}</td>
+        {% if skema_id == 1 or skema_id == 2 %}
         <td>{{ linje.produktvægt }}</td>
+        {% endif %}
         <td>{{ linje.levende_vægt }}</td>
         <td>{{ linje.salgspris|default_if_none:'' }}</td>
         <td>
