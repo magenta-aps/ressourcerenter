@@ -602,7 +602,7 @@ class IndberetningsLinjeListView(TemplateView):
                     fangsttype_item = produkttype_item["fangsttyper"][fangsttype]
 
                     for key in sum_fields:
-                        fangsttype_item["sum"][key] += getattr(linje, key)
+                        fangsttype_item["sum"][key] += getattr(linje, key) or 0
                     fangsttype_item["linjer"].append(linje)
         return virksomheder
 
