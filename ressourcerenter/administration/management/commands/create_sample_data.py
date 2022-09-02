@@ -80,10 +80,16 @@ class Command(BaseCommand):
                         # Two types of product types, identified by pelagisk true/false
                         # Two types of trading, identified by whether trading is done from a boat or on land
                         for indhandlingssted, fartoej_navn, pelagisk in (
-                            (random.choice(indhandlingssteder), None, True),
-                            (random.choice(indhandlingssteder), None, False),
-                            (None, "Systemoprettet fartøj", True),
-                            (None, "Systemoprettet fartøj", False),
+                            (
+                                random.choice(indhandlingssteder),
+                                "Systemoprettet fartøj",
+                                True,
+                            ),
+                            (
+                                random.choice(indhandlingssteder),
+                                "Systemoprettet fartøj",
+                                False,
+                            ),
                         ):
                             indberetning = Indberetning.objects.create(
                                 skematype=skematype,
