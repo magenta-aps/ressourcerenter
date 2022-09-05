@@ -6,6 +6,9 @@ TEST=${TEST:=false}
 SAMPLE_DATA=${SAMPLE_DATA:=false}
 CREATE_DUMMY_USERS=${CREATE_DUMMY_USERS:=false}
 
+django-admin makemessages --all
+django-admin compilemessages
+
 if [ "$MAKE_MIGRATIONS" = true ] || [ "$MIGRATE" = true ] || [ "$TEST" = true ] || [ "$INITIAL_DATA" = true ] || [ "$SAMPLE_DATA" = true ]; then
   python manage.py wait_for_db
   if [ "$MAKE_MIGRATIONS" = true ]; then

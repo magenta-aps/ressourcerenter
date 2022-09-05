@@ -1,0 +1,150 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-09-05 11:18+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: statistik/forms.py:25
+msgid "År"
+msgstr ""
+
+#: statistik/forms.py:31
+msgid "Kvartal"
+msgstr ""
+
+#: statistik/forms.py:33 statistik/views.py:143
+msgid "1. kvartal"
+msgstr ""
+
+#: statistik/forms.py:34 statistik/views.py:144
+msgid "2. kvartal"
+msgstr ""
+
+#: statistik/forms.py:35 statistik/views.py:145
+msgid "3. kvartal"
+msgstr ""
+
+#: statistik/forms.py:36 statistik/views.py:146
+msgid "4. kvartal"
+msgstr ""
+
+#: statistik/forms.py:42
+msgid "Virksomhed"
+msgstr ""
+
+#: statistik/forms.py:48
+msgid "Fartøjs navn"
+msgstr ""
+
+#: statistik/forms.py:54
+msgid "Indberetningstype"
+msgstr ""
+
+#: statistik/forms.py:60
+msgid "Fiskeart (eksport)"
+msgstr ""
+
+#: statistik/forms.py:66
+msgid "Produkttype (eksport)"
+msgstr ""
+
+#: statistik/forms.py:74
+msgid "Fiskeart (indhandling)"
+msgstr ""
+
+#: statistik/forms.py:80
+msgid "Indhandlingssted"
+msgstr ""
+
+#: statistik/forms.py:109
+msgid "Enhed"
+msgstr ""
+
+#: statistik/forms.py:111
+msgid "Produkt vægt tons"
+msgstr ""
+
+#: statistik/forms.py:112
+msgid "Levende vægt tons"
+msgstr ""
+
+#: statistik/forms.py:113
+msgid "Omsætning, tusinde kr."
+msgstr ""
+
+#: statistik/forms.py:114
+msgid "Transporttillæg, tusinde kr."
+msgstr ""
+
+#: statistik/forms.py:115
+msgid "Bonus, tusinde kr."
+msgstr ""
+
+#: statistik/forms.py:116
+msgid "Beregnet afgiftsbetaling, tusinde kr."
+msgstr ""
+
+#: statistik/templates/statistik/base.html:15
+msgid "Statistik af ressourcerenter"
+msgstr ""
+
+#: statistik/templates/statistik/base.html:19
+#: statistik/templates/statistik/statistik_form.html:5
+msgid "Statistik"
+msgstr ""
+
+#: statistik/templates/statistik/statistik_form.html:8
+msgid ""
+"\n"
+"        Denne side udtrækker opsummeringer af afstemte indberetninger ud fra "
+"kriterierne der er valgt i formularen.\n"
+"        Felterne bør udfyldes oppefra og ned, og deres valgmuligheder "
+"indsnævres så der kun optræder muligheder hvor der findes afstemte "
+"indberetninger.\n"
+"        Det sidste felt, Enheder, beskriver hvilke datakolonner der skal med "
+"i resultatet.\n"
+"    "
+msgstr ""
+
+#: statistik/templates/statistik/statistik_form.html:42
+msgid "Vælg alle"
+msgstr ""
+
+#: statistik/templates/statistik/statistik_form.html:43
+msgid "Fravælg alle"
+msgstr ""
+
+#: statistik/templates/statistik/statistik_form.html:53
+#: statistik/templates/statistik/statistik_form.html:124
+msgid "Vis formular"
+msgstr ""
+
+#: statistik/templates/statistik/statistik_form.html:55
+msgid "Hent resultat"
+msgstr ""
+
+#: statistik/templates/statistik/statistik_form.html:56
+msgid "Hent excel-fil"
+msgstr ""
+
+#: statistik/templates/statistik/statistik_form.html:85
+msgid "Der er ingen resultater"
+msgstr ""
+
+#: statistik/templates/statistik/statistik_form.html:125
+msgid "Skjul formular"
+msgstr ""
