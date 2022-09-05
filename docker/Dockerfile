@@ -27,7 +27,6 @@ COPY ./docker/entrypoint.sh /entrypoint.sh
 COPY ./ressourcerenter /app
 # COPY ./manual.md /manual.md
 WORKDIR /app
-RUN django-admin compilemessages
 USER ressourcerenter
 VOLUME  /srv/media
 EXPOSE 8000
