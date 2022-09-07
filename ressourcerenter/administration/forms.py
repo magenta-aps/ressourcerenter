@@ -33,7 +33,7 @@ class AfgiftsperiodeForm(forms.ModelForm, BootstrapForm):
             "navn_dk": forms.widgets.TextInput(),
             "navn_gl": forms.widgets.TextInput(),
             "vis_i_indberetning": forms.widgets.Select(
-                choices=((False, "Nej"), (True, "Ja"))
+                choices=((False, _("Nej")), (True, _("Ja")))
             ),
         }
 

@@ -52,7 +52,7 @@ class StatistikBaseForm(forms.Form):
 
     indberetningstype = forms.MultipleChoiceField(
         label=_("Indberetningstype"),
-        choices=[(x, x) for x in ("Eksport", "Indhandling")],
+        choices=[(_("Eksport"), "Eksport"), (_("Indhandling"), "Indhandling")],
         required=False,
     )
 
