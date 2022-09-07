@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-05 11:18+0000\n"
+"POT-Creation-Date: 2022-09-07 08:11+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,17 +17,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: administration/forms.py:59 administration/models.py:969
-#: administration/templates/administration/afgiftsperiode_satstabel.html:101
-#: administration/templates/administration/indberetning_detail.html:169
-msgid "Ja"
-msgstr ""
-
-#: administration/forms.py:59 administration/models.py:971
+#: administration/forms.py:36 administration/forms.py:59
+#: administration/models.py:971
 #: administration/templates/administration/afgiftsperiode_satstabel.html:102
 #: administration/templates/administration/faktura_detail.html:71
 #: administration/templates/administration/indberetning_detail.html:170
 msgid "Nej"
+msgstr ""
+
+#: administration/forms.py:36 administration/forms.py:59
+#: administration/models.py:969
+#: administration/templates/administration/afgiftsperiode_satstabel.html:101
+#: administration/templates/administration/indberetning_detail.html:169
+msgid "Ja"
 msgstr ""
 
 #: administration/forms.py:80 administration/forms.py:99
