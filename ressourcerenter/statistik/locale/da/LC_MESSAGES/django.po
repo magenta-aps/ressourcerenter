@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-07 08:11+0000\n"
+"POT-Creation-Date: 2022-09-28 12:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,55 +54,55 @@ msgstr ""
 msgid "Indberetningstype"
 msgstr ""
 
-#: statistik/forms.py:56
+#: statistik/forms.py:55
 msgid "Eksport"
 msgstr ""
 
-#: statistik/forms.py:57
+#: statistik/forms.py:55
 msgid "Indhandling"
 msgstr ""
 
-#: statistik/forms.py:63
+#: statistik/forms.py:60
 msgid "Fiskeart (eksport)"
 msgstr ""
 
-#: statistik/forms.py:69
+#: statistik/forms.py:66
 msgid "Produkttype (eksport)"
 msgstr ""
 
-#: statistik/forms.py:77
+#: statistik/forms.py:74
 msgid "Fiskeart (indhandling)"
 msgstr ""
 
-#: statistik/forms.py:83
+#: statistik/forms.py:80
 msgid "Indhandlingssted"
 msgstr ""
 
-#: statistik/forms.py:112
+#: statistik/forms.py:109
 msgid "Enhed"
 msgstr ""
 
-#: statistik/forms.py:114
+#: statistik/forms.py:111
 msgid "Produkt vægt tons"
 msgstr ""
 
-#: statistik/forms.py:115
+#: statistik/forms.py:112
 msgid "Levende vægt tons"
 msgstr ""
 
-#: statistik/forms.py:116
+#: statistik/forms.py:113
 msgid "Omsætning, tusinde kr."
 msgstr ""
 
-#: statistik/forms.py:117
+#: statistik/forms.py:114
 msgid "Transporttillæg, tusinde kr."
 msgstr ""
 
-#: statistik/forms.py:118
+#: statistik/forms.py:115
 msgid "Bonus, tusinde kr."
 msgstr ""
 
-#: statistik/forms.py:119
+#: statistik/forms.py:116
 msgid "Beregnet afgiftsbetaling, tusinde kr."
 msgstr ""
 

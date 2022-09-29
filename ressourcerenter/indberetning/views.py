@@ -1,7 +1,6 @@
 import json
 import mimetypes
 from administration.models import Afgiftsperiode, SkemaType, FiskeArt, ProduktType
-from django.conf import settings
 from django.contrib import messages
 from django.db import IntegrityError
 from django.db.models import Sum
@@ -11,9 +10,7 @@ from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadReque
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.functional import cached_property
-from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
-from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.generic import (
     RedirectView,
     ListView,
@@ -35,12 +32,12 @@ from indberetning.forms import (
 )
 from indberetning.models import Indberetning, Virksomhed, IndberetningLinje, Bilag
 
-LoginProvider = import_string(settings.LOGIN_PROVIDER_CLASS)
-
 
 class Frontpage(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
-        cvr = self.request.session.get("cvr")
+        cvr = self.request.session["user_info"].get("cvr") or self.request.session[
+            "user_info"
+        ].get("CVR")
         if cvr:
             try:
                 virksomhed, created = Virksomhed.objects.get_or_create(cvr=cvr)
@@ -49,13 +46,13 @@ class Frontpage(RedirectView):
                 created = False
                 virksomhed = Virksomhed.objects.get(cvr=cvr)
 
-            virksomhed_navn = self.request.session["user_info"]["OrganizationName"]
+            virksomhed_navn = self.request.session["user_info"]["organizationname"]
             if virksomhed.navn is None:
                 virksomhed.navn = virksomhed_navn
                 virksomhed.save(update_fields=["navn"])
             elif virksomhed.navn != virksomhed_navn:
                 # What to do when data from login doesn't match DB?
-                self.request.session["user_info"]["OrganizationName"] = virksomhed.navn
+                self.request.session["user_info"]["organizationname"] = virksomhed.navn
 
             if created:
                 # Hvis cvr nummeret lige er blevet oprettet,
@@ -82,7 +79,7 @@ class IndberetningsListView(ListView):
 
     def get_queryset(self):
         qs = Indberetning.objects.filter(
-            virksomhed__cvr=self.request.session["cvr"]
+            virksomhed__cvr=self.request.session["user_info"]["cvr"]
         ).order_by("-indberetningstidspunkt")
         form = self.get_form()
         if form.is_valid():
@@ -172,7 +169,7 @@ class IndberetningsLinjebilagFormsetMixin:
             {
                 "prefix": "linje",
                 "auto_id": False,
-                "form_kwargs": {"cvr": self.request.session["cvr"]},
+                "form_kwargs": {"cvr": self.request.session["user_info"]["cvr"]},
             }
         )
         if "data" not in kwargs:
@@ -258,7 +255,9 @@ class CreateIndberetningCreateView(IndberetningsLinjebilagFormsetMixin, FormView
         :return: an unsaved instance of indberetning with th virksomhed and afgiftsperiode etc set
         """
         instance = Indberetning(
-            virksomhed=Virksomhed.objects.get(cvr=self.request.session["cvr"]),
+            virksomhed=Virksomhed.objects.get(
+                cvr=self.request.session["user_info"]["cvr"]
+            ),
             afgiftsperiode=self.afgiftsperiode,
             skematype=self.skema,
         )
@@ -267,7 +266,9 @@ class CreateIndberetningCreateView(IndberetningsLinjebilagFormsetMixin, FormView
             instance.administrator = self.request.user
         else:
             # nemid bruger indberetter
-            instance.indberetters_cpr = self.request.session.get("cpr") or "-"
+            instance.indberetters_cpr = (
+                self.request.session["user_info"].get("cpr") or "-"
+            )
         return instance
 
     def get_context_data(self, **kwargs):
@@ -322,10 +323,10 @@ class UpdateIndberetningsView(IndberetningsLinjebilagFormsetMixin, UpdateView):
 
     def get_queryset(self):
         # always limit the QS to indberetninger belonging to the company.
-        # check for session['cvr'] is done in middleware,
+        # check for session["user_info"]['cvr'] is done in middleware,
         # so we can always assume it is set when processing the view
         return Indberetning.objects.filter(
-            virksomhed__cvr=self.request.session["cvr"]
+            virksomhed__cvr=self.request.session["user_info"]["cvr"]
         ).select_related("afgiftsperiode")
 
     def get_context_data(self, **kwargs):
@@ -371,7 +372,7 @@ class UpdateIndberetningsView(IndberetningsLinjebilagFormsetMixin, UpdateView):
 class BilagDownloadView(DetailView):
     def get_queryset(self):
         return Bilag.objects.filter(
-            indberetning__virksomhed__cvr=self.request.session["cvr"]
+            indberetning__virksomhed__cvr=self.request.session["user_info"]["cvr"]
         )
 
     def render_to_response(self, context, **response_kwargs):
@@ -435,34 +436,3 @@ class IndberetningCalculateJsonView(MultipleFormView):
         return HttpResponseBadRequest(
             json.dumps([form.errors.get_json_data() for form in forms])
         )
-
-
-class LoginView(View):
-    def get(self, request):
-        # Setup the oauth login url and redirect the browser to it.
-        provider = LoginProvider.from_settings()
-        request.session["login_method"] = provider.name
-        return HttpResponseRedirect(provider.login(request))
-
-
-class LoginCallbackView(View):
-    def get(self, request):
-        provider = LoginProvider.from_settings()
-        if provider.handle_login_callback(request=request):
-            # if the call back was successfully, redirect to frontpage
-            return HttpResponseRedirect(reverse("indberetning:frontpage"))
-        return HttpResponseRedirect(reverse("indberetning:login"))
-
-
-class LogoutView(View):
-    def get(self, request):
-        provider = LoginProvider.from_settings()
-        return HttpResponseRedirect(provider.logout(request))
-
-
-class LogoutCallback(View):
-    @xframe_options_exempt
-    def get(self, request):
-        provider = LoginProvider.from_settings()
-        provider.handle_logout_callback(request)
-        return HttpResponse("")

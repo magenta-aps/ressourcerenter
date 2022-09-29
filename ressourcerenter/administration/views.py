@@ -414,7 +414,7 @@ class VirksomhedRepræsentantView(RedirectView):
             virksomhed = Virksomhed.objects.get(pk=kwargs["pk"])
         except Virksomhed.DoesNotExist:
             return HttpResponseNotFound
-        request.session["cvr"] = virksomhed.cvr
+        request.session["user_info"] = {"cvr": virksomhed.cvr}
         request.session["impersonating"] = True
         return super().get(request, *args, **kwargs)
 
@@ -428,7 +428,7 @@ class VirksomhedRepræsentantStopView(RedirectView):
                 pass
 
         if settings.OPENID.get("mock") == "cvr":
-            self.request.session["cvr"] = "12345678"
+            self.request.session["user_info"] = {"cvr": "12345678"}
 
         return reverse("administration:virksomhed-list")
 
