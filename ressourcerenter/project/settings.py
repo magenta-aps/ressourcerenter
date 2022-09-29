@@ -194,6 +194,7 @@ LOGIN_WHITELISTED_URLS = [
     LOGIN_URL,
     re.compile("^/administration/"),
     re.compile("^/statistik/"),
+    "/_ht/",
 ]
 LOGIN_TIMEOUT_URL = reverse_lazy("selvbetjening:login-timeout")
 LOGIN_REPEATED_URL = reverse_lazy("selvbetjening:login-repeat")
