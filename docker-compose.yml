@@ -8,14 +8,14 @@ services:
       dockerfile: docker/Dockerfile
     depends_on:
       - postgres
-    ports:
-      - "8000:8000"
+    network_mode: "host"
     env_file:
       - ./dev-environment/ressourcerenter.env
     volumes:
       - ./ressourcerenter/:/app
       - ./data/:/srv/media
       - ./manual/:/srv/media/manual
+      - ./dev-environment/cert:/ssl:ro
     command: bash -c "
       django-admin compilemessages &&
       gunicorn --bind=0.0.0.0:8000 project.wsgi:application --reload --workers=1 --access-logfile - --error-logfile - --capture-output
@@ -24,9 +24,7 @@ services:
   postgres:
     container_name: ressourcerenter-db
     image: postgres:13
-    ports:
-      # expose to localhost for easier debugging
-      - "5432:5432"
+    network_mode: "host"
     env_file:
       - ./dev-environment/ressourcerenter.env
     volumes:
@@ -35,6 +33,7 @@ services:
   ressourcerenter-cron:
     container_name: ressourcerenter-cron
     image: ressourcerenter:latest
+    network_mode: "host"
     depends_on:
       - postgres
     env_file:
@@ -53,6 +52,28 @@ services:
       - ./manual/:/data
     # options for the -V parameter: https://pandoc.org/MANUAL.html#templates
     command: [ "manual.md", "-V", "geometry:margin=30mm", "-o", "manual.pdf" ]
+
+  test-idp:
+    user: "1000:1000"
+    image: kenchan0130/simplesamlphp
+    container_name: idp
+    network_mode: "host"
+    environment:
+      SIMPLESAMLPHP_SP_ENTITY_ID: http://localhost:8000/indberetning/saml/metadata/
+      # SIMPLESAMLPHP_SP_ENTITY_ID: http://aalisakkat.aka.nanoq.gl
+      SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE: http://localhost:8000/indberetning/login/callback/
+      SIMPLESAMLPHP_SP_SINGLE_LOGOUT_SERVICE: http://localhost:8000/indberetning/logout/callback/
+      #SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE: http://localhost:8080/simplesaml/module.php/saml/sp/saml2-acs.php/example-userpass
+      #SIMPLESAMLPHP_SP_SINGLE_LOGOUT_SERVICE: http://localhost:8080/simplesaml/module.php/saml/sp/saml2-logout.php/example-userpass
+      SIMPLESAMLPHP_IDP_CERTIFICATE: /var/www/simplesamlphp/cert/selfsigned.crt
+      SIMPLESAMLPHP_IDP_PRIVATEKEY: /var/www/simplesamlphp/cert/selfsigned.key
+
+    volumes:
+      - ./dev-environment/cert/idp/selfsigned.crt:/var/www/simplesamlphp/cert/server.crt:ro
+      - ./dev-environment/cert/idp/selfsigned.key:/var/www/simplesamlphp/cert/server.pem:ro
+      - ./dev-idp/authsources.php:/var/www/simplesamlphp/config/authsources.php:ro
+      - ./dev-idp/saml20-sp-remote.php:/var/www/simplesamlphp/metadata/saml20-sp-remote.php:ro
+
 
 volumes:
   ressourcerenter-postgres-data:

@@ -12,9 +12,15 @@ urlpatterns = [
     path("indberetning/", include("indberetning.urls", namespace="indberetning")),
     path("statistik/", include("statistik.urls", namespace="statistik")),
     path("", RedirectView.as_view(permanent=False, url="indberetning/")),
+    path("indberetning/", include("django_mitid_auth.urls", namespace="login")),
     path("_ht/", include("watchman.urls")),
     path("i18n/", include("django.conf.urls.i18n")),
     path("__debug__/", include("debug_toolbar.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
     urlpatterns += staticfiles_urlpatterns()
+
+if settings.MITID_TEST_ENABLED:
+    urlpatterns.append(
+        path("mitid_test/", include("mitid_test.urls", namespace="mitid_test"))
+    )

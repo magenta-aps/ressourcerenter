@@ -3,19 +3,19 @@ from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.utils.module_loading import import_string
+from django_mitid_auth import login_provider_class
 
 
 class PermissionMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        self._administrator_login_url = reverse(settings.LOGIN_URL)
-        self._indberetning_login_url = reverse("indberetning:login")
+        self._administrator_login_url = settings.LOGIN_URL
         self._administrator_logout_url = reverse("administration:logout")
         self._administrator_postlogin_url = reverse("administration:postlogin")
-        self._indberetning_callback_url = reverse("indberetning:login-callback")
-        login_provider = import_string(settings.LOGIN_PROVIDER_CLASS)
-        self._login_provider = login_provider.from_settings()
+
+        self._indberetning_login_url = settings.LOGIN_MITID_URL
+        self._indberetning_callback_url = reverse("login:login-callback")
+        self.provider = login_provider_class()
 
     def __call__(self, request):
         return self.get_response(request)
@@ -51,8 +51,13 @@ class PermissionMiddleware:
                 raise PermissionDenied
         elif app_name == "djdt":
             return None
+        elif app_name in (
+            "django_mitid_auth",
+            "django_mitid_auth:django_mitid_auth.saml",
+        ):
+            return None
         elif app_name == "indberetning":
-            if not self._login_provider.user_is_logged_in(request):
+            if not self.provider.is_logged_in(request):
                 # nemId user not logged in so redirect to login page
                 return redirect(self._indberetning_login_url)
         else:

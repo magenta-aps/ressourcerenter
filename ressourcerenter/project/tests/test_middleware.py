@@ -1,11 +1,15 @@
-from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.test import TestCase, override_settings
+from django.urls import reverse
 from indberetning.models import Virksomhed
 
 
-@override_settings(OPENID={"mock": "cvr"})
+@override_settings(
+    OPENID={"mock": "cvr"},
+    LOGIN_PROVIDER_CLASS="django_mitid_auth.openid.openid.OpenId",
+    LOGIN_BYPASS_ENABLED=False,
+)
 class TestNotLoggedIn(TestCase):
     def test_administration_not_logged_in(self):
         """
@@ -28,7 +32,11 @@ class TestNotLoggedIn(TestCase):
         self.assertEqual(r.status_code, 302)
 
 
-@override_settings(OPENID={"mock": "cvr"})
+@override_settings(
+    OPENID={"mock": "cvr"},
+    LOGIN_PROVIDER_CLASS="django_mitid_auth.openid.openid.OpenId",
+    LOGIN_BYPASS_ENABLED=False,
+)
 class AdministratorTestCase(TestCase):
     def setUp(self) -> None:
         administration_group, _ = Group.objects.get_or_create(name="administration")
@@ -58,11 +66,15 @@ class AdministratorTestCase(TestCase):
 
     def test_not_existing(self):
         self.client.login(username=self.username, password=self.password)
-        r = self.client.get("/something/login/")
+        r = self.client.get("/administration/something/login/")
         self.assertEqual(r.status_code, 404)
 
 
-@override_settings(OPENID={"mock": "cvr"})
+@override_settings(
+    OPENID={"mock": "cvr"},
+    LOGIN_PROVIDER_CLASS="django_mitid_auth.openid.openid.OpenId",
+    LOGIN_BYPASS_ENABLED=False,
+)
 class StatistikTestCase(TestCase):
     def setUp(self) -> None:
         statistik_group, _ = Group.objects.get_or_create(name="statistik")
@@ -91,10 +103,16 @@ class StatistikTestCase(TestCase):
 
     def test_not_existing(self):
         self.client.login(username=self.username, password=self.password)
-        r = self.client.get("/something/login/")
+        r = self.client.get("/administration/something/login/")
         self.assertEqual(r.status_code, 404)
 
 
+@override_settings(
+    OPENID={"mock": "cvr"},
+    DAFO={"mock": True},
+    LOGIN_PROVIDER_CLASS="django_mitid_auth.openid.openid.OpenId",
+    LOGIN_BYPASS_ENABLED=False,
+)
 class UserTestCase(TestCase):
     """
     using nemId
@@ -102,41 +120,33 @@ class UserTestCase(TestCase):
 
     def setUp(self) -> None:
         self.cvr = "12345678"
-        self.client.session["cvr"] = self.cvr
+        session = self.client.session
+        session["user_info"] = {
+            "cvr": self.cvr,
+            "organizationname": "Aperture Science Test Facility",
+        }
+        session.save()
 
     def tearDown(self) -> None:
-        for key in ("cpr", "cvr"):
+        for key in ("user_info",):
             if key in self.client.session:
                 del self.client.session[key]
 
-    @override_settings(OPENID={"mock": "cvr"}, DAFO={"mock": True})
     def test_logged_in_frontpage(self):
         """
         User is "logged in" and can access the frontpage, but gets redirected to the company edit page.
         """
         r = self.client.get(reverse("indberetning:frontpage"), follow=True)
-        company = Virksomhed.objects.get(cvr=self.client.session["cvr"])
+        company = Virksomhed.objects.get(cvr=self.client.session["user_info"]["cvr"])
         self.assertRedirects(
             r, reverse("indberetning:company-edit", kwargs={"pk": company.pk})
         )
         self.assertEqual(200, r.status_code)
 
-    @override_settings(OPENID={"mock": "cvr"}, DAFO={"mock": True})
-    def test_logged_in_cvr_exists(self):
-        """
-        User is not logged in so redirect to the login page
-        """
-        Virksomhed.objects.create(cvr=self.cvr)
-        r = self.client.get(reverse("indberetning:indberetning-list"), follow=True)
-        self.assertRedirects(r, reverse("indberetning:indberetning-list"))
-        self.assertEqual(200, r.status_code)
-
-    @override_settings(OPENID={"mock": "cvr"})
     def test_not_existing(self):
         r = self.client.get("/something/login/")
         self.assertEqual(r.status_code, 404)
 
-    @override_settings(OPENID={"mock": "cvr"})
     def test_logged_in_administration(self):
         """
         Logged in user tries to access the admin page.
