@@ -196,13 +196,13 @@ LOGIN_WHITELISTED_URLS = [
     re.compile("^/statistik/"),
     "/_ht/",
 ]
-LOGIN_TIMEOUT_URL = reverse_lazy("selvbetjening:login-timeout")
-LOGIN_REPEATED_URL = reverse_lazy("selvbetjening:login-repeat")
-LOGIN_NO_CPRCVR_URL = reverse_lazy("selvbetjening:login-no-cpr")
+LOGIN_TIMEOUT_URL = reverse_lazy("indberetning:login-timeout")
+LOGIN_REPEATED_URL = reverse_lazy("indberetning:login-repeat")
+LOGIN_NO_CPRCVR_URL = reverse_lazy("indberetning:login-no-cpr")
 MITID_TEST_ENABLED = bool(strtobool(os.environ.get("MITID_TEST_ENABLED", "False")))
 SESSION_EXPIRE_SECONDS = int(os.environ.get("SESSION_EXPIRE_SECONDS") or 1800)
 SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
-SESSION_EXPIRE_CALLABLE = "selvbetjening.utils.session_timed_out"
+SESSION_EXPIRE_CALLABLE = "indberetning.utils.session_timed_out"
 LOGIN_BYPASS_ENABLED = bool(strtobool(os.environ.get("LOGIN_BYPASS_ENABLED", "False")))
 
 
