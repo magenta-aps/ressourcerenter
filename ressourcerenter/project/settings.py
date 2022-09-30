@@ -189,16 +189,19 @@ LOGIN_PROVIDER_CLASS = os.environ.get("LOGIN_PROVIDER_CLASS") or None
 LOGIN_MITID_REDIRECT_URL = reverse_lazy("indberetning:frontpage")
 LOGOUT_MITID_REDIRECT_URL = reverse_lazy("indberetning:frontpage")
 
+LOGIN_TIMEOUT_URL = reverse_lazy("indberetning:login-timeout")
+LOGIN_REPEATED_URL = reverse_lazy("indberetning:login-repeat")
+LOGIN_NO_CPRCVR_URL = reverse_lazy("indberetning:login-no-cpr")
 LOGIN_WHITELISTED_URLS = [
     "/favicon.ico",
     LOGIN_URL,
     re.compile("^/administration/"),
     re.compile("^/statistik/"),
     "/_ht/",
+    LOGIN_TIMEOUT_URL,
+    LOGIN_REPEATED_URL,
+    LOGIN_NO_CPRCVR_URL,
 ]
-LOGIN_TIMEOUT_URL = reverse_lazy("indberetning:login-timeout")
-LOGIN_REPEATED_URL = reverse_lazy("indberetning:login-repeat")
-LOGIN_NO_CPRCVR_URL = reverse_lazy("indberetning:login-no-cpr")
 MITID_TEST_ENABLED = bool(strtobool(os.environ.get("MITID_TEST_ENABLED", "False")))
 SESSION_EXPIRE_SECONDS = int(os.environ.get("SESSION_EXPIRE_SECONDS") or 1800)
 SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True

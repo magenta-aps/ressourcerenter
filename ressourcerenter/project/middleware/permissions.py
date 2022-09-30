@@ -49,6 +49,9 @@ class PermissionMiddleware:
             if request.path.startswith("/_ht/"):
                 # User may access monitoring
                 return None
+            if request.path.startswith("/error/"):
+                # User may access error pages
+                return None
             else:
                 raise PermissionDenied
         elif app_name == "djdt":
@@ -60,6 +63,8 @@ class PermissionMiddleware:
         ):
             return None
         elif app_name == "indberetning":
+            if request.path.startswith("/indberetning/error/"):
+                return None
             if not self.provider.is_logged_in(request):
                 # nemId user not logged in so redirect to login page
                 return redirect(self._indberetning_login_url)

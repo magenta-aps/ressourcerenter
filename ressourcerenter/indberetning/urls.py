@@ -60,8 +60,8 @@ urlpatterns = [
         name="login-repeat",
     ),
     path(
-        "error/login-nocprcvr/",
+        "error/login-no-cvr/",
         AccessDeniedView.as_view(template_name="indberetning/error/login_no_cvr.html"),
-        name="login-no-cprcvr",
+        name="login-no-cvr",
     ),
 ]
