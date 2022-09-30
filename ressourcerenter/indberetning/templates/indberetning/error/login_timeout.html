@@ -1,11 +1,4 @@
-{% extends 'indberetning/base.html' %}
 {% load i18n %}
-
-{% block userinfo %}
-{% endblock %}
-
-{% block content %}
-    {% translate "Adgang nægtet" as header %}
-    {% translate 'Det anvendte login er timet ud. Prøv at logge ind igen.' as body %}
-    {% include 'indberetning/error/error.html' with header=header body=body login=True %}
-{% endblock %}
+{% translate "Adgang nægtet" as header %}
+{% translate 'Det anvendte login er timet ud. Prøv at logge ind igen.' as body %}
+{% include 'indberetning/error/error.html' with header=header body=body login=True %}

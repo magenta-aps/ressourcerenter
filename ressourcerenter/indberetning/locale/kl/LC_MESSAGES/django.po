@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-29 13:46+0000\n"
+"POT-Creation-Date: 2022-09-30 10:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -138,21 +138,25 @@ msgstr ""
 msgid "Log ud"
 msgstr ""
 
+#: indberetning/templates/indberetning/base.html:73
+msgid "Er du sikker på at du vil logge ud?"
+msgstr ""
+
 #: indberetning/templates/indberetning/error/error.html:14
 msgid "Log ind"
 msgstr ""
 
-#: indberetning/templates/indberetning/error/login_no_cpr.html:8
-#: indberetning/templates/indberetning/error/login_repeat.html:8
+#: indberetning/templates/indberetning/error/login_no_cvr.html:8
+#: indberetning/templates/indberetning/error/login_repeat.html:4
 #: indberetning/templates/indberetning/error/login_timeout.html:8
 msgid "Adgang nægtet"
 msgstr ""
 
-#: indberetning/templates/indberetning/error/login_no_cpr.html:9
-msgid "Det anvendte login har ikke et CPR-nummer tilknyttet."
+#: indberetning/templates/indberetning/error/login_no_cvr.html:9
+msgid "Det anvendte login har ikke et CVR-nummer tilknyttet."
 msgstr ""
 
-#: indberetning/templates/indberetning/error/login_repeat.html:9
+#: indberetning/templates/indberetning/error/login_repeat.html:5
 msgid "Det anvendte login er allerede anvendt. Prøv at logge ind igen."
 msgstr ""
 

@@ -1,11 +1,4 @@
-{% extends 'indberetning/base.html' %}
 {% load i18n %}
-
-{% block userinfo %}
-{% endblock %}
-
-{% block content %}
-    {% translate "Adgang nægtet" as header %}
-    {% translate 'Det anvendte login har ikke et CVR-nummer tilknyttet.' as body %}
-    {% include 'indberetning/error/error.html' with header=header body=body logout=True %}
-{% endblock %}
+{% translate "Adgang nægtet" as header %}
+{% translate 'Det anvendte login har ikke et CVR-nummer tilknyttet.' as body %}
+{% include 'indberetning/error/error.html' with header=header body=body logout=True %}
