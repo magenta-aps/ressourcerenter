@@ -12,7 +12,6 @@ class PermissionMiddleware:
         self._administrator_login_url = settings.LOGIN_URL
         self._administrator_logout_url = reverse("administration:logout")
         self._administrator_postlogin_url = reverse("administration:postlogin")
-
         self._indberetning_login_url = settings.LOGIN_MITID_URL
         self._indberetning_callback_url = reverse("login:login-callback")
         self.provider = login_provider_class()
@@ -47,11 +46,15 @@ class PermissionMiddleware:
             if request.path.startswith("/i18n/"):
                 # User may access language functions
                 return None
+            if request.path.startswith("/_ht/"):
+                # User may access monitoring
+                return None
             else:
                 raise PermissionDenied
         elif app_name == "djdt":
             return None
         elif app_name in (
+            "mitid_test",
             "django_mitid_auth",
             "django_mitid_auth:django_mitid_auth.saml",
         ):

@@ -35,7 +35,7 @@
                     {% else %}
                         {% blocktranslate with company=request.session.company cvr=request.session.user_info.organizationname %}Du er logget ind som <strong>{{company}} ({{cvr}})</strong>{% endblocktranslate %}
                     {% endif %}
-                <a class="btn btn-primary btn-sm" href="{% url 'login:logout' %}">{% translate 'Log ud' %}</a>
+                <a class="btn btn-primary btn-sm" id="logout-link" href="{% url 'login:logout' %}">{% translate 'Log ud' %}</a>
                 {% endif %}
             </span>
             <span class="locale-changer navbar-text">
@@ -68,6 +68,11 @@
     <div class="container-fluid">
         {% block content %}{% endblock %}
     </div>
+    <script>
+        $("#logout-link").on('click', function () {
+            return confirm("{% translate 'Er du sikker på at du vil logge ud?' %}");
+        });
+    </script>
 </main>
 </body>
 </html>

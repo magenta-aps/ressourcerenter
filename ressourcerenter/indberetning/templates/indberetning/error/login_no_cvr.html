@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-    {% trans "Adgang nægtet" as header %}
-    {% trans 'Det anvendte login har ikke et CPR-nummer tilknyttet.' as body %}
+    {% translate "Adgang nægtet" as header %}
+    {% translate 'Det anvendte login har ikke et CVR-nummer tilknyttet.' as body %}
     {% include 'error/error.html' with header=header body=body logout=True %}
 {% endblock %}

@@ -1,5 +1,6 @@
 from django.urls import path
 from django.views.generic import TemplateView
+from django_mitid_auth.saml.views import AccessDeniedView
 from indberetning.apps import IndberetningConfig
 from indberetning.views import (
     CreateIndberetningCreateView,
@@ -47,5 +48,20 @@ urlpatterns = [
         "no_cvr",
         TemplateView.as_view(template_name="indberetning/no_cvr.html"),
         name="no-cvr",
+    ),
+    path(
+        "error/login-timeout/",
+        AccessDeniedView.as_view(template_name="indberetning/error/login_timeout.html"),
+        name="login-timeout",
+    ),
+    path(
+        "error/login-repeat/",
+        AccessDeniedView.as_view(template_name="indberetning/error/login_repeat.html"),
+        name="login-repeat",
+    ),
+    path(
+        "error/login-nocprcvr/",
+        AccessDeniedView.as_view(template_name="indberetning/error/login_no_cvr.html"),
+        name="login-no-cprcvr",
     ),
 ]
