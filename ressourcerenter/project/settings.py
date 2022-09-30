@@ -191,7 +191,7 @@ LOGOUT_MITID_REDIRECT_URL = reverse_lazy("indberetning:frontpage")
 
 LOGIN_TIMEOUT_URL = reverse_lazy("indberetning:login-timeout")
 LOGIN_REPEATED_URL = reverse_lazy("indberetning:login-repeat")
-LOGIN_NO_CPRCVR_URL = reverse_lazy("indberetning:login-no-cpr")
+LOGIN_NO_CPRCVR_URL = reverse_lazy("indberetning:login-no-cvr")
 LOGIN_WHITELISTED_URLS = [
     "/favicon.ico",
     LOGIN_URL,
