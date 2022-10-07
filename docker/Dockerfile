@@ -13,13 +13,15 @@ chown ressourcerenter:ressourcerenter /srv/media && \
 chown ressourcerenter:ressourcerenter /var/cache/aalisakkat && chmod a+w /var/cache/aalisakkat
 # hadolint ignore=DL3008
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gettext pandoc libxmlsec1-dev xmlsec1 && \
+    apt-get install -y --no-install-recommends gettext pandoc libxmlsec1-dev xmlsec1 default-jre graphviz && \
     apt-get clean && rm -rf /var/lib/apt/lists/* \
-    && curl -fsSLO "$SUPERCRONIC_URL" \
+    && wget --progress=dot:giga "$SUPERCRONIC_URL" \
     && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
     && chmod +x "$SUPERCRONIC" \
     && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
-    && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
+    && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic \
+    && wget --progress=dot:giga https://github.com/schemaspy/schemaspy/releases/download/v6.1.0/schemaspy-6.1.0.jar -O /usr/local/share/schemaspy.jar \
+    && wget --progress=dot:giga https://jdbc.postgresql.org/download/postgresql-42.2.8.jar -O /usr/local/share/postgresql.jar
 
 COPY ressourcerenter/requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt

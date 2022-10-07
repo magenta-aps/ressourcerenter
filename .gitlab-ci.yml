@@ -121,6 +121,7 @@ Unittest:
     SAML_CONTACT_SUPPORT_NAME: Tester
     SAML_CONTACT_SUPPORT_EMAIL: test@example.com
     SKIP_IDP_METADATA: "true"
+    GENERATE_DB_DOCUMENTATION: "false"
   script:
     - cd /app && python manage.py test
 
