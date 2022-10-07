@@ -19,6 +19,9 @@ def get_virksomhed_default_sted():
 
 
 class Virksomhed(models.Model):
+    class Meta:
+        ordering = ["navn"]
+
     uuid = models.UUIDField(primary_key=True, default=uuid4)
     cvr = models.TextField(
         unique=True,
