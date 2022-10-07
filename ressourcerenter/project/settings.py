@@ -197,6 +197,7 @@ LOGIN_WHITELISTED_URLS = [
     LOGIN_URL,
     re.compile("^/administration/"),
     re.compile("^/statistik/"),
+    re.compile("^/media/"),
     "/_ht/",
     LOGIN_TIMEOUT_URL,
     LOGIN_REPEATED_URL,

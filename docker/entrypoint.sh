@@ -6,6 +6,7 @@ TEST=${TEST:=false}
 SAMPLE_DATA=${SAMPLE_DATA:=false}
 CREATE_DUMMY_USERS=${CREATE_DUMMY_USERS:=false}
 SKIP_IDP_METADATA=${SKIP_IDP_METADATA:=false}
+GENERATE_DB_DOCUMENTATION=${GENERATE_DB_DOCUMENTATION:=true}
 
 django-admin makemessages --all
 django-admin compilemessages
@@ -36,4 +37,9 @@ if [ "$SAMPLE_DATA" = true ]; then
   echo "Generating sample data"
   python manage.py create_sample_data
 fi
+
+if [ "$GENERATE_DB_DOCUMENTATION" = true ]; then
+  java -jar /usr/local/share/schemaspy.jar -dp /usr/local/share/postgresql.jar -t pgsql -s public -db $POSTGRES_DB -host $POSTGRES_HOST -u $POSTGRES_USER -p $POSTGRES_PASSWORD -o /srv/media/er_html
+fi
+
 exec "$@"
