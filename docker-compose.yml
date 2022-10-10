@@ -13,8 +13,9 @@ services:
       - ./dev-environment/ressourcerenter.env
     volumes:
       - ./ressourcerenter/:/app
-      - ./data/:/srv/media
-      - ./manual/:/srv/media/manual
+      - ./data/g69export:/srv/media/g69export
+      - ./data/:/app/project/static/media
+      - ./manual/:/app/project/static/media/manual
       - ./dev-environment/cert:/ssl:ro
     command: bash -c "
       django-admin compilemessages &&

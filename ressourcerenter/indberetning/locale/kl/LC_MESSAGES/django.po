@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-02 07:33+0000\n"
+"POT-Creation-Date: 2022-10-07 13:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,73 +27,73 @@ msgstr ""
 msgid "Alle perioder"
 msgstr ""
 
-#: indberetning/models.py:26
+#: indberetning/models.py:29
 msgid "CVR-nummer"
 msgstr ""
 
-#: indberetning/models.py:30
+#: indberetning/models.py:33
 msgid "Kontaktperson navn"
 msgstr ""
 
-#: indberetning/models.py:33
+#: indberetning/models.py:36
 msgid "Kontaktperson email"
 msgstr ""
 
-#: indberetning/models.py:36
+#: indberetning/models.py:39
 msgid "Kontaktperson telefonnr"
 msgstr ""
 
-#: indberetning/models.py:38
+#: indberetning/models.py:41
 msgid "Navn"
 msgstr ""
 
-#: indberetning/models.py:73
+#: indberetning/models.py:76
 msgid "Fartøj"
 msgstr ""
 
-#: indberetning/models.py:73
+#: indberetning/models.py:76
 msgid "Indhandlings sted"
 msgstr ""
 
-#: indberetning/models.py:155
+#: indberetning/models.py:158
 #: indberetning/templates/indberetning/includes/linje_list.html:13
 #: indberetning/templates/indberetning/indberetning_form.html:51
 msgid "Produktvægt (kg)"
 msgstr ""
 
-#: indberetning/models.py:160
+#: indberetning/models.py:163
 msgid "Levende vægt/helfisk mængde (kg)"
 msgstr ""
 
-#: indberetning/models.py:163
+#: indberetning/models.py:166
 msgid "Salgspris (kr.)"
 msgstr ""
 
-#: indberetning/models.py:170
+#: indberetning/models.py:173
 #: indberetning/templates/indberetning/includes/linje_list.html:18
 #: indberetning/templates/indberetning/indberetning_form.html:62
 msgid "Transporttillæg (kr)"
 msgstr ""
 
-#: indberetning/models.py:177
+#: indberetning/models.py:180
 #: indberetning/templates/indberetning/includes/linje_list.html:21
 #: indberetning/templates/indberetning/indberetning_form.html:64
 msgid "Bonus og andet vederlag (kr)"
 msgstr ""
 
-#: indberetning/models.py:226
+#: indberetning/models.py:229
 msgid "Havgående"
 msgstr ""
 
-#: indberetning/models.py:228
+#: indberetning/models.py:231
 msgid "Kystnært"
 msgstr ""
 
-#: indberetning/models.py:230
+#: indberetning/models.py:233
 msgid "Indhandling"
 msgstr ""
 
-#: indberetning/models.py:232
+#: indberetning/models.py:235
 msgid "Svalbard og Barentshavet"
 msgstr ""
 
