@@ -39,7 +39,7 @@ if [ "$SAMPLE_DATA" = true ]; then
 fi
 
 if [ "$GENERATE_DB_DOCUMENTATION" = true ]; then
-  java -jar /usr/local/share/schemaspy.jar -dp /usr/local/share/postgresql.jar -t pgsql -s public -db $POSTGRES_DB -host $POSTGRES_HOST -u $POSTGRES_USER -p $POSTGRES_PASSWORD -o /srv/media/er_html
+  java -jar /usr/local/share/schemaspy.jar -dp /usr/local/share/postgresql.jar -t pgsql -s public -db $POSTGRES_DB -host $POSTGRES_HOST -u $POSTGRES_USER -p $POSTGRES_PASSWORD -o /app/project/static/media/er_html
 fi
 
 exec "$@"

@@ -156,7 +156,7 @@ django.conf.locale.LANG_INFO["kl"] = {
 
 UPLOAD_PATH = "/uploads"
 MEDIA_ROOT = "/srv/media/"
-MEDIA_URL = "/media/"
+# MEDIA_URL = "/media/"
 
 
 # Don't limit the number of fields in form submission (e.g. a large number of checkboxes)
@@ -284,6 +284,7 @@ PRISME_PUSH = {
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, "project/static")
 STATIC_URL = "/static/"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
