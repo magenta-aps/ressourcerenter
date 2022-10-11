@@ -40,18 +40,9 @@ class PermissionMiddleware:
         app_name = request.resolver_match.app_name
 
         if app_name == "":
-            if request.path.startswith("/media/"):
-                # User may access media files
-                return None
-            if request.path.startswith("/i18n/"):
-                # User may access language functions
-                return None
-            if request.path.startswith("/_ht/"):
-                # User may access monitoring
-                return None
-            if request.path.startswith("/error/"):
-                # User may access error pages
-                return None
+            for allowed in ("/media/", "/i18n/", "/_ht/", "/error/", "/static/"):
+                if request.path.startswith(allowed):
+                    return None
             else:
                 raise PermissionDenied
         elif app_name == "djdt":

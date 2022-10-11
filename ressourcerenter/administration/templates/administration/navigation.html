@@ -14,7 +14,7 @@
         <a class="nav-item nav-link" href="{% url 'administration:g69-list' %}">{% translate 'G69-kodeeksport' %}</a>
         {% if user.is_authenticated and request.user|has_group:'statistik' %}
         <a class="nav-item nav-link" href="{% url 'statistik:frontpage' %}">{% translate 'Statistik' %}</a>
-        <a class="nav-item nav-link" href="{% get_media_prefix %}manual/manual.pdf">{% translate 'Manual' %}</a>
+        <a class="nav-item nav-link" href="{% static 'media/manual/manual.pdf' %}">{% translate 'Manual' %}</a>
         {% endif %}
         {% endif %}
     </div>

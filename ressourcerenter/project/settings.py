@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "watchman",
     "django_mitid_auth",
     "mitid_test",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [

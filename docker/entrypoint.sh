@@ -40,6 +40,7 @@ fi
 
 if [ "$GENERATE_DB_DOCUMENTATION" = true ]; then
   java -jar /usr/local/share/schemaspy.jar -dp /usr/local/share/postgresql.jar -t pgsql -s public -db $POSTGRES_DB -host $POSTGRES_HOST -u $POSTGRES_USER -p $POSTGRES_PASSWORD -o /app/project/static/media/er_html
+  python manage.py graph_models indberetning administration -X Historical* -g -o /app/project/static/media/aalisakkat_models.png
 fi
 
 exec "$@"
