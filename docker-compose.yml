@@ -54,10 +54,10 @@ services:
     # options for the -V parameter: https://pandoc.org/MANUAL.html#templates
     command: [ "manual.md", "-V", "geometry:margin=30mm", "-o", "manual.pdf" ]
 
-  test-idp:
+  ressourcerenter-test-idp:
     user: "1000:1000"
     image: kenchan0130/simplesamlphp
-    container_name: idp
+    container_name: ressourcerenter-test-idp
     network_mode: "host"
     environment:
       SIMPLESAMLPHP_SP_ENTITY_ID: http://localhost:8000/saml/metadata/
