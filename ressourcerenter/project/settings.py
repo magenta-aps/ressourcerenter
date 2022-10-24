@@ -331,14 +331,14 @@ SAML = {
     "debug": 1,
     "entityid": os.environ.get("SAML_SP_ENTITY_ID"),
     "idp_entity_id": os.environ.get("SAML_IDP_ENTITY_ID"),
-    "name": "KAS Test",
-    "description": "KAS Test",
+    "name": os.environ.get("SAML_NAME") or "Aalisakkat",
+    "description": os.environ.get("SAML_DESCRIPTION") or "Ressourcenter",
     "verify_ssl_cert": False,
     "metadata_remote": os.environ.get("SAML_IDP_METADATA"),
     "metadata": {"local": ["/var/cache/aalisakkat/idp_metadata.xml"]},  # IdP Metadata
     "service": {
         "sp": {
-            "name": "Aalisakkat Test",
+            "name": os.environ.get("SAML_NAME") or "Aalisakkat",
             "hide_assertion_consumer_service": False,
             "endpoints": {
                 "assertion_consumer_service": [
