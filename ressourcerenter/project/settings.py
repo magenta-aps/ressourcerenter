@@ -386,8 +386,8 @@ SAML = {
     "xmlsec_binary": "/usr/bin/xmlsec1",
     "delete_tmpfiles": True,
     "organization": {
-        "name": [("Aalisakkat Test", "da")],
-        "display_name": ["Aalisakkat Test"],
+        "name": [("Aalisakkat", "da")],
+        "display_name": ["Aalisakkat"],
         "url": [("https://magenta.dk", "da")],
     },
     "contact_person": [
