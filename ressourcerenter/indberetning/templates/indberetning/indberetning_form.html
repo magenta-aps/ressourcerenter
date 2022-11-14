@@ -204,14 +204,18 @@
     const update_tsep = function() {
         let value = this.value;
         if (value !== '') {
-            value = replace_repeat(value, /(.)-/g, '$1');
-            value = value.replace(/--+/g, '-');
-            value = value.replace(/[^\d,\-]/g, '');  // Strip away all non-digits and non-commas (including dots)
-            parts = value.split(',', 1);
-            value = replace_repeat(value, /^(-?\d+)(\d\d\d)(\.|,|$)/, '$1.$2$3');
-            value = replace_repeat(value, /,([^,]+),/, ',$1');
-            this.value = value;
+            this.value = tsep(value);
         }
+    };
+
+    const tsep = function(value) {
+        value = replace_repeat(value, /(.)-/g, '$1');
+        value = value.replace(/--+/g, '-');
+        value = value.replace(/[^\d,\-]/g, '');  // Strip away all non-digits and non-commas (including dots)
+        parts = value.split(',', 1);
+        value = replace_repeat(value, /^(-?\d+)(\d\d\d)(\.|,|$)/, '$1.$2$3');
+        value = replace_repeat(value, /,([^,]+),/, ',$1');
+        return value
     };
 
     $(document).ready(function() {
@@ -247,7 +251,7 @@
                     },
                     'success': function (responseObject) {
                         const afgift = responseObject['afgift'];
-                        row.find('.autocalc-afgift-dest').text(afgift.replace('.', ','));
+                        row.find('.autocalc-afgift-dest').text(tsep(afgift.replace('.', ',')));
 
                         const rate_procent = responseObject['rate_procent'];
                         const rate_prkg = responseObject['rate_pr_kg'];
