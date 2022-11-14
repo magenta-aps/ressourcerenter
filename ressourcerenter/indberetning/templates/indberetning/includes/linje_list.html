@@ -22,32 +22,32 @@
         {% endif %}
         <th>{% translate 'Afgiftssats' %}</th>
         <th>{% translate 'Beregnet afgift (kr)' %}</th>
+        <th></th>
     </tr>
     </thead>
     <tbody>
     {% for linje in object_list %}
     <tr>
         {% if skema_id == 2 or skema_id == 3 %}
-        <td>{{linje.indhandlingssted|default_if_none:''}}</td>
+        <td data-key="indhandlingssted" data-value="{{linje.indhandlingssted.pk}}">{{linje.indhandlingssted|default_if_none:''}}</td>
         {% endif %}
         {% if skema_id == 1 or skema_id == 2 %}
-        <td>{{linje.fartøj_navn|default_if_none:''}}</td>
+        <td data-key="fartøj_navn">{{linje.fartøj_navn|default_if_none:''}}</td>
         {% endif %}
-        <td>{{ linje.produkttype }}</td>
+        <td data-key="produkttype" data-value="{{linje.produkttype.pk}}">{{ linje.produkttype }}</td>
         {% if skema_id == 1 or skema_id == 2 %}
-        <td>{{ linje.produktvægt }}</td>
+        <td data-key="produktvægt">{{ linje.produktvægt }}</td>
         {% endif %}
-        <td>{{ linje.levende_vægt }}</td>
-        <td>{{ linje.salgspris|default_if_none:'' }}</td>
-        <td>
+        <td data-key="levende_vægt">{{ linje.levende_vægt }}</td>
+        <td data-key="salgspris">{{ linje.salgspris|default_if_none:'' }}</td>
         {% if skema_id == 1 %}
-        {{ linje.transporttillæg|default_if_none:'' }}
+        <td data-key="transporttillæg">{{ linje.transporttillæg|default_if_none:'' }}</td>
         {% elif skema_id == 2 or skema_id == 3 %}
-        {{ linje.bonus|default_if_none:'' }}
+        <td data-key="bonus">{{ linje.bonus|default_if_none:'' }}</td>
         {% endif %}
-        </td>
         <td>{{linje.fangstafgift.rate_string}}</td>
         <td>{{linje.afgift}}</td>
+        <td><button class="btn btn-primary button_modregn">{% translate "Modregn" %}</button></td>
     </tr>
     {% endfor %}
     </tbody>

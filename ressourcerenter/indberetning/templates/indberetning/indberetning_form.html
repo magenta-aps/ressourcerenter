@@ -31,6 +31,7 @@
         </tr>
         </tbody>
     </table>
+    <p>{% translate 'For at justere en eksisterende indberetning nedad, skal vægt og beløb indtastes med negative tal - altså f.eks. "-10". Uden "-" vil der blive lagt til og ikke modregnet' %}</p>
     <div class="table-responsive">
         <hr />
         <table class="table table-bordered text-center table-sm" id="js-product-table">
@@ -185,6 +186,7 @@
 {{indberetning.to_json|json_script:'indberetning'}}
 {{pelagiske_fiskearter|json_script:'pelagiske_fiskearter'}}
 {{pelagiske_produkttyper|json_script:'pelagiske_produkttyper'}}
+{{produkttype_map|json_script:'produkttype_map'}}
 <script src="{% static 'js/cookie.js' %}"></script>
 <script>
     const boat_placeholder = "{% translate 'Vælg eller opret nyt fartøj' %}";
@@ -223,6 +225,7 @@
         const indberetning = JSON.parse($("#indberetning").text());
         const pelagiske_fiskearter = JSON.parse($("#pelagiske_fiskearter").text());
         const pelagiske_produkttyper = JSON.parse($("#pelagiske_produkttyper").text());
+        const produkttype_map = JSON.parse($("#produkttype_map").text());
         const calculate_afgift = function() {
             const row = $(this).parents('tr');
             const prefix = row.data('prefix') + '-';
@@ -349,7 +352,7 @@
             $("input[data-input-tsep]").each(update_tsep);
         });
 
-        $('input#js-add-product-button').on('click', function() {
+        const addRow = function() {
             const form_idx = $('input[name=linje-TOTAL_FORMS]').val();
             $('table#js-product-table tbody').append($('tbody#js-initial-row').html().replace(/__prefix__/g, form_idx));
             $('input[name=linje-TOTAL_FORMS]').val(parseInt(form_idx)+1);
@@ -375,7 +378,10 @@
             newRow.find('select.js-boat-select').on('select2:select', handleBoatSelect);
 
             newRow.find("input[data-input-tsep]").on('blur', update_tsep);
-        });
+            return newRow;
+        };
+
+        $('input#js-add-product-button').on('click', addRow);
         $('input#js-add-bilag-button').on('click', function() {
             let form_idx = $('input[name=bilag-TOTAL_FORMS]').val();
             $('div#js-bilag-wrapper').append($('div#js-bilag-empty').html().replace(/__prefix__/g, form_idx))
@@ -390,6 +396,61 @@
         $(".custom-file-input").on("change", function() {
             var fileName = $(this).val().split("\\").pop();
             $(this).siblings(".custom-file-label").addClass("selected").text(fileName);
+        });
+
+        $(".button_modregn").on("click", function() {
+            const row = $(this).parents("tr");
+            const data = {};
+            row.find("td").each(function () {
+                const key = $(this).data("key");
+                if (key) {
+                    data[key] = $(this).data("value") || $(this).text().trim();
+                }
+            });
+
+            let newrow;
+            $('table#js-product-table tbody tr').each(function () {
+                let hasValue = false;
+                $(this).find("input,select").each(function() {
+                    if ($(this).val()) {
+                        hasValue = true;
+                    }
+                });
+                if (!hasValue) {
+                    newrow = $(this);
+                }
+            });
+            if (!newrow) {
+                newrow = addRow();
+            }
+            const prefix = newrow.data("prefix");
+            const negate_keys = ["produktvægt", "levende_vægt", "salgspris", "transporttillæg", "bonus"]
+            for (let key in data) {
+                let value = data[key];
+                if (negate_keys.indexOf(key) !== -1) {
+                    if (value === "" || value === "0") {
+                        value = "0"
+                    } else {
+                        value = "-" + value;
+                    }
+                    if (value.startsWith("--")) {
+                        value = value.substring(2);
+                    }
+                }
+                const field = newrow.find("[name='"+prefix+"-"+key+"']").first();
+                if (key === "produkttype" && !field.find("option[value='"+value+"']").length) {
+                    // If value is not an option, use parent group instead
+                    value = produkttype_map[value];
+                }
+                field.val(value);
+            }
+            const select2s = newrow.find("[data-select2-id]");
+            if (select2s.length) {
+                select2s.trigger('change');
+            } else {
+                calculate_afgift.call(newrow.find("input").first());
+            }
+            $(this).prop("disabled", true);
         });
     });
 </script>

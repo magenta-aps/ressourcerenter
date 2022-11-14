@@ -340,6 +340,10 @@ class UpdateIndberetningsView(IndberetningsLinjebilagFormsetMixin, UpdateView):
                 ),
                 "afgiftsperiode": self.afgiftsperiode,
                 "skema": self.skema,
+                "produkttype_map": {
+                    str(produkttype.pk): str(produkttype.gruppe.pk)
+                    for produkttype in ProduktType.objects.filter(gruppe__isnull=False)
+                },
             }
         )
         return ctx

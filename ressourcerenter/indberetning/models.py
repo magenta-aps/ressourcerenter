@@ -234,6 +234,11 @@ class IndberetningLinje(models.Model):
         if fangsttype == "svalbard":
             return _("Svalbard og Barentshavet")
 
+    def save(self, *args, **kwargs):
+        if self.salgspris is not None:
+            self.salgspris = round(self.salgspris, 0)
+        return super().save(*args, **kwargs)
+
     class Meta:
         ordering = ("produkttype__navn_dk",)
 
