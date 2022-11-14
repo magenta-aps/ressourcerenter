@@ -18,6 +18,12 @@ from django.utils.translation import gettext_lazy as _
 import django.conf.locale
 
 from django.urls import reverse_lazy
+import decimal
+
+from indberetning.utils import populate_dummy_session
+
+# Round towards zero (positives round down, negatives round up)
+decimal.getcontext().rounding = decimal.ROUND_DOWN
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -209,7 +215,9 @@ SESSION_EXPIRE_SECONDS = int(os.environ.get("SESSION_EXPIRE_SECONDS") or 1800)
 SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
 SESSION_EXPIRE_CALLABLE = "indberetning.utils.session_timed_out"
 LOGIN_BYPASS_ENABLED = bool(strtobool(os.environ.get("LOGIN_BYPASS_ENABLED", "False")))
-
+DEFAULT_CVR = os.environ.get("DEFAULT_CVR")
+DEFAULT_CPR = None
+POPULATE_DUMMY_SESSION = populate_dummy_session
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
