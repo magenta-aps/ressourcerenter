@@ -1,3 +1,5 @@
+import mimetypes
+
 from django import forms
 from django.conf import settings
 from django.db.models.query import prefetch_related_objects
@@ -13,8 +15,7 @@ from django.views.generic.edit import BaseFormView
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext as _
 from django.utils.functional import cached_property
-from django.http.response import FileResponse
-
+from django.http.response import FileResponse, HttpResponse
 
 from datetime import timedelta
 from tenQ.client import ClientException
@@ -52,6 +53,7 @@ from administration.forms import (
 from administration.forms import IndberetningAfstemForm
 
 from indberetning.models import Virksomhed
+from indberetning.models import Bilag
 from administration.forms import VirksomhedForm
 
 from administration.models import Faktura, Prisme10QBatch
@@ -679,4 +681,19 @@ class G69DownloadView(BaseDetailView):
             self.object.excel_file, as_attachment=True, filename="g69_koder.xlsx"
         )
         # response['Content-Disposition'] = f"attachment; filename={self.object.år}.xlsx"
+        return response
+
+
+class BilagDownloadView(DetailView):
+    def get_queryset(self):
+        return Bilag.objects.filter(
+            indberetning__virksomhed__cvr=self.request.session["user_info"]["cvr"]
+        )
+
+    def render_to_response(self, context, **response_kwargs):
+        bilag = self.get_object()
+        file = bilag.bilag
+        mime_type, _ = mimetypes.guess_type(file.name)
+        response = HttpResponse(file.read(), content_type=mime_type)
+        response["Content-Disposition"] = "attachment; filename=%s" % bilag.filename
         return response

@@ -14,6 +14,7 @@ services:
     volumes:
       - ./ressourcerenter/:/app
       - ./data/g69export:/srv/media/g69export
+      - ./data/bilag:/srv/media/bilag
       - ./data/:/app/project/static/media
       - ./manual/:/app/project/static/media/manual
       - ./dev-environment/cert:/ssl:ro

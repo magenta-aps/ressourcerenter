@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-14 10:48+0000\n"
+"POT-Creation-Date: 2022-11-23 12:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,14 +22,14 @@ msgstr ""
 #: administration/models.py:971
 #: administration/templates/administration/afgiftsperiode_satstabel.html:102
 #: administration/templates/administration/faktura_detail.html:71
-#: administration/templates/administration/indberetning_detail.html:170
+#: administration/templates/administration/indberetning_detail.html:180
 msgid "Nej"
 msgstr ""
 
 #: administration/forms.py:36 administration/forms.py:59
 #: administration/models.py:969
 #: administration/templates/administration/afgiftsperiode_satstabel.html:101
-#: administration/templates/administration/indberetning_detail.html:169
+#: administration/templates/administration/indberetning_detail.html:179
 msgid "Ja"
 msgstr ""
 
@@ -135,44 +135,44 @@ msgstr ""
 msgid "{kvartal}. kvartal"
 msgstr ""
 
-#: administration/models.py:924 administration/views.py:625
+#: administration/models.py:924 administration/views.py:628
 msgid "G69-Kode"
 msgstr ""
 
 #: administration/models.py:925
 #: administration/templates/administration/g69kode_list.html:20
-#: administration/views.py:626
+#: administration/views.py:629
 msgid "År"
 msgstr ""
 
 #: administration/models.py:926
 #: administration/templates/administration/faktura_detail.html:130
 #: administration/templates/administration/indberetning_afstem.html:43
-#: administration/views.py:627
+#: administration/views.py:630
 msgid "Fangsttype"
 msgstr ""
 
-#: administration/models.py:927 administration/views.py:628
+#: administration/models.py:927 administration/views.py:631
 msgid "Aktivitetskode"
 msgstr ""
 
 #: administration/models.py:928
 #: administration/templates/administration/afgiftsperiode_satstabel.html:29
-#: administration/views.py:629
+#: administration/views.py:632
 msgid "Fiskeart"
 msgstr ""
 
-#: administration/models.py:929 administration/views.py:630
+#: administration/models.py:929 administration/views.py:633
 msgid "Fiskeart kode"
 msgstr ""
 
-#: administration/models.py:930 administration/views.py:631
+#: administration/models.py:930 administration/views.py:634
 msgid "Sted"
 msgstr ""
 
 #: administration/models.py:931
 #: administration/templates/administration/virksomhed_list.html:25
-#: administration/views.py:632
+#: administration/views.py:635
 msgid "Stedkode"
 msgstr ""
 
@@ -367,7 +367,7 @@ msgstr ""
 #: administration/templates/administration/indberetning_afstem.html:17
 #: administration/templates/administration/indberetning_detail.html:20
 #: administration/templates/administration/indberetning_list.html:45
-#: administration/views.py:295
+#: administration/views.py:298
 msgid "Afgiftsperiode"
 msgstr ""
 
@@ -394,7 +394,7 @@ msgstr ""
 
 #: administration/templates/administration/faktura_detail.html:42
 #: administration/templates/administration/indberetning_list.html:46
-#: administration/views.py:296
+#: administration/views.py:299
 msgid "Virksomhed"
 msgstr ""
 
@@ -469,13 +469,13 @@ msgstr ""
 
 #: administration/templates/administration/faktura_detail.html:122
 #: administration/templates/administration/indberetning_afstem.html:45
-#: administration/templates/administration/indberetning_detail.html:84
+#: administration/templates/administration/indberetning_detail.html:94
 msgid "Indhandlingssted"
 msgstr ""
 
 #: administration/templates/administration/faktura_detail.html:126
 #: administration/templates/administration/indberetning_afstem.html:44
-#: administration/templates/administration/indberetning_detail.html:87
+#: administration/templates/administration/indberetning_detail.html:97
 msgid "Fartøj"
 msgstr ""
 
@@ -485,36 +485,36 @@ msgstr ""
 
 #: administration/templates/administration/faktura_detail.html:138
 #: administration/templates/administration/indberetning_afstem.html:46
-#: administration/templates/administration/indberetning_detail.html:91
+#: administration/templates/administration/indberetning_detail.html:101
 msgid "Produktvægt (kg)"
 msgstr ""
 
 #: administration/templates/administration/faktura_detail.html:142
 #: administration/templates/administration/indberetning_afstem.html:47
-#: administration/templates/administration/indberetning_detail.html:93
+#: administration/templates/administration/indberetning_detail.html:103
 msgid "Levende vægt/helfisk mængde (kg)"
 msgstr ""
 
 #: administration/templates/administration/faktura_detail.html:146
 #: administration/templates/administration/indberetning_afstem.html:48
-#: administration/templates/administration/indberetning_detail.html:94
+#: administration/templates/administration/indberetning_detail.html:104
 msgid "Omsætning / Indhandlingsværdi (kr)"
 msgstr ""
 
 #: administration/templates/administration/faktura_detail.html:150
 #: administration/templates/administration/indberetning_afstem.html:49
-#: administration/templates/administration/indberetning_detail.html:95
+#: administration/templates/administration/indberetning_detail.html:105
 msgid "Afgiftssats"
 msgstr ""
 
 #: administration/templates/administration/faktura_detail.html:154
 #: administration/templates/administration/indberetning_afstem.html:50
-#: administration/templates/administration/indberetning_detail.html:96
+#: administration/templates/administration/indberetning_detail.html:106
 msgid "Beregnet afgift (kr)"
 msgstr ""
 
 #: administration/templates/administration/faktura_detail.html:158
-#: administration/templates/administration/indberetning_detail.html:97
+#: administration/templates/administration/indberetning_detail.html:107
 #: administration/templates/administration/indberetning_list.html:50
 msgid "Kommentar"
 msgstr ""
@@ -573,7 +573,7 @@ msgstr ""
 #: administration/templates/administration/fiskeart_list.html:5
 #: administration/templates/administration/indberetning_list.html:49
 #: administration/templates/administration/navigation.html:11
-#: administration/views.py:299
+#: administration/views.py:302
 msgid "Fiskearter"
 msgstr ""
 
@@ -705,7 +705,7 @@ msgid "Opret faktura"
 msgstr ""
 
 #: administration/templates/administration/indberetning_afstem.html:103
-#: administration/templates/administration/indberetning_detail.html:128
+#: administration/templates/administration/indberetning_detail.html:138
 msgid "I alt"
 msgstr ""
 
@@ -732,7 +732,7 @@ msgstr ""
 
 #: administration/templates/administration/indberetning_detail.html:24
 #: administration/templates/administration/indberetning_list.html:48
-#: administration/views.py:298
+#: administration/views.py:301
 msgid "Indberetningstidspunkt"
 msgstr ""
 
@@ -749,20 +749,24 @@ msgstr ""
 msgid "Afstemt"
 msgstr ""
 
-#: administration/templates/administration/indberetning_detail.html:66
-#: administration/templates/administration/indberetning_detail.html:157
+#: administration/templates/administration/indberetning_detail.html:61
+msgid "Bilag"
+msgstr ""
+
+#: administration/templates/administration/indberetning_detail.html:76
+#: administration/templates/administration/indberetning_detail.html:167
 msgid "Afstem"
 msgstr ""
 
-#: administration/templates/administration/indberetning_detail.html:71
+#: administration/templates/administration/indberetning_detail.html:81
 msgid "Gem kommentarer"
 msgstr ""
 
-#: administration/templates/administration/indberetning_detail.html:89
+#: administration/templates/administration/indberetning_detail.html:99
 msgid "Dato/tid"
 msgstr ""
 
-#: administration/templates/administration/indberetning_detail.html:163
+#: administration/templates/administration/indberetning_detail.html:173
 msgid "Er du sikker på at du vil afstemme denne indberetning?"
 msgstr ""
 
@@ -787,7 +791,7 @@ msgid "Søg"
 msgstr ""
 
 #: administration/templates/administration/indberetning_list.html:47
-#: administration/views.py:297
+#: administration/views.py:300
 msgid "Cpr"
 msgstr ""
 
@@ -963,21 +967,21 @@ msgstr ""
 msgid "nej"
 msgstr ""
 
-#: administration/views.py:488
+#: administration/views.py:491
 #, python-brace-format
 msgid "Faktura oprettet, men afsendelse fejlede: {error}"
 msgstr ""
 
-#: administration/views.py:495
+#: administration/views.py:498
 msgid "Faktura oprettet og afsendt"
 msgstr ""
 
-#: administration/views.py:516 administration/views.py:526
+#: administration/views.py:519 administration/views.py:529
 #, python-brace-format
 msgid "Afsendelse fejlede: {error}"
 msgstr ""
 
-#: administration/views.py:519
+#: administration/views.py:522
 msgid "Faktura afsendt"
 msgstr ""
 

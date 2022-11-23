@@ -56,6 +56,16 @@
         <th>{% translate 'Afstemt' %}</th>
         <td>{{ object.afstemt|janej|capfirst }}</td>
     </tr>
+    <tr>
+        <th>
+            {% translate 'Bilag' %}
+        </th>
+        <td>
+            {% for bilag in object.bilag.all %}
+            <a href="{% url 'administration:bilag-download' pk=bilag.uuid %}">{{ bilag.filename }}</a>
+            {% endfor %}
+        </td>
+    </tr>
     </tbody>
 </table>
 <form method="post">

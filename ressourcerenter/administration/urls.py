@@ -6,6 +6,7 @@ from administration.views import (
     AfgiftsperiodeHistoryView,
     AfgiftsperiodeSatsTabelUpdateView,
 )
+from administration.views import BilagDownloadView
 from administration.views import FakturaSendView
 from administration.views import (
     FiskeArtListView,
@@ -155,4 +156,5 @@ urlpatterns = [
     path("g69kode/", G69ListView.as_view(), name="g69-list"),
     path("g69kode/create/", G69CodeExportCreateView.as_view(), name="g69-create"),
     path("g69kode/<uuid:pk>/", G69DownloadView.as_view(), name="g69-download"),
+    path("bilag/<uuid:pk>/", BilagDownloadView.as_view(), name="bilag-download"),
 ]
