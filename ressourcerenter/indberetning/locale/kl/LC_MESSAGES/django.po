@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-23 12:05+0000\n"
+"POT-Creation-Date: 2022-11-23 16:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -247,7 +247,9 @@ msgid "Kommentar"
 msgstr ""
 
 #: indberetning/templates/indberetning/indberetning_form.html:104
-#: indberetning/templates/indberetning/indberetning_form.html:172
+#: indberetning/templates/indberetning/indberetning_form.html:134
+#: indberetning/templates/indberetning/indberetning_form.html:179
+#: indberetning/templates/indberetning/indberetning_form.html:191
 msgid "Slet"
 msgstr ""
 
@@ -259,37 +261,37 @@ msgstr ""
 msgid "Eksisterende bilag:"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:128
-#: indberetning/templates/indberetning/indberetning_form.html:179
+#: indberetning/templates/indberetning/indberetning_form.html:130
+#: indberetning/templates/indberetning/indberetning_form.html:187
 msgid "Vælg en fil"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:135
+#: indberetning/templates/indberetning/indberetning_form.html:142
 msgid "Tilføj bilag"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:139
+#: indberetning/templates/indberetning/indberetning_form.html:146
 msgid "Indsend"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:192
+#: indberetning/templates/indberetning/indberetning_form.html:204
 msgid "Vælg eller opret nyt fartøj"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:193
+#: indberetning/templates/indberetning/indberetning_form.html:205
 msgid "Vælg eller opret nyt indhandlingssted"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:194
+#: indberetning/templates/indberetning/indberetning_form.html:206
 #, python-brace-format
 msgid "{rate} kr/kg"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:195
+#: indberetning/templates/indberetning/indberetning_form.html:207
 msgid "Ingen afgift"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:458
+#: indberetning/templates/indberetning/indberetning_form.html:476
 msgid "Gennemse..."
 msgstr ""
 
