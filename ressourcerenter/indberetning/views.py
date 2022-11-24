@@ -185,7 +185,7 @@ class IndberetningsLinjebilagFormsetMixin:
     def get_context_data(self, **kwargs):
         if "bilag_formset" not in kwargs:
             kwargs["bilag_formset"] = BilagsFormSet(
-                auto_id=False, prefix="bilag", queryset=Bilag.objects.none()
+                auto_id=True, prefix="bilag", queryset=Bilag.objects.none()
             )
         ctx = super(IndberetningsLinjebilagFormsetMixin, self).get_context_data(
             **kwargs
@@ -208,7 +208,7 @@ class IndberetningsLinjebilagFormsetMixin:
     def post(self, request, *args, **kwargs):
         form = self.get_form()
         bilag_formset = BilagsFormSet(
-            request.POST, request.FILES, auto_id=False, prefix="bilag"
+            request.POST, request.FILES, auto_id=True, prefix="bilag"
         )
         if form.is_valid() and bilag_formset.is_valid():
             return self.form_valid(form, bilag_formset)
