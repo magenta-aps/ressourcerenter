@@ -6,6 +6,11 @@ from openpyxl.cell import Cell
 from datetime import date
 from tempfile import NamedTemporaryFile
 import os
+from django.db.models import Func
+
+
+class Trunc(Func):
+    function = "TRUNC"
 
 
 class GetFormView(FormView):

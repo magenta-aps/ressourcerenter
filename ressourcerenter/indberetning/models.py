@@ -11,6 +11,8 @@ from django.utils.translation import gettext as _
 from indberetning.validators import validate_cvr, validate_cpr
 from uuid import uuid4
 
+from project.views_mixin import Trunc
+
 logger = logging.getLogger(__name__)
 
 
@@ -127,6 +129,11 @@ class Indberetning(models.Model):
     def afgift_sum(self):
         return self.linjer.aggregate(sum=Sum("fangstafgift__afgift"))["sum"]
         # return sum([linje.fangstafgift.afgift for linje in self.linjer.all()])
+
+    @property
+    def afgift_sum_afrundet(self):
+        return self.linjer.aggregate(sum=Trunc(Sum("fangstafgift__afgift")))["sum"]
+        # return floor(sum([linje.fangstafgift.afgift for linje in self.linjer.all()]))
 
     def to_json(self):
         return {

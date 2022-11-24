@@ -50,7 +50,7 @@
     </tr>
     <tr>
         <th>{% translate 'Total beregnet afgift (kr)' %}</th>
-        <td>{{ object.afgift_sum|default_if_none:'' }}</td>
+        <td>{{ object.afgift_sum_afrundet|default_if_none:'' }}</td>
     </tr>
     <tr>
         <th>{% translate 'Afstemt' %}</th>
