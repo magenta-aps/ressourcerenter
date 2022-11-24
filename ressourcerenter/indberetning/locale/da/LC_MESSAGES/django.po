@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-23 16:35+0000\n"
+"POT-Creation-Date: 2022-11-24 09:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,346 +18,340 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: indberetning/forms.py:97
+#: indberetning/forms.py
 msgid ""
 "Produktvægt, levende vægt og salgspris skal alle være negative eller "
 "positive tal"
 msgstr ""
 
-#: indberetning/forms.py:281
+#: indberetning/forms.py
 msgid "Alle perioder"
 msgstr ""
 
-#: indberetning/models.py:29
+#: indberetning/models.py
 msgid "CVR-nummer"
 msgstr ""
 
-#: indberetning/models.py:33
+#: indberetning/models.py
 msgid "Kontaktperson navn"
 msgstr ""
 
-#: indberetning/models.py:36
+#: indberetning/models.py
 msgid "Kontaktperson email"
 msgstr ""
 
-#: indberetning/models.py:39
+#: indberetning/models.py
 msgid "Kontaktperson telefonnr"
 msgstr ""
 
-#: indberetning/models.py:41
+#: indberetning/models.py
 msgid "Navn"
 msgstr ""
 
-#: indberetning/models.py:76
+#: indberetning/models.py
 msgid "Fartøj"
 msgstr ""
 
-#: indberetning/models.py:76
+#: indberetning/models.py
 msgid "Indhandlings sted"
 msgstr ""
 
-#: indberetning/models.py:158
-#: indberetning/templates/indberetning/includes/linje_list.html:13
-#: indberetning/templates/indberetning/indberetning_form.html:52
+#: indberetning/models.py
+#: indberetning/templates/indberetning/includes/linje_list.html
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Produktvægt (kg)"
 msgstr ""
 
-#: indberetning/models.py:163
+#: indberetning/models.py
 msgid "Levende vægt/helfisk mængde (kg)"
 msgstr ""
 
-#: indberetning/models.py:166
+#: indberetning/models.py
 msgid "Salgspris (kr.)"
 msgstr ""
 
-#: indberetning/models.py:173
-#: indberetning/templates/indberetning/includes/linje_list.html:18
-#: indberetning/templates/indberetning/indberetning_form.html:63
+#: indberetning/models.py
+#: indberetning/templates/indberetning/includes/linje_list.html
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Transporttillæg (kr)"
 msgstr ""
 
-#: indberetning/models.py:180
-#: indberetning/templates/indberetning/includes/linje_list.html:21
-#: indberetning/templates/indberetning/indberetning_form.html:65
+#: indberetning/models.py
+#: indberetning/templates/indberetning/includes/linje_list.html
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Bonus og andet vederlag (kr)"
 msgstr ""
 
-#: indberetning/models.py:229
+#: indberetning/models.py
 msgid "Havgående"
 msgstr ""
 
-#: indberetning/models.py:231
+#: indberetning/models.py
 msgid "Kystnært"
 msgstr ""
 
-#: indberetning/models.py:233
+#: indberetning/models.py
 msgid "Indhandling"
 msgstr ""
 
-#: indberetning/models.py:235
+#: indberetning/models.py
 msgid "Svalbard og Barentshavet"
 msgstr ""
 
-#: indberetning/templates/indberetning/base.html:18
+#: indberetning/templates/indberetning/base.html
 msgid "Indberetning af ressourcerenter"
 msgstr ""
 
-#: indberetning/templates/indberetning/base.html:23
+#: indberetning/templates/indberetning/base.html
 msgid "Tilbage til forsiden for Sullissivik.gl"
 msgstr ""
 
-#: indberetning/templates/indberetning/base.html:25
-#: indberetning/templates/indberetning/indberetning_list.html:5
+#: indberetning/templates/indberetning/base.html
+#: indberetning/templates/indberetning/indberetning_list.html
 msgid "Indberetninger"
 msgstr ""
 
-#: indberetning/templates/indberetning/base.html:30
+#: indberetning/templates/indberetning/base.html
 #, python-format
 msgid ""
 "Logget ind som <strong>%(name)s</strong> på vegne af <strong>%(company)s "
 "(%(cvr)s)</strong>"
 msgstr ""
 
-#: indberetning/templates/indberetning/base.html:31
+#: indberetning/templates/indberetning/base.html
 msgid "Afslut repræsentation"
 msgstr ""
 
-#: indberetning/templates/indberetning/base.html:34
+#: indberetning/templates/indberetning/base.html
 #, python-format
 msgid ""
 "Du er logget ind som <strong>%(name)s</strong> ved <strong>%(company)s "
 "(%(cvr)s)</strong>"
 msgstr ""
 
-#: indberetning/templates/indberetning/base.html:36
+#: indberetning/templates/indberetning/base.html
 #, python-format
 msgid "Du er logget ind som <strong>%(company)s (%(cvr)s)</strong>"
 msgstr ""
 
-#: indberetning/templates/indberetning/base.html:38
-#: indberetning/templates/indberetning/error/error.html:11
+#: indberetning/templates/indberetning/base.html
+#: indberetning/templates/indberetning/error/error.html
 msgid "Log ud"
 msgstr ""
 
-#: indberetning/templates/indberetning/base.html:73
+#: indberetning/templates/indberetning/base.html
 msgid "Er du sikker på at du vil logge ud?"
 msgstr ""
 
-#: indberetning/templates/indberetning/error/error.html:14
+#: indberetning/templates/indberetning/error/error.html
 msgid "Log ind"
 msgstr ""
 
-#: indberetning/templates/indberetning/error/login_no_cvr.html:2
-#: indberetning/templates/indberetning/error/login_repeat.html:2
-#: indberetning/templates/indberetning/error/login_timeout.html:2
+#: indberetning/templates/indberetning/error/login_no_cvr.html
+#: indberetning/templates/indberetning/error/login_repeat.html
+#: indberetning/templates/indberetning/error/login_timeout.html
 msgid "Adgang nægtet"
 msgstr ""
 
-#: indberetning/templates/indberetning/error/login_no_cvr.html:3
+#: indberetning/templates/indberetning/error/login_no_cvr.html
 msgid "Det anvendte login har ikke et CVR-nummer tilknyttet."
 msgstr ""
 
-#: indberetning/templates/indberetning/error/login_repeat.html:3
+#: indberetning/templates/indberetning/error/login_repeat.html
 msgid "Det anvendte login er allerede anvendt. Prøv at logge ind igen."
 msgstr ""
 
-#: indberetning/templates/indberetning/error/login_timeout.html:3
+#: indberetning/templates/indberetning/error/login_timeout.html
 msgid "Det anvendte login er timet ud. Prøv at logge ind igen."
 msgstr ""
 
-#: indberetning/templates/indberetning/includes/linje_list.html:6
-#: indberetning/templates/indberetning/indberetning_form.html:44
-#: indberetning/templates/indberetning/indberetning_form.html:48
+#: indberetning/templates/indberetning/includes/linje_list.html
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Indhandlingssted"
 msgstr ""
 
-#: indberetning/templates/indberetning/includes/linje_list.html:9
-#: indberetning/templates/indberetning/indberetning_form.html:41
-#: indberetning/templates/indberetning/indberetning_form.html:45
+#: indberetning/templates/indberetning/includes/linje_list.html
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Fartøjs navn"
 msgstr ""
 
-#: indberetning/templates/indberetning/includes/linje_list.html:11
-#: indberetning/templates/indberetning/indberetning_form.html:50
+#: indberetning/templates/indberetning/includes/linje_list.html
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Produkttype"
 msgstr ""
 
-#: indberetning/templates/indberetning/includes/linje_list.html:15
-#: indberetning/templates/indberetning/indberetning_form.html:54
+#: indberetning/templates/indberetning/includes/linje_list.html
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Levende vægt (kg)"
 msgstr ""
 
-#: indberetning/templates/indberetning/includes/linje_list.html:17
-#: indberetning/templates/indberetning/indberetning_form.html:57
+#: indberetning/templates/indberetning/includes/linje_list.html
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Omsætning (kr)"
 msgstr ""
 
-#: indberetning/templates/indberetning/includes/linje_list.html:20
-#: indberetning/templates/indberetning/indberetning_form.html:59
+#: indberetning/templates/indberetning/includes/linje_list.html
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Indhandlingsværdi (kr)"
 msgstr ""
 
-#: indberetning/templates/indberetning/includes/linje_list.html:23
-#: indberetning/templates/indberetning/indberetning_form.html:68
+#: indberetning/templates/indberetning/includes/linje_list.html
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Afgiftssats"
 msgstr ""
 
-#: indberetning/templates/indberetning/includes/linje_list.html:24
-#: indberetning/templates/indberetning/indberetning_form.html:69
+#: indberetning/templates/indberetning/includes/linje_list.html
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Beregnet afgift (kr)"
 msgstr ""
 
-#: indberetning/templates/indberetning/includes/linje_list.html:50
+#: indberetning/templates/indberetning/includes/linje_list.html
 msgid "Modregn"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:6
+#: indberetning/templates/indberetning/indberetning_form.html
 #, python-format
 msgid "Tidligere Indberetninger fra %(tidspunkt)s"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:10
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Justerer indberetning"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:12
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Nye indberetninger"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:21
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Afgiftsperiode:"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:25
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Selskab / CVR:"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:29
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Skematype:"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:34
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid ""
 "For at justere en eksisterende indberetning nedad, skal vægt og beløb "
 "indtastes med negative tal - altså f.eks. \"-10\". Uden \"-\" vil der blive "
 "lagt til og ikke modregnet"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:72
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Kommentar"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:104
-#: indberetning/templates/indberetning/indberetning_form.html:134
-#: indberetning/templates/indberetning/indberetning_form.html:179
-#: indberetning/templates/indberetning/indberetning_form.html:191
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Slet"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:111
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Tilføj linje"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:116
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Eksisterende bilag:"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:130
-#: indberetning/templates/indberetning/indberetning_form.html:187
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Vælg en fil"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:142
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Tilføj bilag"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:146
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Indsend"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:204
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Vælg eller opret nyt fartøj"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:205
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Vælg eller opret nyt indhandlingssted"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:206
+#: indberetning/templates/indberetning/indberetning_form.html
 #, python-brace-format
 msgid "{rate} kr/kg"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:207
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Ingen afgift"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_form.html:476
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Gennemse..."
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_list.html:10
+#: indberetning/templates/indberetning/indberetning_list.html
 msgid "Vis indberetninger for:"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_list.html:19
-#: indberetning/templates/indberetning/type_select.html:16
+#: indberetning/templates/indberetning/indberetning_list.html
+#: indberetning/templates/indberetning/type_select.html
 msgid "Opret ny indberetning"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_list.html:32
+#: indberetning/templates/indberetning/indberetning_list.html
 msgid "Dato"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_list.html:35
+#: indberetning/templates/indberetning/indberetning_list.html
 msgid "Justér indberetning"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_list.html:39
+#: indberetning/templates/indberetning/indberetning_list.html
 msgid "Periode"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_list.html:42
+#: indberetning/templates/indberetning/indberetning_list.html
 msgid "Bilag:"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_list.html:49
+#: indberetning/templates/indberetning/indberetning_list.html
 msgid "Indberetter CPR"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_list.html:53
+#: indberetning/templates/indberetning/indberetning_list.html
 msgid "Skematype"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_list.html:57
+#: indberetning/templates/indberetning/indberetning_list.html
 msgid "Total beregnet afgift (kr)"
 msgstr ""
 
-#: indberetning/templates/indberetning/indberetning_list.html:65
+#: indberetning/templates/indberetning/indberetning_list.html
 msgid "Indberetningslinjer"
 msgstr ""
 
-#: indberetning/templates/indberetning/no_cvr.html:6
+#: indberetning/templates/indberetning/no_cvr.html
 msgid "Dette site fungerer kun for logins med et CVR-nummer"
 msgstr ""
 
-#: indberetning/templates/indberetning/no_cvr.html:8
+#: indberetning/templates/indberetning/no_cvr.html
 msgid "Tilbage til login"
 msgstr ""
 
-#: indberetning/templates/indberetning/type_select.html:8
+#: indberetning/templates/indberetning/type_select.html
 msgid "Type af indberetning"
 msgstr ""
 
-#: indberetning/templates/indberetning/type_select.html:12
+#: indberetning/templates/indberetning/type_select.html
 msgid "Indberetningsperiode"
 msgstr ""
 
-#: indberetning/templates/indberetning/virksomhed_form.html:5
+#: indberetning/templates/indberetning/virksomhed_form.html
 msgid "Kontaktoplysninger"
 msgstr ""
 
-#: indberetning/templates/indberetning/virksomhed_form.html:8
+#: indberetning/templates/indberetning/virksomhed_form.html
 msgid ""
 "Før du kan anvende løsningen skal du udfylde kontaktoplysninger på din "
 "organisation.\n"
@@ -365,54 +359,54 @@ msgid ""
 "Skattestyrelsen kan kontakte med spørgsmål omkring indberetninger."
 msgstr ""
 
-#: indberetning/templates/indberetning/virksomhed_form.html:13
+#: indberetning/templates/indberetning/virksomhed_form.html
 msgid "Kontaktperson:"
 msgstr ""
 
-#: indberetning/templates/indberetning/virksomhed_form.html:19
+#: indberetning/templates/indberetning/virksomhed_form.html
 msgid "Kontakt email:"
 msgstr ""
 
-#: indberetning/templates/indberetning/virksomhed_form.html:25
+#: indberetning/templates/indberetning/virksomhed_form.html
 msgid "Telefonnummer:"
 msgstr ""
 
-#: indberetning/templates/indberetning/virksomhed_form.html:31
+#: indberetning/templates/indberetning/virksomhed_form.html
 msgid "Virksomhedens hjemsted:"
 msgstr ""
 
-#: indberetning/templates/indberetning/virksomhed_form.html:38
+#: indberetning/templates/indberetning/virksomhed_form.html
 msgid "Gem"
 msgstr ""
 
-#: indberetning/validators.py:12
+#: indberetning/validators.py
 msgid "CVR nr. skal indeholde 8 tal"
 msgstr ""
 
-#: indberetning/validators.py:18
+#: indberetning/validators.py
 msgid "CPR nr. skal indeholde 10 tal"
 msgstr ""
 
-#: indberetning/views.py:300
+#: indberetning/views.py
 #, python-format
 msgid "Ny Indberetning oprettet for: %s."
 msgstr ""
 
-#: indberetning/views.py:303
+#: indberetning/views.py
 #, python-format
 msgid "Ny Indberetning oprettet for: %(fiskearter)s med %(bilag)s bilag."
 msgstr ""
 
-#: indberetning/views.py:361
+#: indberetning/views.py
 #, python-format
 msgid "Indberetningen blev justeret og tilføjet %d nye bilag."
 msgstr ""
 
-#: indberetning/views.py:365
+#: indberetning/views.py
 #, python-format
 msgid "Der blev tilføjet %d nye bilag til indberetningen"
 msgstr ""
 
-#: indberetning/views.py:369
+#: indberetning/views.py
 msgid "Indberetningen blev justeret."
 msgstr ""
