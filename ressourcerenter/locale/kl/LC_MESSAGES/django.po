@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-23 12:05+0000\n"
+"POT-Creation-Date: 2022-11-23 16:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -134,44 +134,44 @@ msgstr ""
 msgid "{kvartal}. kvartal"
 msgstr ""
 
-#: administration/models.py:924 administration/views.py:628
+#: administration/models.py:924 administration/views.py:627
 msgid "G69-Kode"
 msgstr ""
 
 #: administration/models.py:925
 #: administration/templates/administration/g69kode_list.html:20
-#: administration/views.py:629
+#: administration/views.py:628
 msgid "År"
 msgstr ""
 
 #: administration/models.py:926
 #: administration/templates/administration/faktura_detail.html:130
 #: administration/templates/administration/indberetning_afstem.html:43
-#: administration/views.py:630
+#: administration/views.py:629
 msgid "Fangsttype"
 msgstr ""
 
-#: administration/models.py:927 administration/views.py:631
+#: administration/models.py:927 administration/views.py:630
 msgid "Aktivitetskode"
 msgstr ""
 
 #: administration/models.py:928
 #: administration/templates/administration/afgiftsperiode_satstabel.html:29
-#: administration/views.py:632
+#: administration/views.py:631
 msgid "Fiskeart"
 msgstr ""
 
-#: administration/models.py:929 administration/views.py:633
+#: administration/models.py:929 administration/views.py:632
 msgid "Fiskeart kode"
 msgstr ""
 
-#: administration/models.py:930 administration/views.py:634
+#: administration/models.py:930 administration/views.py:633
 msgid "Sted"
 msgstr ""
 
 #: administration/models.py:931
 #: administration/templates/administration/virksomhed_list.html:25
-#: administration/views.py:635
+#: administration/views.py:634
 msgid "Stedkode"
 msgstr ""
 
@@ -366,7 +366,7 @@ msgstr ""
 #: administration/templates/administration/indberetning_afstem.html:17
 #: administration/templates/administration/indberetning_detail.html:20
 #: administration/templates/administration/indberetning_list.html:45
-#: administration/views.py:298
+#: administration/views.py:297
 msgid "Afgiftsperiode"
 msgstr ""
 
@@ -393,7 +393,7 @@ msgstr ""
 
 #: administration/templates/administration/faktura_detail.html:42
 #: administration/templates/administration/indberetning_list.html:46
-#: administration/views.py:299
+#: administration/views.py:298
 msgid "Virksomhed"
 msgstr ""
 
@@ -572,7 +572,7 @@ msgstr ""
 #: administration/templates/administration/fiskeart_list.html:5
 #: administration/templates/administration/indberetning_list.html:49
 #: administration/templates/administration/navigation.html:11
-#: administration/views.py:302
+#: administration/views.py:301
 msgid "Fiskearter"
 msgstr ""
 
@@ -731,7 +731,7 @@ msgstr ""
 
 #: administration/templates/administration/indberetning_detail.html:24
 #: administration/templates/administration/indberetning_list.html:48
-#: administration/views.py:301
+#: administration/views.py:300
 msgid "Indberetningstidspunkt"
 msgstr ""
 
@@ -790,7 +790,7 @@ msgid "Søg"
 msgstr ""
 
 #: administration/templates/administration/indberetning_list.html:47
-#: administration/views.py:300
+#: administration/views.py:299
 msgid "Cpr"
 msgstr ""
 
@@ -966,21 +966,21 @@ msgstr ""
 msgid "nej"
 msgstr ""
 
-#: administration/views.py:491
+#: administration/views.py:490
 #, python-brace-format
 msgid "Faktura oprettet, men afsendelse fejlede: {error}"
 msgstr ""
 
-#: administration/views.py:498
+#: administration/views.py:497
 msgid "Faktura oprettet og afsendt"
 msgstr ""
 
-#: administration/views.py:519 administration/views.py:529
+#: administration/views.py:518 administration/views.py:528
 #, python-brace-format
 msgid "Afsendelse fejlede: {error}"
 msgstr ""
 
-#: administration/views.py:522
+#: administration/views.py:521
 msgid "Faktura afsendt"
 msgstr ""
 
