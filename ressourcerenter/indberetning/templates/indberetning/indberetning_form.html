@@ -127,8 +127,15 @@
             {% for form in bilag_formset %}
             <tr data-prefix="{{form.prefix}}">
                 <td class="form-inline custom-file col-12">
-                    <label class="custom-file-label" for="{{ form.bilag.id_for_label }}">{% trans 'Vælg en fil' %}</label>
-                    {{ form.bilag }}
+                    <div class="input-group">
+                        <span class="form-control input-label">{% trans 'Vælg en fil' %}</span>
+                        <div class="input-group-append">
+                            {{ form.bilag }}
+                            <label class="filebutton input-group-append btn btn-outline-grey" for="{{ form.prefix }}-bilag">
+                                {% translate "Gennemse..." %}
+                            </label>
+                        </div>
+                    </div>
                 </td>
                 <td class="col-1">
                     <button type="button" class="btn btn-danger" data-delete="{{form.prefix}}">{% translate 'Slet' %}</button>
@@ -184,8 +191,15 @@
         <tbody id="js-bilag-empty">
         <tr data-prefix="bilag-__prefix__">
             <td class="form-inline custom-file col-12">
-                <label class="custom-file-label" for="bilag-{{form.empty_form.prefix}}-bilag">{% translate 'Vælg en fil' %}</label>
-                {{ bilag_formset.empty_form.bilag }}
+                <div class="input-group">
+                    <span class="form-control input-label">{% trans 'Vælg en fil' %}</span>
+                    <div class="input-group-append">
+                        {{ bilag_formset.empty_form.bilag }}
+                        <label class="filebutton input-group-append btn btn-outline-grey" for="{{bilag_formset.empty_form.prefix}}-bilag">
+                            {% translate "Gennemse..." %}
+                        </label>
+                    </div>
+                </div>
             </td>
             <td class="col-1">
                 <button type="button" class="btn btn-danger btn" data-delete="{{bilag_formset.empty_form.prefix}}">{% translate 'Slet' %}</button>
@@ -400,23 +414,24 @@
             return newRow;
         };
 
+        const fileUpdate = function() {
+            $(this).parents(".input-group").find(".input-label").text(
+                $(this).val().split("\\").pop()
+            );
+        }
+
         $('input#js-add-product-button').on('click', addRow);
         $('input#js-add-bilag-button').on('click', function() {
-            let form_idx = $('input[name=bilag-TOTAL_FORMS]').val();
+            const totalForms = $('input[name=bilag-TOTAL_FORMS]');
+            let form_idx = totalForms.val();
             $('div#js-bilag-wrapper > table > tbody').append($('#js-bilag-empty').html().replace(/__prefix__/g, form_idx))
-            $('input[name=bilag-TOTAL_FORMS]').val(parseInt(form_idx)+1);
+            totalForms.val(parseInt(form_idx)+1);
             const newRow = $('div#js-bilag-wrapper > table > tbody > tr:last');
-            newRow.find(".custom-file-input").on("change", function() {
-                var fileName = $(this).val().split("\\").pop();
-                $(this).siblings(".custom-file-label").addClass("selected").text(fileName);
-            });
+            newRow.find(".input-file").on("change", fileUpdate);
             newRow.find('button[data-delete]').on('click', deleteRow);
         });
 
-        $(".custom-file-input").on("change", function() {
-            var fileName = $(this).val().split("\\").pop();
-            $(this).siblings(".custom-file-label").addClass("selected").text(fileName);
-        });
+        $(".input-file").on("change", fileUpdate);
 
         $(".button_modregn").on("click", function() {
             const row = $(this).parents("tr");
@@ -474,7 +489,4 @@
         });
     });
 </script>
-<style>
-    .custom-file-label::after { content: "{% translate 'Gennemse...' %}"; }
-</style>
 {% endblock %}

@@ -261,6 +261,10 @@ msgid "Vælg en fil"
 msgstr ""
 
 #: indberetning/templates/indberetning/indberetning_form.html
+msgid "Gennemse..."
+msgstr ""
+
+#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Tilføj bilag"
 msgstr ""
 
@@ -283,10 +287,6 @@ msgstr ""
 
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Ingen afgift"
-msgstr ""
-
-#: indberetning/templates/indberetning/indberetning_form.html
-msgid "Gennemse..."
 msgstr ""
 
 #: indberetning/templates/indberetning/indberetning_list.html

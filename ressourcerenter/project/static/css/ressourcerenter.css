@@ -100,3 +100,19 @@ ul.errorlist li {
 .locale-changer button[type=submit]:hover {
     background-color: transparent;
 }
+
+.btn-outline-grey {
+    color: #495057;
+    border-color: #ced4da;
+    background-color: #e9ecef;
+}
+
+.input-label {
+    text-align: center;
+}
+
+.input-file {
+    position: absolute;
+    width: 0;
+    height: 0;
+}

@@ -259,7 +259,7 @@ class IndberetningsLinjeSkema3Form(IndberetningsLinjeForm):
 
 class BilagsForm(ModelForm):
     model = Bilag
-    bilag = FileField(widget=FileInput(attrs={"class": "custom-file-input"}))
+    bilag = FileField(widget=FileInput(attrs={"class": "input-file"}))
 
 
 BilagsFormSet = modelformset_factory(
