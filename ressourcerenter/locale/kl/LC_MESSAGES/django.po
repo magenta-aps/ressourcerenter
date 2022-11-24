@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-23 16:35+0000\n"
+"POT-Creation-Date: 2022-11-24 09:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,223 +17,220 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: administration/forms.py:36 administration/forms.py:59
-#: administration/models.py:971
-#: administration/templates/administration/afgiftsperiode_satstabel.html:102
-#: administration/templates/administration/faktura_detail.html:71
-#: administration/templates/administration/indberetning_detail.html:180
+#: administration/forms.py administration/models.py
+#: administration/templates/administration/afgiftsperiode_satstabel.html
+#: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/indberetning_detail.html
 msgid "Nej"
 msgstr ""
 
-#: administration/forms.py:36 administration/forms.py:59
-#: administration/models.py:969
-#: administration/templates/administration/afgiftsperiode_satstabel.html:101
-#: administration/templates/administration/indberetning_detail.html:179
+#: administration/forms.py administration/models.py
+#: administration/templates/administration/afgiftsperiode_satstabel.html
+#: administration/templates/administration/indberetning_detail.html
 msgid "Ja"
 msgstr ""
 
-#: administration/forms.py:80 administration/forms.py:99
-#: administration/models.py:932
-#: administration/templates/administration/afgiftsperiode_satstabel.html:30
+#: administration/forms.py administration/models.py
+#: administration/templates/administration/afgiftsperiode_satstabel.html
 msgid "Grønlandsk fartøj"
 msgstr ""
 
-#: administration/forms.py:81 administration/forms.py:100
+#: administration/forms.py
 msgid "Ikke-grønlandsk fartøj"
 msgstr ""
 
-#: administration/forms.py:82 administration/forms.py:101
+#: administration/forms.py
 msgid "Ikke relevant"
 msgstr ""
 
-#: administration/forms.py:152
+#: administration/forms.py
 msgid "Der må ikke angives både afgift pr. kg og afgift i procent"
 msgstr ""
 
-#: administration/models.py:34 administration/models.py:73
-#: administration/templates/administration/afgiftsperiode_list.html:20
-#: administration/templates/administration/fiskeart_list.html:17
-#: administration/templates/administration/produkttype_list.html:17
+#: administration/models.py
+#: administration/templates/administration/afgiftsperiode_list.html
+#: administration/templates/administration/fiskeart_list.html
+#: administration/templates/administration/produkttype_list.html
 msgid "Dansk navn"
 msgstr ""
 
-#: administration/models.py:38 administration/models.py:77
-#: administration/templates/administration/afgiftsperiode_list.html:21
-#: administration/templates/administration/fiskeart_list.html:18
-#: administration/templates/administration/produkttype_list.html:18
+#: administration/models.py
+#: administration/templates/administration/afgiftsperiode_list.html
+#: administration/templates/administration/fiskeart_list.html
+#: administration/templates/administration/produkttype_list.html
 msgid "Grønlandsk navn"
 msgstr ""
 
-#: administration/models.py:43
-#: administration/templates/administration/fiskeart_list.html:19
-#: administration/templates/administration/produkttype_list.html:19
+#: administration/models.py
+#: administration/templates/administration/fiskeart_list.html
+#: administration/templates/administration/produkttype_list.html
 msgid "Beskrivelse"
 msgstr ""
 
-#: administration/models.py:81
+#: administration/models.py
 msgid "Aktiv"
 msgstr ""
 
-#: administration/models.py:303
+#: administration/models.py
 msgid "Afgift, kr/kg"
 msgstr ""
 
-#: administration/models.py:312
-#: administration/templates/administration/afgiftsperiode_satstabel.html:33
+#: administration/models.py
+#: administration/templates/administration/afgiftsperiode_satstabel.html
 msgid "Afgift, procent af salgspris"
 msgstr ""
 
-#: administration/models.py:398
+#: administration/models.py
 #, python-format
 msgid "%s kr/kg"
 msgstr ""
 
-#: administration/models.py:400
+#: administration/models.py
 #, python-format
 msgid "%s %%"
 msgstr ""
 
-#: administration/models.py:491
+#: administration/models.py
 msgid "prisme 10Q batch"
 msgstr ""
 
-#: administration/models.py:492
+#: administration/models.py
 msgid "prisme 10Q batches"
 msgstr ""
 
-#: administration/models.py:525
+#: administration/models.py
 msgid "Ikke afsendt"
 msgstr ""
 
-#: administration/models.py:526
+#: administration/models.py
 msgid "Afsender"
 msgstr ""
 
-#: administration/models.py:527
+#: administration/models.py
 msgid "Afsendelse fejlet"
 msgstr ""
 
-#: administration/models.py:528
+#: administration/models.py
 msgid "Afsendt"
 msgstr ""
 
-#: administration/models.py:529
+#: administration/models.py
 msgid "Annulleret"
 msgstr ""
 
-#: administration/models.py:560
+#: administration/models.py
 msgid "Undervisningssystem"
 msgstr ""
 
-#: administration/models.py:561
+#: administration/models.py
 msgid "Produktionssystem"
 msgstr ""
 
-#: administration/models.py:744
+#: administration/models.py
 #, python-brace-format
 msgid "{kvartal}. kvartal"
 msgstr ""
 
-#: administration/models.py:924 administration/views.py:627
+#: administration/models.py administration/views.py
 msgid "G69-Kode"
 msgstr ""
 
-#: administration/models.py:925
-#: administration/templates/administration/g69kode_list.html:20
-#: administration/views.py:628
+#: administration/models.py
+#: administration/templates/administration/g69kode_list.html
+#: administration/views.py
 msgid "År"
 msgstr ""
 
-#: administration/models.py:926
-#: administration/templates/administration/faktura_detail.html:130
-#: administration/templates/administration/indberetning_afstem.html:43
-#: administration/views.py:629
+#: administration/models.py
+#: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/indberetning_afstem.html
+#: administration/views.py
 msgid "Fangsttype"
 msgstr ""
 
-#: administration/models.py:927 administration/views.py:630
+#: administration/models.py administration/views.py
 msgid "Aktivitetskode"
 msgstr ""
 
-#: administration/models.py:928
-#: administration/templates/administration/afgiftsperiode_satstabel.html:29
-#: administration/views.py:631
+#: administration/models.py
+#: administration/templates/administration/afgiftsperiode_satstabel.html
+#: administration/views.py
 msgid "Fiskeart"
 msgstr ""
 
-#: administration/models.py:929 administration/views.py:632
+#: administration/models.py administration/views.py
 msgid "Fiskeart kode"
 msgstr ""
 
-#: administration/models.py:930 administration/views.py:633
+#: administration/models.py administration/views.py
 msgid "Sted"
 msgstr ""
 
-#: administration/models.py:931
-#: administration/templates/administration/virksomhed_list.html:25
-#: administration/views.py:634
+#: administration/models.py
+#: administration/templates/administration/virksomhed_list.html
+#: administration/views.py
 msgid "Stedkode"
 msgstr ""
 
-#: administration/templates/403.html:11 administration/templates/403.html:16
+#: administration/templates/403.html
 msgid "Ingen adgang"
 msgstr ""
 
-#: administration/templates/403.html:17
+#: administration/templates/403.html
 msgid "Du har ikke adgang til denne side"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_form.html:7
+#: administration/templates/administration/afgiftsperiode_form.html
 msgid "Redigér Afgiftsperiode"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_form.html:9
+#: administration/templates/administration/afgiftsperiode_form.html
 msgid "Opret Afgiftsperiode"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_form.html:17
-#: administration/templates/administration/fiskeart_form.html:26
-#: administration/templates/administration/produkttype_form.html:27
+#: administration/templates/administration/afgiftsperiode_form.html
+#: administration/templates/administration/fiskeart_form.html
+#: administration/templates/administration/produkttype_form.html
 msgid "Dansk navn:"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_form.html:28
-#: administration/templates/administration/fiskeart_form.html:38
-#: administration/templates/administration/produkttype_form.html:39
+#: administration/templates/administration/afgiftsperiode_form.html
+#: administration/templates/administration/fiskeart_form.html
+#: administration/templates/administration/produkttype_form.html
 msgid "Grønlandsk navn:"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_form.html:39
+#: administration/templates/administration/afgiftsperiode_form.html
 msgid "Startdato:"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_form.html:50
+#: administration/templates/administration/afgiftsperiode_form.html
 msgid "Slutdato:"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_form.html:61
+#: administration/templates/administration/afgiftsperiode_form.html
 msgid "Beregningsmodel:"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_form.html:72
+#: administration/templates/administration/afgiftsperiode_form.html
 msgid "Vis i indberetning:"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_form.html:82
-#: administration/templates/administration/afgiftsperiode_satstabel.html:86
-#: administration/templates/administration/fiskeart_form.html:85
-#: administration/templates/administration/produkttype_form.html:101
-#: administration/templates/administration/virksomhed_form.html:88
+#: administration/templates/administration/afgiftsperiode_form.html
+#: administration/templates/administration/afgiftsperiode_satstabel.html
+#: administration/templates/administration/fiskeart_form.html
+#: administration/templates/administration/produkttype_form.html
+#: administration/templates/administration/virksomhed_form.html
 msgid "Gem"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_list.html:5
-#: administration/templates/administration/frontpage.html:24
-#: administration/templates/administration/navigation.html:10
+#: administration/templates/administration/afgiftsperiode_list.html
+#: administration/templates/administration/frontpage.html
+#: administration/templates/administration/navigation.html
 msgid "Afgiftsperioder"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_list.html:8
+#: administration/templates/administration/afgiftsperiode_list.html
 msgid ""
 "\n"
 "        Denne side viser alle afgiftsperioder. Afgiftsperioder kan godt "
@@ -248,58 +245,58 @@ msgid ""
 "    "
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_list.html:16
-#: administration/templates/administration/fiskeart_list.html:13
-#: administration/templates/administration/g69kode_list.html:16
-#: administration/templates/administration/produkttype_list.html:13
-#: administration/templates/administration/virksomhed_list.html:15
+#: administration/templates/administration/afgiftsperiode_list.html
+#: administration/templates/administration/fiskeart_list.html
+#: administration/templates/administration/g69kode_list.html
+#: administration/templates/administration/produkttype_list.html
+#: administration/templates/administration/virksomhed_list.html
 msgid "Opret ny"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_list.html:22
+#: administration/templates/administration/afgiftsperiode_list.html
 msgid "Dato fra"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_list.html:23
+#: administration/templates/administration/afgiftsperiode_list.html
 msgid "Dato til"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_list.html:24
+#: administration/templates/administration/afgiftsperiode_list.html
 msgid "Vis i indberetning"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_list.html:25
-#: administration/templates/administration/fiskeart_list.html:20
-#: administration/templates/administration/g69kode_list.html:22
-#: administration/templates/administration/produkttype_list.html:20
-#: administration/templates/administration/virksomhed_list.html:27
+#: administration/templates/administration/afgiftsperiode_list.html
+#: administration/templates/administration/fiskeart_list.html
+#: administration/templates/administration/g69kode_list.html
+#: administration/templates/administration/produkttype_list.html
+#: administration/templates/administration/virksomhed_list.html
 msgid "Handlinger"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_list.html:47
-#: administration/templates/administration/fiskeart_list.html:36
-#: administration/templates/administration/produkttype_list.html:36
-#: administration/templates/administration/virksomhed_list.html:55
+#: administration/templates/administration/afgiftsperiode_list.html
+#: administration/templates/administration/fiskeart_list.html
+#: administration/templates/administration/produkttype_list.html
+#: administration/templates/administration/virksomhed_list.html
 msgid "Redigér"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_list.html:48
+#: administration/templates/administration/afgiftsperiode_list.html
 msgid "Satstabel"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_list.html:49
-#: administration/templates/administration/afgiftsperiode_satstabel.html:62
-#: administration/templates/administration/fiskeart_list.html:37
-#: administration/templates/administration/produkttype_list.html:37
+#: administration/templates/administration/afgiftsperiode_list.html
+#: administration/templates/administration/afgiftsperiode_satstabel.html
+#: administration/templates/administration/fiskeart_list.html
+#: administration/templates/administration/produkttype_list.html
 msgid "Historik"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_satstabel.html:5
+#: administration/templates/administration/afgiftsperiode_satstabel.html
 #, python-format
 msgid "Satstabel for Afgiftsperiode %(periode)s "
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_satstabel.html:8
+#: administration/templates/administration/afgiftsperiode_satstabel.html
 msgid ""
 "\n"
 "        På denne side kan afgiftsperiodens satstabel defineres.\n"
@@ -311,242 +308,242 @@ msgid ""
 "    "
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_satstabel.html:21
+#: administration/templates/administration/afgiftsperiode_satstabel.html
 #, python-format
 msgid "Skematype %(id)s"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_satstabel.html:31
+#: administration/templates/administration/afgiftsperiode_satstabel.html
 msgid "Afgiftstype"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_satstabel.html:32
+#: administration/templates/administration/afgiftsperiode_satstabel.html
 msgid "Afgift, kr pr. kg"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_satstabel.html:53
+#: administration/templates/administration/afgiftsperiode_satstabel.html
 msgid "Pr. kg."
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_satstabel.html:54
+#: administration/templates/administration/afgiftsperiode_satstabel.html
 msgid "Procent"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_satstabel.html:84
+#: administration/templates/administration/afgiftsperiode_satstabel.html
 msgid "Annullér"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_satstabel.html:92
+#: administration/templates/administration/afgiftsperiode_satstabel.html
 msgid "Advarsel"
 msgstr ""
 
-#: administration/templates/administration/afgiftsperiode_satstabel.html:98
+#: administration/templates/administration/afgiftsperiode_satstabel.html
 msgid ""
 "Der er fiskearter hvor afgiftssatsen er nul. Disse fiskearter vil ikke blive "
 "afgiftsbelagt. Er du sikker på at det er meningen?"
 msgstr ""
 
-#: administration/templates/administration/base.html:16
+#: administration/templates/administration/base.html
 msgid "Administration af ressourcerenter"
 msgstr ""
 
-#: administration/templates/administration/base.html:21
+#: administration/templates/administration/base.html
 msgid "Administration"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:5
+#: administration/templates/administration/faktura_detail.html
 msgid "Faktura"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:10
+#: administration/templates/administration/faktura_detail.html
 msgid "Fakturadata"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:14
-#: administration/templates/administration/indberetning_afstem.html:17
-#: administration/templates/administration/indberetning_detail.html:20
-#: administration/templates/administration/indberetning_list.html:45
-#: administration/views.py:297
+#: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/indberetning_afstem.html
+#: administration/templates/administration/indberetning_detail.html
+#: administration/templates/administration/indberetning_list.html
+#: administration/views.py
 msgid "Afgiftsperiode"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:18
+#: administration/templates/administration/faktura_detail.html
 msgid "Oprettet af"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:22
+#: administration/templates/administration/faktura_detail.html
 msgid "Oprettelsesdato"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:26
+#: administration/templates/administration/faktura_detail.html
 msgid "Opkrævningsdato"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:30
+#: administration/templates/administration/faktura_detail.html
 msgid "Betalingsdato"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:34
-#: administration/templates/administration/indberetning_detail.html:52
+#: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/indberetning_detail.html
 msgid "Total beregnet afgift (kr)"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:42
-#: administration/templates/administration/indberetning_list.html:46
-#: administration/views.py:298
+#: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/indberetning_list.html
+#: administration/views.py
 msgid "Virksomhed"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:46
-#: administration/templates/administration/virksomhed_list.html:21
+#: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/virksomhed_list.html
 msgid "Navn"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:50
-#: administration/templates/administration/indberetning_detail.html:32
+#: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/indberetning_detail.html
 msgid "CVR"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:54
-#: administration/templates/administration/indberetning_detail.html:36
-#: administration/templates/administration/virksomhed_list.html:22
+#: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/indberetning_detail.html
+#: administration/templates/administration/virksomhed_list.html
 msgid "Kontaktperson"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:58
-#: administration/templates/administration/indberetning_detail.html:40
-#: administration/templates/administration/virksomhed_list.html:23
+#: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/indberetning_detail.html
+#: administration/templates/administration/virksomhed_list.html
 msgid "Email"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:62
-#: administration/templates/administration/indberetning_detail.html:44
+#: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/indberetning_detail.html
 msgid "Telefon"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:70
+#: administration/templates/administration/faktura_detail.html
 msgid "Prisme-overførsel"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:75
-#: administration/templates/administration/g69kode_list.html:21
+#: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/g69kode_list.html
 msgid "Oprettet"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:79
+#: administration/templates/administration/faktura_detail.html
 msgid "Leveret til Prisme"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:83
+#: administration/templates/administration/faktura_detail.html
 msgid "Overførselsstatus"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:87
+#: administration/templates/administration/faktura_detail.html
 msgid "Fejl fra prisme"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:91
-#: administration/templates/administration/indberetning_afstem.html:79
+#: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/indberetning_afstem.html
 msgid "Bogført"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:95
+#: administration/templates/administration/faktura_detail.html
 msgid "Afsending"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:101
+#: administration/templates/administration/faktura_detail.html
 msgid "Send til produktion"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:105
+#: administration/templates/administration/faktura_detail.html
 msgid "Send til uddannelsesmiljø"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:118
+#: administration/templates/administration/faktura_detail.html
 msgid "Indberetningslinje"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:122
-#: administration/templates/administration/indberetning_afstem.html:45
-#: administration/templates/administration/indberetning_detail.html:94
+#: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/indberetning_afstem.html
+#: administration/templates/administration/indberetning_detail.html
 msgid "Indhandlingssted"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:126
-#: administration/templates/administration/indberetning_afstem.html:44
-#: administration/templates/administration/indberetning_detail.html:97
+#: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/indberetning_afstem.html
+#: administration/templates/administration/indberetning_detail.html
 msgid "Fartøj"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:134
+#: administration/templates/administration/faktura_detail.html
 msgid "Produkttype"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:138
-#: administration/templates/administration/indberetning_afstem.html:46
-#: administration/templates/administration/indberetning_detail.html:101
+#: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/indberetning_afstem.html
+#: administration/templates/administration/indberetning_detail.html
 msgid "Produktvægt (kg)"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:142
-#: administration/templates/administration/indberetning_afstem.html:47
-#: administration/templates/administration/indberetning_detail.html:103
+#: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/indberetning_afstem.html
+#: administration/templates/administration/indberetning_detail.html
 msgid "Levende vægt/helfisk mængde (kg)"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:146
-#: administration/templates/administration/indberetning_afstem.html:48
-#: administration/templates/administration/indberetning_detail.html:104
+#: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/indberetning_afstem.html
+#: administration/templates/administration/indberetning_detail.html
 msgid "Omsætning / Indhandlingsværdi (kr)"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:150
-#: administration/templates/administration/indberetning_afstem.html:49
-#: administration/templates/administration/indberetning_detail.html:105
+#: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/indberetning_afstem.html
+#: administration/templates/administration/indberetning_detail.html
 msgid "Afgiftssats"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:154
-#: administration/templates/administration/indberetning_afstem.html:50
-#: administration/templates/administration/indberetning_detail.html:106
+#: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/indberetning_afstem.html
+#: administration/templates/administration/indberetning_detail.html
 msgid "Beregnet afgift (kr)"
 msgstr ""
 
-#: administration/templates/administration/faktura_detail.html:158
-#: administration/templates/administration/indberetning_detail.html:107
-#: administration/templates/administration/indberetning_list.html:50
+#: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/indberetning_detail.html
+#: administration/templates/administration/indberetning_list.html
 msgid "Kommentar"
 msgstr ""
 
-#: administration/templates/administration/faktura_form.html:5
+#: administration/templates/administration/faktura_form.html
 msgid "Opret Faktura"
 msgstr ""
 
-#: administration/templates/administration/faktura_form.html:11
+#: administration/templates/administration/faktura_form.html
 msgid "Betalingsdato:"
 msgstr ""
 
-#: administration/templates/administration/faktura_form.html:22
+#: administration/templates/administration/faktura_form.html
 msgid "Opkrævningsdato:"
 msgstr ""
 
-#: administration/templates/administration/faktura_form.html:36
+#: administration/templates/administration/faktura_form.html
 msgid "Send til testsystem"
 msgstr ""
 
-#: administration/templates/administration/faktura_form.html:44
+#: administration/templates/administration/faktura_form.html
 msgid "Opret og send"
 msgstr ""
 
-#: administration/templates/administration/fiskeart_form.html:7
+#: administration/templates/administration/fiskeart_form.html
 msgid "Opret Fiskeart"
 msgstr ""
 
-#: administration/templates/administration/fiskeart_form.html:9
+#: administration/templates/administration/fiskeart_form.html
 msgid "Redigér Fiskeart"
 msgstr ""
 
-#: administration/templates/administration/fiskeart_form.html:14
+#: administration/templates/administration/fiskeart_form.html
 msgid ""
 "\n"
 "    På denne side kan fiskearten specificeres.\n"
@@ -556,27 +553,27 @@ msgid ""
 "    "
 msgstr ""
 
-#: administration/templates/administration/fiskeart_form.html:50
-#: administration/templates/administration/produkttype_form.html:79
+#: administration/templates/administration/fiskeart_form.html
+#: administration/templates/administration/produkttype_form.html
 msgid "Beskrivelse:"
 msgstr ""
 
-#: administration/templates/administration/fiskeart_form.html:62
+#: administration/templates/administration/fiskeart_form.html
 msgid "Pelagisk:"
 msgstr ""
 
-#: administration/templates/administration/fiskeart_form.html:75
+#: administration/templates/administration/fiskeart_form.html
 msgid "Relevante skematyper:"
 msgstr ""
 
-#: administration/templates/administration/fiskeart_list.html:5
-#: administration/templates/administration/indberetning_list.html:49
-#: administration/templates/administration/navigation.html:11
-#: administration/views.py:301
+#: administration/templates/administration/fiskeart_list.html
+#: administration/templates/administration/indberetning_list.html
+#: administration/templates/administration/navigation.html
+#: administration/views.py
 msgid "Fiskearter"
 msgstr ""
 
-#: administration/templates/administration/fiskeart_list.html:8
+#: administration/templates/administration/fiskeart_list.html
 msgid ""
 "\n"
 "    Denne side viser fiskearterne i systemet, hvor der kan tilføjes nye og "
@@ -584,61 +581,61 @@ msgid ""
 "    "
 msgstr ""
 
-#: administration/templates/administration/frontpage.html:8
-#: administration/templates/administration/indberetning_list.html:5
-#: administration/templates/administration/navigation.html:8
+#: administration/templates/administration/frontpage.html
+#: administration/templates/administration/indberetning_list.html
+#: administration/templates/administration/navigation.html
 msgid "Indberetninger"
 msgstr ""
 
-#: administration/templates/administration/frontpage.html:10
+#: administration/templates/administration/frontpage.html
 msgid "Se og godkend indberetninger."
 msgstr ""
 
-#: administration/templates/administration/frontpage.html:12
+#: administration/templates/administration/frontpage.html
 msgid "Gå til indberetninger"
 msgstr ""
 
-#: administration/templates/administration/frontpage.html:16
-#: administration/templates/administration/navigation.html:9
-#: administration/templates/administration/virksomhed_list.html:5
+#: administration/templates/administration/frontpage.html
+#: administration/templates/administration/navigation.html
+#: administration/templates/administration/virksomhed_list.html
 msgid "Virksomheder"
 msgstr ""
 
-#: administration/templates/administration/frontpage.html:18
+#: administration/templates/administration/frontpage.html
 msgid ""
 "Opret og rediger virksomheder eller foretag indberetninger og justeringer på "
 "vegne af en virksomhed."
 msgstr ""
 
-#: administration/templates/administration/frontpage.html:20
+#: administration/templates/administration/frontpage.html
 msgid "Gå til virksomheder"
 msgstr ""
 
-#: administration/templates/administration/frontpage.html:26
+#: administration/templates/administration/frontpage.html
 msgid "Administrér afgiftsperioder."
 msgstr ""
 
-#: administration/templates/administration/frontpage.html:28
+#: administration/templates/administration/frontpage.html
 msgid "Gå til afgiftsperioder"
 msgstr ""
 
-#: administration/templates/administration/g69kode_form.html:6
+#: administration/templates/administration/g69kode_form.html
 msgid "Hent kodefil for G69"
 msgstr ""
 
-#: administration/templates/administration/g69kode_form.html:13
+#: administration/templates/administration/g69kode_form.html
 msgid "År:"
 msgstr ""
 
-#: administration/templates/administration/g69kode_form.html:22
+#: administration/templates/administration/g69kode_form.html
 msgid "Opret"
 msgstr ""
 
-#: administration/templates/administration/g69kode_list.html:6
+#: administration/templates/administration/g69kode_list.html
 msgid "G69-exports"
 msgstr ""
 
-#: administration/templates/administration/g69kode_list.html:9
+#: administration/templates/administration/g69kode_list.html
 msgid ""
 "\n"
 "    Denne side viser en liste af oprettede G69-filer.\n"
@@ -650,28 +647,28 @@ msgid ""
 "    "
 msgstr ""
 
-#: administration/templates/administration/g69kode_list.html:37
+#: administration/templates/administration/g69kode_list.html
 msgid "Download"
 msgstr ""
 
-#: administration/templates/administration/generic/history.html:7
+#: administration/templates/administration/generic/history.html
 #, python-format
 msgid "Historik for %(object)s"
 msgstr ""
 
-#: administration/templates/administration/generic/history.html:12
+#: administration/templates/administration/generic/history.html
 msgid "Ændringstidspunkt"
 msgstr ""
 
-#: administration/templates/administration/generic/history.html:13
+#: administration/templates/administration/generic/history.html
 msgid "Ændret af"
 msgstr ""
 
-#: administration/templates/administration/indberetning_afstem.html:5
+#: administration/templates/administration/indberetning_afstem.html
 msgid "Afstem indberetninger"
 msgstr ""
 
-#: administration/templates/administration/indberetning_afstem.html:8
+#: administration/templates/administration/indberetning_afstem.html
 msgid ""
 "\n"
 "    Denne viser indberetningslinjer for en given afgiftsperiode, grupperet "
@@ -683,40 +680,40 @@ msgid ""
 "    "
 msgstr ""
 
-#: administration/templates/administration/indberetning_afstem.html:52
+#: administration/templates/administration/indberetning_afstem.html
 msgid "Prisme-status"
 msgstr ""
 
-#: administration/templates/administration/indberetning_afstem.html:53
+#: administration/templates/administration/indberetning_afstem.html
 msgid "Handling"
 msgstr ""
 
-#: administration/templates/administration/indberetning_afstem.html:86
+#: administration/templates/administration/indberetning_afstem.html
 msgid "Se detaljer"
 msgstr ""
 
-#: administration/templates/administration/indberetning_afstem.html:90
+#: administration/templates/administration/indberetning_afstem.html
 msgid "Ikke godkendt"
 msgstr ""
 
-#: administration/templates/administration/indberetning_afstem.html:93
+#: administration/templates/administration/indberetning_afstem.html
 msgid "Opret faktura"
 msgstr ""
 
-#: administration/templates/administration/indberetning_afstem.html:103
-#: administration/templates/administration/indberetning_detail.html:138
+#: administration/templates/administration/indberetning_afstem.html
+#: administration/templates/administration/indberetning_detail.html
 msgid "I alt"
 msgstr ""
 
-#: administration/templates/administration/indberetning_afstem.html:125
+#: administration/templates/administration/indberetning_afstem.html
 msgid "Der er ingen indberetningslinier for perioden"
 msgstr ""
 
-#: administration/templates/administration/indberetning_detail.html:5
+#: administration/templates/administration/indberetning_detail.html
 msgid "Indberetning"
 msgstr ""
 
-#: administration/templates/administration/indberetning_detail.html:8
+#: administration/templates/administration/indberetning_detail.html
 msgid ""
 "\n"
 "        Denne side viser detaljer for en enkelt indberetning, opdelt i flere "
@@ -729,47 +726,46 @@ msgid ""
 "    "
 msgstr ""
 
-#: administration/templates/administration/indberetning_detail.html:24
-#: administration/templates/administration/indberetning_list.html:48
-#: administration/views.py:300
+#: administration/templates/administration/indberetning_detail.html
+#: administration/templates/administration/indberetning_list.html
+#: administration/views.py
 msgid "Indberetningstidspunkt"
 msgstr ""
 
-#: administration/templates/administration/indberetning_detail.html:28
+#: administration/templates/administration/indberetning_detail.html
 msgid "Skematype"
 msgstr ""
 
-#: administration/templates/administration/indberetning_detail.html:48
+#: administration/templates/administration/indberetning_detail.html
 msgid "Indberetter CPR"
 msgstr ""
 
-#: administration/templates/administration/indberetning_detail.html:56
-#: administration/templates/administration/indberetning_list.html:52
+#: administration/templates/administration/indberetning_detail.html
+#: administration/templates/administration/indberetning_list.html
 msgid "Afstemt"
 msgstr ""
 
-#: administration/templates/administration/indberetning_detail.html:61
+#: administration/templates/administration/indberetning_detail.html
 msgid "Bilag"
 msgstr ""
 
-#: administration/templates/administration/indberetning_detail.html:76
-#: administration/templates/administration/indberetning_detail.html:167
+#: administration/templates/administration/indberetning_detail.html
 msgid "Afstem"
 msgstr ""
 
-#: administration/templates/administration/indberetning_detail.html:81
+#: administration/templates/administration/indberetning_detail.html
 msgid "Gem kommentarer"
 msgstr ""
 
-#: administration/templates/administration/indberetning_detail.html:99
+#: administration/templates/administration/indberetning_detail.html
 msgid "Dato/tid"
 msgstr ""
 
-#: administration/templates/administration/indberetning_detail.html:173
+#: administration/templates/administration/indberetning_detail.html
 msgid "Er du sikker på at du vil afstemme denne indberetning?"
 msgstr ""
 
-#: administration/templates/administration/indberetning_list.html:8
+#: administration/templates/administration/indberetning_list.html
 msgid ""
 "\n"
 "        Denne side viser en liste af alle indberetninger ud fra de angivne "
@@ -781,84 +777,84 @@ msgid ""
 "    "
 msgstr ""
 
-#: administration/templates/administration/indberetning_list.html:26
+#: administration/templates/administration/indberetning_list.html
 msgid "Tidspunkt"
 msgstr ""
 
-#: administration/templates/administration/indberetning_list.html:38
+#: administration/templates/administration/indberetning_list.html
 msgid "Søg"
 msgstr ""
 
-#: administration/templates/administration/indberetning_list.html:47
-#: administration/views.py:299
+#: administration/templates/administration/indberetning_list.html
+#: administration/views.py
 msgid "Cpr"
 msgstr ""
 
-#: administration/templates/administration/indberetning_list.html:51
+#: administration/templates/administration/indberetning_list.html
 msgid "Afgift"
 msgstr ""
 
-#: administration/templates/administration/indberetning_list.html:70
+#: administration/templates/administration/indberetning_list.html
 msgid "Vis detaljer"
 msgstr ""
 
-#: administration/templates/administration/indberetning_list.html:81
+#: administration/templates/administration/indberetning_list.html
 msgid "Hent excel-regneark"
 msgstr ""
 
-#: administration/templates/administration/login.html:5
+#: administration/templates/administration/login.html
 msgid "Ressourcerenter administration"
 msgstr ""
 
-#: administration/templates/administration/login.html:21
+#: administration/templates/administration/login.html
 msgid "Brugernavn"
 msgstr ""
 
-#: administration/templates/administration/login.html:27
+#: administration/templates/administration/login.html
 msgid "Password"
 msgstr ""
 
-#: administration/templates/administration/login.html:33
+#: administration/templates/administration/login.html
 msgid "Login"
 msgstr ""
 
-#: administration/templates/administration/navigation.html:7
+#: administration/templates/administration/navigation.html
 msgid "Forside"
 msgstr ""
 
-#: administration/templates/administration/navigation.html:12
+#: administration/templates/administration/navigation.html
 msgid "Produkttyper"
 msgstr ""
 
-#: administration/templates/administration/navigation.html:13
+#: administration/templates/administration/navigation.html
 msgid "Fakturaer"
 msgstr ""
 
-#: administration/templates/administration/navigation.html:14
+#: administration/templates/administration/navigation.html
 msgid "G69-kodeeksport"
 msgstr ""
 
-#: administration/templates/administration/navigation.html:16
+#: administration/templates/administration/navigation.html
 msgid "Statistik"
 msgstr ""
 
-#: administration/templates/administration/navigation.html:17
+#: administration/templates/administration/navigation.html
 msgid "Manual"
 msgstr ""
 
-#: administration/templates/administration/navigation.html:24
+#: administration/templates/administration/navigation.html
 msgid "Log ud"
 msgstr ""
 
-#: administration/templates/administration/produkttype_form.html:7
+#: administration/templates/administration/produkttype_form.html
 msgid "Opret Produkt"
 msgstr ""
 
-#: administration/templates/administration/produkttype_form.html:9
+#: administration/templates/administration/produkttype_form.html
 msgid "Redigér Produkt"
 msgstr ""
 
-#: administration/templates/administration/produkttype_form.html:14
+#: administration/templates/administration/produkttype_form.html
 msgid ""
 "\n"
 "    På denne side kan produkttypen specificeres.\n"
@@ -870,23 +866,23 @@ msgid ""
 "    "
 msgstr ""
 
-#: administration/templates/administration/produkttype_form.html:51
+#: administration/templates/administration/produkttype_form.html
 msgid "Grønlandsk fartøj:"
 msgstr ""
 
-#: administration/templates/administration/produkttype_form.html:63
+#: administration/templates/administration/produkttype_form.html
 msgid "Fiskeart:"
 msgstr ""
 
-#: administration/templates/administration/produkttype_form.html:91
+#: administration/templates/administration/produkttype_form.html
 msgid "Overordnet produkt:"
 msgstr ""
 
-#: administration/templates/administration/produkttype_list.html:5
+#: administration/templates/administration/produkttype_list.html
 msgid "Produkter"
 msgstr ""
 
-#: administration/templates/administration/produkttype_list.html:8
+#: administration/templates/administration/produkttype_list.html
 msgid ""
 "\n"
 "    Denne side viser produkttyperne i systemet, hvor der kan tilføjes nye og "
@@ -894,39 +890,39 @@ msgid ""
 "    "
 msgstr ""
 
-#: administration/templates/administration/virksomhed_form.html:7
+#: administration/templates/administration/virksomhed_form.html
 msgid "Opret Virksomhed"
 msgstr ""
 
-#: administration/templates/administration/virksomhed_form.html:9
+#: administration/templates/administration/virksomhed_form.html
 msgid "Redigér Virksomhed"
 msgstr ""
 
-#: administration/templates/administration/virksomhed_form.html:18
+#: administration/templates/administration/virksomhed_form.html
 msgid "CVR-nummer:"
 msgstr ""
 
-#: administration/templates/administration/virksomhed_form.html:30
+#: administration/templates/administration/virksomhed_form.html
 msgid "Navn:"
 msgstr ""
 
-#: administration/templates/administration/virksomhed_form.html:42
+#: administration/templates/administration/virksomhed_form.html
 msgid "Kontaktperson navn:"
 msgstr ""
 
-#: administration/templates/administration/virksomhed_form.html:54
+#: administration/templates/administration/virksomhed_form.html
 msgid "Kontaktperson email:"
 msgstr ""
 
-#: administration/templates/administration/virksomhed_form.html:66
+#: administration/templates/administration/virksomhed_form.html
 msgid "Kontaktperson telefon:"
 msgstr ""
 
-#: administration/templates/administration/virksomhed_form.html:78
+#: administration/templates/administration/virksomhed_form.html
 msgid "Stedkode:"
 msgstr ""
 
-#: administration/templates/administration/virksomhed_list.html:8
+#: administration/templates/administration/virksomhed_list.html
 msgid ""
 "\n"
 "        Denne side viser alle virksomheder i systemet med deres stamdata.\n"
@@ -938,60 +934,60 @@ msgid ""
 "    "
 msgstr ""
 
-#: administration/templates/administration/virksomhed_list.html:20
+#: administration/templates/administration/virksomhed_list.html
 msgid "CVR-nummer"
 msgstr ""
 
-#: administration/templates/administration/virksomhed_list.html:24
+#: administration/templates/administration/virksomhed_list.html
 msgid "Telefonnummer"
 msgstr ""
 
-#: administration/templates/administration/virksomhed_list.html:26
+#: administration/templates/administration/virksomhed_list.html
 msgid "Stednavn"
 msgstr ""
 
-#: administration/templates/administration/virksomhed_list.html:57
+#: administration/templates/administration/virksomhed_list.html
 msgid "Afslut repræsentation"
 msgstr ""
 
-#: administration/templates/administration/virksomhed_list.html:59
+#: administration/templates/administration/virksomhed_list.html
 msgid "Repræsentér"
 msgstr ""
 
-#: administration/templatetags/administration_tags.py:18
+#: administration/templatetags/administration_tags.py
 msgid "ja"
 msgstr ""
 
-#: administration/templatetags/administration_tags.py:18
+#: administration/templatetags/administration_tags.py
 msgid "nej"
 msgstr ""
 
-#: administration/views.py:490
+#: administration/views.py
 #, python-brace-format
 msgid "Faktura oprettet, men afsendelse fejlede: {error}"
 msgstr ""
 
-#: administration/views.py:497
+#: administration/views.py
 msgid "Faktura oprettet og afsendt"
 msgstr ""
 
-#: administration/views.py:518 administration/views.py:528
+#: administration/views.py
 #, python-brace-format
 msgid "Afsendelse fejlede: {error}"
 msgstr ""
 
-#: administration/views.py:521
+#: administration/views.py
 msgid "Faktura afsendt"
 msgstr ""
 
-#: project/form_fields.py:40
+#: project/form_fields.py
 msgid "Tallet må ikke indeholde punktum, kun komma"
 msgstr ""
 
-#: project/settings.py:146
+#: project/settings.py
 msgid "Danish"
 msgstr ""
 
-#: project/settings.py:147
+#: project/settings.py
 msgid "Greenlandic"
 msgstr ""

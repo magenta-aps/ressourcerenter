@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-23 16:35+0000\n"
+"POT-Creation-Date: 2022-11-24 09:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,104 +18,104 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: statistik/forms.py:25
+#: statistik/forms.py
 msgid "År"
 msgstr ""
 
-#: statistik/forms.py:31
+#: statistik/forms.py
 msgid "Kvartal"
 msgstr ""
 
-#: statistik/forms.py:33 statistik/views.py:143
+#: statistik/forms.py statistik/views.py
 msgid "1. kvartal"
 msgstr ""
 
-#: statistik/forms.py:34 statistik/views.py:144
+#: statistik/forms.py statistik/views.py
 msgid "2. kvartal"
 msgstr ""
 
-#: statistik/forms.py:35 statistik/views.py:145
+#: statistik/forms.py statistik/views.py
 msgid "3. kvartal"
 msgstr ""
 
-#: statistik/forms.py:36 statistik/views.py:146
+#: statistik/forms.py statistik/views.py
 msgid "4. kvartal"
 msgstr ""
 
-#: statistik/forms.py:42
+#: statistik/forms.py
 msgid "Virksomhed"
 msgstr ""
 
-#: statistik/forms.py:48
+#: statistik/forms.py
 msgid "Fartøjs navn"
 msgstr ""
 
-#: statistik/forms.py:54
+#: statistik/forms.py
 msgid "Indberetningstype"
 msgstr ""
 
-#: statistik/forms.py:55
+#: statistik/forms.py
 msgid "Eksport"
 msgstr ""
 
-#: statistik/forms.py:55
+#: statistik/forms.py
 msgid "Indhandling"
 msgstr ""
 
-#: statistik/forms.py:60
+#: statistik/forms.py
 msgid "Fiskeart (eksport)"
 msgstr ""
 
-#: statistik/forms.py:66
+#: statistik/forms.py
 msgid "Produkttype (eksport)"
 msgstr ""
 
-#: statistik/forms.py:74
+#: statistik/forms.py
 msgid "Fiskeart (indhandling)"
 msgstr ""
 
-#: statistik/forms.py:80
+#: statistik/forms.py
 msgid "Indhandlingssted"
 msgstr ""
 
-#: statistik/forms.py:109
+#: statistik/forms.py
 msgid "Enhed"
 msgstr ""
 
-#: statistik/forms.py:111
+#: statistik/forms.py
 msgid "Produkt vægt tons"
 msgstr ""
 
-#: statistik/forms.py:112
+#: statistik/forms.py
 msgid "Levende vægt tons"
 msgstr ""
 
-#: statistik/forms.py:113
+#: statistik/forms.py
 msgid "Omsætning, tusinde kr."
 msgstr ""
 
-#: statistik/forms.py:114
+#: statistik/forms.py
 msgid "Transporttillæg, tusinde kr."
 msgstr ""
 
-#: statistik/forms.py:115
+#: statistik/forms.py
 msgid "Bonus, tusinde kr."
 msgstr ""
 
-#: statistik/forms.py:116
+#: statistik/forms.py
 msgid "Beregnet afgiftsbetaling, tusinde kr."
 msgstr ""
 
-#: statistik/templates/statistik/base.html:15
+#: statistik/templates/statistik/base.html
 msgid "Statistik af ressourcerenter"
 msgstr ""
 
-#: statistik/templates/statistik/base.html:19
-#: statistik/templates/statistik/statistik_form.html:5
+#: statistik/templates/statistik/base.html
+#: statistik/templates/statistik/statistik_form.html
 msgid "Statistik"
 msgstr ""
 
-#: statistik/templates/statistik/statistik_form.html:8
+#: statistik/templates/statistik/statistik_form.html
 msgid ""
 "\n"
 "        Denne side udtrækker opsummeringer af afstemte indberetninger ud fra "
@@ -128,31 +128,30 @@ msgid ""
 "    "
 msgstr ""
 
-#: statistik/templates/statistik/statistik_form.html:42
+#: statistik/templates/statistik/statistik_form.html
 msgid "Vælg alle"
 msgstr ""
 
-#: statistik/templates/statistik/statistik_form.html:43
+#: statistik/templates/statistik/statistik_form.html
 msgid "Fravælg alle"
 msgstr ""
 
-#: statistik/templates/statistik/statistik_form.html:53
-#: statistik/templates/statistik/statistik_form.html:124
+#: statistik/templates/statistik/statistik_form.html
 msgid "Vis formular"
 msgstr ""
 
-#: statistik/templates/statistik/statistik_form.html:55
+#: statistik/templates/statistik/statistik_form.html
 msgid "Hent resultat"
 msgstr ""
 
-#: statistik/templates/statistik/statistik_form.html:56
+#: statistik/templates/statistik/statistik_form.html
 msgid "Hent excel-fil"
 msgstr ""
 
-#: statistik/templates/statistik/statistik_form.html:85
+#: statistik/templates/statistik/statistik_form.html
 msgid "Der er ingen resultater"
 msgstr ""
 
-#: statistik/templates/statistik/statistik_form.html:125
+#: statistik/templates/statistik/statistik_form.html
 msgid "Skjul formular"
 msgstr ""

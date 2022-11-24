@@ -7,3 +7,4 @@ docker-compose.override.yml
 data/*
 !data/.gitkeep
 manual/manual.pdf
+.java/
