@@ -1,9 +1,11 @@
 import json
 import mimetypes
+from decimal import Decimal
+
 from administration.models import Afgiftsperiode, SkemaType, FiskeArt, ProduktType
 from django.contrib import messages
 from django.db import IntegrityError
-from django.db.models import Sum
+from django.db.models import Sum, Value
 from django.db.models.query import prefetch_related_objects
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
@@ -31,6 +33,8 @@ from indberetning.forms import (
     IndberetningSearchForm,
 )
 from indberetning.models import Indberetning, Virksomhed, IndberetningLinje, Bilag
+
+from project.views_mixin import Trunc
 
 
 class Frontpage(RedirectView):
@@ -87,7 +91,9 @@ class IndberetningsListView(ListView):
             if data["afgiftsperiode"]:
                 qs = qs.filter(afgiftsperiode=data["afgiftsperiode"])
 
-        qs = qs.annotate(linjer_sum=Sum("linjer__fangstafgift__afgift"))
+        qs = qs.annotate(
+            linjer_sum=Trunc(Sum("linjer__fangstafgift__afgift"), Value(Decimal(0)))
+        )
         return qs
 
     def get_form(self):

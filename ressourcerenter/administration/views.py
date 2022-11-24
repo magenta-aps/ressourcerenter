@@ -1,9 +1,10 @@
 import mimetypes
+from decimal import Decimal
 
 from django import forms
 from django.conf import settings
 from django.db.models.query import prefetch_related_objects
-from django.db.models import Sum
+from django.db.models import Sum, Value
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.http import HttpResponseNotFound
@@ -67,6 +68,8 @@ from administration.models import G69CodeExport
 from administration.models import g69_export_filepath
 
 from administration.forms import G69CodeExportForm
+
+from project.views_mixin import Trunc
 
 
 class PostLoginView(RedirectView):
@@ -330,7 +333,9 @@ class IndberetningListView(ExcelMixin, ListView):
                 )
             if data["produkttype"]:
                 qs = qs.filter(linjer__produkttype=data["produkttype"])
-            qs = qs.annotate(linjer_sum=Sum("linjer__fangstafgift__afgift"))
+            qs = qs.annotate(
+                linjer_sum=Trunc(Sum("linjer__fangstafgift__afgift"), Value(Decimal(0)))
+            )
             qs = qs.order_by("-indberetningstidspunkt")
         return qs
 

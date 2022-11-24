@@ -97,7 +97,7 @@ class IndberetningsLinjeBeregningForm(ModelForm):
                         "Produktvægt, levende vægt og salgspris skal alle være negative eller positive tal"
                     )
                 )
-        if "salgspris" in cleaned_data:
+        if cleaned_data.get("salgspris"):
             cleaned_data["salgspris"] = round(cleaned_data["salgspris"], 0)
         return cleaned_data
 
