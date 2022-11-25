@@ -487,6 +487,13 @@
             }
             $(this).prop("disabled", true);
         });
+
+        $("ul.errorlist li").each(function () {
+            const $this = $(this);
+            let text = $this.text();
+            text = text.replace(/(\d+)/, tsep);
+            $this.text(text);
+        });
     });
 </script>
 {% endblock %}
