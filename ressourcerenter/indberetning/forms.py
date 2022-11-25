@@ -70,11 +70,33 @@ class IndberetningsLinjeBeregningForm(ModelForm):
             "bonus",
         )
 
-    produktvægt = LocalizedDecimalField(required=False, clientside_formatting=True)
-    levende_vægt = LocalizedDecimalField(clientside_formatting=True)
-    salgspris = LocalizedDecimalField(required=False, clientside_formatting=True)
-    transporttillæg = LocalizedDecimalField(required=False, clientside_formatting=True)
-    bonus = LocalizedDecimalField(required=False, clientside_formatting=True)
+    produktvægt = LocalizedDecimalField(
+        required=False,
+        clientside_formatting=True,
+        max_value=999_999_999,
+        min_value=-999_999_999,
+    )
+    levende_vægt = LocalizedDecimalField(
+        clientside_formatting=True, max_value=999_999_999, min_value=-999_999_999
+    )
+    salgspris = LocalizedDecimalField(
+        required=False,
+        clientside_formatting=True,
+        max_value=999_999_999,
+        min_value=-999_999_999,
+    )
+    transporttillæg = LocalizedDecimalField(
+        required=False,
+        clientside_formatting=True,
+        max_value=999_999_999,
+        min_value=-999_999_999,
+    )
+    bonus = LocalizedDecimalField(
+        required=False,
+        clientside_formatting=True,
+        max_value=999_999_999,
+        min_value=-999_999_999,
+    )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -153,7 +175,12 @@ class IndberetningsLinjeSkema1Form(NonPelagiskPrisRequired, IndberetningsLinjeFo
         ).order_by("fiskeart__pelagisk", "navn_dk"),
         required=True,
     )
-    produktvægt = LocalizedDecimalField(required=True, clientside_formatting=True)
+    produktvægt = LocalizedDecimalField(
+        required=True,
+        clientside_formatting=True,
+        max_value=999_999_999,
+        min_value=-999_999_999,
+    )
     fartøj_navn = CharField(
         widget=Select(
             attrs={
@@ -196,8 +223,18 @@ class IndberetningsLinjeSkema2Form(NonPelagiskPrisRequired, IndberetningsLinjeFo
         ).order_by("fiskeart__pelagisk", "navn_dk"),
         required=True,
     )
-    bonus = LocalizedDecimalField(required=True, clientside_formatting=True)
-    produktvægt = LocalizedDecimalField(required=True, clientside_formatting=True)
+    bonus = LocalizedDecimalField(
+        required=True,
+        clientside_formatting=True,
+        max_value=999_999_999,
+        min_value=-999_999_999,
+    )
+    produktvægt = LocalizedDecimalField(
+        required=True,
+        clientside_formatting=True,
+        max_value=999_999_999,
+        min_value=-999_999_999,
+    )
     fartøj_navn = CharField(
         widget=Select(
             attrs={
@@ -237,7 +274,12 @@ class IndberetningsLinjeSkema3Form(IndberetningsLinjeForm):
         ).order_by("fiskeart__pelagisk", "navn_dk"),
         required=True,
     )
-    bonus = LocalizedDecimalField(required=True, clientside_formatting=True)
+    bonus = LocalizedDecimalField(
+        required=True,
+        clientside_formatting=True,
+        max_value=999_999_999,
+        min_value=-999_999_999,
+    )
     indhandlingssted = ModelChoiceField(
         queryset=Indhandlingssted.objects.filter(aktiv_til_indhandling=True)
     )

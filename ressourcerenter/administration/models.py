@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _, get_language
 from io import BytesIO
 from itertools import chain
-from math import ceil
+from math import ceil, floor
 from openpyxl import Workbook
 from project.dateutil import quarter_number, month_last_date, quarter_last_month
 from simple_history.models import HistoricalRecords
@@ -724,7 +724,7 @@ class Faktura(models.Model):
             opkraev_date=self.opkrævningsdato or self.betalingsdato,
         ).serialize_transaction(
             cpr_nummer=self.virksomhed.cvr,
-            amount_in_dkk=self.beløb,
+            amount_in_dkk=int(floor(self.beløb)),
             afstem_noegle=str(self.pk),
             rate_text=self.text,
             rate_nummer=self.periode.kvartal_nummer,
