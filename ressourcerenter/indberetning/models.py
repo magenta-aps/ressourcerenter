@@ -133,7 +133,6 @@ class Indberetning(models.Model):
     @property
     def afgift_sum_afrundet(self):
         return self.linjer.aggregate(sum=Trunc(Sum("fangstafgift__afgift")))["sum"]
-        # return floor(sum([linje.fangstafgift.afgift for linje in self.linjer.all()]))
 
     def to_json(self):
         return {

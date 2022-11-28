@@ -42,10 +42,11 @@
             <tr>
                 <th class="col-1">{% translate 'Fangsttype' %}</th>
                 <th class="col-1">{% translate 'Fartøj' %}</th>
-                <th class="col-1">{% translate 'Indhandlingssted' %}</th>
+                <th class="col-2">{% translate 'Indhandlingssted' %}</th>
                 <th class="col-1">{% translate 'Produktvægt (kg)' %}</th>
-                <th class="col-2">{% translate 'Levende vægt/helfisk mængde (kg)' %}</th>
-                <th class="col-2">{% translate 'Omsætning / Indhandlingsværdi (kr)' %}</th>
+                <th class="col-1">{% translate 'Levende vægt/helfisk mængde (kg)' %}</th>
+                <th class="col-1">{% translate 'Omsætning / Indhandlingsværdi (kr)' %}</th>
+                <th class="col-1">{% translate 'Bonus / transporttillæg (kr)' %}</th>
                 <th class="col-1">{% translate 'Afgiftssats' %}</th>
                 <th class="col-1">{% translate 'Beregnet afgift (kr)' %}</th>
 
@@ -69,6 +70,7 @@
                                         <td>{{linje.produktvægt|default_if_none:''}}</td>
                                         <td>{{linje.levende_vægt}}</td>
                                         <td>{{linje.salgspris}}</td>
+                                        <td>{{linje.bonus|default:linje.transporttillæg|default:'0,00'}}</td>
                                         <td>{{linje.fangstafgift.rate_string}}</td>
                                         <td>{{linje.afgift}}</td>
                                             {% with faktura=linje.faktura %}
@@ -104,6 +106,7 @@
                                     <td>{{ sum.produktvægt }}</td>
                                     <td>{{ sum.levende_vægt }}</td>
                                     <td>{{ sum.salgspris }}</td>
+                                    <td>{{ sum.bonus|add:sum.transporttillæg|default:"0,00" }}</td>
                                     <td></td>
                                     <td>{{ sum.afgift }}</td>
                                     <td colspan="2"></td>

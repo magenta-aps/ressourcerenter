@@ -72,6 +72,10 @@ from administration.forms import G69CodeExportForm
 from project.views_mixin import Trunc
 
 
+def floor_decimal(value: Decimal) -> Decimal:
+    return Decimal(str(int(value)) + ".00")
+
+
 class PostLoginView(RedirectView):
     # Viderestiller til forsiden af den app man har adgang til
     def get_redirect_url(self):
@@ -476,7 +480,7 @@ class FakturaCreateView(CreateView):
             kode=linje.debitorgruppekode,
             periode=linje.indberetning.afgiftsperiode,
             virksomhed=linje.indberetning.virksomhed,
-            beløb=linje.afgift,
+            beløb=floor_decimal(linje.afgift),
             opretter=self.request.user,
             batch=Prisme10QBatch.objects.create(oprettet_af=self.request.user),
             betalingsdato=form.cleaned_data["betalingsdato"],
@@ -564,7 +568,14 @@ class IndberetningsLinjeListView(TemplateView):
         # * Produkttyper
         # * Fangsttyper
         virksomheder = []
-        sum_fields = {"produktvægt", "levende_vægt", "salgspris", "afgift"}
+        sum_fields = {
+            "produktvægt",
+            "levende_vægt",
+            "salgspris",
+            "afgift",
+            "bonus",
+            "transporttillæg",
+        }
 
         virksomheder_uuids = [
             virksomhed["virksomhed"]
@@ -611,6 +622,10 @@ class IndberetningsLinjeListView(TemplateView):
                     for key in sum_fields:
                         fangsttype_item["sum"][key] += getattr(linje, key) or 0
                     fangsttype_item["linjer"].append(linje)
+            for produkttype_item in virksomhed_data["produkttyper"].values():
+                for fangsttype_item in produkttype_item["fangsttyper"].values():
+                    for key, value in fangsttype_item["sum"].items():
+                        fangsttype_item["sum"][key] = floor_decimal(value)
         return virksomheder
 
     def get_context_data(self, **kwargs):
