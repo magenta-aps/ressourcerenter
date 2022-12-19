@@ -570,7 +570,10 @@ class Prisme10QBatch(models.Model):
             if settings.PRISME_PUSH["destinations_available"][destination_id]
         )
     )
-    completion_statuses = {"10q_production": STATUS_DELIVERED, "10q_development": None}
+    completion_statuses = {
+        "10q_production": STATUS_DELIVERED,
+        "10q_development": STATUS_DELIVERED,
+    }
 
     def send(self, user, force_send_to_test=False, callback=None):
         try:
