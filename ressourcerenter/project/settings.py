@@ -221,19 +221,6 @@ POPULATE_DUMMY_SESSION = populate_dummy_session
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-OPENID = {
-    "mock": os.environ.get("LOGIN_MOCK"),
-    "scope": os.environ.get("OPENID_SCOPE"),
-    "client_id": os.environ.get("OPENID_CLIENT_ID"),
-    "private_key": "/ssl/ressourcerenter_openid.key",
-    "certificate": "/ssl/ressourcerenter_openid.cert",
-    "issuer": os.environ.get("OPENID_ISSUER"),
-    "logout_uri": os.environ.get("OPENID_LOGOUT_URI"),
-    "front_channel_logout_uri": os.environ.get("OPENID_FRONT_CHANNEL_LOGOUT_URI"),
-    "post_logout_redirect_uri": os.environ.get("OPENID_POST_LOGOUT_REDIRECT_URI"),
-    "login_callback_url": os.environ.get("OPENID_LOGIN_CALLBACK"),
-}
-
 DAFO = {
     "mock": strtobool(os.environ.get("PITU_MOCK", "False")),
     "certificate": "/ssl/kas+ressourcerenter.cert",

@@ -6,8 +6,7 @@ from indberetning.models import Virksomhed
 
 
 @override_settings(
-    OPENID={"mock": "cvr"},
-    LOGIN_PROVIDER_CLASS="django_mitid_auth.openid.openid.OpenId",
+    LOGIN_PROVIDER_CLASS="django_mitid_auth.saml.oiosaml.OIOSaml",
     LOGIN_BYPASS_ENABLED=False,
 )
 class TestNotLoggedIn(TestCase):
@@ -33,8 +32,7 @@ class TestNotLoggedIn(TestCase):
 
 
 @override_settings(
-    OPENID={"mock": "cvr"},
-    LOGIN_PROVIDER_CLASS="django_mitid_auth.openid.openid.OpenId",
+    LOGIN_PROVIDER_CLASS="django_mitid_auth.saml.oiosaml.OIOSaml",
     LOGIN_BYPASS_ENABLED=False,
 )
 class AdministratorTestCase(TestCase):
@@ -71,8 +69,7 @@ class AdministratorTestCase(TestCase):
 
 
 @override_settings(
-    OPENID={"mock": "cvr"},
-    LOGIN_PROVIDER_CLASS="django_mitid_auth.openid.openid.OpenId",
+    LOGIN_PROVIDER_CLASS="django_mitid_auth.saml.oiosaml.OIOSaml",
     LOGIN_BYPASS_ENABLED=False,
 )
 class StatistikTestCase(TestCase):
@@ -108,16 +105,11 @@ class StatistikTestCase(TestCase):
 
 
 @override_settings(
-    OPENID={"mock": "cvr"},
     DAFO={"mock": True},
-    LOGIN_PROVIDER_CLASS="django_mitid_auth.openid.openid.OpenId",
+    LOGIN_PROVIDER_CLASS="django_mitid_auth.saml.oiosaml.OIOSaml",
     LOGIN_BYPASS_ENABLED=False,
 )
 class UserTestCase(TestCase):
-    """
-    using nemId
-    """
-
     def setUp(self) -> None:
         self.cvr = "12345678"
         session = self.client.session

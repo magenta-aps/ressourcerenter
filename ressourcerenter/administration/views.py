@@ -437,10 +437,6 @@ class VirksomhedRepræsentantStopView(RedirectView):
                 del self.request.session[key]
             except KeyError:
                 pass
-
-        if settings.OPENID.get("mock") == "cvr":
-            self.request.session["user_info"] = {"cvr": "12345678"}
-
         return reverse("administration:virksomhed-list")
 
 
