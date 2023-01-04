@@ -271,7 +271,6 @@ class CreateIndberetningCreateView(IndberetningsLinjebilagFormsetMixin, FormView
             # if the user is logged in as an administrator set the administrator field.
             instance.administrator = self.request.user
         else:
-            # nemid bruger indberetter
             instance.indberetters_cpr = (
                 self.request.session["user_info"].get("cpr") or "-"
             )

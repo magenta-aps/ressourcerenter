@@ -97,7 +97,7 @@ class Indberetning(models.Model):
     virksomhed = models.ForeignKey(Virksomhed, on_delete=models.PROTECT)
     indberetters_cpr = models.TextField(
         validators=[validate_cpr]
-    )  # CPR fra medarbejder signatur eller nemid
+    )  # CPR fra medarbejdersignatur eller mitid
     administrator = models.ForeignKey(
         get_user_model(), null=True, on_delete=models.PROTECT
     )  # only used when sudo is used

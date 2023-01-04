@@ -57,7 +57,6 @@ class PermissionMiddleware:
             if request.path.startswith("/indberetning/error/"):
                 return None
             if not self.provider.is_logged_in(request):
-                # nemId user not logged in so redirect to login page
                 return redirect(self._indberetning_login_url)
         else:
             if not request.user.is_authenticated:
