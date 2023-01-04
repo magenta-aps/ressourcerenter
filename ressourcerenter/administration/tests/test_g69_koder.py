@@ -2,11 +2,13 @@ from administration.models import Afgiftsperiode, ProduktType, SkemaType
 from administration.models import BeregningsModel2021
 from administration.models import G69Code
 from administration.models import G69CodeExport
-from datetime import date
+from datetime import date, time, timedelta
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.datetime_safe import datetime
+from django.utils.timezone import utc
 from indberetning.models import Indhandlingssted
 from indberetning.models import Virksomhed, Indberetning, IndberetningLinje
 from io import BytesIO
@@ -199,6 +201,11 @@ class G69KodeTestCase(G69TestCase):
                 salgspris=10000,
                 indhandlingssted=self.sted,
             )
+            linje.indberetningstidspunkt = datetime.combine(
+                self.periode.dato_fra + timedelta(days=40), time(tzinfo=utc)
+            )
+            linje.save(update_fields=["indberetningstidspunkt"])
+
             self.assertEqual(
                 G69Code.for_indberetningslinje(linje).kode, expected_full_kode, navn
             )
