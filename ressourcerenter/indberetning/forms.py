@@ -4,7 +4,7 @@ from django.forms import ModelChoiceField, CharField, FileField
 from django.forms import ModelForm, modelformset_factory
 from django.forms import Select, Textarea, FileInput
 from django.utils import timezone
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from indberetning.models import (
     Bilag,
     Virksomhed,

@@ -33,7 +33,6 @@ from indberetning.forms import (
     IndberetningSearchForm,
 )
 from indberetning.models import Indberetning, Virksomhed, IndberetningLinje, Bilag
-
 from project.views_mixin import Trunc
 
 
@@ -302,12 +301,20 @@ class CreateIndberetningCreateView(IndberetningsLinjebilagFormsetMixin, FormView
             formset, bilag_formset
         )
         fiskearter = set([str(linje.produkttype) for linje in linjer])
-        message = _("Ny Indberetning oprettet for: %s.") % ", ".join(fiskearter)
-        if len(bilags) > 0:
-            message = _(
-                "Ny Indberetning oprettet for: %(fiskearter)s med %(bilag)s bilag."
-            ) % {"fiskearter": ", ".join(fiskearter), "bilag": len(bilags)}
-        if len(bilags) > 0 or len(linjer) > 0:
+        message = _("Ny indberetning oprettet for: %(fiskearter)s.") % {
+            "fiskearter": ", ".join(fiskearter)
+        }
+        bilag_count = len(bilags)
+        if bilag_count > 0:
+            if bilag_count == 1:
+                message = _(
+                    "Ny indberetning oprettet for: %(fiskearter)s med 1 bilag.",
+                ) % {"fiskearter": ", ".join(fiskearter)}
+            else:
+                message = _(
+                    "Ny indberetning oprettet for: %(fiskearter)s med %(bilag)s bilag."
+                ) % {"fiskearter": ", ".join(fiskearter), "bilag": bilag_count}
+        if bilag_count > 0 or len(linjer) > 0:
             messages.add_message(self.request, messages.INFO, message)
         return redirect(reverse("indberetning:indberetning-list"))
 
@@ -362,14 +369,21 @@ class UpdateIndberetningsView(IndberetningsLinjebilagFormsetMixin, UpdateView):
             formset, bilag_formset
         )
         message = None
+        antal_bilag = len(bilags)
         if linjer and bilags:
-            message = _("Indberetningen blev justeret og tilføjet %d nye bilag.") % len(
-                bilags
-            )
+            if antal_bilag == 1:
+                message = _("Indberetningen blev justeret og tilføjet 1 nyt bilag.")
+            else:
+                message = _(
+                    "Indberetningen blev justeret og tilføjet %(bilag)d nye bilag."
+                ) % {"bilag": antal_bilag}
         elif bilags:
-            message = _("Der blev tilføjet %d nye bilag til indberetningen") % len(
-                bilags
-            )
+            if antal_bilag == 1:
+                message = _("Der blev tilføjet 1 nyt bilag til indberetningen")
+            else:
+                message = _(
+                    "Der blev tilføjet %(bilag)d nye bilag til indberetningen"
+                ) % {"bilag": antal_bilag}
         elif linjer:
             message = _("Indberetningen blev justeret.")
 

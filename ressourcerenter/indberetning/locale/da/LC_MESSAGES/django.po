@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-24 14:24+0000\n"
+"POT-Creation-Date: 2022-12-19 07:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -53,7 +53,9 @@ msgid "Fartøj"
 msgstr ""
 
 #: indberetning/models.py
-msgid "Indhandlings sted"
+#: indberetning/templates/indberetning/includes/linje_list.html
+#: indberetning/templates/indberetning/indberetning_form.html
+msgid "Indhandlingssted"
 msgstr ""
 
 #: indberetning/models.py
@@ -67,7 +69,7 @@ msgid "Levende vægt/helfisk mængde (kg)"
 msgstr ""
 
 #: indberetning/models.py
-msgid "Salgspris (kr.)"
+msgid "Salgspris (kr)"
 msgstr ""
 
 #: indberetning/models.py
@@ -167,11 +169,6 @@ msgstr ""
 
 #: indberetning/templates/indberetning/includes/linje_list.html
 #: indberetning/templates/indberetning/indberetning_form.html
-msgid "Indhandlingssted"
-msgstr ""
-
-#: indberetning/templates/indberetning/includes/linje_list.html
-#: indberetning/templates/indberetning/indberetning_form.html
 msgid "Fartøjs navn"
 msgstr ""
 
@@ -236,9 +233,16 @@ msgstr ""
 
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid ""
-"For at justere en eksisterende indberetning nedad, skal vægt og beløb "
-"indtastes med negative tal - altså f.eks. \"-10\". Uden \"-\" vil der blive "
-"lagt til og ikke modregnet"
+"Ved justering af en tidligere indberetning nedad skal vægt og beløb "
+"indtastes med minus foran, f.eks. \"-10\" og beløbene vil blive modregnet "
+"den tidligere indberetning, som der justeres."
+msgstr ""
+
+#: indberetning/templates/indberetning/indberetning_form.html
+msgid ""
+"Ved justering af en tidligere indberetning opad skal vægt og beløb indtastes "
+"uden minus foran, og beløbene vil blive lagt til den tidligere indberetning, "
+"som der justeres."
 msgstr ""
 
 #: indberetning/templates/indberetning/indberetning_form.html
@@ -254,7 +258,7 @@ msgid "Tilføj linje"
 msgstr ""
 
 #: indberetning/templates/indberetning/indberetning_form.html
-msgid "Eksisterende bilag:"
+msgid "Eksisterende bilag"
 msgstr ""
 
 #: indberetning/templates/indberetning/indberetning_form.html
@@ -312,7 +316,7 @@ msgid "Periode"
 msgstr ""
 
 #: indberetning/templates/indberetning/indberetning_list.html
-msgid "Bilag:"
+msgid "Bilag"
 msgstr ""
 
 #: indberetning/templates/indberetning/indberetning_list.html
@@ -354,8 +358,7 @@ msgstr ""
 #: indberetning/templates/indberetning/virksomhed_form.html
 msgid ""
 "Før du kan anvende løsningen skal du udfylde kontaktoplysninger på din "
-"organisation.\n"
-"        Felterne skal udfyldes med kontaktoplysninger på en person som "
+"organisation. Felterne skal udfyldes med kontaktoplysninger på en person som "
 "Skattestyrelsen kan kontakte med spørgsmål omkring indberetninger."
 msgstr ""
 
@@ -389,22 +392,35 @@ msgstr ""
 
 #: indberetning/views.py
 #, python-format
-msgid "Ny Indberetning oprettet for: %s."
+msgid "Ny indberetning oprettet for: %(fiskearter)s."
 msgstr ""
 
 #: indberetning/views.py
 #, python-format
-msgid "Ny Indberetning oprettet for: %(fiskearter)s med %(bilag)s bilag."
+msgid "Ny indberetning oprettet for: %(fiskearter)s med 1 bilag."
+msgstr "Ny indberetning oprettet for: %(fiskearter)s med 1 bilag."
+
+#: indberetning/views.py
+#, python-format
+msgid "Ny indberetning oprettet for: %(fiskearter)s med %(bilag)s bilag."
+msgstr ""
+
+#: indberetning/views.py
+msgid "Indberetningen blev justeret og tilføjet 1 nyt bilag."
 msgstr ""
 
 #: indberetning/views.py
 #, python-format
-msgid "Indberetningen blev justeret og tilføjet %d nye bilag."
+msgid "Indberetningen blev justeret og tilføjet %(bilag)d nye bilag."
+msgstr ""
+
+#: indberetning/views.py
+msgid "Der blev tilføjet 1 nyt bilag til indberetningen"
 msgstr ""
 
 #: indberetning/views.py
 #, python-format
-msgid "Der blev tilføjet %d nye bilag til indberetningen"
+msgid "Der blev tilføjet %(bilag)d nye bilag til indberetningen"
 msgstr ""
 
 #: indberetning/views.py

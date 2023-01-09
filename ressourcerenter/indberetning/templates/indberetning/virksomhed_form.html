@@ -5,8 +5,8 @@
     <h1 class="text-center">{% translate 'Kontaktoplysninger'%}</h1>
 </div>
 <div class="justify-content-center">
-    <p class="center-block mx-auto" style="max-width: 55rem">{%blocktranslate%}Før du kan anvende løsningen skal du udfylde kontaktoplysninger på din organisation.
-        Felterne skal udfyldes med kontaktoplysninger på en person som Skattestyrelsen kan kontakte med spørgsmål omkring indberetninger.{%endblocktranslate%}</p>
+    <p class="center-block mx-auto" style="max-width: 55rem">
+        {% blocktranslate %}Før du kan anvende løsningen skal du udfylde kontaktoplysninger på din organisation. Felterne skal udfyldes med kontaktoplysninger på en person som Skattestyrelsen kan kontakte med spørgsmål omkring indberetninger.{% endblocktranslate %}</p>
     <form method="POST" action=".">
         {% csrf_token %}
         <div class="form-group row">
