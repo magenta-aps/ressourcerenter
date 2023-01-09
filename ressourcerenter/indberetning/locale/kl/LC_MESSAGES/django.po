@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-24 14:24+0000\n"
+"POT-Creation-Date: 2022-12-19 07:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,99 +16,104 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: indberetning/forms.py
 msgid ""
 "Produktvægt, levende vægt og salgspris skal alle være negative eller "
 "positive tal"
 msgstr ""
+"Tunisassiap oqimaassusaa, uummatillugu oqimaassusaa tunineqarneranilu akii "
+"tamarmik kisitsisit ajortuunngikkunik pitsaasuussapput"
 
 #: indberetning/forms.py
 msgid "Alle perioder"
-msgstr ""
+msgstr "Piffissat tamarmiusut"
 
 #: indberetning/models.py
 msgid "CVR-nummer"
-msgstr ""
+msgstr "CVR-normu (Inuussutissarsiornermut normu)"
 
 #: indberetning/models.py
 msgid "Kontaktperson navn"
-msgstr ""
+msgstr "Attaveqarfissap atia"
 
 #: indberetning/models.py
 msgid "Kontaktperson email"
-msgstr ""
+msgstr "Attaveqarfissap emailia"
 
 #: indberetning/models.py
 msgid "Kontaktperson telefonnr"
-msgstr ""
+msgstr "Attaveqarfissap telefonia"
 
 #: indberetning/models.py
 msgid "Navn"
-msgstr ""
+msgstr "Ateq"
 
 #: indberetning/models.py
 msgid "Fartøj"
-msgstr ""
+msgstr "Angallat"
 
 #: indberetning/models.py
-msgid "Indhandlings sted"
-msgstr ""
+#: indberetning/templates/indberetning/includes/linje_list.html
+#: indberetning/templates/indberetning/indberetning_form.html
+msgid "Indhandlingssted"
+msgstr "Tunitsiviup sumiinnera"
 
 #: indberetning/models.py
 #: indberetning/templates/indberetning/includes/linje_list.html
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Produktvægt (kg)"
-msgstr ""
+msgstr "Tunisassiap Oqimaassusaa (kg)"
 
 #: indberetning/models.py
 msgid "Levende vægt/helfisk mængde (kg)"
-msgstr ""
+msgstr "Uummatillugit oqimaassusaat/qalerallit annertussusaat (kg)"
 
 #: indberetning/models.py
-msgid "Salgspris (kr.)"
-msgstr ""
+msgid "Salgspris (kr)"
+msgstr "Tuninerani akia (kr)"
 
 #: indberetning/models.py
 #: indberetning/templates/indberetning/includes/linje_list.html
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Transporttillæg (kr)"
-msgstr ""
+msgstr "Assartuinermi tapeq (kr)"
 
 #: indberetning/models.py
 #: indberetning/templates/indberetning/includes/linje_list.html
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Bonus og andet vederlag (kr)"
-msgstr ""
+msgstr "Bonus aamma akissarsiat allat (kr)"
 
 #: indberetning/models.py
 msgid "Havgående"
-msgstr ""
+msgstr "Avataasiornermi"
 
 #: indberetning/models.py
 msgid "Kystnært"
-msgstr ""
+msgstr "Sinerissap qanittuani"
 
 #: indberetning/models.py
 msgid "Indhandling"
-msgstr ""
+msgstr "Tulaassinerit"
 
 #: indberetning/models.py
 msgid "Svalbard og Barentshavet"
-msgstr ""
+msgstr "Svaldbard Barentsillu imartaa"
 
 #: indberetning/templates/indberetning/base.html
 msgid "Indberetning af ressourcerenter"
-msgstr ""
+msgstr "Isumalluutinik atuinermi akiliutit nalunaarutigineri"
 
 #: indberetning/templates/indberetning/base.html
 msgid "Tilbage til forsiden for Sullissivik.gl"
-msgstr ""
+msgstr "Sullissivik.gl-ip saqqaanut uterit"
 
 #: indberetning/templates/indberetning/base.html
 #: indberetning/templates/indberetning/indberetning_list.html
 msgid "Indberetninger"
-msgstr ""
+msgstr "Nalunaarutiginnittarnerit"
 
 #: indberetning/templates/indberetning/base.html
 #, python-format
@@ -116,10 +121,12 @@ msgid ""
 "Logget ind som <strong>%(name)s</strong> på vegne af <strong>%(company)s "
 "(%(cvr)s)</strong>"
 msgstr ""
+"Iserpunga <strong>%(name)s</strong> sinnerlugu <strong>%(company)s "
+"(%(cvr)s)</strong>"
 
 #: indberetning/templates/indberetning/base.html
 msgid "Afslut repræsentation"
-msgstr ""
+msgstr "Ilisarititsineq naammassiuk"
 
 #: indberetning/templates/indberetning/base.html
 #, python-format
@@ -127,285 +134,322 @@ msgid ""
 "Du er logget ind som <strong>%(name)s</strong> ved <strong>%(company)s "
 "(%(cvr)s)</strong>"
 msgstr ""
+"Imatut isersimavutit <strong>%(name)s</strong> uku atorlugit <strong>"
+"%(company)s (%(cvr)s)</strong>"
 
 #: indberetning/templates/indberetning/base.html
 #, python-format
 msgid "Du er logget ind som <strong>%(company)s (%(cvr)s)</strong>"
-msgstr ""
+msgstr "Imatut isersimavutit <strong>%(company)s (%(cvr)s)</strong>"
 
 #: indberetning/templates/indberetning/base.html
 #: indberetning/templates/indberetning/error/error.html
 msgid "Log ud"
-msgstr ""
+msgstr "Anigit"
 
 #: indberetning/templates/indberetning/base.html
 msgid "Er du sikker på at du vil logge ud?"
-msgstr ""
+msgstr "Ilumut aniniarpit?"
 
 #: indberetning/templates/indberetning/error/error.html
 msgid "Log ind"
-msgstr ""
+msgstr "Iserit"
 
 #: indberetning/templates/indberetning/error/login_no_cvr.html
 #: indberetning/templates/indberetning/error/login_repeat.html
 #: indberetning/templates/indberetning/error/login_timeout.html
 msgid "Adgang nægtet"
-msgstr ""
+msgstr "Iseriarnerit itigartinneqarpoq"
 
 #: indberetning/templates/indberetning/error/login_no_cvr.html
 msgid "Det anvendte login har ikke et CVR-nummer tilknyttet."
-msgstr ""
+msgstr "Isissutissaq (login) atorneqartoq CVR-normutaqanngilaq."
 
 #: indberetning/templates/indberetning/error/login_repeat.html
 msgid "Det anvendte login er allerede anvendt. Prøv at logge ind igen."
-msgstr ""
+msgstr "Isissutissaq atorneqartoq atorneqareerpoq. Iseriaqqillutit misiliguk."
 
 #: indberetning/templates/indberetning/error/login_timeout.html
 msgid "Det anvendte login er timet ud. Prøv at logge ind igen."
 msgstr ""
-
-#: indberetning/templates/indberetning/includes/linje_list.html
-#: indberetning/templates/indberetning/indberetning_form.html
-msgid "Indhandlingssted"
-msgstr ""
+"Isissutissap piffissaq atuuffissani qaanngersimavaa. Iseriaqqillutit "
+"misiliguk."
 
 #: indberetning/templates/indberetning/includes/linje_list.html
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Fartøjs navn"
-msgstr ""
+msgstr "Angallatip atia"
 
 #: indberetning/templates/indberetning/includes/linje_list.html
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Produkttype"
-msgstr ""
+msgstr "Tunisassiap suunera"
 
 #: indberetning/templates/indberetning/includes/linje_list.html
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Levende vægt (kg)"
-msgstr ""
+msgstr "Uumatillugit oqimaassusaat (kg)"
 
 #: indberetning/templates/indberetning/includes/linje_list.html
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Omsætning (kr)"
-msgstr ""
+msgstr "Kaaviiaartitat (kr)"
 
 #: indberetning/templates/indberetning/includes/linje_list.html
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Indhandlingsværdi (kr)"
-msgstr ""
+msgstr "Tulaasat nalingi"
 
 #: indberetning/templates/indberetning/includes/linje_list.html
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Afgiftssats"
-msgstr ""
+msgstr "Akitsuutit annertussusaat"
 
 #: indberetning/templates/indberetning/includes/linje_list.html
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Beregnet afgift (kr)"
-msgstr ""
+msgstr "Akitsuut naatsorsorneqartoq (kr)"
 
 #: indberetning/templates/indberetning/includes/linje_list.html
 msgid "Modregn"
-msgstr ""
+msgstr "Naatsorsoruk"
 
 #: indberetning/templates/indberetning/indberetning_form.html
 #, python-format
 msgid "Tidligere Indberetninger fra %(tidspunkt)s"
-msgstr ""
+msgstr "Siornatigut nalunaarutaasartut %(tidspunkt)s-imeersut"
 
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Justerer indberetning"
-msgstr ""
+msgstr "Iluarsivaa nalunaarutigineqartoq"
 
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Nye indberetninger"
-msgstr ""
+msgstr "Nalunaarutiginninnerit nutaat"
 
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Afgiftsperiode:"
-msgstr ""
+msgstr "Piffissaq akitsuusiiffiusoq:"
 
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Selskab / CVR:"
-msgstr ""
+msgstr "Ingerlatseqatigiiffik / CVR:"
 
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Skematype:"
-msgstr ""
+msgstr "Immersugassap ilusaa:"
 
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid ""
-"For at justere en eksisterende indberetning nedad, skal vægt og beløb "
-"indtastes med negative tal - altså f.eks. \"-10\". Uden \"-\" vil der blive "
-"lagt til og ikke modregnet"
+"Ved justering af en tidligere indberetning nedad skal vægt og beløb "
+"indtastes med minus foran, f.eks. \"-10\" og beløbene vil blive modregnet "
+"den tidligere indberetning, som der justeres."
 msgstr ""
+"Nalunaarutit siornatigut suliarisimasanut ataatigut aaqqiiniarnermi "
+"oqimaassutsip aningaasallu annertussusaa allattorneranni saavatigut minus-"
+"imik allattoqassaaq, assersuutigalugu \"-10\" taamaasillunilu siornatigut "
+"nalunaarutaasimasut aaqqitaasullu utimut aaqqinneqarumaarlutik."
+
+#: indberetning/templates/indberetning/indberetning_form.html
+msgid ""
+"Ved justering af en tidligere indberetning opad skal vægt og beløb indtastes "
+"uden minus foran, og beløbene vil blive lagt til den tidligere indberetning, "
+"som der justeres."
+msgstr ""
+"Nalunaarutit siornatigut suliarisimasanut ataatigut aaqqiiniarnermi "
+"oqimaassutsip aningaasallu annertussusaa allattorneranni saavatigut minus-"
+"imik allattoqassaaq."
 
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Kommentar"
-msgstr ""
+msgstr "Oqaaseqaat"
 
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Slet"
-msgstr ""
+msgstr "Peeruk"
 
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Tilføj linje"
-msgstr ""
+msgstr "Titarnermik nutaamik ilanngussigit"
 
 #: indberetning/templates/indberetning/indberetning_form.html
-msgid "Eksisterende bilag:"
-msgstr ""
+msgid "Eksisterende bilag"
+msgstr "Ilanngussat pioreersut"
 
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Vælg en fil"
-msgstr ""
+msgstr "Fil-imik toqqaagit"
 
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Gennemse..."
-msgstr ""
+msgstr "Misissoruk"
 
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Tilføj bilag"
-msgstr ""
+msgstr "Ilanngussaq ilannguguk"
 
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Indsend"
-msgstr ""
+msgstr "Nassiuguk"
 
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Vælg eller opret nyt fartøj"
-msgstr ""
+msgstr "Angallat nutaaq toqqaruk pilersigulluunniit"
 
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Vælg eller opret nyt indhandlingssted"
-msgstr ""
+msgstr "Tunitsiviusartoq nutaaq toqqaruk pilersigulluunniit"
 
 #: indberetning/templates/indberetning/indberetning_form.html
-#, python-brace-format
+#, fuzzy, python-brace-format
+#| msgid "{rate} kr/kg"
 msgid "{rate} kr/kg"
-msgstr ""
+msgstr "{rate} kr/kg"
 
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid "Ingen afgift"
-msgstr ""
+msgstr "Akitsuutitaqanngilaq"
 
 #: indberetning/templates/indberetning/indberetning_list.html
 msgid "Vis indberetninger for:"
-msgstr ""
+msgstr "Uunga tunngatillugu nalunaarutigineqartut saqqummersikkit:"
 
 #: indberetning/templates/indberetning/indberetning_list.html
 #: indberetning/templates/indberetning/type_select.html
 msgid "Opret ny indberetning"
-msgstr ""
+msgstr "Nalunaarutissamik nutaamik pilersitsigit"
 
 #: indberetning/templates/indberetning/indberetning_list.html
 msgid "Dato"
-msgstr ""
+msgstr "Ulloq"
 
 #: indberetning/templates/indberetning/indberetning_list.html
 msgid "Justér indberetning"
-msgstr ""
+msgstr "Nalunaarutissaq iluarsiuk"
 
 #: indberetning/templates/indberetning/indberetning_list.html
 msgid "Periode"
-msgstr ""
+msgstr "Piffissaq"
 
 #: indberetning/templates/indberetning/indberetning_list.html
-msgid "Bilag:"
-msgstr ""
+msgid "Bilag"
+msgstr "Ilanngussat"
 
 #: indberetning/templates/indberetning/indberetning_list.html
 msgid "Indberetter CPR"
-msgstr ""
+msgstr "Nalunaarutiginnittup CPR-ia (Inuu normua)"
 
 #: indberetning/templates/indberetning/indberetning_list.html
 msgid "Skematype"
-msgstr ""
+msgstr "Immersugassap ilusaa"
 
 #: indberetning/templates/indberetning/indberetning_list.html
 msgid "Total beregnet afgift (kr)"
-msgstr ""
+msgstr "Akitsuutit naatsorsukkat katillugit (kr)"
 
 #: indberetning/templates/indberetning/indberetning_list.html
 msgid "Indberetningslinjer"
-msgstr ""
+msgstr "Nalunaaruteqarfissat"
 
 #: indberetning/templates/indberetning/no_cvr.html
 msgid "Dette site fungerer kun for logins med et CVR-nummer"
-msgstr ""
+msgstr "Qupperneq una CVR-normu atorlugu isernermi taamaallaat atorsinnaavoq"
 
 #: indberetning/templates/indberetning/no_cvr.html
 msgid "Tilbage til login"
-msgstr ""
+msgstr "Iserfissamut uterit"
 
 #: indberetning/templates/indberetning/type_select.html
 msgid "Type af indberetning"
-msgstr ""
+msgstr "Nalunaarutigineqartup suussusaa"
 
 #: indberetning/templates/indberetning/type_select.html
 msgid "Indberetningsperiode"
-msgstr ""
+msgstr "Piffissaq nalunaaruteqarfiusoq"
 
 #: indberetning/templates/indberetning/virksomhed_form.html
 msgid "Kontaktoplysninger"
-msgstr ""
+msgstr "Attaveqarnissamut paasissutissat"
 
 #: indberetning/templates/indberetning/virksomhed_form.html
 msgid ""
 "Før du kan anvende løsningen skal du udfylde kontaktoplysninger på din "
-"organisation.\n"
-"        Felterne skal udfyldes med kontaktoplysninger på en person som "
+"organisation. Felterne skal udfyldes med kontaktoplysninger på en person som "
 "Skattestyrelsen kan kontakte med spørgsmål omkring indberetninger."
 msgstr ""
+"Aqqissuussaq atorsinnaassagukku attaveqarfissamut tunngatillugu "
+"immersugassat immersoqqaartariaqassavatit. Nalunaarutigineqartut "
+"Akileraartarnermut Aqutsisoqarfimmit apeqqutissaqarfigineqartillugit "
+"attavigineqarsinnaasumit immersugassaq immersorneqarsimassaaq."
 
 #: indberetning/templates/indberetning/virksomhed_form.html
 msgid "Kontaktperson:"
-msgstr ""
+msgstr "Inuk attaveqaataasussaq:"
 
 #: indberetning/templates/indberetning/virksomhed_form.html
 msgid "Kontakt email:"
-msgstr ""
+msgstr "Email attaveqarfissaq:"
 
 #: indberetning/templates/indberetning/virksomhed_form.html
 msgid "Telefonnummer:"
-msgstr ""
+msgstr "Oqarasuaatip normua:"
 
 #: indberetning/templates/indberetning/virksomhed_form.html
 msgid "Virksomhedens hjemsted:"
-msgstr ""
+msgstr "Suliffeqarfiup angerlarsimaffia:"
 
 #: indberetning/templates/indberetning/virksomhed_form.html
 msgid "Gem"
-msgstr ""
+msgstr "Toqqoruk"
 
 #: indberetning/validators.py
 msgid "CVR nr. skal indeholde 8 tal"
-msgstr ""
+msgstr "CVR.nr. arfineq pingasunik kisitsisitaqassaaq"
 
 #: indberetning/validators.py
 msgid "CPR nr. skal indeholde 10 tal"
-msgstr ""
+msgstr "CPR. nr. qulinik kisitsisitaqassaaq"
 
 #: indberetning/views.py
 #, python-format
-msgid "Ny Indberetning oprettet for: %s."
-msgstr ""
+msgid "Ny indberetning oprettet for: %(fiskearter)s."
+msgstr "Nalunaarut nutaaq uunga pilersinneqartoq: %(fiskearter)s."
 
 #: indberetning/views.py
 #, python-format
-msgid "Ny Indberetning oprettet for: %(fiskearter)s med %(bilag)s bilag."
+msgid "Ny indberetning oprettet for: %(fiskearter)s med 1 bilag."
 msgstr ""
+"Nalunaarut nutaaq uunga pilersinneqartoq: %(fiskearter)s ilanngussamik "
+"ataatsimik ilallugu"
 
 #: indberetning/views.py
 #, python-format
-msgid "Indberetningen blev justeret og tilføjet %d nye bilag."
+msgid "Ny indberetning oprettet for: %(fiskearter)s med %(bilag)s bilag."
 msgstr ""
+"Nalunaarutit nutaat uku %(bilag)s pilersinneqarput: %(fiskearter)s "
+"ilanngussartallit."
+
+#: indberetning/views.py
+msgid "Indberetningen blev justeret og tilføjet 1 nyt bilag."
+msgstr ""
+"Nalunaarutigineqartoq aaqqinneqarpoq ilanngussamillu nutaamik "
+"ilanngussivigineqarluni."
 
 #: indberetning/views.py
 #, python-format
-msgid "Der blev tilføjet %d nye bilag til indberetningen"
+msgid "Indberetningen blev justeret og tilføjet %(bilag)d nye bilag."
+msgstr "Nalunaarut aaqqinneqarlunilu ilaneqarpoq %(bilag)d ilanngussat nutaat."
+
+#: indberetning/views.py
+msgid "Der blev tilføjet 1 nyt bilag til indberetningen"
+msgstr "Nalunaarutigineqartumut ilanngussamik ataatsimik ilanngussisoqarpoq"
+
+#: indberetning/views.py
+#, python-format
+msgid "Der blev tilføjet %(bilag)d nye bilag til indberetningen"
 msgstr ""
+"Nalunaarutigineqartumut ilanngussanik nutaanik %(bilag)d ilanngussisoqarpoq"
 
 #: indberetning/views.py
 msgid "Indberetningen blev justeret."
-msgstr ""
+msgstr "Nalunaarutigineqartoq aaqqinneqareerpoq."

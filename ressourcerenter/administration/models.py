@@ -44,7 +44,7 @@ class NamedModel(models.Model):
     )
 
     def __str__(self):
-        if get_language() == "kl-GL":
+        if get_language() in ("kl", "kl-GL"):
             return self.navn_gl
         else:
             return self.navn_dk

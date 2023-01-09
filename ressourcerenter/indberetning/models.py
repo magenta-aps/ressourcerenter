@@ -75,7 +75,7 @@ class Indhandlingssted(models.Model):
         return str(self.stedkode).zfill(6)
 
 
-navne_typer = (("fartøj", _("Fartøj")), ("indhandlings_sted", _("Indhandlings sted")))
+navne_typer = (("fartøj", _("Fartøj")), ("indhandlings_sted", _("Indhandlingssted")))
 
 
 class Navne(models.Model):
@@ -169,7 +169,7 @@ class IndberetningLinje(models.Model):
         verbose_name=_("Levende vægt/helfisk mængde (kg)"),
     )  # hel fisk
     salgspris = models.DecimalField(
-        max_digits=20, decimal_places=2, null=True, verbose_name=_("Salgspris (kr.)")
+        max_digits=20, decimal_places=2, null=True, verbose_name=_("Salgspris (kr)")
     )
     transporttillæg = models.DecimalField(
         max_digits=20,

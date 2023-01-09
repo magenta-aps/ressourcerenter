@@ -31,7 +31,12 @@
         </tr>
         </tbody>
     </table>
-    <p>{% translate 'For at justere en eksisterende indberetning nedad, skal vægt og beløb indtastes med negative tal - altså f.eks. "-10". Uden "-" vil der blive lagt til og ikke modregnet' %}</p>
+    <p>
+        {% translate 'Ved justering af en tidligere indberetning nedad skal vægt og beløb indtastes med minus foran, f.eks. "-10" og beløbene vil blive modregnet den tidligere indberetning, som der justeres.' %}
+    </p>
+    <p>
+        {% translate 'Ved justering af en tidligere indberetning opad skal vægt og beløb indtastes uden minus foran, og beløbene vil blive lagt til den tidligere indberetning, som der justeres.' %}
+    </p>
     <div class="table-responsive">
         <hr />
         <table class="table table-bordered text-center table-sm" id="js-product-table">
@@ -47,22 +52,22 @@
                 {% if skema.id == 3 %}
                 <th class="col-4">{% translate 'Indhandlingssted' %}</th>
                 {% endif %}
-                <th class="col-2">{% translate 'Produkttype'%}</th>
+                <th class="col-2">{% translate 'Produkttype' %}</th>
                 {% if skema.id != 3 %}
-                <th class="col-1">{% translate 'Produktvægt (kg)'%}</th>
+                <th class="col-1">{% translate 'Produktvægt (kg)' %}</th>
                 {% endif %}
-                <th class="col-1">{% translate 'Levende vægt (kg)'%}</th>
+                <th class="col-1">{% translate 'Levende vægt (kg)' %}</th>
 
                 {% if skema.id == 1 %}
-                <th class="col-1">{% translate 'Omsætning (kr)'%}</th>
+                <th class="col-1">{% translate 'Omsætning (kr)' %}</th>
                 {% elif skema.id == 2 or skema.id == 3 %}
-                <th class="col-1">{% translate 'Indhandlingsværdi (kr)'%}</th>
+                <th class="col-1">{% translate 'Indhandlingsværdi (kr)' %}</th>
                 {% endif %}
 
                 {% if skema.id == 1 %}
-                <th class="col-1">{% translate 'Transporttillæg (kr)'%}</th>
+                <th class="col-1">{% translate 'Transporttillæg (kr)' %}</th>
                 {% elif skema.id == 2 or skema.id == 3 %}
-                <th class="col-1">{% translate 'Bonus og andet vederlag (kr)'%}</th>
+                <th class="col-1">{% translate 'Bonus og andet vederlag (kr)' %}</th>
                 {% endif %}
 
                 <th class="col-1">{% translate 'Afgiftssats' %}</th>
@@ -108,14 +113,14 @@
         </table>
     </div>
     <div>
-        <input type="button" class="btn btn-sm btn-primary" id="js-add-product-button" value="{% translate 'Tilføj linje'%}">
+        <input type="button" class="btn btn-sm btn-primary" id="js-add-product-button" value="{% translate 'Tilføj linje' %}">
     </div>
     <hr/>
     {% if object.bilag.count %}
     <div class="form-inline">
-        <strong class="mr-2">{% translate 'Eksisterende bilag:'%}</strong>
+        <strong class="mr-2">{% translate 'Eksisterende bilag' %}</strong>
         {% for bilag in object.bilag.all %}
-        <a class="mr-2" href="{% url 'indberetning:bilag-download' pk=bilag.uuid%}">{{bilag.filename}}</a>
+        <a class="mr-2" href="{% url 'indberetning:bilag-download' pk=bilag.uuid %}">{{bilag.filename}}</a>
         {% endfor %}
     </div>
     {% endif %}
