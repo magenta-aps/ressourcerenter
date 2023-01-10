@@ -425,7 +425,10 @@ class VirksomhedRepræsentantView(RedirectView):
             virksomhed = Virksomhed.objects.get(pk=kwargs["pk"])
         except Virksomhed.DoesNotExist:
             return HttpResponseNotFound
-        request.session["user_info"] = {"cvr": virksomhed.cvr}
+        request.session["user_info"] = {
+            "cvr": virksomhed.cvr,
+            "organizationname": virksomhed.navn,
+        }
         request.session["impersonating"] = True
         return super().get(request, *args, **kwargs)
 
