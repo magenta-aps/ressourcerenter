@@ -77,7 +77,6 @@ class VirksomhedUpdateView(UpdateView):
 
 
 class IndberetningsListView(ListView):
-
     form_class = IndberetningSearchForm
 
     def get_queryset(self):
@@ -446,7 +445,6 @@ class MultipleFormView(View):
 
 
 class IndberetningCalculateJsonView(MultipleFormView):
-
     form_classes = [IndberetningBeregningForm, IndberetningsLinjeBeregningForm]
 
     def forms_valid(self, forms):

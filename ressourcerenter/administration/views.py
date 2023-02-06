@@ -94,7 +94,6 @@ class FrontpageView(TemplateView):
 
 
 class AfgiftsperiodeCreateView(CreateView):
-
     model = Afgiftsperiode
     form_class = AfgiftsperiodeForm
 
@@ -106,7 +105,6 @@ class AfgiftsperiodeCreateView(CreateView):
 
 
 class AfgiftsperiodeListView(ListView):
-
     model = Afgiftsperiode
     queryset = Afgiftsperiode.objects.all()
 
@@ -120,7 +118,6 @@ class AfgiftsperiodeUpdateView(UpdateView):
 
 
 class AfgiftsperiodeHistoryView(HistoryMixin, DetailView):
-
     model = Afgiftsperiode
 
     def get_fields(self, **kwargs):
@@ -131,7 +128,6 @@ class AfgiftsperiodeHistoryView(HistoryMixin, DetailView):
 
 
 class AfgiftsperiodeSatsTabelUpdateView(UpdateView):
-
     model = Afgiftsperiode
     form_class = forms.inlineformset_factory(
         Afgiftsperiode,
@@ -172,7 +168,6 @@ class AfgiftsperiodeSatsTabelUpdateView(UpdateView):
 
 
 class SatsTabelElementHistoryView(HistoryMixin, DetailView):
-
     model = SatsTabelElement
 
     def get_fields(self):
@@ -189,7 +184,6 @@ class SatsTabelElementHistoryView(HistoryMixin, DetailView):
 
 
 class FiskeArtCreateView(CreateView):
-
     model = FiskeArt
     form_class = FiskeArtForm
 
@@ -201,7 +195,6 @@ class FiskeArtCreateView(CreateView):
 
 
 class FiskeArtUpdateView(UpdateView):
-
     model = FiskeArt
     form_class = FiskeArtForm
 
@@ -210,12 +203,10 @@ class FiskeArtUpdateView(UpdateView):
 
 
 class FiskeArtListView(ListView):
-
     model = FiskeArt
 
 
 class FiskeArtHistoryView(HistoryMixin, DetailView):
-
     model = FiskeArt
 
     def get_fields(self, **kwargs):
@@ -233,7 +224,6 @@ class FiskeArtHistoryView(HistoryMixin, DetailView):
 
 
 class ProduktTypeCreateView(CreateView):
-
     model = ProduktType
     form_class = ProduktTypeCreateForm
 
@@ -245,7 +235,6 @@ class ProduktTypeCreateView(CreateView):
 
 
 class ProduktTypeUpdateView(UpdateView):
-
     model = ProduktType
     form_class = ProduktTypeUpdateForm
 
@@ -254,12 +243,10 @@ class ProduktTypeUpdateView(UpdateView):
 
 
 class ProduktTypeListView(ListView):
-
     model = ProduktType
 
 
 class ProduktTypeHistoryView(HistoryMixin, DetailView):
-
     model = ProduktType
 
     def get_fields(self, **kwargs):
@@ -509,7 +496,6 @@ class FakturaCreateView(CreateView):
 
 
 class FakturaSendView(SingleObjectMixin, BaseFormView):
-
     form_class = BatchSendForm
     model = Faktura
 
@@ -585,7 +571,6 @@ class IndberetningsLinjeListView(TemplateView):
         for virksomhed in Virksomhed.objects.filter(
             uuid__in=virksomheder_uuids
         ).prefetch_related("indberetning_set", "indberetning_set__linjer"):
-
             virksomhed_data = {"virksomhed": virksomhed, "produkttyper": {}}
             virksomheder.append(virksomhed_data)
             for indberetning in virksomhed.indberetning_set.filter(

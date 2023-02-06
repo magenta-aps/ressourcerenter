@@ -51,7 +51,6 @@ class NamedModel(models.Model):
 
 
 class SkemaType(models.Model):
-
     # Skematype 1
     # Havgående fartøjer og kystnære rejefartøjer - producerende fartøjer
     # Eksport
@@ -344,7 +343,6 @@ post_save.connect(
 
 
 class FangstAfgift(models.Model):
-
     indberetninglinje = models.OneToOneField(
         "indberetning.IndberetningLinje",
         on_delete=models.CASCADE,
@@ -402,7 +400,6 @@ class FangstAfgift(models.Model):
 
 
 class BeregningsModel(models.Model):
-
     navn = models.CharField(
         max_length=256,
         blank=False,
@@ -434,7 +431,6 @@ class BeregningsModel(models.Model):
 
 
 class BeregningsModel2021(BeregningsModel):
-
     beregningsmodel_ptr = models.OneToOneField(
         BeregningsModel,
         on_delete=models.CASCADE,
@@ -664,7 +660,6 @@ class Prisme10QBatch(models.Model):
 
 
 class Faktura(models.Model):
-
     virksomhed = models.ForeignKey(
         "indberetning.Virksomhed", null=False, on_delete=models.CASCADE
     )
@@ -985,7 +980,6 @@ def g69_export_filepath(instance, filename):
 
 
 class G69CodeExport(models.Model):
-
     uuid = models.UUIDField(primary_key=True, default=uuid4)
 
     år = models.PositiveSmallIntegerField(

@@ -102,7 +102,6 @@ class PrismeSELAccountResponseTransaction(object):
 
 
 class PrismeSELAccountResponse:
-
     itemclass = PrismeSELAccountResponseTransaction
 
     def __init__(self, request, xml):
@@ -124,7 +123,6 @@ class PrismeSELAccountResponse:
 
 
 class Prisme(object):
-
     _client = None
 
     @property

@@ -8,7 +8,6 @@ from project.forms_mixin import BootstrapForm
 
 
 class StatistikBaseForm(forms.Form):
-
     MONTH_JANUAR = "1"
     MONTH_APRIL = "4"
     MONTH_JULI = "7"
@@ -104,7 +103,6 @@ class StatistikBaseForm(forms.Form):
 
 
 class StatistikForm(BootstrapForm, StatistikBaseForm):
-
     enhed = forms.MultipleChoiceField(
         label=_("Enhed"),
         choices=(

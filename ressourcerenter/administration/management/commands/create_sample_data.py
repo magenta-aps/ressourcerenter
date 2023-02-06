@@ -16,7 +16,6 @@ class Command(BaseCommand):
     help = "Create sample data only for development environments"
 
     def handle(self, *args, **options):
-
         random.seed(10)
 
         virksomheder = []
@@ -42,7 +41,6 @@ class Command(BaseCommand):
         random.shuffle(alle_fartoejer)  # Shuffle to check that sorting works
 
         for periode in Afgiftsperiode.objects.all():
-
             fartoejer = random.sample(alle_fartoejer, 3)
             periode.beregningsmodel = beregningsmodel
             periode.save()
@@ -58,7 +56,6 @@ class Command(BaseCommand):
                 create_datetime = timezone.make_aware(create_datetime)
 
                 for skematype in SkemaType.objects.all().order_by("id"):
-
                     if skematype.id == 1:
                         indberetning = Indberetning.objects.create(
                             skematype=skematype,
