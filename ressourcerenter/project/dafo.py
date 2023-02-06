@@ -17,7 +17,6 @@ class DatafordelerClient(object):
         root_ca=True,
         timeout=10,
     ):
-
         self._mock = mock
 
         if not self._mock:

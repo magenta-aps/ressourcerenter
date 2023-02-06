@@ -247,7 +247,6 @@ class FakturaForm(BootstrapForm, forms.ModelForm):
 
 
 class BatchSendForm(forms.Form):
-
     destination = forms.ChoiceField(
         choices=lambda: [
             (key, key)
@@ -258,7 +257,6 @@ class BatchSendForm(forms.Form):
 
 
 class G69KodeForm(BootstrapForm):
-
     år = forms.ChoiceField(
         choices=(
             (år, str(år)) for år in range(date.today().year, date.today().year - 10, -1)

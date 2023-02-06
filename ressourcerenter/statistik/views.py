@@ -203,7 +203,6 @@ class StatistikView(ExcelMixin, StatistikBaseView):
         result = []
 
         for db_row_dict in qs:
-
             # Add values from grouping fields
             new_row_identifiers = []
             for key in grouping_fields.values():
@@ -254,7 +253,6 @@ class StatistikView(ExcelMixin, StatistikBaseView):
 
 
 class StatistikChoicesView(StatistikBaseView):
-
     form_class = StatistikBaseForm
 
     def form_invalid(self, form):

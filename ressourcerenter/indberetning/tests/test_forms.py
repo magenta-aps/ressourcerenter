@@ -37,11 +37,6 @@ class CompanyContactTestForm(TestCase):
 
 
 class IndberetningSelectTestForm(TestCase):
-
-    """
-    Simulating that OpenId was used to login
-    """
-
     def setUp(self) -> None:
         self.periode = Afgiftsperiode.objects.get(navn_dk="4. kvartal 2021")
         self.skema = SkemaType.objects.get(
@@ -208,11 +203,6 @@ class BeregningslinjeTests(TestCase):
 
 
 class IndberetningerTests(TestCase):
-
-    """
-    Simulating that OpenId was used to login
-    """
-
     def setUp(self) -> None:
         self.cvr = "12345678"
         Indhandlingssted.objects.create(navn="test")

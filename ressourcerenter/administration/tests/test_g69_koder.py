@@ -39,7 +39,6 @@ class G69TestCase(TestCase):
 
 class FangsttypeTestCase(G69TestCase):
     def test_fangsttyper(self):
-
         indberetning1 = Indberetning.objects.create(
             afgiftsperiode=self.periode,
             skematype=self.skematyper[1],
