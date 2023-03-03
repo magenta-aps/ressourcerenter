@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from django import forms
 from django.conf import settings
+from django.db.models.aggregates import Count
 from django.db.models.query import prefetch_related_objects
 from django.db.models import Sum, Value
 from django.shortcuts import redirect
@@ -205,6 +206,15 @@ class FiskeArtUpdateView(UpdateView):
 class FiskeArtListView(ListView):
     model = FiskeArt
 
+    def get_context_data(self, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context["any_objects_with_no_product_types"] = not all(
+            context["object_list"]
+            .annotate(producttype_count=Count("produkttype"))
+            .values_list("producttype_count", flat=True)
+        )
+        return context
+
 
 class FiskeArtHistoryView(HistoryMixin, DetailView):
     model = FiskeArt
@@ -229,6 +239,12 @@ class ProduktTypeCreateView(CreateView):
 
     def get_success_url(self):
         return reverse("administration:produkttype-list")
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if "fiskeart" in self.request.GET:
+            kwargs["initial"] = {"fiskeart": self.request.GET["fiskeart"]}
+        return kwargs
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(**{**kwargs, "creating": True})

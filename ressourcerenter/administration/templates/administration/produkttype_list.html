@@ -16,7 +16,8 @@
         <tr>
             <th class="col-3">{% translate 'Dansk navn' %}</th>
             <th class="col-3">{% translate 'Grønlandsk navn' %}</th>
-            <th class="col-4">{% translate 'Beskrivelse' %}</th>
+            <th class="col-3">{% translate 'Beskrivelse' %}</th>
+            <th class="col-1">{% translate 'Fiskeart' %}</th>
             <th class="col-2">{% translate 'Handlinger' %}</th>
         </tr>
     </thead>
@@ -31,6 +32,9 @@
             </td>
             <td>
                 {{ object.beskrivelse|default_if_none:'' }}
+            </td>
+            <td>
+                {{ object.fiskeart }}
             </td>
             <td>
                 <a class="btn btn-primary" href="{% url 'administration:produkttype-update' pk=object.pk %}">{% translate 'Redigér' %}</a>

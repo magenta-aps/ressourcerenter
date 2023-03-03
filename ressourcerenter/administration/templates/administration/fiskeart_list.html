@@ -10,19 +10,30 @@
     {% endblocktranslate %}
 </p>
 
+{% if any_objects_with_no_product_types %}
+<p class="alert alert-danger">
+    {% blocktranslate %}
+    Der er en fiskeart uden produkttyper.
+    Fiskearter kan kun bruges i indberetning og administration når de har mindst én produkttype tilknyttet.
+    {% endblocktranslate %}
+</p>
+{% endif %}
+
 <a class="btn btn-success" href="{% url 'administration:fiskeart-create' %}">{% translate 'Opret ny' %}</a>
 <table class="table">
     <thead>
         <tr>
             <th class="col-3">{% translate 'Dansk navn' %}</th>
             <th class="col-3">{% translate 'Grønlandsk navn' %}</th>
-            <th class="col-4">{% translate 'Beskrivelse' %}</th>
+            <th class="col-3">{% translate 'Beskrivelse' %}</th>
+            <th class="col-1">{% translate 'Antal produkttyper' %}</th>
             <th class="col-2">{% translate 'Handlinger' %}</th>
         </tr>
     </thead>
     <tbody>
     {% for object in object_list %}
-        <tr>
+        {% with produkttype_count=object.produkttype_set.count %}
+        <tr {% if produkttype_count == 0%}class="table-danger"{% endif %}>
             <td>
                 {{ object.navn_dk }}
             </td>
@@ -33,10 +44,17 @@
                 {{ object.beskrivelse|default_if_none:'' }}
             </td>
             <td>
+                {{ produkttype_count }}
+            </td>
+            <td>
+                {% if produkttype_count == 0 %}
+                <a class="btn btn-primary" href="{% url 'administration:produkttype-create' %}?fiskeart={{object.pk}}">{% translate 'Opret fiskeart' %}</a>
+                {% endif %}
                 <a class="btn btn-primary" href="{% url 'administration:fiskeart-update' pk=object.pk %}">{% translate 'Redigér' %}</a>
                 <a class="btn btn-primary" href="{% url 'administration:fiskeart-history' pk=object.pk %}">{% translate 'Historik' %}</a>
             </td>
         </tr>
+        {% endwith %}
     {% endfor %}
     </tbody>
 </table>
