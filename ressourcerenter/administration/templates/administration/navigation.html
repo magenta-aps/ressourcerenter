@@ -1,6 +1,7 @@
 {% load static %}
 {% load i18n %}
 {% load administration_tags %}
+{% get_current_language as LANGUAGE_CODE %}
 <nav class="nav navbar navbar-light navbar-expand-lg" style="background-color: #e3f2fd;">
     <div class="navbar-nav mr-auto">
         {% if user.is_authenticated and request.user|has_group:'administration' %}
@@ -20,9 +21,26 @@
     </div>
 
     <div class="navbar-nav">
+        <form action="{% url 'set_language' %}" method="post" data-autosubmit="true">
+            {% csrf_token %}
+            <select name="language" class="form-control" >
+                <option value="kl" class="option-kl" {% if LANGUAGE_CODE|split:'-'|first == 'kl' %}selected="selected"{% endif %}>Kalaallisut</option>
+                <option value="da" class="option-da" {% if LANGUAGE_CODE|split:'-'|first == 'da' %}selected="selected"{% endif %}>Dansk</option>
+            </select>
+        </form>
+    </div>
+
+    <div class="navbar-nav">
         {% if user.is_authenticated %}
         <a class="nav-item nav-link" href="{% url 'administration:logout' %}">{% translate 'Log ud' %}</a>
         {% endif %}
     </div>
 </nav>
 <hr class="p-0 m-0">
+<script>
+    $(function () {
+        $("[data-autosubmit]").find("input,select").on("change", function () {
+            $(this).parents("form").first().submit();
+        });
+    });
+</script>
