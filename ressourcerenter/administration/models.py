@@ -135,7 +135,9 @@ class ProduktType(NamedModel):
 
     fiskeart = models.ForeignKey(FiskeArt, on_delete=models.CASCADE, null=False)
 
-    fartoej_groenlandsk = models.BooleanField(null=True)
+    fartoej_groenlandsk = models.BooleanField(
+        null=True, verbose_name=_("Grønlandsk fartøj")
+    )
     # Skematype 1's queryset skal være produkter som ikke har children
     # andre skematyper skal være produkter som ikke er children
     gruppe = models.ForeignKey(

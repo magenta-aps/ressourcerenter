@@ -121,7 +121,7 @@
                 <td class="text-right">{{ linje.produktvægt }}</td>
                 {% endif %}
                 <td class="text-right">{{ linje.levende_vægt }}</td>
-                <td class="text-right">{{ linje.salgspris }}</td>
+                <td class="text-right">{{ linje.salgspris|default_if_none:0 }}</td>
                 <td class="text-right">{{ linje.fangstafgift.rate_string }}</td>
                 <td class="text-right">{{ linje.afgift }}</td>
                 <td class="text-right">

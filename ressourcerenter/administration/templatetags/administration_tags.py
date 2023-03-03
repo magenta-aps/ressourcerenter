@@ -21,7 +21,7 @@ def janej(item):
 
 @register.filter
 def list_sum_attr(itemlist, attribute):
-    return sum([getattr(item, attribute) for item in itemlist])
+    return sum([getattr(item, attribute) or 0 for item in itemlist])
 
 
 @register.filter
