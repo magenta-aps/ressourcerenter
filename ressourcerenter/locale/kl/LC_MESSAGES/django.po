@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-06 08:55+0000\n"
+"POT-Creation-Date: 2023-03-06 12:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -877,6 +877,44 @@ msgstr ""
 
 #: administration/templates/administration/produkttype_form.html
 msgid "Overordnet produkt"
+msgstr ""
+
+#: administration/templates/administration/produkttype_form.html
+msgid ""
+"\n"
+"            Aktivitetskoder indgår i dataoverførslen til Prisme, og skal "
+"kunne genkendes derovre.\n"
+"            Vær derfor sikker på at koden er den samme som forventes i "
+"Prisme.\n"
+"            "
+msgstr ""
+
+#: administration/templates/administration/produkttype_form.html
+msgid ""
+"\n"
+"            Hvis der ikke angives en aktivitetskode, og der findes en "
+"overordnet produkttype,\n"
+"            vil den overordnede produkttypes aktivitetskode blive brugt.\n"
+"            Bemærk at \"0\" tæller som at værdien er sat; hvis den "
+"overordnede produkttypes\n"
+"            kode skal bruges, skal feltet være helt tomt.\n"
+"            "
+msgstr ""
+
+#: administration/templates/administration/produkttype_form.html
+msgid "Aktivitetskode for indhandling"
+msgstr ""
+
+#: administration/templates/administration/produkttype_form.html
+msgid "Aktivitetskode for havgående fiskeri"
+msgstr ""
+
+#: administration/templates/administration/produkttype_form.html
+msgid "Aktivitetskode for kystnært fiskeri"
+msgstr ""
+
+#: administration/templates/administration/produkttype_form.html
+msgid "Aktivitetskode for fiskeri ved Svalbard og i Barentshavet"
 msgstr ""
 
 #: administration/templates/administration/produkttype_list.html

@@ -19,7 +19,7 @@
     {% endblocktranslate %}
 </p>
 
-<form method="post" action="{% url 'administration:produkttype-create' %}">
+<form method="post" {% if creating %} action="{% url 'administration:produkttype-create' %}"{% endif %}>
     {% csrf_token %}
 
     <div class="form-row">
@@ -98,6 +98,114 @@
         </div>
     </div>
 
+    <div class="form-row">
+        <div class="col-6">
+            {% blocktranslate %}
+            Aktivitetskoder indgår i dataoverførslen til Prisme, og skal kunne genkendes derovre.
+            Vær derfor sikker på at koden er den samme som forventes i Prisme.
+            {% endblocktranslate %}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="col-6">
+            {% blocktranslate %}
+            Hvis der ikke angives en aktivitetskode, og der findes en overordnet produkttype,
+            vil den overordnede produkttypes aktivitetskode blive brugt.
+            Bemærk at "0" tæller som at værdien er sat; hvis den overordnede produkttypes
+            kode skal bruges, skal feltet være helt tomt.
+            {% endblocktranslate %}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="col-2">
+            <label for="{{ form.aktivitetskode_indhandling.id_for_label }}">{% translate 'Aktivitetskode for indhandling' %}:</label>
+        </div>
+        <div class="col-4">
+            {{ form.aktivitetskode_indhandling }}
+        </div>
+        <div class="col-6">
+            {{ form.aktivitetskode_indhandling.errors }}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="col-2">
+            <label for="{{ form.aktivitetskode_havgående.id_for_label }}">{% translate 'Aktivitetskode for havgående fiskeri' %}:</label>
+        </div>
+        <div class="col-4">
+            {{ form.aktivitetskode_havgående }}
+        </div>
+        <div class="col-6">
+            {{ form.aktivitetskode_havgående.errors }}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="col-2">
+            <label for="{{ form.aktivitetskode_kystnært.id_for_label }}">{% translate 'Aktivitetskode for kystnært fiskeri' %}:</label>
+        </div>
+        <div class="col-4">
+            {{ form.aktivitetskode_kystnært }}
+        </div>
+        <div class="col-6">
+            {{ form.aktivitetskode_kystnært.errors }}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="col-2">
+            <label for="{{ form.aktivitetskode_svalbard.id_for_label }}">{% translate 'Aktivitetskode for fiskeri ved Svalbard og i Barentshavet' %}:</label>
+        </div>
+        <div class="col-4">
+            {{ form.aktivitetskode_svalbard }}
+        </div>
+        <div class="col-6">
+            {{ form.aktivitetskode_svalbard.errors }}
+        </div>
+    </div>
+
     <button type="submit" class="btn btn-primary">{% translate 'Gem' %}</button>
 </form>
+{{ fiskeart_map|json_script:"fiskeart_map" }}
+<script>
+    const toggle_options = function (field, option_values) {
+        field.find("option").each(function (){
+            const $this = $(this);
+            if (this.value !== "" && (!option_values || option_values.indexOf(this.value) === -1)) {
+                $this.attr("disabled", "disabled");
+                $this.hide();
+                if ($this.prop("selected")) {
+                    $this.prop("selected", false);
+                }
+            } else {
+                $this.removeAttr("disabled");
+                $this.show();
+            }
+        });
+    }
+
+    $(function (){
+        const fiskeart_map = JSON.parse($("#fiskeart_map").text());
+        const produkttype_field = $("#{{form.gruppe.id_for_label}}");
+
+        {% if form.fiskeart %}
+
+        const fiskeart_field = $("#{{form.fiskeart.id_for_label}}");
+        const update_produkttype_field = function () {
+            const fiskeart_value = fiskeart_field.val();
+            toggle_options(produkttype_field, fiskeart_map[fiskeart_value])
+        }
+        update_produkttype_field();
+        fiskeart_field.on("change", update_produkttype_field);
+
+        {% else %}
+
+        const fiskeart_value = "{{ object.fiskeart.uuid }}";
+        toggle_options(produkttype_field, fiskeart_map[fiskeart_value])
+
+        {% endif %}
+    });
+</script>
 {% endblock %}
