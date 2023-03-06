@@ -73,6 +73,8 @@
     <div class="form-row">
         <div class="col-2">
             <label for="{{ form.skematype.id_for_label }}">{% translate 'Relevante skematyper' %}:</label>
+            <br/>
+            <small class="text-muted">{% translate 'Hold ctrl/cmd nede for at vælge flere' %}</small>
         </div>
         <div class="col-4">
             {{ form.skematype }}
