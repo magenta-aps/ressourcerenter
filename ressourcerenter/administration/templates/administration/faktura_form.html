@@ -8,7 +8,7 @@
     {% csrf_token %}
     <div class="form-row">
         <div class="col-2">
-            <label for="{{ form.betalingsdato.id_for_label }}">{% translate 'Betalingsdato:' %}</label>
+            <label for="{{ form.betalingsdato.id_for_label }}">{% translate 'Betalingsdato' %}:</label>
         </div>
         <div class="col-4">
             {{ form.betalingsdato }}
@@ -19,7 +19,7 @@
     </div>
     <div class="form-row">
         <div class="col-2">
-            <label for="{{ form.opkrævningsdato.id_for_label }}">{% translate 'Opkrævningsdato:' %}</label>
+            <label for="{{ form.opkrævningsdato.id_for_label }}">{% translate 'Opkrævningsdato' %}:</label>
         </div>
         <div class="col-4">
             {{ form.opkrævningsdato }}

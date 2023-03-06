@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-03 13:18+0000\n"
+"POT-Creation-Date: 2023-03-06 08:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,6 +33,7 @@ msgstr ""
 
 #: administration/forms.py administration/models.py
 #: administration/templates/administration/afgiftsperiode_satstabel.html
+#: administration/templates/administration/produkttype_form.html
 msgid "Grønlandsk fartøj"
 msgstr ""
 
@@ -53,21 +54,29 @@ msgid "{kvartal}. kvartal {år}"
 msgstr "{kvartal}. ukiup sisamararterutaa {år}"
 
 #: administration/models.py
+#: administration/templates/administration/afgiftsperiode_form.html
 #: administration/templates/administration/afgiftsperiode_list.html
+#: administration/templates/administration/fiskeart_form.html
 #: administration/templates/administration/fiskeart_list.html
+#: administration/templates/administration/produkttype_form.html
 #: administration/templates/administration/produkttype_list.html
 msgid "Dansk navn"
 msgstr ""
 
 #: administration/models.py
+#: administration/templates/administration/afgiftsperiode_form.html
 #: administration/templates/administration/afgiftsperiode_list.html
+#: administration/templates/administration/fiskeart_form.html
 #: administration/templates/administration/fiskeart_list.html
+#: administration/templates/administration/produkttype_form.html
 #: administration/templates/administration/produkttype_list.html
 msgid "Grønlandsk navn"
 msgstr ""
 
 #: administration/models.py
+#: administration/templates/administration/fiskeart_form.html
 #: administration/templates/administration/fiskeart_list.html
+#: administration/templates/administration/produkttype_form.html
 #: administration/templates/administration/produkttype_list.html
 msgid "Beskrivelse"
 msgstr ""
@@ -141,6 +150,7 @@ msgid "G69-Kode"
 msgstr ""
 
 #: administration/models.py
+#: administration/templates/administration/g69kode_form.html
 #: administration/templates/administration/g69kode_list.html
 #: administration/views.py
 msgid "År"
@@ -159,6 +169,7 @@ msgstr ""
 
 #: administration/models.py
 #: administration/templates/administration/afgiftsperiode_satstabel.html
+#: administration/templates/administration/produkttype_form.html
 #: administration/templates/administration/produkttype_list.html
 #: administration/views.py
 msgid "Fiskeart"
@@ -173,6 +184,7 @@ msgid "Sted"
 msgstr ""
 
 #: administration/models.py
+#: administration/templates/administration/virksomhed_form.html
 #: administration/templates/administration/virksomhed_list.html
 #: administration/views.py
 msgid "Stedkode"
@@ -195,31 +207,20 @@ msgid "Opret Afgiftsperiode"
 msgstr ""
 
 #: administration/templates/administration/afgiftsperiode_form.html
-#: administration/templates/administration/fiskeart_form.html
-#: administration/templates/administration/produkttype_form.html
-msgid "Dansk navn:"
+msgid "Startdato"
 msgstr ""
 
 #: administration/templates/administration/afgiftsperiode_form.html
-#: administration/templates/administration/fiskeart_form.html
-#: administration/templates/administration/produkttype_form.html
-msgid "Grønlandsk navn:"
+msgid "Slutdato"
 msgstr ""
 
 #: administration/templates/administration/afgiftsperiode_form.html
-msgid "Startdato:"
+msgid "Beregningsmodel"
 msgstr ""
 
 #: administration/templates/administration/afgiftsperiode_form.html
-msgid "Slutdato:"
-msgstr ""
-
-#: administration/templates/administration/afgiftsperiode_form.html
-msgid "Beregningsmodel:"
-msgstr ""
-
-#: administration/templates/administration/afgiftsperiode_form.html
-msgid "Vis i indberetning:"
+#: administration/templates/administration/afgiftsperiode_list.html
+msgid "Vis i indberetning"
 msgstr ""
 
 #: administration/templates/administration/afgiftsperiode_form.html
@@ -265,10 +266,6 @@ msgstr ""
 
 #: administration/templates/administration/afgiftsperiode_list.html
 msgid "Dato til"
-msgstr ""
-
-#: administration/templates/administration/afgiftsperiode_list.html
-msgid "Vis i indberetning"
 msgstr ""
 
 #: administration/templates/administration/afgiftsperiode_list.html
@@ -382,10 +379,12 @@ msgid "Oprettelsesdato"
 msgstr ""
 
 #: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/faktura_form.html
 msgid "Opkrævningsdato"
 msgstr ""
 
 #: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/faktura_form.html
 msgid "Betalingsdato"
 msgstr ""
 
@@ -401,6 +400,7 @@ msgid "Virksomhed"
 msgstr ""
 
 #: administration/templates/administration/faktura_detail.html
+#: administration/templates/administration/virksomhed_form.html
 #: administration/templates/administration/virksomhed_list.html
 msgid "Navn"
 msgstr ""
@@ -526,14 +526,6 @@ msgid "Opret Faktura"
 msgstr ""
 
 #: administration/templates/administration/faktura_form.html
-msgid "Betalingsdato:"
-msgstr ""
-
-#: administration/templates/administration/faktura_form.html
-msgid "Opkrævningsdato:"
-msgstr ""
-
-#: administration/templates/administration/faktura_form.html
 msgid "Send til testsystem"
 msgstr ""
 
@@ -560,16 +552,11 @@ msgid ""
 msgstr ""
 
 #: administration/templates/administration/fiskeart_form.html
-#: administration/templates/administration/produkttype_form.html
-msgid "Beskrivelse:"
+msgid "Pelagisk"
 msgstr ""
 
 #: administration/templates/administration/fiskeart_form.html
-msgid "Pelagisk:"
-msgstr ""
-
-#: administration/templates/administration/fiskeart_form.html
-msgid "Relevante skematyper:"
+msgid "Relevante skematyper"
 msgstr ""
 
 #: administration/templates/administration/fiskeart_list.html
@@ -590,6 +577,7 @@ msgstr ""
 #: administration/templates/administration/fiskeart_list.html
 msgid ""
 "\n"
+"    Der er en fiskeart uden produkttyper.\n"
 "    Fiskearter kan kun bruges i indberetning og administration når de har "
 "mindst én produkttype tilknyttet.\n"
 "    "
@@ -643,10 +631,6 @@ msgstr ""
 
 #: administration/templates/administration/g69kode_form.html
 msgid "Hent kodefil for G69"
-msgstr ""
-
-#: administration/templates/administration/g69kode_form.html
-msgid "År:"
 msgstr ""
 
 #: administration/templates/administration/g69kode_form.html
@@ -893,15 +877,7 @@ msgid ""
 msgstr ""
 
 #: administration/templates/administration/produkttype_form.html
-msgid "Grønlandsk fartøj:"
-msgstr ""
-
-#: administration/templates/administration/produkttype_form.html
-msgid "Fiskeart:"
-msgstr ""
-
-#: administration/templates/administration/produkttype_form.html
-msgid "Overordnet produkt:"
+msgid "Overordnet produkt"
 msgstr ""
 
 #: administration/templates/administration/produkttype_list.html
@@ -925,27 +901,20 @@ msgid "Redigér Virksomhed"
 msgstr ""
 
 #: administration/templates/administration/virksomhed_form.html
-msgid "CVR-nummer:"
+#: administration/templates/administration/virksomhed_list.html
+msgid "CVR-nummer"
 msgstr ""
 
 #: administration/templates/administration/virksomhed_form.html
-msgid "Navn:"
+msgid "Kontaktperson navn"
 msgstr ""
 
 #: administration/templates/administration/virksomhed_form.html
-msgid "Kontaktperson navn:"
+msgid "Kontaktperson email"
 msgstr ""
 
 #: administration/templates/administration/virksomhed_form.html
-msgid "Kontaktperson email:"
-msgstr ""
-
-#: administration/templates/administration/virksomhed_form.html
-msgid "Kontaktperson telefon:"
-msgstr ""
-
-#: administration/templates/administration/virksomhed_form.html
-msgid "Stedkode:"
+msgid "Kontaktperson telefon"
 msgstr ""
 
 #: administration/templates/administration/virksomhed_list.html
@@ -958,10 +927,6 @@ msgid ""
 "på \"Repræsentér\"; herved navigeres til den indberetningsside som "
 "virksomheden ser.\n"
 "    "
-msgstr ""
-
-#: administration/templates/administration/virksomhed_list.html
-msgid "CVR-nummer"
 msgstr ""
 
 #: administration/templates/administration/virksomhed_list.html

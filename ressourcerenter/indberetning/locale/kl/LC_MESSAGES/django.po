@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-03 13:18+0000\n"
+"POT-Creation-Date: 2023-03-06 08:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -228,16 +228,17 @@ msgid "Nye indberetninger"
 msgstr "Nalunaarutiginninnerit nutaat"
 
 #: indberetning/templates/indberetning/indberetning_form.html
-msgid "Afgiftsperiode:"
-msgstr "Piffissaq akitsuusiiffiusoq:"
+msgid "Afgiftsperiode"
+msgstr "Piffissaq akitsuusiiffiusoq"
 
 #: indberetning/templates/indberetning/indberetning_form.html
-msgid "Selskab / CVR:"
-msgstr "Ingerlatseqatigiiffik / CVR:"
+msgid "Selskab / CVR"
+msgstr "Ingerlatseqatigiiffik / CVR"
 
 #: indberetning/templates/indberetning/indberetning_form.html
-msgid "Skematype:"
-msgstr "Immersugassap ilusaa:"
+#: indberetning/templates/indberetning/indberetning_list.html
+msgid "Skematype"
+msgstr "Immersugassap ilusaa"
 
 #: indberetning/templates/indberetning/indberetning_form.html
 msgid ""
@@ -311,8 +312,8 @@ msgid "Ingen afgift"
 msgstr "Akitsuutitaqanngilaq"
 
 #: indberetning/templates/indberetning/indberetning_list.html
-msgid "Vis indberetninger for:"
-msgstr "Uunga tunngatillugu nalunaarutigineqartut saqqummersikkit:"
+msgid "Vis indberetninger for"
+msgstr "Uunga tunngatillugu nalunaarutigineqartut saqqummersikkit"
 
 #: indberetning/templates/indberetning/indberetning_list.html
 #: indberetning/templates/indberetning/type_select.html
@@ -338,10 +339,6 @@ msgstr "Ilanngussat"
 #: indberetning/templates/indberetning/indberetning_list.html
 msgid "Indberetter CPR"
 msgstr "Nalunaarutiginnittup CPR-ia (Inuu normua)"
-
-#: indberetning/templates/indberetning/indberetning_list.html
-msgid "Skematype"
-msgstr "Immersugassap ilusaa"
 
 #: indberetning/templates/indberetning/indberetning_list.html
 msgid "Total beregnet afgift (kr)"
@@ -383,20 +380,20 @@ msgstr ""
 "attavigineqarsinnaasumit immersugassaq immersorneqarsimassaaq."
 
 #: indberetning/templates/indberetning/virksomhed_form.html
-msgid "Kontaktperson:"
-msgstr "Inuk attaveqaataasussaq:"
+msgid "Kontaktperson"
+msgstr "Inuk attaveqaataasussaq"
 
 #: indberetning/templates/indberetning/virksomhed_form.html
-msgid "Kontakt email:"
-msgstr "Email attaveqarfissaq:"
+msgid "Kontakt email"
+msgstr "Email attaveqarfissaq"
 
 #: indberetning/templates/indberetning/virksomhed_form.html
-msgid "Telefonnummer:"
-msgstr "Oqarasuaatip normua:"
+msgid "Telefonnummer"
+msgstr "Oqarasuaatip normua"
 
 #: indberetning/templates/indberetning/virksomhed_form.html
-msgid "Virksomhedens hjemsted:"
-msgstr "Suliffeqarfiup angerlarsimaffia:"
+msgid "Virksomhedens hjemsted"
+msgstr "Suliffeqarfiup angerlarsimaffia"
 
 #: indberetning/templates/indberetning/virksomhed_form.html
 msgid "Gem"
