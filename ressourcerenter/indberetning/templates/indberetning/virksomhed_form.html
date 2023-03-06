@@ -10,25 +10,25 @@
     <form method="POST" action=".">
         {% csrf_token %}
         <div class="form-group row">
-            <label class="offset-sm-3 col-sm-2" for="{{ form.kontakt_person.id_for_label }}">{% translate 'Kontaktperson:' %}</label>
+            <label class="offset-sm-3 col-sm-2" for="{{ form.kontakt_person.id_for_label }}">{% translate 'Kontaktperson' %}:</label>
             <div class="col-sm-4">
                 {{form.kontakt_person}}
             </div>
         </div>
         <div class="form-group row">
-            <label class="offset-sm-3 col-sm-2" for="{{ form.kontakt_email.id_for_label }}">{% translate 'Kontakt email:' %}</label>
+            <label class="offset-sm-3 col-sm-2" for="{{ form.kontakt_email.id_for_label }}">{% translate 'Kontakt email' %}:</label>
             <div class="col-sm-4">
                 {{form.kontakt_email}}
             </div>
         </div>
         <div class="form-group row">
-            <label class="offset-sm-3 col-sm-2" for="{{ form.kontakts_phone_nr.id_for_label }}">{% translate 'Telefonnummer:' %}</label>
+            <label class="offset-sm-3 col-sm-2" for="{{ form.kontakts_phone_nr.id_for_label }}">{% translate 'Telefonnummer' %}:</label>
             <div class="col-sm-4">
                 {{form.kontakts_phone_nr}}
             </div>
         </div>
         <div class="form-group row">
-            <label class="offset-sm-3 col-sm-2" for="{{ form.sted.id_for_label }}">{% translate 'Virksomhedens hjemsted:' %}</label>
+            <label class="offset-sm-3 col-sm-2" for="{{ form.sted.id_for_label }}">{% translate 'Virksomhedens hjemsted' %}:</label>
             <div class="col-sm-4">
                 {{form.sted}}
             </div>

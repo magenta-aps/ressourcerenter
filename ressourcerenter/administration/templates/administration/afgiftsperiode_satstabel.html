@@ -12,7 +12,7 @@
     {% endblocktranslate %}
 </p>
 
-<form method="post">
+<form method="post" id="satstabel_form">
     {% csrf_token %}
     {{ form.management_form }}
     {% for item in form.forms_by_skematype %}
@@ -138,10 +138,10 @@
             select.change();
         }
     });
-    $('form').on('submit', function(event){
+    $('form#satstabel_form').on('submit', function(event){
         if ($(event.originalEvent.submitter).attr('name') !== 'really_submit') {
             let allSet = true;
-            $('form input:not(:disabled):not([type=hidden])').each(function () {
+            $('form#satstabel_form input:not(:disabled):not([type=hidden])').each(function () {
                 if (!parseFloat(this.value)) {
                     allSet = false;
                     return false;  // Break out of each()

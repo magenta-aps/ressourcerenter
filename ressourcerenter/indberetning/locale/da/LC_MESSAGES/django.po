@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-03 13:18+0000\n"
+"POT-Creation-Date: 2023-03-06 08:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -220,15 +220,16 @@ msgid "Nye indberetninger"
 msgstr ""
 
 #: indberetning/templates/indberetning/indberetning_form.html
-msgid "Afgiftsperiode:"
+msgid "Afgiftsperiode"
 msgstr ""
 
 #: indberetning/templates/indberetning/indberetning_form.html
-msgid "Selskab / CVR:"
+msgid "Selskab / CVR"
 msgstr ""
 
 #: indberetning/templates/indberetning/indberetning_form.html
-msgid "Skematype:"
+#: indberetning/templates/indberetning/indberetning_list.html
+msgid "Skematype"
 msgstr ""
 
 #: indberetning/templates/indberetning/indberetning_form.html
@@ -295,7 +296,7 @@ msgid "Ingen afgift"
 msgstr ""
 
 #: indberetning/templates/indberetning/indberetning_list.html
-msgid "Vis indberetninger for:"
+msgid "Vis indberetninger for"
 msgstr ""
 
 #: indberetning/templates/indberetning/indberetning_list.html
@@ -321,10 +322,6 @@ msgstr ""
 
 #: indberetning/templates/indberetning/indberetning_list.html
 msgid "Indberetter CPR"
-msgstr ""
-
-#: indberetning/templates/indberetning/indberetning_list.html
-msgid "Skematype"
 msgstr ""
 
 #: indberetning/templates/indberetning/indberetning_list.html
@@ -363,19 +360,19 @@ msgid ""
 msgstr ""
 
 #: indberetning/templates/indberetning/virksomhed_form.html
-msgid "Kontaktperson:"
+msgid "Kontaktperson"
 msgstr ""
 
 #: indberetning/templates/indberetning/virksomhed_form.html
-msgid "Kontakt email:"
+msgid "Kontakt email"
 msgstr ""
 
 #: indberetning/templates/indberetning/virksomhed_form.html
-msgid "Telefonnummer:"
+msgid "Telefonnummer"
 msgstr ""
 
 #: indberetning/templates/indberetning/virksomhed_form.html
-msgid "Virksomhedens hjemsted:"
+msgid "Virksomhedens hjemsted"
 msgstr ""
 
 #: indberetning/templates/indberetning/virksomhed_form.html
