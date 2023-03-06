@@ -69,6 +69,10 @@ class ProduktTypeCreateForm(forms.ModelForm, BootstrapForm):
             "fiskeart",
             "fartoej_groenlandsk",
             "gruppe",
+            "aktivitetskode_indhandling",
+            "aktivitetskode_havgående",
+            "aktivitetskode_kystnært",
+            "aktivitetskode_svalbard",
         )
 
         widgets = {
@@ -88,7 +92,17 @@ class ProduktTypeCreateForm(forms.ModelForm, BootstrapForm):
 class ProduktTypeUpdateForm(forms.ModelForm, BootstrapForm):
     class Meta:
         model = ProduktType
-        fields = ("navn_dk", "navn_gl", "beskrivelse", "fartoej_groenlandsk", "gruppe")
+        fields = (
+            "navn_dk",
+            "navn_gl",
+            "beskrivelse",
+            "fartoej_groenlandsk",
+            "gruppe",
+            "aktivitetskode_indhandling",
+            "aktivitetskode_havgående",
+            "aktivitetskode_kystnært",
+            "aktivitetskode_svalbard",
+        )
 
         widgets = {
             "navn_dk": forms.TextInput(),

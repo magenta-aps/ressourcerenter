@@ -157,16 +157,16 @@ class ProduktType(NamedModel):
         choices=((x, x) for x in ("havgående", "indhandling", "kystnært", "svalbard")),
     )
     aktivitetskode_indhandling = models.PositiveIntegerField(
-        null=True, validators=[MaxValueValidator(999999)]
+        null=True, validators=[MaxValueValidator(99999)]
     )
     aktivitetskode_havgående = models.PositiveIntegerField(
-        null=True, validators=[MaxValueValidator(999999)]
+        null=True, validators=[MaxValueValidator(99999)]
     )
     aktivitetskode_kystnært = models.PositiveIntegerField(
-        null=True, validators=[MaxValueValidator(999999)]
+        null=True, validators=[MaxValueValidator(99999)]
     )
     aktivitetskode_svalbard = models.PositiveIntegerField(
-        null=True, validators=[MaxValueValidator(999999)]
+        null=True, blank=True, validators=[MaxValueValidator(99999)]
     )
     ordering = models.PositiveSmallIntegerField(default=0)
 
@@ -221,6 +221,16 @@ class ProduktType(NamedModel):
         return [groups[x] for x in sorted(groups)] + [
             non_group_items[x] for x in sorted(non_group_items)
         ]
+
+    @staticmethod
+    def by_fiskearter(as_uuid=False):
+        map = {}
+        for produkttype in ProduktType.objects.all().select_related("fiskeart"):
+            fiskeart_uuid = str(produkttype.fiskeart.uuid)
+            if fiskeart_uuid not in map:
+                map[fiskeart_uuid] = []
+            map[fiskeart_uuid].append(str(produkttype.uuid) if as_uuid else produkttype)
+        return map
 
     @staticmethod
     def create_satstabelelementer(

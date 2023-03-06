@@ -247,7 +247,13 @@ class ProduktTypeCreateView(CreateView):
         return kwargs
 
     def get_context_data(self, **kwargs):
-        return super().get_context_data(**{**kwargs, "creating": True})
+        return super().get_context_data(
+            **{
+                **kwargs,
+                "creating": True,
+                "fiskeart_map": ProduktType.by_fiskearter(as_uuid=True),
+            }
+        )
 
 
 class ProduktTypeUpdateView(UpdateView):
@@ -256,6 +262,15 @@ class ProduktTypeUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse("administration:produkttype-list")
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(
+            **{
+                **kwargs,
+                "creating": False,
+                "fiskeart_map": ProduktType.by_fiskearter(as_uuid=True),
+            }
+        )
 
 
 class ProduktTypeListView(ListView):
