@@ -12,6 +12,12 @@
     {% endblocktranslate %}
 </p>
 
+<p class="help">
+    {% blocktranslate %}
+    I hvert felt kan man holde ctrl/cmd nede og klikke på valgmulighederne for at vælge flere ad gangen.
+    {% endblocktranslate %}
+</p>
+
 <form method="post" id="statistikform">
     {% csrf_token %}
     <div id="statistik-form" class="mb-3 collapse {% if not form.is_valid %}show{% endif %}">
