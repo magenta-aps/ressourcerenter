@@ -49,7 +49,9 @@ class Frontpage(RedirectView):
                 created = False
                 virksomhed = Virksomhed.objects.get(cvr=cvr)
 
-            virksomhed_navn = self.request.session["user_info"]["organizationname"]
+            virksomhed_navn = self.request.session["user_info"].get(
+                "organizationname", f"CVR {cvr}"
+            )
             if virksomhed.navn is None:
                 virksomhed.navn = virksomhed_navn
                 virksomhed.save(update_fields=["navn"])
