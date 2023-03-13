@@ -325,6 +325,7 @@
                 const fields = item.find("input,select");
                 fields.val("");
                 fields.trigger("change");
+                item.find('.autocalc-afgift-dest, .autocalc-sats-dest').text("");
             } else {
                 item.remove();
                 const form_idx = $('input[name=linje-TOTAL_FORMS]').val();

@@ -640,10 +640,10 @@ class Prisme10QBatch(models.Model):
                     "password": settings.PRISME_PUSH["password"],
                     "known_hosts": settings.PRISME_PUSH["known_hosts"],
                 }
-                filename_10q = "KAS_10Q_export_{}.10q".format(
+                filename_10q = "RES_10Q_export_{}.10q".format(
                     timezone.now().strftime("%Y-%m-%dT%H-%M-%S")
                 )
-                filename_g69 = "KAS_G69_export_{}.g69".format(
+                filename_g69 = "RES_G69_export_{}.g69".format(
                     timezone.now().strftime("%Y-%m-%dT%H-%M-%S")
                 )
                 put_file_in_prisme_folder(
