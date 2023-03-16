@@ -4,7 +4,12 @@ from decimal import Decimal, ROUND_HALF_EVEN
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import (
+    MinValueValidator,
+    MaxValueValidator,
+    MinLengthValidator,
+    RegexValidator,
+)
 from django.db import models
 from django.db.models import Max
 from django.db.models.signals import pre_save, post_save, m2m_changed
@@ -96,6 +101,20 @@ class FiskeArt(NamedModel):
     history = HistoricalRecords()
     kode = models.PositiveSmallIntegerField(
         null=True, validators=[MaxValueValidator(99)]
+    )
+    # Vi skal kunne acceptere foranstillede nuller, så BigIntegerField er ikke nok
+    g69_overstyringskode = models.CharField(
+        max_length=15,
+        validators=[
+            MinLengthValidator(15),
+            RegexValidator(
+                r"^\d+\Z",
+                message=_("Enter a valid integer."),
+                code="invalid",
+            ),
+        ],
+        null=False,
+        default="241126242040197",
     )
 
     @staticmethod
@@ -768,16 +787,35 @@ class Faktura(models.Model):
         # hvis det er 4 kvartal, så skal dato være 31.12.2022
         posteringsdato = self.opkrævningsdato or self.betalingsdato
 
-        return writer.serialize_transaction_pair(
-            maskinnr=int(static_data["user_number"]),
-            eks_løbenr=self.id,
-            post_dato=posteringsdato,
-            kontonr=G69Code.for_indberetningslinje(linje).kode_int,
-            beløb=self.beløb,
-            is_cvr=True,
-            ydelse_modtager=int(linje.indberetning.virksomhed.cvr),
-            posteringstekst=tekst[:35],
-            ekstern_reference=str(self.id),
+        data = {
+            "maskinnr": int(static_data["user_number"]),
+            "eks_løbenr": self.id,
+            "post_dato": posteringsdato,
+            "beløb": self.beløb,
+            "is_cvr": True,
+            "ydelse_modtager": int(linje.indberetning.virksomhed.cvr),
+            "posteringstekst": tekst[:35],
+            "ekstern_reference": str(self.id),
+        }
+
+        normal_kode = G69Code.for_indberetningslinje(linje).kode_int
+        overstyringskode = int(linje.produkttype.fiskeart.g69_overstyringskode)
+
+        return "\r\n".join(
+            [
+                writer.serialize_transaction(
+                    post_type="NOR",
+                    is_debet=True,
+                    kontonr=overstyringskode if self.beløb >= 0 else normal_kode,
+                    **data,
+                ),
+                writer.serialize_transaction(
+                    post_type="NOR",
+                    is_debet=False,
+                    kontonr=overstyringskode if self.beløb < 0 else normal_kode,
+                    **data,
+                ),
+            ]
         )
 
     @property

@@ -112,8 +112,9 @@
     </div>
 </div>
 
-{% with linje=object.linje %}
 <div class="row">
+
+    {% with linje=object.linje %}
     <div class="col-4">
         <h2>{% translate 'Indberetningslinje' %}</h2>
         <table class="table table-bordered table-sm">
@@ -161,7 +162,24 @@
         </tbody>
         </table>
     </div>
+    {% endwith %}
+
+    <div class="col-4">
+        <h2>{% translate 'G69-data' %}</h2>
+        {% for g69_line in g69 %}
+        <table class="table table-bordered table-sm">
+            <tbody>
+            {% for key, value in g69_line.items %}
+            <tr>
+                <th>{{key}}</th>
+                <td>{{value}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% endfor %}
+    </div>
+
 </div>
-{% endwith %}
 
 {% endblock %}

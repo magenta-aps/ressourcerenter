@@ -18,6 +18,8 @@ from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext as _
 from django.utils.functional import cached_property
 from django.http.response import FileResponse, HttpResponse
+from tenQ.writer import G69TransactionWriter
+
 
 from datetime import timedelta
 from tenQ.client import ClientException
@@ -392,6 +394,17 @@ class FakturaDetailView(DetailView):
     template_name = "administration/faktura_detail.html"
     model = Faktura
 
+    @property
+    def g69data(self):
+        g69transactionwriter = G69TransactionWriter(
+            registreringssted=0, organisationsenhed=0
+        )
+        raw_string = self.object.prismeG69_content(g69transactionwriter)
+        return [
+            {part[0:3]: part[3:] for part in raw_substring.split("&")}
+            for raw_substring in raw_string.split("\r\n")
+        ]
+
     def get_context_data(self, **kwargs):
         return super().get_context_data(
             **{
@@ -399,6 +412,7 @@ class FakturaDetailView(DetailView):
                 "destinations_available": settings.PRISME_PUSH[
                     "destinations_available"
                 ],
+                "g69": self.g69data,
             }
         )
 
