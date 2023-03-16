@@ -48,7 +48,14 @@ class AfgiftsperiodeForm(forms.ModelForm, BootstrapForm):
 class FiskeArtForm(forms.ModelForm, BootstrapForm):
     class Meta:
         model = FiskeArt
-        fields = ("navn_dk", "navn_gl", "beskrivelse", "skematype", "pelagisk")
+        fields = (
+            "navn_dk",
+            "navn_gl",
+            "beskrivelse",
+            "skematype",
+            "pelagisk",
+            "g69_overstyringskode",
+        )
 
         widgets = {
             "navn_dk": forms.TextInput(),
