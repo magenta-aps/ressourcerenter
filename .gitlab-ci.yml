@@ -130,10 +130,10 @@ Generate documentation:
     entrypoint: ["/bin/sh", "-c"]
   script:
     - cd manual
-    - pandoc manual.md -V geometry:margin=30mm --output=manual.pdf
+    - pandoc manual.md -V geometry:margin=30mm --output=administration-manual.pdf
   artifacts:
     paths:
-      - manual/manual.pdf
+      - manual/administration-manual.pdf
 
 
 # Release stage

@@ -53,7 +53,7 @@ services:
     volumes:
       - ./manual/:/data
     # options for the -V parameter: https://pandoc.org/MANUAL.html#templates
-    command: [ "manual.md", "-V", "geometry:margin=30mm", "-o", "manual.pdf" ]
+    command: [ "manual.md", "-V", "geometry:margin=30mm", "-o", "administration-manual.pdf" ]
 
   ressourcerenter-test-idp:
     user: "1000:1000"

@@ -6,5 +6,5 @@ docker-compose.override.yml
 *.mo
 data/*
 !data/.gitkeep
-manual/manual.pdf
+manual/administration-manual.pdf
 .java/

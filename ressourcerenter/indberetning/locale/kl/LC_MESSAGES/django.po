@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-16 11:45+0000\n"
+"POT-Creation-Date: 2023-03-21 08:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -114,6 +114,10 @@ msgstr "Sullissivik.gl-ip saqqaanut uterit"
 #: indberetning/templates/indberetning/indberetning_list.html
 msgid "Indberetninger"
 msgstr "Nalunaarutiginnittarnerit"
+
+#: indberetning/templates/indberetning/base.html
+msgid "Brugervejledning"
+msgstr ""
 
 #: indberetning/templates/indberetning/base.html
 #, python-format
