@@ -405,6 +405,10 @@ class FakturaDetailView(DetailView):
             for raw_substring in raw_string.split("\r\n")
         ]
 
+    @property
+    def tenQdata(self):
+        return self.object.tenQtransactionwriter.parse(self.object.prisme10Q_content)
+
     def get_context_data(self, **kwargs):
         return super().get_context_data(
             **{
@@ -413,6 +417,7 @@ class FakturaDetailView(DetailView):
                     "destinations_available"
                 ],
                 "g69": self.g69data,
+                "tenQ": self.tenQdata,
             }
         )
 
