@@ -730,7 +730,7 @@ class Faktura(models.Model):
     )
 
     @property
-    def prisme10Q_content(self):
+    def tenQtransactionwriter(self):
         if settings.PRISME_PUSH["mock"]:
             static_data = {
                 "project_id": "ALIS",
@@ -751,7 +751,11 @@ class Faktura(models.Model):
             bruger_nummer=static_data["user_number"],
             betal_art=static_data["payment_type"],
             opkraev_date=self.opkrævningsdato or self.betalingsdato,
-        ).serialize_transaction(
+        )
+
+    @property
+    def prisme10Q_content(self):
+        return self.tenQtransactionwriter.serialize_transaction(
             cpr_nummer=self.virksomhed.cvr,
             amount_in_dkk=int(floor(self.beløb)),
             afstem_noegle=str(self.pk),

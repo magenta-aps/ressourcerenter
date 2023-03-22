@@ -180,6 +180,22 @@
         {% endfor %}
     </div>
 
+    <div class="col-4">
+        <h2>{% translate '10Q-data' %}</h2>
+        {% for tenQ_line in tenQ %}
+        <table class="table table-bordered table-sm">
+            <tbody>
+            {% for key, value in tenQ_line.items %}
+            <tr>
+                <th class="col-5">{{key}}</th>
+                <td>{{value}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% endfor %}
+    </div>
+
 </div>
 
 {% endblock %}
