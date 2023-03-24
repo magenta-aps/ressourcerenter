@@ -116,6 +116,11 @@ class FiskeArt(NamedModel):
         null=False,
         default="241126242040197",
     )
+    betalingsart = models.IntegerField(
+        validators=[MinValueValidator(100), MaxValueValidator(999)],
+        null=False,
+        default=100,
+    )
 
     @staticmethod
     def create_satstabelelementer(sender, instance, **kwargs):
@@ -749,7 +754,7 @@ class Faktura(models.Model):
             faktura_no=self.id,
             leverandoer_ident=static_data["project_id"],
             bruger_nummer=static_data["user_number"],
-            betal_art=static_data["payment_type"],
+            betal_art=self.linje.produkttype.fiskeart.betalingsart,
             opkraev_date=self.opkrævningsdato or self.betalingsdato,
         )
 
@@ -795,9 +800,8 @@ class Faktura(models.Model):
             "maskinnr": int(static_data["user_number"]),
             "eks_løbenr": self.id,
             "post_dato": posteringsdato,
-            "beløb": self.beløb,
             "is_cvr": True,
-            "ydelse_modtager": int(linje.indberetning.virksomhed.cvr),
+            "ydelse_modtager": linje.indberetning.virksomhed.cvr,
             "posteringstekst": tekst[:35],
             "ekstern_reference": str(self.id),
         }
@@ -811,12 +815,14 @@ class Faktura(models.Model):
                     post_type="NOR",
                     is_debet=True,
                     kontonr=overstyringskode if self.beløb >= 0 else normal_kode,
+                    beløb=self.beløb,
                     **data,
                 ),
                 writer.serialize_transaction(
                     post_type="NOR",
                     is_debet=False,
                     kontonr=overstyringskode if self.beløb < 0 else normal_kode,
+                    beløb=self.beløb.copy_negate(),
                     **data,
                 ),
             ]
@@ -942,7 +948,7 @@ class G69Code(models.Model):
         while produkttype.gruppe:
             produkttype = produkttype.gruppe
         return G69Code(
-            år=indberetningslinje.indberetningstidspunkt.year,
+            år=indberetningslinje.indberetning.afgiftsperiode.dato_fra.year,
             produkttype=produkttype,
             sted=sted,
             fangsttype=indberetningslinje.fangsttype,

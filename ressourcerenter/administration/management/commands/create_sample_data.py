@@ -75,7 +75,7 @@ class Command(BaseCommand):
                         for fiskeart in fiskearter:
                             for produkttype in fiskeart.produkttype_set.all():
                                 for i in range(1, random.randint(1, 10)):
-                                    x = random.randint(10, 50)
+                                    x = random.randint(-20, 50)
                                     IndberetningLinje.objects.create(
                                         indberetning=indberetning,
                                         fartøj_navn=random.choice(fartoejer),
@@ -113,7 +113,7 @@ class Command(BaseCommand):
                             for fiskeart in fiskearter:
                                 for produkttype in fiskeart.produkttype_set.all():
                                     for i in range(1, random.randint(1, 10)):
-                                        x = random.randint(10, 50)
+                                        x = random.randint(-20, 50)
                                         IndberetningLinje.objects.create(
                                             indberetning=indberetning,
                                             fartøj_navn=random.choice(fartoejer),
@@ -144,7 +144,7 @@ class Command(BaseCommand):
                         for fiskeart in skematype.fiskeart_set.all():
                             for produkttype in fiskeart.produkttype_set.all():
                                 for i in range(1, random.randint(1, 10)):
-                                    x = random.randint(10, 50)
+                                    x = random.randint(-20, 50)
                                     IndberetningLinje.objects.create(
                                         indberetning=indberetning,
                                         indhandlingssted=sted,
