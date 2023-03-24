@@ -55,6 +55,7 @@ class FiskeArtForm(forms.ModelForm, BootstrapForm):
             "skematype",
             "pelagisk",
             "g69_overstyringskode",
+            "betalingsart",
         )
 
         widgets = {
