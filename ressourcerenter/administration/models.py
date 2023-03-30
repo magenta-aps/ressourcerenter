@@ -195,6 +195,7 @@ class ProduktType(NamedModel):
         validators=[MaxValueValidator(99999)],
     )
     ordering = models.PositiveSmallIntegerField(default=0)
+    g69_use_aktivitetskode_as_fiskeartskode = models.BooleanField(default=False)
 
     @property
     def available_fangsttyper(self):
@@ -913,12 +914,23 @@ class G69Code(models.Model):
             self.update_kode()
 
     def update_kode(self):
+        år = str(self.år).zfill(2)[-2:]
+        stedkode = str(self.sted.stedkode)[-6:].zfill(6)
+        fiskeartskode = str(self.produkttype.fiskeart.kode)[-2:].zfill(2)
+        aktivitetskode = str(self.produkttype.get_aktivitetskode(self.fangsttype))[
+            -5:
+        ].zfill(5)
+
+        # Mode 30.03.2023: fiskeartskode for rejer i g69 skal følge aktivitetskode
+        if self.produkttype.g69_use_aktivitetskode_as_fiskeartskode:
+            fiskeartskode = aktivitetskode[-2:]
+
         self.kode = "".join(
             [
-                str(self.år).zfill(2)[-2:],
-                str(self.sted.stedkode)[-6:].zfill(6),
-                str(self.produkttype.fiskeart.kode)[-2:].zfill(2),
-                str(self.produkttype.get_aktivitetskode(self.fangsttype))[-5:].zfill(5),
+                år,
+                stedkode,
+                fiskeartskode,
+                aktivitetskode,
             ]
         )
 
@@ -1010,10 +1022,15 @@ class G69Code(models.Model):
                 "grønlandsk": G69Code._yesnoblank(item.produkttype.fartoej_groenlandsk),
             }
             if collapse:
-                if row["kode"] not in collapsed_data:
-                    collapsed_data[row["kode"]] = row
+                kode = row["kode"]
+                if kode not in collapsed_data:
+                    collapsed_data[kode] = row
                 else:
-                    collapsed_data[row["kode"]]["fangsttype"] = ""
+                    for name, value in row.items():
+                        if str(value) not in str(collapsed_data[kode][name]):
+                            collapsed_data[kode][
+                                name
+                            ] = f"{collapsed_data[kode][name]} + {value}"
             else:
                 data.append(row)
 
