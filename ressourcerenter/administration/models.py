@@ -181,16 +181,18 @@ class ProduktType(NamedModel):
         choices=((x, x) for x in ("havgående", "indhandling", "kystnært", "svalbard")),
     )
     aktivitetskode_indhandling = models.PositiveIntegerField(
-        null=True, validators=[MaxValueValidator(99999)]
+        null=True, validators=[MaxValueValidator(99999)], blank=True
     )
     aktivitetskode_havgående = models.PositiveIntegerField(
-        null=True, validators=[MaxValueValidator(99999)]
+        null=True, validators=[MaxValueValidator(99999)], blank=True
     )
     aktivitetskode_kystnært = models.PositiveIntegerField(
-        null=True, validators=[MaxValueValidator(99999)]
+        null=True, validators=[MaxValueValidator(99999)], blank=True
     )
     aktivitetskode_svalbard = models.PositiveIntegerField(
-        null=True, blank=True, validators=[MaxValueValidator(99999)]
+        null=True,
+        blank=True,
+        validators=[MaxValueValidator(99999)],
     )
     ordering = models.PositiveSmallIntegerField(default=0)
 

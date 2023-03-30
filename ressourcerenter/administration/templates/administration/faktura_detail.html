@@ -39,7 +39,7 @@
     </div>
 
     <div class="col-4">
-        <h2>{% translate 'Virksomhed' %}</h2>
+        <h2><a href="{% url 'administration:virksomhed-update' object.virksomhed.uuid %}">{% translate 'Virksomhed' %}</a></h2>
         <table class="table table-bordered table-sm">
             <tbody>
             <tr>
@@ -116,7 +116,7 @@
 
     {% with linje=object.linje %}
     <div class="col-4">
-        <h2>{% translate 'Indberetningslinje' %}</h2>
+        <h2><a href="{% url 'administration:indberetning-detail' linje.indberetning.uuid %}">{% translate 'Indberetningslinje' %}</a></h2>
         <table class="table table-bordered table-sm">
             <tbody>
             <tr>
