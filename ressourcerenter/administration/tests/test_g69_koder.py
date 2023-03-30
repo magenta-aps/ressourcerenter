@@ -686,7 +686,29 @@ class G69KodeTestCase(G69TestCase):
                 "grønlandsk": "",
             },
             {
-                "kode": "22" + "010769" + "12" + "10012",
+                "kode": "220107691210012",
+                "skatteår": 2022,
+                "fangsttype": "indhandling",
+                "aktivitet_kode": "010012",
+                "fiskeart_navn": "Reje - havgående licens",
+                "fiskeart_kode": 11,
+                "sted_navn": "Innaarsuit",
+                "sted_kode": 10769,
+                "grønlandsk": "",
+            },
+            {
+                "kode": "220107691210012",
+                "skatteår": 2022,
+                "fangsttype": "indhandling",
+                "aktivitet_kode": "010012",
+                "fiskeart_navn": "Reje - kystnær licens",
+                "fiskeart_kode": 12,
+                "sted_navn": "Innaarsuit",
+                "sted_kode": 10769,
+                "grønlandsk": "",
+            },
+            {
+                "kode": "220107691210012",
                 "skatteår": 2022,
                 "fangsttype": "kystnært",
                 "aktivitet_kode": "010012",
@@ -697,12 +719,23 @@ class G69KodeTestCase(G69TestCase):
                 "grønlandsk": "",
             },
             {
-                "kode": "22" + "010769" + "13" + "10014",
+                "kode": "220107691210012",
+                "skatteår": 2022,
+                "fangsttype": "indhandling",
+                "aktivitet_kode": "010012",
+                "fiskeart_navn": "Reje - Svalbard og Barentshavet",
+                "fiskeart_kode": 14,
+                "sted_navn": "Innaarsuit",
+                "sted_kode": 10769,
+                "grønlandsk": "",
+            },
+            {
+                "kode": "22" + "010769" + "14" + "10014",
                 "skatteår": 2022,
                 "fangsttype": "svalbard",
                 "aktivitet_kode": "010014",
                 "fiskeart_navn": "Reje - Svalbard og Barentshavet",
-                "fiskeart_kode": 13,
+                "fiskeart_kode": 14,
                 "sted_navn": "Innaarsuit",
                 "sted_kode": 10769,
                 "grønlandsk": "",
@@ -713,7 +746,10 @@ class G69KodeTestCase(G69TestCase):
         raw_data = G69Code.get_spreadsheet_raw(2022)
         self.assertListEqual(raw_data["headers"], expected_headers)
         for item in expected_data_subset:
-            self.assertIn(item, raw_data["data"])
+            if item not in raw_data["data"]:
+                closest = [x for x in raw_data["data"] if x["kode"] == item["kode"]]
+                print(closest)
+                self.fail(f"{item} not found")
 
     def test_csv(self):
         self.client.login(username=self.username, password=self.password)
@@ -730,7 +766,7 @@ class G69KodeTestCase(G69TestCase):
         wb = load_workbook(filename=BytesIO(response.getvalue()))
         ws = wb.active
         self.assertEqual(ws.max_column, 9)
-        self.assertEqual(ws.max_row, 2887)
+        self.assertEqual(ws.max_row, 2665)
 
         # Koder er unikke og sorterede
         expected = [
@@ -748,7 +784,7 @@ class G69KodeTestCase(G69TestCase):
             [
                 "22" + "010769" + "01" + "10021",
                 "2022",
-                None,
+                "havgående + indhandling + kystnært",
                 "010021",
                 "Makrel",
                 1,
@@ -759,7 +795,7 @@ class G69KodeTestCase(G69TestCase):
             [
                 "22" + "010769" + "01" + "10022",
                 "2022",
-                None,
+                "havgående + indhandling + kystnært",
                 "010022",
                 "Makrel",
                 1,
@@ -770,7 +806,7 @@ class G69KodeTestCase(G69TestCase):
             [
                 "22" + "010769" + "02" + "10023",
                 "2022",
-                None,
+                "havgående + indhandling + kystnært",
                 "010023",
                 "Sild",
                 2,
@@ -781,7 +817,7 @@ class G69KodeTestCase(G69TestCase):
             [
                 "22" + "010769" + "02" + "10024",
                 "2022",
-                None,
+                "havgående + indhandling + kystnært",
                 "010024",
                 "Sild",
                 2,
@@ -792,7 +828,7 @@ class G69KodeTestCase(G69TestCase):
             [
                 "22" + "010769" + "03" + "10025",
                 "2022",
-                None,
+                "havgående + indhandling + kystnært",
                 "010025",
                 "Lodde",
                 3,
@@ -803,7 +839,7 @@ class G69KodeTestCase(G69TestCase):
             [
                 "22" + "010769" + "03" + "10026",
                 "2022",
-                None,
+                "havgående + indhandling + kystnært",
                 "010026",
                 "Lodde",
                 3,
@@ -814,7 +850,7 @@ class G69KodeTestCase(G69TestCase):
             [
                 "22" + "010769" + "04" + "10038",
                 "2022",
-                None,
+                "havgående + indhandling + kystnært",
                 "010038",
                 "Blåhvilling",
                 4,
@@ -825,7 +861,7 @@ class G69KodeTestCase(G69TestCase):
             [
                 "22" + "010769" + "04" + "10039",
                 "2022",
-                None,
+                "havgående + indhandling + kystnært",
                 "010039",
                 "Blåhvilling",
                 4,
@@ -836,7 +872,7 @@ class G69KodeTestCase(G69TestCase):
             [
                 "22" + "010769" + "05" + "10040",
                 "2022",
-                None,
+                "havgående + indhandling + kystnært",
                 "010040",
                 "Guldlaks",
                 5,
@@ -847,7 +883,7 @@ class G69KodeTestCase(G69TestCase):
             [
                 "22" + "010769" + "05" + "10041",
                 "2022",
-                None,
+                "havgående + indhandling + kystnært",
                 "010041",
                 "Guldlaks",
                 5,
@@ -988,45 +1024,23 @@ class G69KodeTestCase(G69TestCase):
                 None,
             ],
             [
-                "22" + "010769" + "11" + "10012",
-                "2022",
-                "indhandling",
-                "010012",
-                "Reje - havgående licens",
-                11,
-                "Innaarsuit",
-                10769,
-                None,
-            ],
-            [
                 "22" + "010769" + "12" + "10012",
                 "2022",
-                None,
+                "indhandling + kystnært",
                 "010012",
-                "Reje - kystnær licens",
-                12,
+                "Reje - havgående licens + Reje - kystnær licens + Reje - Svalbard og Barentshavet",
+                "11 + 12 + 14",
                 "Innaarsuit",
                 10769,
                 None,
             ],
             [
-                "22" + "010769" + "13" + "10012",
-                "2022",
-                "indhandling",
-                "010012",
-                "Reje - Svalbard og Barentshavet",
-                13,
-                "Innaarsuit",
-                10769,
-                None,
-            ],
-            [
-                "22" + "010769" + "13" + "10014",
+                "22" + "010769" + "14" + "10014",
                 "2022",
                 "svalbard",
                 "010014",
                 "Reje - Svalbard og Barentshavet",
-                13,
+                14,
                 "Innaarsuit",
                 10769,
                 None,
@@ -1036,4 +1050,5 @@ class G69KodeTestCase(G69TestCase):
         self.maxDiff = None
         actual = [[cell.value for cell in ws[row]] for row in range(1, ws.max_row + 1)]
         for item in expected:
-            self.assertIn(item, actual)
+            if item not in actual:
+                self.fail(f"{item} not found")
