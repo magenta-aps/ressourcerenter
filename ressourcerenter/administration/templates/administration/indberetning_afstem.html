@@ -86,6 +86,12 @@
                                                     <td>
                                                         <a class="btn {% if faktura.batch.status == 'failed' %}btn-warning{% else %}btn-primary{% endif %}"
                                                            href="{% url 'administration:faktura-detail' faktura.pk %}">{% translate 'Se detaljer' %}</a>
+
+                                                        {# Good for debugging locally #}
+                                                        {# <form action="{% url 'administration:faktura-delete' faktura.pk %}" method="post"> #}
+                                                        {#     {% csrf_token %}<button class="btn btn-danger">Slet</button> #}
+                                                        {# </form> #}
+
                                                     </td>
                                                 {% else %}
                                                     <td>

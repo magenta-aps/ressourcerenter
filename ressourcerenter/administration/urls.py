@@ -45,6 +45,8 @@ from administration.views import (
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 
+from administration.views import FakturaDeleteView
+
 app_name = AdministrationConfig.name
 
 urlpatterns = [
@@ -136,6 +138,7 @@ urlpatterns = [
     ),
     path("faktura/<int:pk>", FakturaDetailView.as_view(), name="faktura-detail"),
     path("faktura/<int:pk>/send", FakturaSendView.as_view(), name="faktura-send"),
+    path("faktura/<int:pk>/delete", FakturaDeleteView.as_view(), name="faktura-delete"),
     path("virksomhed/", VirksomhedListView.as_view(), name="virksomhed-list"),
     path("virksomhed/create", VirksomhedCreateView.as_view(), name="virksomhed-create"),
     path(

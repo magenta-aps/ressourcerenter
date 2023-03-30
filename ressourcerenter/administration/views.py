@@ -13,7 +13,7 @@ from django.views.generic import RedirectView
 from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic import CreateView, UpdateView
 from django.views.generic.detail import SingleObjectMixin, BaseDetailView
-from django.views.generic.edit import BaseFormView
+from django.views.generic.edit import BaseFormView, DeleteView
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext as _
 from django.utils.functional import cached_property
@@ -478,6 +478,11 @@ class VirksomhedRepræsentantStopView(RedirectView):
             except KeyError:
                 pass
         return reverse("administration:virksomhed-list")
+
+
+class FakturaDeleteView(DeleteView):
+    model = Faktura
+    success_url = reverse_lazy("administration:indberetningslinje-list")
 
 
 class FakturaCreateView(CreateView):

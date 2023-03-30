@@ -218,14 +218,17 @@ class IndberetningLinje(models.Model):
         produkttype = self.produkttype
         while produkttype.gruppe is not None:
             produkttype = produkttype.gruppe
-        if produkttype.fangsttype:
-            return produkttype.fangsttype
+
         skematype = self.indberetning.skematype
+        if skematype.id == 2:
+            # Hvis skematype 2, brug ikke produkttype
+            return "indhandling"
+        if produkttype.fangsttype:
+            # Lad produkttyper som definerer en fangsttype (fx. rejer) overstyre
+            return produkttype.fangsttype
         if skematype.id == 1:
             return "havgående"
-        elif skematype.id == 2:
-            return "indhandling"
-        elif skematype.id == 3:
+        if skematype.id == 3:
             return "kystnært"
 
     @property
