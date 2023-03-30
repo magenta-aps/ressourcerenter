@@ -730,7 +730,7 @@ class G69KodeTestCase(G69TestCase):
         wb = load_workbook(filename=BytesIO(response.getvalue()))
         ws = wb.active
         self.assertEqual(ws.max_column, 9)
-        self.assertEqual(ws.max_row, 2665)
+        self.assertEqual(ws.max_row, 2887)
 
         # Koder er unikke og sorterede
         expected = [
@@ -988,12 +988,34 @@ class G69KodeTestCase(G69TestCase):
                 None,
             ],
             [
+                "22" + "010769" + "11" + "10012",
+                "2022",
+                "indhandling",
+                "010012",
+                "Reje - havgående licens",
+                11,
+                "Innaarsuit",
+                10769,
+                None,
+            ],
+            [
                 "22" + "010769" + "12" + "10012",
                 "2022",
-                "kystnært",
+                None,
                 "010012",
                 "Reje - kystnær licens",
                 12,
+                "Innaarsuit",
+                10769,
+                None,
+            ],
+            [
+                "22" + "010769" + "13" + "10012",
+                "2022",
+                "indhandling",
+                "010012",
+                "Reje - Svalbard og Barentshavet",
+                13,
                 "Innaarsuit",
                 10769,
                 None,
