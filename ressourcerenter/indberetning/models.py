@@ -248,6 +248,22 @@ class IndberetningLinje(models.Model):
             self.salgspris = round(self.salgspris, 0)
         return super().save(*args, **kwargs)
 
+    @property
+    def is_negative(self):
+        return any(
+            [
+                True
+                for field in [
+                    "produktvægt",
+                    "levende_vægt",
+                    "salgspris",
+                    "transporttillæg",
+                    "bonus",
+                ]
+                if getattr(self, field) is not None and getattr(self, field) < 0
+            ]
+        )
+
     class Meta:
         ordering = ("produkttype__navn_dk",)
 

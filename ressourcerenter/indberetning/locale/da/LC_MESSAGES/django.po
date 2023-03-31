@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-31 10:31+0000\n"
+"POT-Creation-Date: 2023-03-31 10:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,6 +22,12 @@ msgstr ""
 msgid ""
 "Produktvægt, levende vægt og salgspris skal alle være negative eller "
 "positive tal"
+msgstr ""
+
+#: indberetning/forms.py
+msgid ""
+"Negative indberetningslinjer skal have fartøjsnavn/indhandlingssted der "
+"matcher med en positiv indberetningslinje"
 msgstr ""
 
 #: indberetning/forms.py

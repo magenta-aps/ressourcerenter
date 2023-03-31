@@ -153,6 +153,27 @@ class IndberetningsLinjeForm(BootstrapForm, IndberetningsLinjeBeregningForm):
             "kommentar",
         )
 
+    @property
+    def is_negative(self):
+        return (
+            self.is_bound
+            and self.cleaned_data
+            and any(
+                [
+                    True
+                    for field in [
+                        "produktvægt",
+                        "levende_vægt",
+                        "salgspris",
+                        "transporttillæg",
+                        "bonus",
+                    ]
+                    if self.cleaned_data[field] is not None
+                    and self.cleaned_data[field] < 0
+                ]
+            )
+        )
+
 
 class NonPelagiskPrisRequired:
     def clean(self):
@@ -171,6 +192,51 @@ class NonPelagiskPrisRequired:
 class IndberetningBaseFormset(BaseInlineFormSet):
     def clean(self):
         super().clean()
+        errors = []
+        for function in (
+            self.validate_stedkode,
+            self.validate_sum_positive,
+        ):
+            try:
+                function()
+            except ValidationError as e:
+                errors.append(e)
+        if errors:
+            raise ValidationError(errors)
+
+    def validate_stedkode(self):
+        fields = (
+            "fartøj_navn",
+            "indhandlingssted",
+        )
+        existing = {f: set() for f in fields}
+        # Find navne i eksisterende positive linjer og subforms
+        for linje in self.instance.linjer.all():
+            if not linje.is_negative:
+                for field in fields:
+                    value = getattr(linje, field, None)
+                    if value is not None:
+                        existing[field].add(value)
+        for form in self.forms:
+            if not form.is_negative:
+                for field in fields:
+                    value = form.cleaned_data.get(field, None)
+                    if value is not None:
+                        existing[field].add(value)
+        for form in self.forms:
+            if form.is_negative:
+                for field in fields:
+                    if field in form.cleaned_data:
+                        value = form.cleaned_data[field]
+                        if value not in existing[field]:
+                            raise ValidationError(
+                                _(
+                                    "Negative indberetningslinjer skal have fartøjsnavn/"
+                                    "indhandlingssted der matcher med en positiv indberetningslinje"
+                                )
+                            )
+
+    def validate_sum_positive(self):
         fields = (
             "produktvægt",
             "levende_vægt",
