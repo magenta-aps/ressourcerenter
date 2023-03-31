@@ -2,6 +2,11 @@
 {% load i18n %}
 {% load static %}
 {% block content %}
+{% if form.non_form_errors %}
+    {% for error in form.non_form_errors %}
+    <div class="alert alert-danger">{{ error }}</div>
+    {% endfor %}
+{% endif %}
 {% if edit_mode %}
 <h2>{% blocktranslate with tidspunkt=object.indberetningstidspunkt|date:"SHORT_DATE_FORMAT" %}Tidligere Indberetninger fra {{tidspunkt}}{% endblocktranslate %}</h2>
 <div class="table-responsive">

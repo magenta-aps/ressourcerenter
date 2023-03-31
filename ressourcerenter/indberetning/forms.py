@@ -1,6 +1,6 @@
 from administration.models import Afgiftsperiode, ProduktType, SkemaType
 from django.core.exceptions import ValidationError
-from django.forms import ModelChoiceField, CharField, FileField
+from django.forms import ModelChoiceField, CharField, FileField, BaseInlineFormSet
 from django.forms import ModelForm, modelformset_factory
 from django.forms import Select, Textarea, FileInput
 from django.utils import timezone
@@ -166,6 +166,36 @@ class NonPelagiskPrisRequired:
                         code="required",
                     )
         return cleaned_data
+
+
+class IndberetningBaseFormset(BaseInlineFormSet):
+    def clean(self):
+        super().clean()
+        fields = (
+            "produktvægt",
+            "levende_vægt",
+            "salgspris",
+            "transporttillæg",
+            "bonus",
+        )
+        sums = {f: 0 for f in fields}
+        if self.instance:
+            for existing_linje in self.instance.linjer.all():
+                for field in fields:
+                    value = getattr(existing_linje, field) or 0
+                    sums[field] += value
+        for form in self.forms:
+            for field in fields:
+                value = form.cleaned_data.get(field) or 0
+                sums[field] += value
+        for field in fields:
+            if sums[field] < 0:
+                raise ValidationError(
+                    _(
+                        "Summen af tal i hvert felt i indberetningen må ikke være negativt, "
+                        "dvs. indberetningen som helhed må kun have en positiv sum i alle felter."
+                    )
+                )
 
 
 class IndberetningsLinjeSkema1Form(NonPelagiskPrisRequired, IndberetningsLinjeForm):

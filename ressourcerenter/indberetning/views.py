@@ -31,6 +31,7 @@ from indberetning.forms import (
     IndberetningBeregningForm,
     IndberetningsLinjeBeregningForm,
     IndberetningSearchForm,
+    IndberetningBaseFormset,
 )
 from indberetning.models import Indberetning, Virksomhed, IndberetningLinje, Bilag
 from project.views_mixin import Trunc
@@ -163,6 +164,7 @@ class IndberetningsLinjebilagFormsetMixin:
             parent_model=Indberetning,
             model=IndberetningLinje,
             form=self.get_linje_form(),
+            formset=IndberetningBaseFormset,
             can_delete=False,
             validate_min=True,
             extra=1,
