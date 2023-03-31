@@ -818,14 +818,14 @@ class Faktura(models.Model):
                     post_type="NOR",
                     is_debet=True,
                     kontonr=overstyringskode if self.beløb >= 0 else normal_kode,
-                    beløb=self.beløb,
+                    beløb=self.beløb.copy_abs(),
                     **data,
                 ),
                 writer.serialize_transaction(
                     post_type="NOR",
                     is_debet=False,
                     kontonr=overstyringskode if self.beløb < 0 else normal_kode,
-                    beløb=self.beløb.copy_negate(),
+                    beløb=self.beløb.copy_abs(),
                     **data,
                 ),
             ]
