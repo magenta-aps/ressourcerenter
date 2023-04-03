@@ -206,11 +206,9 @@ Deploy test:
   # Automatic deployment of branch master to test
   stage: deploy
   when: manual
-  only:
-    refs:
-      - master
   extends:
     - .saltbert
+    - .rules:semver-all
   variables:
     SALTBERT_ORCHESTRATION: ressourcerenter.service-test
     SALTBERT_URL: https://ctrldev1.magenta-aps.dk
