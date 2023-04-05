@@ -139,33 +139,17 @@ Generate documentation:
 # Release stage
 ###############
 
-.release-aalisakkat:
+Release image:
   stage: release
   image: alpine
-  needs:
-    - Unittest
+  needs: ["Unittest"]
   variables:
     GIT_STRATEGY: none # We do not need the source code
   dependencies: []
-  before_script:
-    # install skopeo
-    - apk add skopeo
-
-Release dev image:
   extends:
-    - .release-aalisakkat
     - .rules:semver-all
-  script:
-    - skopeo copy
-      --src-creds=${CI_REGISTRY_USER}:${CI_BUILD_TOKEN}
-      --dest-creds=${RELEASE_REGISTRY_USER}:${RELEASE_REGISTRY_PASSWORD}
-      "docker://${IMAGE_SHA}"
-      "docker://${IMAGE_DEV}"
-
-Release production image:
-  extends:
-    - .release-aalisakkat
-    - .rules:semver-core
+  before_script:
+    - apk add skopeo
   script:
     - skopeo copy
       --src-creds=${CI_REGISTRY_USER}:${CI_BUILD_TOKEN}
@@ -182,7 +166,7 @@ Configure test:
   extends:
     - .rules:semver-all
     - .config:endpoint-with-tag
-  needs: ["Release dev image"]
+  needs: ["Release image"]
   variables:
     # Matches routing in config-updater/config_updater/ressourcerenter/main.py in salt repo
     ENDPOINT: ressourcerenter/salt/update-test
@@ -193,7 +177,7 @@ Configure production:
   extends:
     - .rules:semver-core
     - .config:endpoint-with-tag
-  needs: ["Release production image"]
+  needs: ["Release image"]
   variables:
     # Matches routing in config-updater/config_updater/ressourcerenter/main.py in salt repo
     ENDPOINT: ressourcerenter/salt/update-production
@@ -208,6 +192,7 @@ Deploy test:
   variables:
     SALTBERT_ORCHESTRATION: ressourcerenter.service-test
     SALTBERT_URL: https://ctrldev1.magenta-aps.dk
+  needs: ["Release image", "Configure test"]
   environment:
     name: test
     url: "https://test.aalisakkat.aka.sullissivik.gl"
@@ -222,7 +207,7 @@ Deploy production:
   variables:
     SALTBERT_ORCHESTRATION: ressourcerenter.service-prod
     SALTBERT_URL: https://ctrl1.magenta-aps.dk
-  needs: ["Release production image", "Configure production"]
+  needs: ["Release image", "Configure production"]
   environment:
     name: production
     url: "https://aalisakkat.aka.sullissivik.gl"
