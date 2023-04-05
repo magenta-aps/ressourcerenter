@@ -759,6 +759,7 @@ class Faktura(models.Model):
             bruger_nummer=static_data["user_number"],
             betal_art=self.linje.produkttype.fiskeart.betalingsart,
             opkraev_date=self.opkrævningsdato or self.betalingsdato,
+            omraade_nummer=0,
         )
 
     @property
