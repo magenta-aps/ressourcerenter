@@ -154,9 +154,7 @@ Generate documentation:
 Release dev image:
   extends:
     - .release-aalisakkat
-  only:
-    refs:
-      - master
+    - .rules:semver-all
   script:
     - skopeo copy
       --src-creds=${CI_REGISTRY_USER}:${CI_BUILD_TOKEN}
@@ -179,16 +177,15 @@ Release production image:
 # Deploy stage
 ##############
 
-# We roll master out to test, so no need to update config
-#Configure test:
-#  stage: deploy
-#  extends:
-#    - .rules:semver-all
-#    - .config:endpoint-with-tag
-#  needs: ["Release dev image"]
-#  variables:
-#    # Matches routing in config-updater/config_updater/ressourcerenter/main.py in salt repo
-#    ENDPOINT: ressourcerenter/salt/update-test
+Configure test:
+  stage: deploy
+  extends:
+    - .rules:semver-all
+    - .config:endpoint-with-tag
+  needs: ["Release dev image"]
+  variables:
+    # Matches routing in config-updater/config_updater/ressourcerenter/main.py in salt repo
+    ENDPOINT: ressourcerenter/salt/update-test
 
 
 Configure production:
@@ -203,7 +200,6 @@ Configure production:
 
 
 Deploy test:
-  # Automatic deployment of branch master to test
   stage: deploy
   when: manual
   extends:
