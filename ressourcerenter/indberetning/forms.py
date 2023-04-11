@@ -205,33 +205,46 @@ class IndberetningBaseFormset(BaseInlineFormSet):
         if errors:
             raise ValidationError(errors)
 
+    def get_existing_data(
+        self, fields, qs=None, only_negative=False, only_positive=False
+    ):
+        if self.instance is None:
+            return []
+        if qs is None:
+            qs = self.instance.linjer.all()
+        return [
+            {field: getattr(linje, field) for field in fields if hasattr(linje, field)}
+            for linje in qs
+            if (not only_negative or linje.is_negative)
+            and (not only_positive or not linje.is_negative)
+        ]
+
+    def get_form_data(
+        self, fields, default=None, only_negative=False, only_positive=False
+    ):
+        return [
+            {field: form.cleaned_data.get(field) or default for field in fields}
+            for form in self.forms
+            if (not only_negative or form.is_negative)
+            and (not only_positive or not form.is_negative)
+        ]
+
     def validate_stedkode(self):
         fields = (
             "fartøj_navn",
             "indhandlingssted",
             "produkttype",
         )
-        existing = []
-        # Find navne i eksisterende positive linjer og subforms
-        for linje in self.instance.linjer.all():
-            if not linje.is_negative:
-                existing.append(
-                    {field: getattr(linje, field, None) for field in fields}
-                )
-        for form in self.forms:
-            if not form.is_negative:
-                existing.append(
-                    {field: form.cleaned_data.get(field, None) for field in fields}
-                )
-        for form in self.forms:
-            if form.is_negative:
-                data = {field: form.cleaned_data.get(field, None) for field in fields}
-                if data not in existing:
+        existing_data = self.get_existing_data(
+            fields, only_positive=True
+        ) + self.get_form_data(fields, only_positive=True)
+        new_data = self.get_form_data(fields, only_negative=True)
+        for data in new_data:
+            if data not in existing_data:
                     raise ValidationError(
                         _(
-                            "Rettelse af allerede indberettede indberetningslinjer "
-                            "skal have fartøjsnavn/indhandlingssted, som den oprindelige "
-                            "indberetningslinje."
+                            "Negative indberetningslinjer skal have fartøjsnavn, indhandlingssted "
+                            "og produkttype der matcher med en positiv indberetningslinje"
                         )
                     )
 
@@ -243,16 +256,8 @@ class IndberetningBaseFormset(BaseInlineFormSet):
             "transporttillæg",
             "bonus",
         )
-        sums = {f: 0 for f in fields}
-        if self.instance:
-            for existing_linje in self.instance.linjer.all():
-                for field in fields:
-                    value = getattr(existing_linje, field) or 0
-                    sums[field] += value
-        for form in self.forms:
-            for field in fields:
-                value = form.cleaned_data.get(field) or 0
-                sums[field] += value
+        data = self.get_existing_data(fields) + self.get_form_data(fields, 0)
+        sums = {f: sum([d.get(f) or 0 for d in data]) for f in fields}
         for field in fields:
             if sums[field] < 0:
                 raise ValidationError(
@@ -277,28 +282,11 @@ class IndberetningBaseFormset(BaseInlineFormSet):
             "bonus",
         )
         items = []
-        if self.instance:
-            for existing_linje in self.instance.linjer.all():
-                found_item = None
-                for item in items:
-                    if all(
-                        [
-                            item[field] == getattr(existing_linje, field, None)
-                            for field in id_fields
-                        ]
-                    ):
-                        found_item = item
-                if found_item is None:
-                    found_item = {
-                        field: getattr(existing_linje, field, None)
-                        for field in id_fields
-                    }
-                    found_item.update({field: 0 for field in amount_fields})
-                    items.append(found_item)
-                for field in amount_fields:
-                    found_item[field] += getattr(existing_linje, field) or 0
-        for form in self.forms:
-            data = form.cleaned_data
+        input_data = self.get_existing_data(
+            id_fields + amount_fields
+        ) + self.get_form_data(id_fields + amount_fields)
+
+        for data in input_data:
             found_item = None
             for item in items:
                 if all([item[field] == data.get(field, None) for field in id_fields]):
@@ -309,6 +297,7 @@ class IndberetningBaseFormset(BaseInlineFormSet):
                 items.append(found_item)
             for field in amount_fields:
                 found_item[field] += data.get(field) or 0
+
         for item in items:
             for field in amount_fields:
                 if item[field] < 0:
@@ -349,6 +338,7 @@ class IndberetningsLinjeSkema1Form(NonPelagiskPrisRequired, IndberetningsLinjeFo
             attrs={
                 "class": "js-boat-select form-control col-2 ",
                 "autocomplete": "off",
+                "style": "width:100%",
             }
         )
     )
@@ -402,6 +392,7 @@ class IndberetningsLinjeSkema2Form(NonPelagiskPrisRequired, IndberetningsLinjeFo
             attrs={
                 "class": "js-boat-select form-control col-2",
                 "autocomplete": "off",
+                "style": "width:100%",
             }
         )
     )
