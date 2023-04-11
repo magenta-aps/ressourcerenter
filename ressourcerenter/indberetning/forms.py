@@ -208,33 +208,30 @@ class IndberetningBaseFormset(BaseInlineFormSet):
         fields = (
             "fartøj_navn",
             "indhandlingssted",
+            "produkttype",
         )
-        existing = {f: set() for f in fields}
+        existing = []
         # Find navne i eksisterende positive linjer og subforms
         for linje in self.instance.linjer.all():
             if not linje.is_negative:
-                for field in fields:
-                    value = getattr(linje, field, None)
-                    if value is not None:
-                        existing[field].add(value)
+                existing.append(
+                    {field: getattr(linje, field, None) for field in fields}
+                )
         for form in self.forms:
             if not form.is_negative:
-                for field in fields:
-                    value = form.cleaned_data.get(field, None)
-                    if value is not None:
-                        existing[field].add(value)
+                existing.append(
+                    {field: form.cleaned_data.get(field, None) for field in fields}
+                )
         for form in self.forms:
             if form.is_negative:
-                for field in fields:
-                    if field in form.cleaned_data:
-                        value = form.cleaned_data[field]
-                        if value not in existing[field]:
-                            raise ValidationError(
-                                _(
-                                    "Negative indberetningslinjer skal have fartøjsnavn/"
-                                    "indhandlingssted der matcher med en positiv indberetningslinje"
-                                )
-                            )
+                data = {field: form.cleaned_data.get(field, None) for field in fields}
+                if data not in existing:
+                    raise ValidationError(
+                        _(
+                            "Negative indberetningslinjer skal have fartøjsnavn, indhandlingssted "
+                            "og produkttype der matcher med en positiv indberetningslinje"
+                        )
+                    )
 
     def validate_sum_positive(self):
         fields = (
