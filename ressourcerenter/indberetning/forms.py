@@ -196,6 +196,7 @@ class IndberetningBaseFormset(BaseInlineFormSet):
         for function in (
             self.validate_stedkode,
             self.validate_sum_positive,
+            self.validate_compartmentalized_sums,
         ):
             try:
                 function()
@@ -261,6 +262,73 @@ class IndberetningBaseFormset(BaseInlineFormSet):
                         "positiv sum eller nulstilling."
                     )
                 )
+
+    def validate_compartmentalized_sums(self):
+        id_fields = (
+            "fartøj_navn",
+            "indhandlingssted",
+            "produkttype",
+        )
+        amount_fields = (
+            "produktvægt",
+            "levende_vægt",
+            "salgspris",
+            "transporttillæg",
+            "bonus",
+        )
+        items = []
+        if self.instance:
+            for existing_linje in self.instance.linjer.all():
+                found_item = None
+                for item in items:
+                    if all(
+                        [
+                            item[field] == getattr(existing_linje, field, None)
+                            for field in id_fields
+                        ]
+                    ):
+                        found_item = item
+                if found_item is None:
+                    found_item = {
+                        field: getattr(existing_linje, field, None)
+                        for field in id_fields
+                    }
+                    found_item.update({field: 0 for field in amount_fields})
+                    items.append(found_item)
+                for field in amount_fields:
+                    found_item[field] += getattr(existing_linje, field) or 0
+        for form in self.forms:
+            data = form.cleaned_data
+            found_item = None
+            for item in items:
+                if all([item[field] == data.get(field, None) for field in id_fields]):
+                    found_item = item
+            if found_item is None:
+                found_item = {field: data.get(field, None) for field in id_fields}
+                found_item.update({field: 0 for field in amount_fields})
+                items.append(found_item)
+            for field in amount_fields:
+                found_item[field] += data.get(field) or 0
+        for item in items:
+            for field in amount_fields:
+                if item[field] < 0:
+                    raise ValidationError(
+                        _(
+                            "Summen af tal i hvert felt i indberetningen for en "
+                            "indhandling/fartøj/produkttype må ikke være negativ. "
+                            "Summen af feltet %(field)s for %(item)s er negativt",
+                        ),
+                        params={
+                            "field": field.replace("_", " "),
+                            "item": ", ".join(
+                                [
+                                    str(item[field])
+                                    for field in id_fields
+                                    if item[field] is not None
+                                ]
+                            ),
+                        },
+                    )
 
 
 class IndberetningsLinjeSkema1Form(NonPelagiskPrisRequired, IndberetningsLinjeForm):

@@ -45,6 +45,14 @@ msgstr ""
 "iussapput."
 
 #: indberetning/forms.py
+#, python-format
+msgid ""
+"Summen af tal i hvert felt i indberetningen for en indhandling/fartøj/"
+"produkttype må ikke være negativ. Summen af feltet %(field)s for %(item)s er "
+"negativt"
+msgstr ""
+
+#: indberetning/forms.py
 msgid "Alle perioder"
 msgstr "Piffissat tamarmiusut"
 
