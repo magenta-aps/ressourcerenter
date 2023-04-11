@@ -257,7 +257,7 @@ class IndberetningBaseFormset(BaseInlineFormSet):
             "bonus",
         )
         data = self.get_existing_data(fields) + self.get_form_data(fields, 0)
-        sums = {f: sum([d.get(f) or 0 for d in data]) for f in fields}
+        sums = {field: sum([d.get(field) or 0 for d in data]) for field in fields}
         for field in fields:
             if sums[field] < 0:
                 raise ValidationError(
