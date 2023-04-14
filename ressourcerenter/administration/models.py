@@ -1,6 +1,11 @@
 import logging
 from datetime import date
 from decimal import Decimal, ROUND_HALF_EVEN
+from io import BytesIO
+from itertools import chain
+from math import ceil, floor
+from uuid import uuid4
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
@@ -15,16 +20,12 @@ from django.db.models import Max
 from django.db.models.signals import pre_save, post_save, m2m_changed
 from django.utils import timezone
 from django.utils.translation import gettext as _, get_language
-from io import BytesIO
-from itertools import chain
-from math import ceil, floor
 from openpyxl import Workbook
 from project.dateutil import quarter_number, month_last_date, quarter_last_month
 from simple_history.models import HistoricalRecords
 from tenQ.client import put_file_in_prisme_folder, ClientException
 from tenQ.writer import G69TransactionWriter
 from tenQ.writer import TenQTransactionWriter
-from uuid import uuid4
 
 logger = logging.getLogger(__name__)
 
@@ -314,6 +315,10 @@ class Afgiftsperiode(NamedModel):
     @property
     def kvartal_nummer(self):
         return ceil(self.dato_fra.month / 3)
+
+    @property
+    def år(self):
+        return self.dato_fra.year
 
 
 class SatsTabelElement(models.Model):
@@ -783,8 +788,9 @@ class Faktura(models.Model):
             }
         else:
             static_data = settings.PRISME_PUSH["fielddata"]
-        tidtekst = _("{kvartal}. kvartal").format(
-            kvartal=linje.indberetning.afgiftsperiode.kvartal_nummer
+        periode = linje.indberetning.afgiftsperiode
+        tidtekst = "{kvartal}. kvartal {år}".format(
+            kvartal=periode.kvartal_nummer, år=periode.år
         )
         tekst = ", ".join(
             filter(
@@ -826,7 +832,7 @@ class Faktura(models.Model):
                     post_type="NOR",
                     is_debet=False,
                     kontonr=overstyringskode if self.beløb < 0 else normal_kode,
-                    beløb=self.beløb.copy_abs(),
+                    beløb=self.beløb.copy_abs().copy_negate(),
                     **data,
                 ),
             ]

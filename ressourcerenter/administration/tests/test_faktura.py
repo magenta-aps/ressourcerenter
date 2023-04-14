@@ -1,10 +1,11 @@
+from datetime import date
+from datetime import datetime
+from decimal import Decimal
+
 from administration.models import Afgiftsperiode, ProduktType, SkemaType, Faktura
 from administration.models import BeregningsModel2021
 from administration.models import FiskeArt
 from administration.models import SatsTabelElement
-from datetime import date
-from datetime import datetime
-from decimal import Decimal
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from indberetning.models import Indhandlingssted
@@ -104,6 +105,6 @@ class FakturaTestCase(TestCase):
         )
         self.assertEquals(
             faktura.prismeG69_content(writer),
-            "000G6900001000001NORFLYD&10300000&1040000001&11020220321&111241126242040197&112000000100000 &113D&13203&13312345678&153Makrel, 1. kvartal&2501\r\n"
-            "000G6900002000001NORFLYD&10300000&1040000001&11020220321&111220104600110022&112000000100000 &113K&13203&13312345678&153Makrel, 1. kvartal&2501",
+            "000G6900001000001NORFLYD&10300000&1040000001&11020220321&111241126242040197&112000000100000 &113D&13203&13312345678&153Makrel, 1. kvartal 2022&2501\r\n"
+            "000G6900002000001NORFLYD&10300000&1040000001&11020220321&111220104600110022&112000000100000-&113K&13203&13312345678&153Makrel, 1. kvartal 2022&2501",
         )
