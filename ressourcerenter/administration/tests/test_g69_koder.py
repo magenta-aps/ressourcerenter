@@ -157,13 +157,13 @@ class G69KodeTestCase(G69TestCase):
                 "Hellefisk - Indhandling fra kystnært",
                 None,
                 skematype_indhandling,
-                10013,
+                10012,
             ),
             (
                 "Hellefisk - Indhandling fra havgående",
                 None,
                 skematype_indhandling,
-                10013,
+                10011,
             ),
             ("Hellefisk", None, skematype_kystnær, 10012),
             ("Makrel", True, skematype_havgående, 10021),
@@ -587,10 +587,10 @@ class G69KodeTestCase(G69TestCase):
                 "grønlandsk": "",
             },
             {
-                "kode": "22" + "010769" + "06" + "10013",
+                "kode": "22" + "010769" + "06" + "10011",
                 "skatteår": 2022,
                 "fangsttype": "indhandling",
-                "aktivitet_kode": "010013",
+                "aktivitet_kode": "010011",
                 "fiskeart_navn": "Hellefisk - Indhandling fra havgående",
                 "fiskeart_kode": 6,
                 "sted_navn": "Innaarsuit",
@@ -598,10 +598,10 @@ class G69KodeTestCase(G69TestCase):
                 "grønlandsk": "",
             },
             {
-                "kode": "22" + "010769" + "06" + "10013",
+                "kode": "22" + "010769" + "06" + "10012",
                 "skatteår": 2022,
                 "fangsttype": "indhandling",
-                "aktivitet_kode": "010013",
+                "aktivitet_kode": "010012",
                 "fiskeart_navn": "Hellefisk - Indhandling fra kystnært",
                 "fiskeart_kode": 6,
                 "sted_navn": "Innaarsuit",
@@ -788,7 +788,7 @@ class G69KodeTestCase(G69TestCase):
         wb = load_workbook(filename=BytesIO(response.getvalue()))
         ws = wb.active
         self.assertEqual(ws.max_column, 9)
-        self.assertEqual(ws.max_row, 2665)
+        self.assertEqual(ws.max_row, 2554)
 
         # Koder er unikke og sorterede
         expected = [
@@ -916,9 +916,9 @@ class G69KodeTestCase(G69TestCase):
             [
                 "22" + "010769" + "06" + "10011",
                 "2022",
-                "havgående",
+                "havgående + indhandling",
                 "010011",
-                "Hellefisk",
+                "Hellefisk + Hellefisk - Indhandling fra havgående",
                 6,
                 "Innaarsuit",
                 10769,
@@ -927,20 +927,9 @@ class G69KodeTestCase(G69TestCase):
             [
                 "22" + "010769" + "06" + "10012",
                 "2022",
-                "kystnært",
+                "kystnært + indhandling",
                 "010012",
-                "Hellefisk",
-                6,
-                "Innaarsuit",
-                10769,
-                None,
-            ],
-            [
-                "22" + "010769" + "06" + "10013",
-                "2022",
-                "indhandling",
-                "010013",
-                "Hellefisk - Indhandling fra havgående + Hellefisk - Indhandling fra kystnært",
+                "Hellefisk + Hellefisk - Indhandling fra kystnært",
                 6,
                 "Innaarsuit",
                 10769,
