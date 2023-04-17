@@ -163,7 +163,7 @@ class G69KodeTestCase(G69TestCase):
                 "Hellefisk - Indhandling fra havgående",
                 None,
                 skematype_indhandling,
-                10011,
+                10013,
             ),
             ("Hellefisk", None, skematype_kystnær, 10012),
             ("Makrel", True, skematype_havgående, 10021),
@@ -578,6 +578,17 @@ class G69KodeTestCase(G69TestCase):
             {
                 "kode": "22" + "010769" + "06" + "10012",
                 "skatteår": 2022,
+                "fangsttype": "indhandling",
+                "aktivitet_kode": "010012",
+                "fiskeart_navn": "Hellefisk - Indhandling fra kystnært",
+                "fiskeart_kode": 6,
+                "sted_navn": "Innaarsuit",
+                "sted_kode": 10769,
+                "grønlandsk": "",
+            },
+            {
+                "kode": "22" + "010769" + "06" + "10012",
+                "skatteår": 2022,
                 "fangsttype": "kystnært",
                 "aktivitet_kode": "010012",
                 "fiskeart_navn": "Hellefisk",
@@ -587,22 +598,11 @@ class G69KodeTestCase(G69TestCase):
                 "grønlandsk": "",
             },
             {
-                "kode": "22" + "010769" + "06" + "10011",
+                "kode": "22" + "010769" + "06" + "10013",
                 "skatteår": 2022,
                 "fangsttype": "indhandling",
-                "aktivitet_kode": "010011",
+                "aktivitet_kode": "010013",
                 "fiskeart_navn": "Hellefisk - Indhandling fra havgående",
-                "fiskeart_kode": 6,
-                "sted_navn": "Innaarsuit",
-                "sted_kode": 10769,
-                "grønlandsk": "",
-            },
-            {
-                "kode": "22" + "010769" + "06" + "10012",
-                "skatteår": 2022,
-                "fangsttype": "indhandling",
-                "aktivitet_kode": "010012",
-                "fiskeart_navn": "Hellefisk - Indhandling fra kystnært",
                 "fiskeart_kode": 6,
                 "sted_navn": "Innaarsuit",
                 "sted_kode": 10769,
@@ -770,8 +770,7 @@ class G69KodeTestCase(G69TestCase):
         for item in expected_data_subset:
             if item not in raw_data["data"]:
                 closest = [x for x in raw_data["data"] if x["kode"] == item["kode"]]
-                print(closest)
-                self.fail(f"{item} not found")
+                self.fail(f"{item} not found, closest: {closest}")
 
     def test_csv(self):
         self.client.login(username=self.username, password=self.password)
@@ -788,7 +787,7 @@ class G69KodeTestCase(G69TestCase):
         wb = load_workbook(filename=BytesIO(response.getvalue()))
         ws = wb.active
         self.assertEqual(ws.max_column, 9)
-        self.assertEqual(ws.max_row, 2554)
+        self.assertEqual(ws.max_row, 2665)
 
         # Koder er unikke og sorterede
         expected = [
@@ -916,9 +915,9 @@ class G69KodeTestCase(G69TestCase):
             [
                 "22" + "010769" + "06" + "10011",
                 "2022",
-                "havgående + indhandling",
+                "havgående",
                 "010011",
-                "Hellefisk + Hellefisk - Indhandling fra havgående",
+                "Hellefisk",
                 6,
                 "Innaarsuit",
                 10769,
@@ -930,6 +929,17 @@ class G69KodeTestCase(G69TestCase):
                 "kystnært + indhandling",
                 "010012",
                 "Hellefisk + Hellefisk - Indhandling fra kystnært",
+                6,
+                "Innaarsuit",
+                10769,
+                None,
+            ],
+            [
+                "22" + "010769" + "06" + "10013",
+                "2022",
+                "indhandling",
+                "010013",
+                "Hellefisk - Indhandling fra havgående",
                 6,
                 "Innaarsuit",
                 10769,
@@ -1061,5 +1071,6 @@ class G69KodeTestCase(G69TestCase):
         self.maxDiff = None
         actual = [[cell.value for cell in ws[row]] for row in range(1, ws.max_row + 1)]
         for item in expected:
+            closest = [e for e in actual if e[0] == item[0]]
             if item not in actual:
-                self.fail(f"{item} not found")
+                self.fail(f"{item} not found, closest: {closest}")
