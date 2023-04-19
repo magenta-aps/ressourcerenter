@@ -104,6 +104,7 @@
             <th>{% translate 'Afgiftssats' %}</th>
             <th>{% translate 'Beregnet afgift (kr)' %}</th>
             <th>{% translate 'Kommentar' %}</th>
+            <th>{% translate 'Ratenummer' %}</th>
         </tr>
         </thead>
         <tbody>
@@ -128,6 +129,7 @@
                     {{ subform.uuid }}
                     {{ subform.kommentar }}
                 </td>
+                <td class="text-right">{{ linje.ratenummer }}</td>
             </tr>
         {% endwith %}
         {% endfor %}

@@ -774,7 +774,7 @@ class Faktura(models.Model):
             amount_in_dkk=int(floor(self.beløb)),
             afstem_noegle=str(self.pk),
             rate_text=self.text,
-            rate_nummer=self.periode.kvartal_nummer,
+            rate_nummer=self.linje.ratenummer,
         )
 
     def prismeG69_content(self, writer):

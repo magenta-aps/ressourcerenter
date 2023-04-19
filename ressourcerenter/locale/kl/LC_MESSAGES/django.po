@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-11 06:32+0000\n"
+"POT-Creation-Date: 2023-04-19 07:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -142,11 +142,6 @@ msgstr ""
 #: administration/models.py
 msgid "Produktionssystem"
 msgstr ""
-
-#: administration/models.py
-#, python-brace-format
-msgid "{kvartal}. kvartal"
-msgstr "{kvartal}. ukiup sisamararterutaa"
 
 #: administration/models.py administration/views.py
 msgid "G69-Kode"
@@ -394,6 +389,10 @@ msgstr ""
 #: administration/templates/administration/faktura_detail.html
 #: administration/templates/administration/indberetning_detail.html
 msgid "Total beregnet afgift (kr)"
+msgstr ""
+
+#: administration/templates/administration/faktura_detail.html
+msgid "Fakturanummer"
 msgstr ""
 
 #: administration/templates/administration/faktura_detail.html
@@ -792,6 +791,10 @@ msgstr ""
 
 #: administration/templates/administration/indberetning_detail.html
 msgid "Dato/tid"
+msgstr ""
+
+#: administration/templates/administration/indberetning_detail.html
+msgid "Ratenummer"
 msgstr ""
 
 #: administration/templates/administration/indberetning_detail.html

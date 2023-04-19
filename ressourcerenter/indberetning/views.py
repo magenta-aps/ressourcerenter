@@ -177,7 +177,9 @@ class IndberetningsLinjebilagFormsetMixin:
             {
                 "prefix": "linje",
                 "auto_id": False,
-                "form_kwargs": {"cvr": self.request.session["user_info"]["cvr"]},
+                "form_kwargs": {
+                    "cvr": self.request.session["user_info"]["cvr"],
+                },
             }
         )
         if "data" not in kwargs:

@@ -2,10 +2,10 @@ import logging
 import os
 from administration.models import SkemaType, Afgiftsperiode, ProduktType
 from django.contrib.auth import get_user_model
-from django.core.validators import MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, IntegrityError
-from django.db.models import Sum
-from django.db.models.signals import post_save
+from django.db.models import Sum, Max
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.utils.translation import gettext as _
 from indberetning.validators import validate_cvr, validate_cpr
@@ -199,6 +199,12 @@ class IndberetningLinje(models.Model):
         related_name="linje",
     )
 
+    ratenummer_counter = models.PositiveSmallIntegerField(
+        null=True,
+        default=None,
+        validators=[MaxValueValidator(99), MinValueValidator(0)],
+    )
+
     @property
     def afgift(self):
         return self.fangstafgift.afgift
@@ -264,6 +270,10 @@ class IndberetningLinje(models.Model):
             ]
         )
 
+    @property
+    def ratenummer(self):
+        return f"{self.indberetning.afgiftsperiode.kvartal_nummer}{str(self.ratenummer_counter).zfill(2)}"
+
     class Meta:
         ordering = ("produkttype__navn_dk",)
 
@@ -283,6 +293,56 @@ def calculate_afgift(sender, **kwargs):
         fangstafgift.save()
     except Exception as e:
         print(e)
+
+
+@receiver(
+    pre_save,
+    sender=IndberetningLinje,
+    dispatch_uid="indberetninglinje_set_ratenummer",
+)
+def set_ratenummer(sender, **kwargs):
+    indberetningslinje = kwargs["instance"]
+    indberetning = indberetningslinje.indberetning
+    if indberetningslinje.ratenummer_counter is None:
+        # Find relaterede indberetningslinjer, som har samme cvr, betalingsart og afgiftsperiode
+        # Disse udgør et "namespace" for os, indenfor hvilket kollisioner på ratenummer er relevant
+        relaterede = IndberetningLinje.objects.filter(
+            indberetning__virksomhed__cvr=indberetning.virksomhed.cvr,
+            produkttype__fiskeart__betalingsart=indberetningslinje.produkttype.fiskeart.betalingsart,
+            indberetning__afgiftsperiode=indberetning.afgiftsperiode,
+        ).exclude(pk=indberetningslinje.pk)
+
+        # Find linjer i samme indberetning som matcher på fartøj, indhandlingssted og produkttype
+        # Alle disse linjer, sammen med vores instance, skal have samme ratenummer
+        samme_data = relaterede.filter(
+            indberetning=indberetning,
+            fartøj_navn=indberetningslinje.fartøj_navn,
+            indhandlingssted=indberetningslinje.indhandlingssted,
+            produkttype=indberetningslinje.produkttype,
+        )
+        # Hvis et match har et ratenummer, brug det
+        har_ratenummer = samme_data.filter(ratenummer_counter__isnull=False).first()
+        if har_ratenummer:
+            ratenummer_counter = har_ratenummer.ratenummer_counter
+        else:
+            # Hvis ikke, find største brugte ratenummer blandt de
+            # relaterede, og brug det nummer der er 1 højere
+            max_used_ratenummer = relaterede.aggregate(Max("ratenummer_counter"))[
+                "ratenummer_counter__max"
+            ]
+            if max_used_ratenummer is None:
+                ratenummer_counter = 0
+            else:
+                if max_used_ratenummer >= 99:
+                    raise Exception(
+                        f"Ratenummer overstiger 99 for {indberetning.virksomhed.cvr}, "
+                        f"{indberetningslinje.produkttype.fiskeart.betalingsart}, {indberetning.afgiftsperiode}"
+                    )
+                ratenummer_counter = max_used_ratenummer + 1
+
+        # update() sender ikke signal om pre_save
+        samme_data.update(ratenummer_counter=ratenummer_counter)
+        indberetningslinje.ratenummer_counter = ratenummer_counter
 
 
 @receiver(post_save, sender=IndberetningLinje, dispatch_uid="indberetning_store_navne")
