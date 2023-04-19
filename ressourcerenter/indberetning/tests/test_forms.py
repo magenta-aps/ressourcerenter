@@ -1,14 +1,16 @@
 import uuid
+
 from django.test import TestCase, override_settings
 from indberetning.forms import IndberetningsTypeSelectForm
-from indberetning.forms import (
-    VirksomhedsAddressForm,
-    IndberetningsLinjeBeregningForm,
-    IndberetningsLinjeSkema1Form,
-    IndberetningsLinjeSkema2Form,
-    IndberetningsLinjeSkema3Form,
-)
-from indberetning.models import Afgiftsperiode, SkemaType, ProduktType, Indhandlingssted
+from indberetning.forms import VirksomhedsAddressForm
+from indberetning.forms import IndberetningsLinjeBeregningForm
+from indberetning.forms import IndberetningsLinjeSkema1Form
+from indberetning.forms import IndberetningsLinjeSkema2Form
+from indberetning.forms import IndberetningsLinjeSkema3Form
+from indberetning.models import Afgiftsperiode
+from indberetning.models import SkemaType
+from indberetning.models import ProduktType
+from indberetning.models import Indhandlingssted
 
 
 class CompanyContactTestForm(TestCase):
@@ -31,6 +33,7 @@ class CompanyContactTestForm(TestCase):
             "kontakt_person": "test",
             "kontakt_email": "test@test.test",
             "kontakts_phone_nr": "test",
+            "sted": Indhandlingssted.objects.first().uuid,
         }
         form = VirksomhedsAddressForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -80,8 +83,8 @@ class BeregningslinjeTests(TestCase):
     """
 
     def setUp(self) -> None:
-        self.produkttype = ProduktType.objects.create(
-            navn_dk="Blåhvilling, grønlandsk fartøj"
+        self.produkttype = ProduktType.objects.get(
+            navn_dk="Blåhvilling, grønlandsk fartøj",
         )
 
     def test_all_values_is_None(self):
@@ -101,11 +104,11 @@ class BeregningslinjeTests(TestCase):
         # Has all values
         form_data = {
             "produkttype": self.produkttype,
-            "produktvægt": 100,
-            "levende_vægt": 100,
-            "salgspris": 100,
-            "transporttillæg": 100,
-            "bonus": 100,
+            "produktvægt": "100",
+            "levende_vægt": "100",
+            "salgspris": "100",
+            "transporttillæg": "100",
+            "bonus": "100",
         }
         form = IndberetningsLinjeBeregningForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -114,11 +117,11 @@ class BeregningslinjeTests(TestCase):
         # Has all negative values
         form_data = {
             "produkttype": self.produkttype,
-            "produktvægt": -100,
-            "levende_vægt": -100,
-            "salgspris": -100,
-            "transporttillæg": -100,
-            "bonus": -100,
+            "produktvægt": "-100",
+            "levende_vægt": "-100",
+            "salgspris": "-100",
+            "transporttillæg": "-100",
+            "bonus": "-100",
         }
         form = IndberetningsLinjeBeregningForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -139,31 +142,31 @@ class BeregningslinjeTests(TestCase):
         # one of produktvægt, levende_vægt or salgspris is negative (invalid)
         form_data = {
             "produkttype": self.produkttype,
-            "produktvægt": -100,
-            "levende_vægt": 100,
-            "salgspris": 100,
-            "transporttillæg": 100,
-            "bonus": 100,
+            "produktvægt": "-100",
+            "levende_vægt": "100",
+            "salgspris": "100",
+            "transporttillæg": "100",
+            "bonus": "100",
         }
         form = IndberetningsLinjeBeregningForm(data=form_data)
         self.assertFalse(form.is_valid())
         form_data = {
             "produkttype": self.produkttype,
-            "produktvægt": 100,
-            "levende_vægt": -100,
-            "salgspris": 100,
-            "transporttillæg": 100,
-            "bonus": 100,
+            "produktvægt": "100",
+            "levende_vægt": "-100",
+            "salgspris": "100",
+            "transporttillæg": "100",
+            "bonus": "100",
         }
         form = IndberetningsLinjeBeregningForm(data=form_data)
         self.assertFalse(form.is_valid())
         form_data = {
             "produkttype": self.produkttype,
-            "produktvægt": 100,
-            "levende_vægt": 100,
-            "salgspris": -100,
-            "transporttillæg": 100,
-            "bonus": 100,
+            "produktvægt": "100",
+            "levende_vægt": "100",
+            "salgspris": "-100",
+            "transporttillæg": "100",
+            "bonus": "100",
         }
         form = IndberetningsLinjeBeregningForm(data=form_data)
         self.assertFalse(form.is_valid())
@@ -172,31 +175,31 @@ class BeregningslinjeTests(TestCase):
         # one of produktvægt, levende_vægt or salgspris is 0 (valid)
         form_data = {
             "produkttype": self.produkttype,
-            "produktvægt": 0,
-            "levende_vægt": 100,
-            "salgspris": 100,
-            "transporttillæg": 100,
-            "bonus": 100,
+            "produktvægt": "0",
+            "levende_vægt": "100",
+            "salgspris": "100",
+            "transporttillæg": "100",
+            "bonus": "100",
         }
         form = IndberetningsLinjeBeregningForm(data=form_data)
         self.assertTrue(form.is_valid())
         form_data = {
             "produkttype": self.produkttype,
-            "produktvægt": 100,
-            "levende_vægt": 0,
-            "salgspris": 100,
-            "transporttillæg": 100,
-            "bonus": 100,
+            "produktvægt": "100",
+            "levende_vægt": "0",
+            "salgspris": "100",
+            "transporttillæg": "100",
+            "bonus": "100",
         }
         form = IndberetningsLinjeBeregningForm(data=form_data)
         self.assertTrue(form.is_valid())
         form_data = {
             "produkttype": self.produkttype,
-            "produktvægt": 100,
-            "levende_vægt": 100,
-            "salgspris": 0,
-            "transporttillæg": 100,
-            "bonus": 100,
+            "produktvægt": "100",
+            "levende_vægt": "100",
+            "salgspris": "0",
+            "transporttillæg": "100",
+            "bonus": "100",
         }
         form = IndberetningsLinjeBeregningForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -205,7 +208,7 @@ class BeregningslinjeTests(TestCase):
 class IndberetningerTests(TestCase):
     def setUp(self) -> None:
         self.cvr = "12345678"
-        Indhandlingssted.objects.create(navn="test")
+        Indhandlingssted.objects.create(navn="test", stedkode="1234")
 
 
 class Indberetninger1Tests(IndberetningerTests):
@@ -227,9 +230,9 @@ class Indberetninger1Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "produktvægt": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "produktvægt": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema1Form(cvr=self.cvr, data=form_data)
@@ -240,10 +243,10 @@ class Indberetninger1Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": -100,
-            "transporttillæg": -100,
-            "produktvægt": -100,
-            "salgspris": -100,
+            "levende_vægt": "-100",
+            "transporttillæg": "-100",
+            "produktvægt": "-100",
+            "salgspris": "-100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema1Form(cvr=self.cvr, data=form_data)
@@ -254,11 +257,11 @@ class Indberetninger1Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "produktvægt": 100,
-            "salgspris": 100,
-            "dummy": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "produktvægt": "100",
+            "salgspris": "100",
+            "dummy": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema1Form(cvr=self.cvr, data=form_data)
@@ -266,11 +269,11 @@ class Indberetninger1Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "produktvægt": 100,
-            "salgspris": 100,
-            "dummy": -100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "produktvægt": "100",
+            "salgspris": "100",
+            "dummy": "-100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema1Form(cvr=self.cvr, data=form_data)
@@ -278,10 +281,10 @@ class Indberetninger1Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "produktvægt": 100,
-            "salgspris": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "produktvægt": "100",
+            "salgspris": "100",
             "dummy": "abc",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
@@ -290,10 +293,10 @@ class Indberetninger1Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "produktvægt": 100,
-            "salgspris": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "produktvægt": "100",
+            "salgspris": "100",
             "dummy": None,
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
@@ -302,10 +305,10 @@ class Indberetninger1Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "produktvægt": 100,
-            "salgspris": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "produktvægt": "100",
+            "salgspris": "100",
             "dummy": True,
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
@@ -317,10 +320,10 @@ class Indberetninger1Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": -100,
-            "transporttillæg": 100,
-            "produktvægt": 100,
-            "salgspris": 100,
+            "levende_vægt": "-100",
+            "transporttillæg": "100",
+            "produktvægt": "100",
+            "salgspris": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema1Form(cvr=self.cvr, data=form_data)
@@ -328,10 +331,10 @@ class Indberetninger1Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "produktvægt": -100,
-            "salgspris": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "produktvægt": "-100",
+            "salgspris": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema1Form(cvr=self.cvr, data=form_data)
@@ -339,10 +342,10 @@ class Indberetninger1Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "produktvægt": 100,
-            "salgspris": -100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "produktvægt": "100",
+            "salgspris": "-100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema1Form(cvr=self.cvr, data=form_data)
@@ -353,10 +356,10 @@ class Indberetninger1Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 0,
-            "transporttillæg": 0,
-            "produktvægt": 0,
-            "salgspris": 0,
+            "levende_vægt": "0",
+            "transporttillæg": "0",
+            "produktvægt": "0",
+            "salgspris": "0",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema1Form(cvr=self.cvr, data=form_data)
@@ -367,10 +370,10 @@ class Indberetninger1Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": "5.5",
-            "transporttillæg": "5.5",
-            "produktvægt": "5.5",
-            "salgspris": "5.5",
+            "levende_vægt": "5,5",
+            "transporttillæg": "5,5",
+            "produktvægt": "5,5",
+            "salgspris": "5,5",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema1Form(cvr=self.cvr, data=form_data)
@@ -382,9 +385,9 @@ class Indberetninger1Tests(IndberetningerTests):
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
             "levende_vægt": "abc",
-            "transporttillæg": 100,
-            "produktvægt": 100,
-            "salgspris": 100,
+            "transporttillæg": "100",
+            "produktvægt": "100",
+            "salgspris": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema1Form(cvr=self.cvr, data=form_data)
@@ -392,10 +395,10 @@ class Indberetninger1Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
+            "levende_vægt": "100",
             "transporttillæg": "abc",
-            "produktvægt": 100,
-            "salgspris": 100,
+            "produktvægt": "100",
+            "salgspris": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema1Form(cvr=self.cvr, data=form_data)
@@ -403,10 +406,10 @@ class Indberetninger1Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
             "produktvægt": "abc",
-            "salgspris": 100,
+            "salgspris": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema1Form(cvr=self.cvr, data=form_data)
@@ -414,9 +417,9 @@ class Indberetninger1Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "produktvægt": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "produktvægt": "100",
             "salgspris": "abc",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
@@ -428,7 +431,7 @@ class Indberetninger1Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": uuid.uuid4,
-            "levende_vægt": 100,
+            "levende_vægt": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema1Form(cvr=self.cvr, data=form_data)
@@ -439,7 +442,7 @@ class Indberetninger1Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
+            "levende_vægt": "100",
             "indhandlingssted": uuid.uuid4,
         }
         form = IndberetningsLinjeSkema1Form(cvr=self.cvr, data=form_data)
@@ -465,10 +468,10 @@ class Indberetninger2Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "produktvægt": 100,
-            "bonus": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "produktvægt": "100",
+            "bonus": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema2Form(cvr=self.cvr, data=form_data)
@@ -479,11 +482,11 @@ class Indberetninger2Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": -100,
-            "transporttillæg": -100,
-            "produktvægt": -100,
-            "bonus": -100,
-            "salgspris": -100,
+            "levende_vægt": "-100",
+            "transporttillæg": "-100",
+            "produktvægt": "-100",
+            "bonus": "-100",
+            "salgspris": "-100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema2Form(cvr=self.cvr, data=form_data)
@@ -494,12 +497,12 @@ class Indberetninger2Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "produktvægt": 100,
-            "bonus": 100,
-            "salgspris": 100,
-            "dummy": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "produktvægt": "100",
+            "bonus": "100",
+            "salgspris": "100",
+            "dummy": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema2Form(cvr=self.cvr, data=form_data)
@@ -507,12 +510,12 @@ class Indberetninger2Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "produktvægt": 100,
-            "bonus": 100,
-            "salgspris": 100,
-            "dummy": -100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "produktvægt": "100",
+            "bonus": "100",
+            "salgspris": "100",
+            "dummy": "-100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema2Form(cvr=self.cvr, data=form_data)
@@ -520,11 +523,11 @@ class Indberetninger2Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "produktvægt": 100,
-            "bonus": 100,
-            "salgspris": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "produktvægt": "100",
+            "bonus": "100",
+            "salgspris": "100",
             "dummy": "abc",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
@@ -533,11 +536,11 @@ class Indberetninger2Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "produktvægt": 100,
-            "bonus": 100,
-            "salgspris": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "produktvægt": "100",
+            "bonus": "100",
+            "salgspris": "100",
             "dummy": None,
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
@@ -546,11 +549,11 @@ class Indberetninger2Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "produktvægt": 100,
-            "bonus": 100,
-            "salgspris": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "produktvægt": "100",
+            "bonus": "100",
+            "salgspris": "100",
             "dummy": True,
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
@@ -562,11 +565,11 @@ class Indberetninger2Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": -100,
-            "transporttillæg": 100,
-            "produktvægt": 100,
-            "bonus": 100,
-            "salgspris": 100,
+            "levende_vægt": "-100",
+            "transporttillæg": "100",
+            "produktvægt": "100",
+            "bonus": "100",
+            "salgspris": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema2Form(cvr=self.cvr, data=form_data)
@@ -574,11 +577,11 @@ class Indberetninger2Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "produktvægt": -100,
-            "bonus": 100,
-            "salgspris": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "produktvægt": "-100",
+            "bonus": "100",
+            "salgspris": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema2Form(cvr=self.cvr, data=form_data)
@@ -586,11 +589,11 @@ class Indberetninger2Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "produktvægt": 100,
-            "bonus": 100,
-            "salgspris": -100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "produktvægt": "100",
+            "bonus": "100",
+            "salgspris": "-100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema2Form(cvr=self.cvr, data=form_data)
@@ -601,11 +604,11 @@ class Indberetninger2Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 0,
-            "transporttillæg": 0,
-            "produktvægt": 0,
-            "bonus": 0,
-            "salgspris": 0,
+            "levende_vægt": "0",
+            "transporttillæg": "0",
+            "produktvægt": "0",
+            "bonus": "0",
+            "salgspris": "0",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema2Form(cvr=self.cvr, data=form_data)
@@ -616,11 +619,11 @@ class Indberetninger2Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 5.5,
-            "transporttillæg": 5.5,
-            "produktvægt": 5.5,
-            "bonus": 5.5,
-            "salgspris": 5.5,
+            "levende_vægt": "5,5",
+            "transporttillæg": "5,5",
+            "produktvægt": "5,5",
+            "bonus": "5,5",
+            "salgspris": "5,5",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema2Form(cvr=self.cvr, data=form_data)
@@ -647,9 +650,9 @@ class Indberetninger2Tests(IndberetningerTests):
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
             "levende_vægt": "abc",
-            "transporttillæg": 100,
-            "produktvægt": 100,
-            "bonus": 100,
+            "transporttillæg": "100",
+            "produktvægt": "100",
+            "bonus": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema2Form(cvr=self.cvr, data=form_data)
@@ -657,10 +660,10 @@ class Indberetninger2Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
+            "levende_vægt": "100",
             "transporttillæg": "abc",
-            "produktvægt": 100,
-            "bonus": 100,
+            "produktvægt": "100",
+            "bonus": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema2Form(cvr=self.cvr, data=form_data)
@@ -668,10 +671,10 @@ class Indberetninger2Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
             "produktvægt": "abc",
-            "bonus": 100,
+            "bonus": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema2Form(cvr=self.cvr, data=form_data)
@@ -682,7 +685,7 @@ class Indberetninger2Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": uuid.uuid4,
-            "levende_vægt": 100,
+            "levende_vægt": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema2Form(cvr=self.cvr, data=form_data)
@@ -693,7 +696,7 @@ class Indberetninger2Tests(IndberetningerTests):
         form_data = {
             "fartøj_navn": "test",
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
+            "levende_vægt": "100",
             "indhandlingssted": uuid.uuid4,
         }
         form = IndberetningsLinjeSkema2Form(cvr=self.cvr, data=form_data)
@@ -702,7 +705,7 @@ class Indberetninger2Tests(IndberetningerTests):
 
 class Indberetninger3Tests(IndberetningerTests):
     """
-    Test the formular for skematype1
+    Test the formular for skematype3
     """
 
     def setUp(self) -> None:
@@ -716,9 +719,9 @@ class Indberetninger3Tests(IndberetningerTests):
         # Validate that a valid indberetning-form is accepted
         form_data = {
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "bonus": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "bonus": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema3Form(cvr=self.cvr, data=form_data)
@@ -728,10 +731,10 @@ class Indberetninger3Tests(IndberetningerTests):
         # Add all negative values
         form_data = {
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": -100,
-            "transporttillæg": -100,
-            "bonus": -100,
-            "salgspris": -100,
+            "levende_vægt": "-100",
+            "transporttillæg": "-100",
+            "bonus": "-100",
+            "salgspris": "-100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema3Form(cvr=self.cvr, data=form_data)
@@ -741,32 +744,32 @@ class Indberetninger3Tests(IndberetningerTests):
         # Add dummy attribute, and validate that it is ignored
         form_data = {
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "bonus": 100,
-            "salgspris": 100,
-            "dummy": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "bonus": "100",
+            "salgspris": "100",
+            "dummy": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema3Form(cvr=self.cvr, data=form_data)
         self.assertTrue(form.is_valid())
         form_data = {
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "bonus": 100,
-            "salgspris": 100,
-            "dummy": -100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "bonus": "100",
+            "salgspris": "100",
+            "dummy": "-100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema3Form(cvr=self.cvr, data=form_data)
         self.assertTrue(form.is_valid())
         form_data = {
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "bonus": 100,
-            "salgspris": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "bonus": "100",
+            "salgspris": "100",
             "dummy": "abc",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
@@ -774,10 +777,10 @@ class Indberetninger3Tests(IndberetningerTests):
         self.assertTrue(form.is_valid())
         form_data = {
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "bonus": 100,
-            "salgspris": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "bonus": "100",
+            "salgspris": "100",
             "dummy": None,
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
@@ -785,10 +788,10 @@ class Indberetninger3Tests(IndberetningerTests):
         self.assertTrue(form.is_valid())
         form_data = {
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "bonus": 100,
-            "salgspris": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "bonus": "100",
+            "salgspris": "100",
             "dummy": True,
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
@@ -799,20 +802,20 @@ class Indberetninger3Tests(IndberetningerTests):
         # Add only one negative value to produktvægt og salgspris
         form_data = {
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": -100,
-            "transporttillæg": 100,
-            "bonus": 100,
-            "salgspris": 100,
+            "levende_vægt": "-100",
+            "transporttillæg": "100",
+            "bonus": "100",
+            "salgspris": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema3Form(cvr=self.cvr, data=form_data)
         self.assertFalse(form.is_valid())
         form_data = {
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "bonus": 100,
-            "salgspris": -100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "bonus": "100",
+            "salgspris": "-100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema3Form(cvr=self.cvr, data=form_data)
@@ -822,10 +825,10 @@ class Indberetninger3Tests(IndberetningerTests):
         # Add all 0 values
         form_data = {
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 0,
-            "transporttillæg": 0,
-            "bonus": 0,
-            "salgspris": 0,
+            "levende_vægt": "0",
+            "transporttillæg": "0",
+            "bonus": "0",
+            "salgspris": "0",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema3Form(cvr=self.cvr, data=form_data)
@@ -835,10 +838,10 @@ class Indberetninger3Tests(IndberetningerTests):
         # Add decimal number
         form_data = {
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 5.5,
-            "transporttillæg": 5.5,
-            "bonus": 5.5,
-            "salgspris": 5.5,
+            "levende_vægt": "5,5",
+            "transporttillæg": "5,5",
+            "bonus": "5,5",
+            "salgspris": "5,5",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema3Form(cvr=self.cvr, data=form_data)
@@ -862,38 +865,38 @@ class Indberetninger3Tests(IndberetningerTests):
         form_data = {
             "produkttype": self.first_ex_producttype.uuid,
             "levende_vægt": "abc",
-            "transporttillæg": 100,
-            "bonus": 100,
-            "salgspris": 100,
+            "transporttillæg": "100",
+            "bonus": "100",
+            "salgspris": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema3Form(cvr=self.cvr, data=form_data)
         self.assertFalse(form.is_valid())
         form_data = {
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
+            "levende_vægt": "100",
             "transporttillæg": "abc",
-            "bonus": 100,
-            "salgspris": 100,
+            "bonus": "100",
+            "salgspris": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema3Form(cvr=self.cvr, data=form_data)
         self.assertFalse(form.is_valid())
         form_data = {
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
             "bonus": "abc",
-            "salgspris": 100,
+            "salgspris": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema3Form(cvr=self.cvr, data=form_data)
         self.assertFalse(form.is_valid())
         form_data = {
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
-            "transporttillæg": 100,
-            "bonus": 100,
+            "levende_vægt": "100",
+            "transporttillæg": "100",
+            "bonus": "100",
             "salgspris": "abc",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
@@ -904,7 +907,7 @@ class Indberetninger3Tests(IndberetningerTests):
         # Validate that a unknown 'produkttype' is rejected
         form_data = {
             "produkttype": uuid.uuid4,
-            "levende_vægt": 100,
+            "levende_vægt": "100",
             "indhandlingssted": self.first_example_indhandlingssted.uuid,
         }
         form = IndberetningsLinjeSkema3Form(cvr=self.cvr, data=form_data)
@@ -914,7 +917,7 @@ class Indberetninger3Tests(IndberetningerTests):
         # Validate that a unknown 'indhandlingssted' is rejected
         form_data = {
             "produkttype": self.first_ex_producttype.uuid,
-            "levende_vægt": 100,
+            "levende_vægt": "100",
             "indhandlingssted": uuid.uuid4,
         }
         form = IndberetningsLinjeSkema3Form(cvr=self.cvr, data=form_data)

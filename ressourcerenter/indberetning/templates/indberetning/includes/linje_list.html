@@ -47,7 +47,11 @@
         {% endif %}
         <td>{{linje.fangstafgift.rate_string}}</td>
         <td>{{linje.afgift}}</td>
-        <td><button class="btn btn-primary button_modregn" type="button">{% translate "Modregn" %}</button></td>
+        <td>
+            {% if not linje.is_negative %}
+            <button class="btn btn-primary button_modregn" type="button">{% translate "Modregn" %}</button>
+            {% endif %}
+        </td>
     </tr>
     {% endfor %}
     </tbody>

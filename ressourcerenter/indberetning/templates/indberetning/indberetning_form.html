@@ -111,7 +111,9 @@
                 {% if request.session.impersonating %}
                 <td>{{ subform.kommentar }}</td>
                 {% endif %}
-                <td><button type="button" class="btn btn-danger btn-sm" data-delete="{{subform.prefix}}">{% translate 'Slet' %}</button></td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm" data-delete="{{subform.prefix}}">{% translate 'Slet' %}</button>
+                </td>
             </tr>
             {% endfor %}
             </tbody>
@@ -193,7 +195,9 @@
             {% if request.session.impersonating %}
             <td>{{ form.empty_form.kommentar }}</td>
             {% endif %}
-            <td><button type="button" class="btn btn-danger btn-sm" data-delete="{{form.empty_form.prefix}}">{% translate 'Slet' %}</button></td>
+            <td>
+                <button type="button" class="btn btn-danger btn-sm" data-delete="{{form.empty_form.prefix}}">{% translate 'Slet' %}</button>
+            </td>
         </tr>
         </tbody>
     </table>
