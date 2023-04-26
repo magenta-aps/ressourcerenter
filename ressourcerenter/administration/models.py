@@ -848,6 +848,8 @@ class Faktura(models.Model):
         ]
         if self.linje.indhandlingssted:
             textparts.append(str(self.linje.indhandlingssted))
+        if self.linje.fartøj_navn:
+            textparts.append(self.linje.fartøj_navn)
 
         # Split all parts so they're each <= 60 chars
         splitted_textparts = [x for part in textparts for x in self._split(part)]
