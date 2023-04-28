@@ -752,8 +752,9 @@ class Faktura(models.Model):
             }
         else:
             static_data = settings.PRISME_PUSH["fielddata"]
+        opkraev_dato = self.opkrævningsdato or self.betalingsdato
         return TenQTransactionWriter(
-            due_date=self.betalingsdato,
+            due_date=opkraev_dato,
             last_payment_date=self.betalingsdato,
             creation_date=self.linje.indberetningstidspunkt,
             year=self.periode.dato_fra.year,  # Bruges i paalign_aar,
@@ -763,7 +764,7 @@ class Faktura(models.Model):
             leverandoer_ident=static_data["project_id"],
             bruger_nummer=static_data["user_number"],
             betal_art=self.linje.produkttype.fiskeart.betalingsart,
-            opkraev_date=self.opkrævningsdato or self.betalingsdato,
+            opkraev_date=opkraev_dato,
             omraade_nummer=0,
         )
 
