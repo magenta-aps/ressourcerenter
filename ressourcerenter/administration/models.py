@@ -573,10 +573,6 @@ class Prisme10QBatch(models.Model):
         choices=status_choices, default=STATUS_CREATED, max_length=15
     )
 
-    g69transactionwriter = G69TransactionWriter(
-        registreringssted=0, organisationsenhed=0
-    )
-
     def get_prisme10Q_content(self, max_entries=None, fakturaer=None):
         if fakturaer is None:
             fakturaer = self.fakturaer.filter(bogført__isnull=True)
@@ -589,11 +585,11 @@ class Prisme10QBatch(models.Model):
             fakturaer = self.fakturaer.filter(bogført__isnull=True)
         if max_entries is not None:
             fakturaer = fakturaer[:max_entries]
+        g69transactionwriter = G69TransactionWriter(
+            registreringssted=0, organisationsenhed=0
+        )
         return "\r\n".join(
-            [
-                faktura.prismeG69_content(self.g69transactionwriter)
-                for faktura in fakturaer
-            ]
+            [faktura.prismeG69_content(g69transactionwriter) for faktura in fakturaer]
         )
 
     destinations_all = (
