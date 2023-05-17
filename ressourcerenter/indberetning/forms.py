@@ -228,8 +228,9 @@ class IndberetningBaseFormset(BaseInlineFormSet):
                 if data not in existing:
                     raise ValidationError(
                         _(
-                            "Negative indberetningslinjer skal have fartøjsnavn, indhandlingssted "
-                            "og produkttype der matcher med en positiv indberetningslinje"
+                            "Rettelse af allerede indberettede indberetningslinjer "
+                            "skal have fartøjsnavn/indhandlingssted, som den oprindelige "
+                            "indberetningslinje."
                         )
                     )
 
@@ -255,8 +256,9 @@ class IndberetningBaseFormset(BaseInlineFormSet):
             if sums[field] < 0:
                 raise ValidationError(
                     _(
-                        "Summen af tal i hvert felt i indberetningen må ikke være negativt, "
-                        "dvs. indberetningen som helhed må kun have en positiv sum i alle felter."
+                        "Summen af tal i hvert felt i indberetningen må ikke være "
+                        "i minus, dvs. indberetningen som helhed må kun have en "
+                        "positiv sum eller nulstilling."
                     )
                 )
 
