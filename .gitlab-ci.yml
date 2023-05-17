@@ -191,7 +191,7 @@ Deploy test:
     - .rules:semver-all
   variables:
     SALTBERT_ORCHESTRATION: ressourcerenter.service-test
-    SALTBERT_URL: https://ctrldev1.magenta-aps.dk
+    SALTBERT_URL: https://saltmaster.groenland.magentahosted.dk/
   needs: ["Release image", "Configure test"]
   environment:
     name: test
