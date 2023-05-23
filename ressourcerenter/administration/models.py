@@ -786,14 +786,15 @@ class Faktura(models.Model):
         else:
             static_data = settings.PRISME_PUSH["fielddata"]
         periode = linje.indberetning.afgiftsperiode
-        tidtekst = "{kvartal}. kvartal {år}".format(
+        tidtekst = "{kvartal}.kv {år}".format(
             kvartal=periode.kvartal_nummer, år=periode.år
         )
+        fiskeart = str(linje.produkttype.fiskeart).replace("licens", "").replace("  ", " ").strip()
         tekst = ", ".join(
             filter(
                 None,
                 [
-                    str(linje.produkttype.fiskeart),
+                    fiskeart,
                     str(linje.indhandlingssted) if linje.indhandlingssted else None,
                     tidtekst,
                 ],
