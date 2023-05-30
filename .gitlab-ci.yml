@@ -190,7 +190,7 @@ Deploy test:
     - .saltbert
     - .rules:semver-all
   variables:
-    SALTBERT_ORCHESTRATION: ressourcerenter.service-test
+    SALTBERT_ORCHESTRATION: groenland.ressourcerenter.service-test
     SALTBERT_URL: https://saltmaster.groenland.magentahosted.dk
   needs: ["Release image", "Configure test"]
   environment:
@@ -205,7 +205,7 @@ Deploy production:
     - .saltbert
     - .rules:semver-core
   variables:
-    SALTBERT_ORCHESTRATION: ressourcerenter.service-prod
+    SALTBERT_ORCHESTRATION: groenland.ressourcerenter.service-prod
     SALTBERT_URL: https://saltmaster.groenland.magentahosted.dk
   needs: ["Release image", "Configure production"]
   environment:
