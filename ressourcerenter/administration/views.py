@@ -744,10 +744,7 @@ class G69DownloadView(BaseDetailView):
 
 
 class BilagDownloadView(DetailView):
-    def get_queryset(self):
-        return Bilag.objects.filter(
-            indberetning__virksomhed__cvr=self.request.session["user_info"]["cvr"]
-        )
+    model = Bilag
 
     def render_to_response(self, context, **response_kwargs):
         bilag = self.get_object()

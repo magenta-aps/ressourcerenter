@@ -61,7 +61,7 @@ class StatistikTestCase(TestCase):
                 "quarter_starting_month": [1],
                 "enhed": ["levende_ton"],
                 **{
-                    key: values if type(values) == "list" else [values]
+                    key: values if type(values) is list else [values]
                     for key, values in fields.items()
                 },
             }

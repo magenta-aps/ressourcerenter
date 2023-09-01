@@ -56,14 +56,14 @@ class ExcelMixin(object):
 
         for row in self.rows(form):
             for i, item in enumerate(row):
-                value = item["value"] if type(item) == dict else item
+                value = item["value"] if type(item) is dict else item
 
                 if isinstance(value, date):
                     value = date_format(
                         value, format="SHORT_DATE_FORMAT", use_l10n=True
                     )
 
-                if type(item) == dict and "excel_format" in item:
+                if type(item) is dict and "excel_format" in item:
                     value = Cell(worksheet=ws, value=value)
                     value.number_format = item["excel_format"]
 
