@@ -14,7 +14,7 @@ def get(item, attribute):
 
 @register.filter
 def janej(item):
-    if type(item) == bool:
+    if type(item) is bool:
         return _("ja") if item else _("nej")
     return item
 

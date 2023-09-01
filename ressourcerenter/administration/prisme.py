@@ -111,7 +111,7 @@ class PrismeSELAccountResponse:
         if xml is not None:
             self.data = xml_to_dict(xml)
             transactions = self.data["CustTable"]["CustTrans"]
-            if type(transactions) != list:
+            if type(transactions) is not list:
                 transactions = [transactions]
             self.transactions = [self.itemclass(x) for x in transactions]
 
