@@ -26,7 +26,13 @@
                 <a class="nav-link" href="{% url 'indberetning:indberetning-list' %}">{% translate 'Indberetninger' %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% static 'media/manual/indberetning-manual.pdf' %}">{% translate 'Brugervejledning' %}</a>
+                {% if LANGUAGE_CODE|split:'-'|first == 'kl' %}
+                <a class="nav-link" href="{% static 'media/manual/indberetning-manual-kl.pdf' %}">{% translate 'Brugervejledning' %}</a>
+                {% else %}
+                <a class="nav-link" href="{% static 'media/manual/indberetning-manual-da.pdf' %}">{% translate 'Brugervejledning' %}</a>
+                {% endif %}
+            </li>
+            <li class="nav-item">
             </li>
         </ul>
         <span class="ml-auto">
