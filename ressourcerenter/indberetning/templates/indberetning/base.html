@@ -27,9 +27,9 @@
             </li>
             <li class="nav-item">
                 {% if LANGUAGE_CODE|split:'-'|first == 'kl' %}
-                <a class="nav-link" href="{% static 'media/manual/indberetning-manual-kl.pdf' %}">{% translate 'Brugervejledning' %}</a>
+                <a class="nav-link" href="{% static 'manual/user/manual-kl.pdf' %}">{% translate 'Brugervejledning' %}</a>
                 {% else %}
-                <a class="nav-link" href="{% static 'media/manual/indberetning-manual-da.pdf' %}">{% translate 'Brugervejledning' %}</a>
+                <a class="nav-link" href="{% static 'manual/user/manual-da.pdf' %}">{% translate 'Brugervejledning' %}</a>
                 {% endif %}
             </li>
             <li class="nav-item">

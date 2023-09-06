@@ -16,8 +16,8 @@ services:
       - ./data/g69export:/srv/media/g69export
       - ./data/bilag:/srv/media/bilag
       - ./data/:/app/project/static/media
-      - ./manual/:/app/project/static/media/manual
       - ./dev-environment/cert:/ssl:ro
+      - ./admin-manual:/app/project/static/manual/admin
     command: bash -c "
       django-admin compilemessages &&
       gunicorn --bind=0.0.0.0:8000 project.wsgi:application --reload --workers=1 --access-logfile - --error-logfile - --capture-output
@@ -51,9 +51,9 @@ services:
     container_name: ressourcerenter-manual
     image: pandoc/latex
     volumes:
-      - ./manual/:/data
+      - ./admin-manual:/data
     # options for the -V parameter: https://pandoc.org/MANUAL.html#templates
-    command: [ "manual.md", "-V", "geometry:margin=30mm", "-o", "administration-manual.pdf" ]
+    command: [ "manual.md", "-V", "geometry:margin=30mm", "-o", "manual.pdf" ]
 
   ressourcerenter-test-idp:
     user: "1000:1000"
