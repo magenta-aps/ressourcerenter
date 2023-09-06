@@ -1,14 +1,14 @@
 version: "3.4"
 services:
 
-  manual:
-    container_name: ressourcerenter-manual
-    image: pandoc/latex
-    volumes:
-      - ./admin-manual:/input:ro
-      - ./ressourcerenter/project/static/manual/admin/:/output
-    # options for the -V parameter: https://pandoc.org/MANUAL.html#templates
-    command: [ "/input/manual.md", "-V", "geometry:margin=30mm", "-o", "/output/manual.pdf" ]
+#  manual:
+#    container_name: ressourcerenter-manual
+#    image: pandoc/latex
+#    volumes:
+#      - ./admin-manual:/input:ro
+#      - ./ressourcerenter/project/static/manual/admin/:/output
+#    # options for the -V parameter: https://pandoc.org/MANUAL.html#templates
+#    command: [ "/input/manual.md", "-V", "geometry:margin=30mm", "-o", "/output/manual.pdf" ]
 
   ressourcerenter-web:
     container_name: ressourcerenter
