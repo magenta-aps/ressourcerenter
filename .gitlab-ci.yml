@@ -129,11 +129,11 @@ Generate documentation:
     name: pandoc/latex
     entrypoint: ["/bin/sh", "-c"]
   script:
-    - cd manual
-    - pandoc manual.md -V geometry:margin=30mm --output=administration-manual.pdf
+    - cd admin-manual  # Matches folder in this git repo
+    - pandoc manual.md -V geometry:margin=30mm --output=manual.pdf
   artifacts:
     paths:
-      - manual/administration-manual.pdf
+      - admin-manual/manual.pdf
 
 
 # Release stage
