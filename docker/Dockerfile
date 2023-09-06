@@ -12,9 +12,10 @@ useradd -u 75090 --no-log-init -r -g ressourcerenter -G certificate_exporter res
 chown ressourcerenter:ressourcerenter /srv/media && \
 chown ressourcerenter:ressourcerenter /var/cache/aalisakkat && chmod a+w /var/cache/aalisakkat
 # hadolint ignore=DL3008
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends gettext pandoc libxmlsec1-dev xmlsec1 default-jre graphviz && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends gettext libxmlsec1-dev xmlsec1 default-jre graphviz \
+    && apt-get autoremove -y \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* \
     && wget --progress=dot:giga "$SUPERCRONIC_URL" \
     && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
     && chmod +x "$SUPERCRONIC" \
