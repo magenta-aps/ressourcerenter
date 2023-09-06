@@ -53,6 +53,22 @@ Lint REUSE compliance:
   script:
     - reuse lint
 
+# Documentation stage
+#####################
+
+Generate documentation:
+  stage: document
+  needs: []
+  image:
+    name: pandoc/latex
+    entrypoint: ["/bin/sh", "-c"]
+  script:
+    - cd admin-manual  # Matches folder in this git repo
+    - pandoc manual.md -V geometry:margin=30mm --output=manual.pdf
+  artifacts:
+    paths:
+      - admin-manual/manual.pdf
+
 # Build stage
 #############
 
@@ -118,23 +134,6 @@ Unittest:
     GENERATE_DB_DOCUMENTATION: "false"
   script:
     - cd /app && python manage.py test
-
-# Documentation stage
-#####################
-
-Generate documentation:
-  stage: document
-  needs: []
-  image:
-    name: pandoc/latex
-    entrypoint: ["/bin/sh", "-c"]
-  script:
-    - cd admin-manual  # Matches folder in this git repo
-    - pandoc manual.md -V geometry:margin=30mm --output=manual.pdf
-  artifacts:
-    paths:
-      - admin-manual/manual.pdf
-
 
 # Release stage
 ###############

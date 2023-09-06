@@ -1,5 +1,15 @@
 version: "3.4"
 services:
+
+  manual:
+    container_name: ressourcerenter-manual
+    image: pandoc/latex
+    volumes:
+      - ./admin-manual:/input:ro
+      - ./ressourcerenter/project/static/manual/admin/:/output
+    # options for the -V parameter: https://pandoc.org/MANUAL.html#templates
+    command: [ "/input/manual.md", "-V", "geometry:margin=30mm", "-o", "/output/manual.pdf" ]
+
   ressourcerenter-web:
     container_name: ressourcerenter
     image: ressourcerenter:latest
@@ -8,6 +18,7 @@ services:
       dockerfile: docker/Dockerfile
     depends_on:
       - postgres
+      - manual
     network_mode: "host"
     env_file:
       - ./dev-environment/ressourcerenter.env
@@ -17,7 +28,6 @@ services:
       - ./data/bilag:/srv/media/bilag
       - ./data/:/app/project/static/media
       - ./dev-environment/cert:/ssl:ro
-      - ./admin-manual:/app/project/static/manual/admin
     command: bash -c "
       django-admin compilemessages &&
       gunicorn --bind=0.0.0.0:8000 project.wsgi:application --reload --workers=1 --access-logfile - --error-logfile - --capture-output
@@ -46,14 +56,6 @@ services:
       - ./dev-environment/crontab:/crontab
     entrypoint: [ ]
     command: [ "supercronic", "/crontab" ]
-
-  manual:
-    container_name: ressourcerenter-manual
-    image: pandoc/latex
-    volumes:
-      - ./admin-manual:/data
-    # options for the -V parameter: https://pandoc.org/MANUAL.html#templates
-    command: [ "manual.md", "-V", "geometry:margin=30mm", "-o", "manual.pdf" ]
 
   ressourcerenter-test-idp:
     user: "1000:1000"
