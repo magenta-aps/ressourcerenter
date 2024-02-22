@@ -14,7 +14,6 @@ from uuid import uuid4
 
 
 class AfgiftTestCase(TestCase):
-
     """
     §4
     Test at havgående fiskeri efter

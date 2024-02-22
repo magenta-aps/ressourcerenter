@@ -21,9 +21,9 @@ class StatistikBaseView(FormView):
     def get_queryset(self, form, only_fields=None):
         grouping_fields = {}
         grouping_fields["years"] = "indberetning__afgiftsperiode__dato_fra__year"
-        grouping_fields[
-            "quarter_starting_month"
-        ] = "indberetning__afgiftsperiode__dato_fra__month"
+        grouping_fields["quarter_starting_month"] = (
+            "indberetning__afgiftsperiode__dato_fra__month"
+        )
         ordering_fields = {}
 
         cleaned_data = form.cleaned_data.copy()
@@ -87,9 +87,9 @@ class StatistikBaseView(FormView):
                         output_field=TextField(),
                     )
                 )
-                grouping_fields[
-                    "fiskeart_eksport"
-                ] = "fiskeart_eksport"  # værdi passer med key i annotate-kaldet
+                grouping_fields["fiskeart_eksport"] = (
+                    "fiskeart_eksport"  # værdi passer med key i annotate-kaldet
+                )
                 fiskeart_export_q &= Q(
                     produkttype__fiskeart__in=cleaned_data["fiskeart_eksport"]
                 )  # AND valgt produkttype
@@ -106,9 +106,9 @@ class StatistikBaseView(FormView):
                         output_field=TextField(),
                     )
                 )
-                grouping_fields[
-                    "fiskeart_indhandling"
-                ] = "fiskeart_indhandling"  # værdi passer med key i annotate-kaldet
+                grouping_fields["fiskeart_indhandling"] = (
+                    "fiskeart_indhandling"  # værdi passer med key i annotate-kaldet
+                )
                 fiskeart_indhandling_q &= Q(
                     produkttype__fiskeart__in=cleaned_data["fiskeart_indhandling"]
                 )  # AND valgt produkttype
