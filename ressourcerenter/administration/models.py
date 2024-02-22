@@ -425,9 +425,9 @@ class FangstAfgift(models.Model):
 
     def to_json(self):
         return {
-            "beregningsmodel": self.beregningsmodel.pk
-            if self.beregningsmodel
-            else None,
+            "beregningsmodel": (
+                self.beregningsmodel.pk if self.beregningsmodel else None
+            ),
             "rate_element": self.rate_element.pk if self.rate_element else None,
             "afgift": str(self.afgift),
             "rate_procent": str(self.rate_procent),

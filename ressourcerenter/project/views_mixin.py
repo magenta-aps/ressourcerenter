@@ -82,9 +82,9 @@ class ExcelMixin(object):
                 content=stream,
                 content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             )
-            response[
-                "Content-Disposition"
-            ] = f"attachment; filename={self.filename_base}.xlsx"
+            response["Content-Disposition"] = (
+                f"attachment; filename={self.filename_base}.xlsx"
+            )
             return response
 
     def create_excel_file(self, context, filename):
