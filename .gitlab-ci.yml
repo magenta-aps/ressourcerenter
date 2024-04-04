@@ -4,6 +4,7 @@ stages:
   - build
   - test
   - release
+  - configure
   - deploy
 
 
@@ -161,7 +162,7 @@ Release image:
 ##############
 
 Configure test:
-  stage: deploy
+  stage: configure
   extends:
     - .rules:semver-all
     - .config:endpoint-with-tag
@@ -172,7 +173,7 @@ Configure test:
 
 
 Configure production:
-  stage: deploy
+  stage: configure
   extends:
     - .rules:semver-core
     - .config:endpoint-with-tag
