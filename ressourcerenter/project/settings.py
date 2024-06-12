@@ -98,7 +98,7 @@ TEMPLATES = [
             ],
             "libraries": {
                 "csp": "csp.templatetags.csp",
-            }
+            },
         },
     },
 ]
