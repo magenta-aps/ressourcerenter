@@ -4,7 +4,7 @@
 {% load i18n %}
 <div class="card rounded m-3">
     <div class="card-body">
-        <div class="card float-left m-3" style="width: 18rem; min-height: 14rem;">
+        <div class="card float-left m-3">
             <h5 class="card-header text-white bg-primary">{% translate 'Indberetninger' %}</h5>
             <div class="card-body">
               <p class="card-text">{% translate 'Se og godkend indberetninger.' %}</p>
@@ -12,7 +12,7 @@
             <a class="btn btn-success stretched-link" href="{% url 'administration:indberetning-list' %}">{% translate 'Gå til indberetninger' %}</a>
         </div>
 
-        <div class="card float-left m-3" style="width: 18rem; min-height: 14rem;">
+        <div class="card float-left m-3">
             <h5 class="card-header text-white bg-primary">{% translate 'Virksomheder' %}</h5>
             <div class="card-body">
               <p class="card-text">{% translate 'Opret og rediger virksomheder eller foretag indberetninger og justeringer på vegne af en virksomhed.' %}</p>
@@ -20,7 +20,7 @@
             <a class="btn btn-success stretched-link" href="{% url 'administration:virksomhed-list' %}">{% translate 'Gå til virksomheder' %}</a>
         </div>
 
-        <div class="card float-left m-3" style="width: 18rem; min-height: 14rem;">
+        <div class="card float-left m-3">
             <h5 class="card-header text-white bg-primary">{% translate 'Afgiftsperioder' %}</h5>
             <div class="card-body">
               <p class="card-text">{% translate 'Administrér afgiftsperioder.' %}</p>

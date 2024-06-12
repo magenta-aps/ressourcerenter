@@ -139,7 +139,7 @@
 <form method="post" id="linjeform">
     {% csrf_token %}
 </form>
-<script>
+<script nonce="{{request.csp_nonce}}">
     $('table button[type="submit"]').on('click', function() {
         $("#linjeform").append($(this).parents('tbody').find('input'));
     });

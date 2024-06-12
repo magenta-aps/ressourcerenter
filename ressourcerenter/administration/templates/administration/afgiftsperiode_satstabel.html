@@ -107,7 +107,7 @@
 
 </form>
 
-<script>
+<script nonce="{{request.csp_nonce}}">
     $('.type_select').change(function (){
         const className = $(this).val();
         const columns = $(this).parents("tr").find(".switchcolumn");

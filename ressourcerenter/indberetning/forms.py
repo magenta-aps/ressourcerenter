@@ -281,7 +281,6 @@ class IndberetningsLinjeSkema1Form(NonPelagiskPrisRequired, IndberetningsLinjeFo
             attrs={
                 "class": "js-boat-select form-control col-2 ",
                 "autocomplete": "off",
-                "style": "width:100%",
             }
         )
     )
@@ -335,7 +334,6 @@ class IndberetningsLinjeSkema2Form(NonPelagiskPrisRequired, IndberetningsLinjeFo
             attrs={
                 "class": "js-boat-select form-control col-2",
                 "autocomplete": "off",
-                "style": "width:100%",
             }
         )
     )

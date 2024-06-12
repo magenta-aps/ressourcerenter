@@ -69,7 +69,9 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
     "django_session_timeout.middleware.SessionTimeoutMiddleware",
+    "csp.middleware.CSPMiddleware",
 ]
+
 
 if DEBUG:
     import socket
@@ -94,6 +96,9 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            "libraries": {
+                "csp": "csp.templatetags.csp",
+            }
         },
     },
 ]
