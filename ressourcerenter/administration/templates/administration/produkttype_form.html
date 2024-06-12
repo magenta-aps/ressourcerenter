@@ -1,5 +1,6 @@
 {% extends 'administration/base.html' %}
 {% load i18n %}
+{% load csp %}
 
 {% block content %}
 <h1>
@@ -168,8 +169,10 @@
 
     <button type="submit" class="btn btn-primary">{% translate 'Gem' %}</button>
 </form>
+{% script id="fiskeart_map" type="application/json" %}
 {{ fiskeart_map|json_script:"fiskeart_map" }}
-<script>
+{% endscript %}
+<script nonce="{{request.csp_nonce}}">
     const toggle_options = function (field, option_values) {
         field.find("option").each(function (){
             const $this = $(this);

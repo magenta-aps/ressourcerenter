@@ -1,5 +1,6 @@
 {% extends 'statistik/base.html' %}
 {% load i18n %}
+{% load csp %}
 
 {% block content %}
 <h1>{% trans 'Statistik' %}</h1>
@@ -58,7 +59,7 @@
         {% if form.is_valid %}
         <button id="toggle-button" type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#statistik-form">{% translate 'Vis formular' %}</button>
         {% endif %}
-        <button id="form-button" type="submit" class="btn btn-primary"{% if form.is_valid %}style="display:none"{% endif %}>{% translate 'Hent resultat' %}</button>
+        <button id="form-button" type="submit" class="btn btn-primary{% if form.is_valid %} hidden{% endif %}">{% translate 'Hent resultat' %}</button>
         <button id="excel-button" type="submit" class="btn btn-success" name="format" value="xlsx">{% translate 'Hent excel-fil' %}</button>
     </div>
 
@@ -95,8 +96,10 @@
 </table>
 {% endif %}
 
+{% script id="produkt_fiskeart_map" type="application/json" %}
 {{ produkt_fiskeart_map|json_script:"produkt_fiskeart_map" }}
-<script>
+{% endscript %}
+<script nonce="{{request.csp_nonce}}">
 
     const field_map = {
         'years': '#{{ form.years.id_for_label }}',

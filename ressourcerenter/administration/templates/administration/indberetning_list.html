@@ -81,7 +81,7 @@
         <a class="btn btn-primary" href="{{ excel_link }}">{% translate 'Hent excel-regneark' %}</a>
     </div>
 </div>
-<script>
+<script nonce="{{request.csp_nonce}}">
     $("[data-toggle=collapse] a").on('click', function(event){
         event.stopPropagation();
     })
