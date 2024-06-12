@@ -116,3 +116,28 @@ ul.errorlist li {
     width: 0;
     height: 0;
 }
+
+.admin nav {
+    background-color: #e3f2fd;
+}
+
+.admin .card-body .card {
+    width: 18rem;
+    min-height: 14rem;
+}
+
+.autowidth {
+    width: auto;
+}
+
+.hidden {
+    display: none;
+}
+
+.center-block {
+    max-width: 55rem;
+}
+
+.js-boat-select, .select2-container {
+    width:100% !important;
+}

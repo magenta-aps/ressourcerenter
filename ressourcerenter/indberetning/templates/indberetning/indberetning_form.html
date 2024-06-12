@@ -1,6 +1,7 @@
 {% extends "indberetning/base.html"%}
 {% load i18n %}
 {% load static %}
+{% load csp %}
 {% block content %}
 {% if form.non_form_errors %}
     {% for error in form.non_form_errors %}
@@ -166,7 +167,7 @@
     </div>
 </form>
 
-<div style="display: none">
+<div class="hidden">
     <table>
         <tbody id="js-initial-row">
         <tr class="autocalc-afgift" data-prefix="{{form.empty_form.prefix}}">
@@ -223,12 +224,24 @@
     </table>
 </div>
 
+{% script id="indberetning" type="application/json" %}
 {{indberetning.to_json|json_script:'indberetning'}}
+{% endscript %}
+
+{% script id="pelagiske_fiskearter" type="application/json" %}
 {{pelagiske_fiskearter|json_script:'pelagiske_fiskearter'}}
+{% endscript %}
+
+{% script id="pelagiske_produkttyper" type="application/json" %}
 {{pelagiske_produkttyper|json_script:'pelagiske_produkttyper'}}
+{% endscript %}
+
+{% script id="produkttype_map" type="application/json" %}
 {{produkttype_map|json_script:'produkttype_map'}}
-<script src="{% static 'js/cookie.js' %}"></script>
-<script>
+{% endscript %}
+
+<script src="{% static 'js/cookie.js' %}" nonce="{{request.csp_nonce}}"></script>
+<script nonce="{{request.csp_nonce}}">
     const boat_placeholder = "{% translate 'Vælg eller opret nyt fartøj' %}";
     const place_placeholder = "{% translate 'Vælg eller opret nyt indhandlingssted' %}";
     const rate_prkg_string = "{% translate '{rate} kr/kg' %}";

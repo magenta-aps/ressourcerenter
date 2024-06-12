@@ -9,9 +9,9 @@
     <link rel="stylesheet" href="{% static 'css/select2.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/select2-bootstrap4.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/ressourcerenter.css' %}">
-    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-    <script src="{% static 'js/select2.full.min.js' %}"></script>
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}" nonce="{{request.csp_nonce}}"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}" nonce="{{request.csp_nonce}}"></script>
+    <script src="{% static 'js/select2.full.min.js' %}" nonce="{{request.csp_nonce}}"></script>
     <title>{% translate 'Statistik af ressourcerenter' %}</title>
 </head>
 <body>
