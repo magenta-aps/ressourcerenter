@@ -64,4 +64,9 @@ urlpatterns = [
         AccessDeniedView.as_view(template_name="indberetning/error/login_no_cvr.html"),
         name="login-no-cvr",
     ),
+    path(
+        "error/login-assurance/",
+        AccessDeniedView.as_view(template_name="indberetning/error/login_assurance.html"),
+        name="login-assurance",
+    ),
 ]

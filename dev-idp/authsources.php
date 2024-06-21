@@ -33,7 +33,7 @@ $config = array(
 
             # Claims fra OIOSAML
             'https://data.gov.dk/model/core/specVersion' => 'OIO-SAML-3.0',
-            'https://data.gov.dk/concept/core/nsis/loa' => 'Substantial',
+            'https://data.gov.dk/concept/core/nsis/loa' => 'Low',
             'https://data.gov.dk/concept/core/nsis/ial' => 'Substantial',
             'https://data.gov.dk/concept/core/nsis/aal' => 'High',
             'https://data.gov.dk/model/core/eid/fullName' => 'Anders And',
