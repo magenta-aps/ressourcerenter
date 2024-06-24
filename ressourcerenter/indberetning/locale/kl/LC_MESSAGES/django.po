@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-12 10:56+0000\n"
+"POT-Creation-Date: 2024-06-21 13:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -177,11 +177,21 @@ msgstr "Ilumut aniniarpit?"
 msgid "Log ind"
 msgstr "Iserit"
 
+#: indberetning/templates/indberetning/error/login_assurance.html
 #: indberetning/templates/indberetning/error/login_no_cvr.html
 #: indberetning/templates/indberetning/error/login_repeat.html
 #: indberetning/templates/indberetning/error/login_timeout.html
 msgid "Adgang nægtet"
 msgstr "Iseriarnerit itigartinneqarpoq"
+
+#: indberetning/templates/indberetning/error/login_assurance.html
+#, fuzzy
+#| msgid "Det anvendte login er timet ud. Prøv at logge ind igen."
+msgid ""
+"Der er logget ind med utilstrækkeligt sikringsniveau. Prøv at logge ind igen."
+msgstr ""
+"Isissutissap piffissaq atuuffissani qaanngersimavaa. Iseriaqqillutit "
+"misiliguk."
 
 #: indberetning/templates/indberetning/error/login_no_cvr.html
 msgid "Det anvendte login har ikke et CVR-nummer tilknyttet."
