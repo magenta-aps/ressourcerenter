@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "django_mitid_auth",
     "mitid_test",
     "django_extensions",
+    "metrics",
 ]
 
 MIDDLEWARE = [
@@ -212,6 +213,7 @@ LOGIN_WHITELISTED_URLS = [
     re.compile("^/statistik/"),
     re.compile("^/media/"),
     re.compile("^/i18n/"),
+    re.compile("^/metrics/"),
     "/_ht/",
     LOGIN_TIMEOUT_URL,
     LOGIN_REPEATED_URL,

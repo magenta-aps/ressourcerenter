@@ -14,6 +14,7 @@ urlpatterns = [
     path("_ht/", include("watchman.urls")),
     path("i18n/", include("django.conf.urls.i18n")),
     path("__debug__/", include("debug_toolbar.urls")),
+    path("metrics/", include("metrics.urls")),
 ]
 if settings.DEBUG:
     urlpatterns += staticfiles_urlpatterns()
