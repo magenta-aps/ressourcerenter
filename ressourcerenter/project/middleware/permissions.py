@@ -40,7 +40,14 @@ class PermissionMiddleware:
         app_name = request.resolver_match.app_name
 
         if app_name == "":
-            for allowed in ("/media/", "/i18n/", "/_ht/", "/error/", "/static/"):
+            for allowed in (
+                "/media/",
+                "/i18n/",
+                "/_ht/",
+                "/metrics/",
+                "/error/",
+                "/static/",
+            ):
                 if request.path.startswith(allowed):
                     return None
             else:
