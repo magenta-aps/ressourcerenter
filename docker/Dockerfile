@@ -19,7 +19,8 @@ RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt bookworm-pgdg main"
     apt-get install -y --no-install-recommends \
         gettext libxmlsec1-dev xmlsec1 default-jre graphviz postgresql-client-common postgresql-client-16 && \
     apt-get autoremove -y && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # supercronic
 RUN curl -fsSLO "$SUPERCRONIC_URL" && \
