@@ -11,18 +11,26 @@ groupadd -g 75100 -r certificate_exporter && \
 useradd -u 75090 --no-log-init -r -g ressourcerenter -G certificate_exporter ressourcerenter && \
 chown ressourcerenter:ressourcerenter /srv/media && \
 chown ressourcerenter:ressourcerenter /var/cache/aalisakkat && chmod a+w /var/cache/aalisakkat
+
 # hadolint ignore=DL3008
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends gettext libxmlsec1-dev xmlsec1 default-jre graphviz \
-    && apt-get autoremove -y \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* \
-    && wget --progress=dot:giga "$SUPERCRONIC_URL" \
-    && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
-    && chmod +x "$SUPERCRONIC" \
-    && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
-    && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic \
-    && wget --progress=dot:giga https://github.com/schemaspy/schemaspy/releases/download/v6.1.0/schemaspy-6.1.0.jar -O /usr/local/share/schemaspy.jar \
-    && wget --progress=dot:giga https://jdbc.postgresql.org/download/postgresql-42.2.8.jar -O /usr/local/share/postgresql.jar
+RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt bookworm-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && \
+    curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        gettext libxmlsec1-dev xmlsec1 default-jre graphviz postgresql-client-common postgresql-client-16 && \
+    apt-get autoremove -y && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# supercronic
+RUN curl -fsSLO "$SUPERCRONIC_URL" && \
+    echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - && \
+    chmod +x "$SUPERCRONIC" && \
+    mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" && \
+    ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
+
+# schemaspy
+RUN curl -fsSLO https://github.com/schemaspy/schemaspy/releases/download/v6.1.0/schemaspy-6.1.0.jar -O /usr/local/share/schemaspy.jar && \
+    curl -fsSLO https://jdbc.postgresql.org/download/postgresql-42.2.8.jar -O /usr/local/share/postgresql.jar
 
 COPY ressourcerenter/requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
