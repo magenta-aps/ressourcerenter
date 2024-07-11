@@ -4,13 +4,15 @@ ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.
     SUPERCRONIC_SHA1SUM=048b95b48b708983effb2e5c935a1ef8483d9e3e\
     PYTHONUNBUFFERED=1
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN mkdir /app && mkdir -p /srv/media && mkdir -p /var/cache/aalisakkat && \
-#gid/uid from salt
-groupadd -g 75090 -r ressourcerenter && \
-groupadd -g 75100 -r certificate_exporter && \
-useradd -u 75090 --no-log-init -r -g ressourcerenter -G certificate_exporter ressourcerenter && \
-chown ressourcerenter:ressourcerenter /srv/media && \
-chown ressourcerenter:ressourcerenter /var/cache/aalisakkat && chmod a+w /var/cache/aalisakkat
+RUN mkdir /app &&  \
+    mkdir -p /srv/media &&  \
+    mkdir -p /var/cache/aalisakkat && \
+    #gid/uid from salt
+    groupadd -g 75090 -r ressourcerenter && \
+    groupadd -g 75100 -r certificate_exporter && \
+    useradd -u 75090 --no-log-init -r -g ressourcerenter -G certificate_exporter ressourcerenter && \
+    chown ressourcerenter:ressourcerenter /srv/media && \
+    chown ressourcerenter:ressourcerenter /var/cache/aalisakkat && chmod a+w /var/cache/aalisakkat
 
 # hadolint ignore=DL3008
 RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt bookworm-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && \
@@ -30,8 +32,8 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" && \
     ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
 
 # schemaspy
-RUN curl -fsSL https://github.com/schemaspy/schemaspy/releases/download/v6.1.0/schemaspy-6.1.0.jar -O /usr/local/share/schemaspy.jar && \
-    curl -fsSL https://jdbc.postgresql.org/download/postgresql-42.2.8.jar -O /usr/local/share/postgresql.jar
+RUN curl -fsSL --output /usr/local/share/schemaspy.jar https://github.com/schemaspy/schemaspy/releases/download/v6.1.0/schemaspy-6.1.0.jar && \
+    curl -fsSL --output /usr/local/share/postgresql.jar https://jdbc.postgresql.org/download/postgresql-42.2.8.jar
 
 COPY ressourcerenter/requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
