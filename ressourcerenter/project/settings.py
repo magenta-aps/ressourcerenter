@@ -153,7 +153,7 @@ LANGUAGES = [
     ("kl", _("Greenlandic")),
 ]
 LANGUAGE_COOKIE_NAME = "Sullissivik.Portal.Lang"
-LANGUAGE_COOKIE_DOMAIN = os.environ["DJANGO_LANGUAGE_COOKIE_DOMAIN"]
+LANGUAGE_COOKIE_DOMAIN = os.environ["LANGUAGE_COOKIE_DOMAIN"]
 LOCALE_PATHS = [os.path.join(BASE_DIR, "locale")]
 DECIMAL_SEPARATOR = ","
 THOUSAND_SEPARATOR = "."
