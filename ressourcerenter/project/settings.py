@@ -28,8 +28,8 @@ decimal.getcontext().rounding = decimal.ROUND_DOWN
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
-DEBUG = strtobool(os.environ.get("DJANGO_DEBUG", "False"))
+SECRET_KEY = os.environ["SECRET_KEY"]
+DEBUG = strtobool(os.environ.get("DEBUG", "False"))
 
 ALLOWED_HOSTS = ["*"]
 
@@ -144,7 +144,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 USE_TZ = True
-TIME_ZONE = os.environ["DJANGO_TIMEZONE"]
+TIME_ZONE = os.environ["TIMEZONE"]
 LANGUAGE_CODE = "da"
 USE_I18N = True
 USE_L10N = True
