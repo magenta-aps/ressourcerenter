@@ -105,8 +105,8 @@ Unittest:
     - name: postgres:13
       alias: ressourcerenter-db
   variables:
-    DJANGO_SECRET_KEY: e$s6@0(hs5ja79-&!l7vt^onoe4h^*bv_e4hj&wt5^8*&x76-$
-    DJANGO_TIMEZONE: Europe/Copenhagen
+    SECRET_KEY: e$s6@0(hs5ja79-&!l7vt^onoe4h^*bv_e4hj&wt5^8*&x76-$
+    TIMEZONE: Europe/Copenhagen
     POSTGRES_USER: ressourcerenter
     POSTGRES_PASSWORD: ressourcerenter
     POSTGRES_DB: ressourcerenter
