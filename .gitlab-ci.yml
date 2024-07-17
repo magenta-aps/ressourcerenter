@@ -111,7 +111,7 @@ Unittest:
     POSTGRES_PASSWORD: ressourcerenter
     POSTGRES_DB: ressourcerenter
     POSTGRES_HOST: ressourcerenter-db
-    DJANGO_LANGUAGE_COOKIE_DOMAIN: localhost
+    LANGUAGE_COOKIE_DOMAIN: localhost
     # No fiddling with sftp server during testing
     LOGIN_MOCK: cvr
     PRISME_PUSH_MOCK: "true"
