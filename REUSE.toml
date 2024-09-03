@@ -1,0 +1,45 @@
+version = 1
+SPDX-PackageName = "Ressourcerenter"
+SPDX-PackageSupplier = "Magenta ApS <info@magenta.dk>"
+
+[[annotations]]
+path = ["REUSE.toml", "ressourcerenter/**", "dev-environment/**", "docker/**", "dev-idp/**", "mockup/**", "manual/**", "docker-compose.yml", "**.md", ".gitignore", ".gitlab-ci.yml"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2021-2024 Magenta ApS <info@magenta.dk>"
+SPDX-License-Identifier = "MPL-2.0"
+
+[[annotations]]
+path = ["ressourcerenter/project/static/css/bootstrap**", "ressourcerenter/project/static/js/bootstrap**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2011-2021 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "ressourcerenter/project/static/js/jquery**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2022 OpenJS Foundation and jQuery contributors"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["ressourcerenter/project/static/css/select2**", "ressourcerenter/project/static/js/select2**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2012-2017 Kevin Brown, Igor Vaynberg, and Select2 contributors"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "ressourcerenter/project/static/js/cookie.js"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2022 OpenJS Foundation and jQuery contributors"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "ressourcerenter/project/static/js/cookie.js"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Copyright (c) Django Software Foundation and individual contributors."
+SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = "ressourcerenter/project/static/js/htmx.min.js"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Copyright (c) 2020, Big Sky Software"
+SPDX-License-Identifier = "BSD-2-Clause"
