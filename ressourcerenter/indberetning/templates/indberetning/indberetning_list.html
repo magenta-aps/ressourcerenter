@@ -38,7 +38,7 @@
         <tr>
             <th class="col-2">{% translate 'Periode' %}</th>
             <td class="col-4">{{indberetning.afgiftsperiode}}</td>
-            <td class="col-6" rowspan="4">
+            <td class="col-6" rowspan="3">
             <strong class="mr-2">{% translate 'Bilag' %}</strong>
             {% for bilag in indberetning.bilag.all %}
             <a class="mr-2" href="{% url 'indberetning:bilag-download' pk=bilag.uuid%}">{{bilag.filename}}</a>
