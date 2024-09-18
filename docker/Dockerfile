@@ -35,6 +35,9 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" && \
 RUN curl -fsSL --output /usr/local/share/schemaspy.jar https://github.com/schemaspy/schemaspy/releases/download/v6.1.0/schemaspy-6.1.0.jar && \
     curl -fsSL --output /usr/local/share/postgresql.jar https://jdbc.postgresql.org/download/postgresql-42.2.8.jar
 
+ARG COMMIT_TAG
+ENV COMMIT_TAG=${COMMIT_TAG:-HEAD}
+
 COPY ressourcerenter/requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 COPY docker/crontab /crontab
@@ -43,8 +46,8 @@ COPY ./ressourcerenter /app
 # COPY ./manual.md /manual.md
 WORKDIR /app
 USER ressourcerenter
-VOLUME  /srv/media
-VOLUME  /var/cache/aalisakkat
+VOLUME /srv/media
+VOLUME /var/cache/aalisakkat
 EXPOSE 8000
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["gunicorn","-b","0.0.0.0:8000","project.wsgi:application","-w 4","-t 120","--error-logfile","-","--capture-output"]
