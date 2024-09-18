@@ -25,6 +25,8 @@ from indberetning.utils import populate_dummy_session
 # Round towards zero (positives round down, negatives round up)
 decimal.getcontext().rounding = decimal.ROUND_DOWN
 
+VERSION = os.environ["COMMIT_TAG"]
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
