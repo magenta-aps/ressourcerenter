@@ -1,10 +1,10 @@
 from collections import defaultdict
+from datetime import date
 
+from administration.models import Faktura
+from administration.prisme import Prisme
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from administration.prisme import Prisme
-from administration.models import Faktura
-from datetime import date
 
 
 class Command(BaseCommand):
