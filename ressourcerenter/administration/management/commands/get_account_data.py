@@ -6,6 +6,8 @@ from administration.prisme import Prisme
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
+from ressourcerenter.administration.prisme import PrismeException
+
 
 class Command(BaseCommand):
     help = "Get Prisme Kontoudtog"
@@ -25,7 +27,10 @@ class Command(BaseCommand):
             # så første faktura her vil altid være den ældste.
             first_date = next(iter(fakturaer.values())).oprettet.date()
             # Hent kontoudtog fra første fakturadato til nu
-            responses = prisme.get_account_data(cvr, first_date, timezone.now())
+            try:
+                responses = prisme.get_account_data(cvr, first_date, timezone.now())
+            except PrismeException:
+                continue
             # For hver transaktion der optræder i kontoudtoget,
             # se om vi kan finde en matchende faktura og sæt den til at være bogført
             for response in responses:
