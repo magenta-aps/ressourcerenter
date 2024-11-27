@@ -8,7 +8,7 @@ CREATE_DUMMY_USERS=${CREATE_DUMMY_USERS:=false}
 SKIP_IDP_METADATA=${SKIP_IDP_METADATA:=false}
 GENERATE_DB_DOCUMENTATION=${GENERATE_DB_DOCUMENTATION:=true}
 
-django-admin makemessages --all --no-obsolete --add-location file
+python manage.py make_messages --all --no-obsolete --add-location file
 django-admin compilemessages
 
 python manage.py wait_for_db
