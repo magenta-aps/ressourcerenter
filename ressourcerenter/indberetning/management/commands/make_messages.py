@@ -9,7 +9,3 @@ class Command(makemessages.Command):
     msgmerge_options = list(
         {*makemessages.Command.msgmerge_options, "--no-fuzzy-matching"}
     )
-
-    def handle(self, *args, **options):
-        print("make_messages")
-        return super().handle(*args, **options)
