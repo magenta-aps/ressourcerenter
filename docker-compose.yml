@@ -1,4 +1,3 @@
-version: "3.4"
 services:
 
   manual:
@@ -11,15 +10,16 @@ services:
     command: [ "/input/manual.md", "-V", "geometry:margin=30mm", "-o", "/output/manual.pdf" ]
 
   ressourcerenter-web:
-    container_name: ressourcerenter
+    container_name: ressourcerenter-web
     image: ressourcerenter:latest
     build:
       context: .
       dockerfile: docker/Dockerfile
     depends_on:
-      - postgres
+      - ressourcerenter-db
       - manual
-    network_mode: "host"
+    ports:
+      - "8030:8000"
     env_file:
       - ./dev-environment/ressourcerenter.env
     volumes:
@@ -32,22 +32,25 @@ services:
       django-admin compilemessages &&
       gunicorn --bind=0.0.0.0:8000 project.wsgi:application --reload --workers=1 --access-logfile=- --error-logfile=- --capture-output
       "
+    networks:
+      - default
+      - database
 
-  postgres:
+  ressourcerenter-db:
     container_name: ressourcerenter-db
     image: postgres:13
-    network_mode: "host"
     env_file:
       - ./dev-environment/ressourcerenter.env
     volumes:
       - ressourcerenter-postgres-data:/var/lib/postgresql/data
+    networks:
+      - database
 
   ressourcerenter-cron:
     container_name: ressourcerenter-cron
     image: ressourcerenter:latest
-    network_mode: "host"
     depends_on:
-      - postgres
+      - ressourcerenter-db
     env_file:
       - ./dev-environment/ressourcerenter.env
     volumes:
@@ -56,25 +59,46 @@ services:
       - ./dev-environment/crontab:/crontab
     entrypoint: [ ]
     command: [ "supercronic", "/crontab" ]
+    networks:
+      - database
 
-  ressourcerenter-test-idp:
+  ressourcerenter-idp:
     user: "1000:1000"
     image: kenchan0130/simplesamlphp
-    container_name: ressourcerenter-test-idp
-    network_mode: "host"
+    container_name: ressourcerenter-idp
+    ports:
+      - "8031:8031"
     environment:
-      SIMPLESAMLPHP_SP_ENTITY_ID: http://localhost:8000/saml/metadata/
-      SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE: http://localhost:8000/login/callback/
-      SIMPLESAMLPHP_SP_SINGLE_LOGOUT_SERVICE: http://localhost:8000/logout/callback/
+      HTTP_PORT: 8031
+      SIMPLESAMLPHP_SP_ENTITY_ID: http://ressourcerenter-web:8030/saml/metadata/
+      SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE: http://ressourcerenter-web:8030/login/callback/
+      SIMPLESAMLPHP_SP_SINGLE_LOGOUT_SERVICE: http://ressourcerenter-web:8030/logout/callback/
       SIMPLESAMLPHP_IDP_CERTIFICATE: /var/www/simplesamlphp/cert/selfsigned.crt
       SIMPLESAMLPHP_IDP_PRIVATEKEY: /var/www/simplesamlphp/cert/selfsigned.key
 
     volumes:
       - ./dev-environment/cert/idp/selfsigned.crt:/var/www/simplesamlphp/cert/server.crt:ro
       - ./dev-environment/cert/idp/selfsigned.key:/var/www/simplesamlphp/cert/server.pem:ro
-      - ./dev-idp/authsources.php:/var/www/simplesamlphp/config/authsources.php:ro
-      - ./dev-idp/saml20-sp-remote.php:/var/www/simplesamlphp/metadata/saml20-sp-remote.php:ro
+      - ./dev-environment/idp/authsources.php:/var/www/simplesamlphp/config/authsources.php:ro
+      - ./dev-environment/idp/saml20-sp-remote.php:/var/www/simplesamlphp/metadata/saml20-sp-remote.php:ro
+      - ./dev-environment/idp/ports.conf:/etc/apache2/ports.conf:ro
+      - ./dev-environment/idp/site.conf:/etc/apache2/sites-available/simplesamlphp.conf:ro
+
+    networks:
+      - default
+
+  ressourcerenter-hosts-updater:
+    container_name: ressourcerenter-hosts-updater
+    image: bash
+    volumes:
+      - ./dev-environment/hosts.sh:/hosts.sh:ro
+      - /etc/hosts:/hosts:rw
+    command: [ "bash", "/hosts.sh" ]
 
 
 volumes:
   ressourcerenter-postgres-data:
+
+networks:
+  default:
+  database:
