@@ -28,10 +28,7 @@ services:
       - ./data/bilag:/srv/media/bilag
       - ./data/:/app/project/static/media
       - ./dev-environment/cert:/ssl:ro
-    command: bash -c "
-      django-admin compilemessages &&
-      gunicorn --bind=0.0.0.0:8000 project.wsgi:application --reload --workers=1 --access-logfile=- --error-logfile=- --capture-output
-      "
+    command: gunicorn --bind=0.0.0.0:8000 project.wsgi:application --reload --workers=1 --access-logfile=- --error-logfile=- --capture-output
     networks:
       - default
       - database
