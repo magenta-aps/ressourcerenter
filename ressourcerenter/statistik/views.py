@@ -181,7 +181,7 @@ class StatistikView(ExcelMixin, StatistikBaseView):
         if "transporttillæg_tkr" in enheder:
             annotations["transporttillæg_tkr"] = Sum("transporttillæg")
         if "bonus_tkr" in enheder:
-            annotations["bonus_tkr"] = Coalesce(Sum('bonus'), Decimal(0))
+            annotations["bonus_tkr"] = Coalesce(Sum("bonus"), Decimal(0))
         if "afgift_tkr" in enheder:
             annotations["afgift_tkr"] = Sum("fangstafgift__afgift")
 
