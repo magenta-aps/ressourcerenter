@@ -85,6 +85,7 @@ class Command(BaseCommand):
                                         transporttillæg=Decimal(100.0),
                                         kommentar="Her er en lang kommentar som er meget lang for at demonstrere hvordan vi håndtererer en lang kommentar som bliver bred på siden",
                                         produkttype=produkttype,
+                                        bonus=random.randint(500, 2000) if random.randint(1, 100) < 50 else None,
                                     )
 
                     if skematype.id == 2:
@@ -127,6 +128,7 @@ class Command(BaseCommand):
                                             salgspris=40 * x,
                                             kommentar="Her er en lang kommentar som er meget lang for at demonstrere hvordan vi håndtererer en lang kommentar som bliver bred på siden",
                                             produkttype=produkttype,
+                                            bonus=random.randint(500, 2000) if random.randint(1, 100) < 50 else None,
                                         )
 
                     if skematype.id == 3:
@@ -155,4 +157,5 @@ class Command(BaseCommand):
                                         salgspris=40 * x,
                                         kommentar="Her er en lang kommentar som er meget lang for at demonstrere hvordan vi håndtererer en lang kommentar som bliver bred på siden",
                                         produkttype=produkttype,
+                                        bonus=random.randint(500, 2000) if random.randint(1, 100) < 50 else None,
                                     )
