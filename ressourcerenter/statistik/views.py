@@ -1,9 +1,12 @@
 import json
+from decimal import Decimal
+
 from administration.models import Afgiftsperiode, FiskeArt
 from django.db.models import Case, Value, When
 from django.db.models import Q
 from django.db.models import Sum
 from django.db.models import TextField
+from django.db.models.functions import Coalesce
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
@@ -178,7 +181,7 @@ class StatistikView(ExcelMixin, StatistikBaseView):
         if "transporttillæg_tkr" in enheder:
             annotations["transporttillæg_tkr"] = Sum("transporttillæg")
         if "bonus_tkr" in enheder:
-            annotations["bonus"] = Sum("bonus")
+            annotations["bonus_tkr"] = Coalesce(Sum("bonus"), Decimal(0))
         if "afgift_tkr" in enheder:
             annotations["afgift_tkr"] = Sum("fangstafgift__afgift")
 
