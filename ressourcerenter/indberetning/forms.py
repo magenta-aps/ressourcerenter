@@ -75,27 +75,34 @@ class IndberetningsLinjeBeregningForm(ModelForm):
         clientside_formatting=True,
         max_value=999_999_999,
         min_value=-999_999_999,
+        decimal_places=2,
     )
     levende_vægt = LocalizedDecimalField(
-        clientside_formatting=True, max_value=999_999_999, min_value=-999_999_999
+        clientside_formatting=True,
+        max_value=999_999_999,
+        min_value=-999_999_999,
+        decimal_places=2,
     )
     salgspris = LocalizedDecimalField(
         required=False,
         clientside_formatting=True,
         max_value=999_999_999,
         min_value=-999_999_999,
+        decimal_places=2,
     )
     transporttillæg = LocalizedDecimalField(
         required=False,
         clientside_formatting=True,
         max_value=999_999_999,
         min_value=-999_999_999,
+        decimal_places=2,
     )
     bonus = LocalizedDecimalField(
         required=False,
         clientside_formatting=True,
         max_value=999_999_999,
         min_value=-999_999_999,
+        decimal_places=2,
     )
 
     def clean(self):
@@ -275,6 +282,7 @@ class IndberetningsLinjeSkema1Form(NonPelagiskPrisRequired, IndberetningsLinjeFo
         clientside_formatting=True,
         max_value=999_999_999,
         min_value=-999_999_999,
+        decimal_places=2,
     )
     fartøj_navn = CharField(
         widget=Select(
@@ -322,12 +330,14 @@ class IndberetningsLinjeSkema2Form(NonPelagiskPrisRequired, IndberetningsLinjeFo
         clientside_formatting=True,
         max_value=999_999_999,
         min_value=-999_999_999,
+        decimal_places=2,
     )
     produktvægt = LocalizedDecimalField(
         required=True,
         clientside_formatting=True,
         max_value=999_999_999,
         min_value=-999_999_999,
+        decimal_places=2,
     )
     fartøj_navn = CharField(
         widget=Select(
@@ -372,6 +382,7 @@ class IndberetningsLinjeSkema3Form(IndberetningsLinjeForm):
         clientside_formatting=True,
         max_value=999_999_999,
         min_value=-999_999_999,
+        decimal_places=2,
     )
     indhandlingssted = ModelChoiceField(
         queryset=Indhandlingssted.objects.filter(aktiv_til_indhandling=True)
