@@ -19,3 +19,4 @@ pysaml2==7.5.0
 xmltodict>=0.12.0
 whitenoise==6.2.0
 django-csp==3.8
+paramiko==3.5.1
