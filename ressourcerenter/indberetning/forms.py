@@ -75,27 +75,34 @@ class IndberetningsLinjeBeregningForm(ModelForm):
         clientside_formatting=True,
         max_value=999_999_999,
         min_value=-999_999_999,
+        decimal_places=2,
     )
     levende_vægt = LocalizedDecimalField(
-        clientside_formatting=True, max_value=999_999_999, min_value=-999_999_999
+        clientside_formatting=True,
+        max_value=999_999_999,
+        min_value=-999_999_999,
+        decimal_places=2,
     )
     salgspris = LocalizedDecimalField(
         required=False,
         clientside_formatting=True,
         max_value=999_999_999,
         min_value=-999_999_999,
+        decimal_places=2,
     )
     transporttillæg = LocalizedDecimalField(
         required=False,
         clientside_formatting=True,
         max_value=999_999_999,
         min_value=-999_999_999,
+        decimal_places=2,
     )
     bonus = LocalizedDecimalField(
         required=False,
         clientside_formatting=True,
         max_value=999_999_999,
         min_value=-999_999_999,
+        decimal_places=2,
     )
 
     def clean(self):
@@ -218,21 +225,27 @@ class IndberetningBaseFormset(BaseInlineFormSet):
                     {field: getattr(linje, field, None) for field in fields}
                 )
         for form in self.forms:
-            if not form.is_negative:
-                existing.append(
-                    {field: form.cleaned_data.get(field, None) for field in fields}
-                )
-        for form in self.forms:
-            if form.is_negative:
-                data = {field: form.cleaned_data.get(field, None) for field in fields}
-                if data not in existing:
-                    raise ValidationError(
-                        _(
-                            "Rettelse af allerede indberettede indberetningslinjer "
-                            "skal have fartøjsnavn/indhandlingssted, som den oprindelige "
-                            "indberetningslinje."
-                        )
+            if form.is_valid():
+                if not form.is_negative:
+                    existing.append(
+                        {field: form.cleaned_data.get(field, None) for field in fields}
                     )
+                elif form.is_negative:
+                    data = {
+                        field: form.cleaned_data.get(field, None) for field in fields
+                    }
+                    if data not in existing:
+                        raise ValidationError(
+                            _(
+                                "Rettelse af allerede indberettede indberetningslinjer "
+                                "skal have fartøjsnavn/indhandlingssted, som den oprindelige "
+                                "indberetningslinje."
+                            )
+                        )
+            else:
+                raise ValidationError(
+                    _("Fejl i indberetningen. Se fejlmedelelser ved felterne")
+                )
 
     def validate_sum_positive(self):
         fields = (
@@ -275,6 +288,7 @@ class IndberetningsLinjeSkema1Form(NonPelagiskPrisRequired, IndberetningsLinjeFo
         clientside_formatting=True,
         max_value=999_999_999,
         min_value=-999_999_999,
+        decimal_places=2,
     )
     fartøj_navn = CharField(
         widget=Select(
@@ -322,12 +336,14 @@ class IndberetningsLinjeSkema2Form(NonPelagiskPrisRequired, IndberetningsLinjeFo
         clientside_formatting=True,
         max_value=999_999_999,
         min_value=-999_999_999,
+        decimal_places=2,
     )
     produktvægt = LocalizedDecimalField(
         required=True,
         clientside_formatting=True,
         max_value=999_999_999,
         min_value=-999_999_999,
+        decimal_places=2,
     )
     fartøj_navn = CharField(
         widget=Select(
@@ -372,6 +388,7 @@ class IndberetningsLinjeSkema3Form(IndberetningsLinjeForm):
         clientside_formatting=True,
         max_value=999_999_999,
         min_value=-999_999_999,
+        decimal_places=2,
     )
     indhandlingssted = ModelChoiceField(
         queryset=Indhandlingssted.objects.filter(aktiv_til_indhandling=True)
