@@ -64,4 +64,4 @@ class PrismeTestCase(TestCase):
         get_account_data_mock.return_value = [prisme_sel_mock(faktura.id, dato)]
         management.call_command("get_account_data")
         faktura.refresh_from_db()
-        self.assertEquals(faktura.bogført, dato)
+        self.assertEqual(faktura.bogført, dato)
