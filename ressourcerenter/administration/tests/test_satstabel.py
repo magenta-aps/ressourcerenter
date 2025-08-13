@@ -55,4 +55,4 @@ class PrismeTestCase(TestCase):
             ),
             data,
         )
-        self.assertEquals(r.status_code, 302)
+        self.assertEqual(r.status_code, 302)

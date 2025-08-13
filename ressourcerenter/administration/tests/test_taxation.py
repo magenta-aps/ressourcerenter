@@ -120,7 +120,7 @@ class AfgiftTestCase(TestCase):
             levende_vaegt=100,
             salgsvaegt=100,
         )
-        self.assertEquals(result.afgift, Decimal(20))
+        self.assertEqual(result.afgift, Decimal(20))
 
     def test_landed_calculation_2(self):
         """
@@ -145,7 +145,7 @@ class AfgiftTestCase(TestCase):
             salgsvaegt=100,
         )
 
-        self.assertEquals(result.afgift, Decimal(5))
+        self.assertEqual(result.afgift, Decimal(5))
 
     def test_transferred_calculation_2(self):
         """
@@ -164,17 +164,17 @@ class AfgiftTestCase(TestCase):
             levende_vaegt=100,
             salgsvaegt=100,
         )
-        self.assertEquals(Decimal(50), result.afgift)
+        self.assertEqual(Decimal(50), result.afgift)
 
         result = self._calculate(
             fiskeart="Torsk", salgspris=500, levende_vaegt=100, salgsvaegt=100
         )
-        self.assertEquals(Decimal(25), result.afgift)
+        self.assertEqual(Decimal(25), result.afgift)
 
         result = self._calculate(
             fiskeart="Hellefisk", salgspris=300, levende_vaegt=150, salgsvaegt=150
         )
-        self.assertEquals(Decimal(15), result.afgift)
+        self.assertEqual(Decimal(15), result.afgift)
 
     def test_transferred_calculation_3(self):
         """
@@ -199,7 +199,7 @@ class AfgiftTestCase(TestCase):
             salgsvaegt=100,
         )
 
-        self.assertEquals(result.afgift, Decimal(70))
+        self.assertEqual(result.afgift, Decimal(70))
 
     def test_pelagic(self):
         """
@@ -220,7 +220,7 @@ class AfgiftTestCase(TestCase):
             salgsvaegt=100,
             fartoej_groenlandsk=True,
         )
-        self.assertEquals(result.afgift, Decimal(25))
+        self.assertEqual(result.afgift, Decimal(25))
 
         result = self._calculate(
             fiskeart="Sild",
@@ -229,7 +229,7 @@ class AfgiftTestCase(TestCase):
             salgsvaegt=100,
             fartoej_groenlandsk=False,
         )
-        self.assertEquals(result.afgift, Decimal(80))
+        self.assertEqual(result.afgift, Decimal(80))
 
         result = self._calculate(
             fiskeart="Lodde",
@@ -238,7 +238,7 @@ class AfgiftTestCase(TestCase):
             salgsvaegt=100,
             fartoej_groenlandsk=True,
         )
-        self.assertEquals(result.afgift, Decimal(15))
+        self.assertEqual(result.afgift, Decimal(15))
 
         result = self._calculate(
             fiskeart="Lodde",
@@ -247,7 +247,7 @@ class AfgiftTestCase(TestCase):
             salgsvaegt=100,
             fartoej_groenlandsk=False,
         )
-        self.assertEquals(result.afgift, Decimal(70))
+        self.assertEqual(result.afgift, Decimal(70))
 
         result = self._calculate(
             fiskeart="Makrel",
@@ -256,7 +256,7 @@ class AfgiftTestCase(TestCase):
             salgsvaegt=100,
             fartoej_groenlandsk=True,
         )
-        self.assertEquals(result.afgift, Decimal(40))
+        self.assertEqual(result.afgift, Decimal(40))
 
         result = self._calculate(
             fiskeart="Makrel",
@@ -265,7 +265,7 @@ class AfgiftTestCase(TestCase):
             salgsvaegt=100,
             fartoej_groenlandsk=False,
         )
-        self.assertEquals(result.afgift, Decimal(100))
+        self.assertEqual(result.afgift, Decimal(100))
 
         result = self._calculate(
             fiskeart="Blåhvilling",
@@ -274,7 +274,7 @@ class AfgiftTestCase(TestCase):
             salgsvaegt=100,
             fartoej_groenlandsk=True,
         )
-        self.assertEquals(result.afgift, Decimal(15))
+        self.assertEqual(result.afgift, Decimal(15))
 
         result = self._calculate(
             fiskeart="Blåhvilling",
@@ -283,7 +283,7 @@ class AfgiftTestCase(TestCase):
             salgsvaegt=100,
             fartoej_groenlandsk=False,
         )
-        self.assertEquals(result.afgift, Decimal(70))
+        self.assertEqual(result.afgift, Decimal(70))
 
         result = self._calculate(
             fiskeart="Guldlaks",
@@ -292,7 +292,7 @@ class AfgiftTestCase(TestCase):
             salgsvaegt=100,
             fartoej_groenlandsk=True,
         )
-        self.assertEquals(result.afgift, Decimal(15))
+        self.assertEqual(result.afgift, Decimal(15))
 
         result = self._calculate(
             fiskeart="Guldlaks",
@@ -301,4 +301,4 @@ class AfgiftTestCase(TestCase):
             salgsvaegt=100,
             fartoej_groenlandsk=False,
         )
-        self.assertEquals(result.afgift, Decimal(70))
+        self.assertEqual(result.afgift, Decimal(70))
