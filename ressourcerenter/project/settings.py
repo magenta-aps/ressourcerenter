@@ -13,14 +13,13 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import re
 import os
 from pathlib import Path
-from distutils.util import strtobool
 from django.utils.translation import gettext_lazy as _
 import django.conf.locale
 
 from django.urls import reverse_lazy
 import decimal
 
-from indberetning.utils import populate_dummy_session
+from indberetning.utils import populate_dummy_session, strtobool
 
 # Round towards zero (positives round down, negatives round up)
 decimal.getcontext().rounding = decimal.ROUND_DOWN
@@ -171,7 +170,6 @@ django.conf.locale.LANG_INFO["kl"] = {
 
 UPLOAD_PATH = "/uploads"
 MEDIA_ROOT = "/srv/media/"
-# MEDIA_URL = "/media/"
 
 
 # Don't limit the number of fields in form submission (e.g. a large number of checkboxes)

@@ -1,6 +1,6 @@
 django==3.2.9
 gunicorn==22.0.0
-psycopg2==2.8.6
+psycopg2==2.9.10
 requests==2.25.1
 django-simple-history==3.0.0
 openpyxl==3.0.7
@@ -11,7 +11,8 @@ pydotplus==2.0.2
 xmltodict>=0.12.0
 dict2xml>=1.6.1
 requests[socks]
-tenQ @ git+https://github.com/magenta-aps/10Q.git@0.1.6
+tenQ @ git+https://github.com/magenta-aps/10Q.git@0.7.0
+paramiko==3.5.1
 django-debug-toolbar
 django_mitid_auth @ git+https://github.com/magenta-aps/gl-django-login.git@1.4.0
 django-session-timeout @ git+https://github.com/Lapeth/django-session-timeout@master
@@ -19,4 +20,4 @@ pysaml2==7.5.0
 xmltodict>=0.12.0
 whitenoise==6.2.0
 django-csp==3.8
-paramiko==3.5.1
+setuptools==80.9.0
