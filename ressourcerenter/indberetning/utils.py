@@ -11,6 +11,7 @@ def populate_dummy_session():
         "organizationname": "Development Organization",
     }
 
+
 def strtobool(val, return_value_if_nonbool=False):
     if isinstance(val, bool):
         return val
