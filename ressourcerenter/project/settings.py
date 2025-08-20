@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import re
 import os
+import sys
 from pathlib import Path
 from django.utils.translation import gettext_lazy as _
 import django.conf.locale
@@ -31,6 +32,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ["SECRET_KEY"]
 DEBUG = strtobool(os.environ.get("DEBUG", "False"))
+TESTING = len(sys.argv) > 1 and sys.argv[1] == "test"
 
 ALLOWED_HOSTS = ["*"]
 
@@ -44,7 +46,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "debug_toolbar",
     "simple_history",
     "administration",
     "indberetning",
@@ -55,9 +56,10 @@ INSTALLED_APPS = [
     "django_extensions",
     "metrics",
 ]
+if not TESTING:
+    INSTALLED_APPS.append("debug_toolbar")
 
 MIDDLEWARE = [
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -73,6 +75,8 @@ MIDDLEWARE = [
     "django_session_timeout.middleware.SessionTimeoutMiddleware",
     "csp.middleware.CSPMiddleware",
 ]
+if not TESTING:
+    MIDDLEWARE.append("debug_toolbar.middleware.DebugToolbarMiddleware")
 
 
 if DEBUG:
