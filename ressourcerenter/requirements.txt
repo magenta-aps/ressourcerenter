@@ -13,7 +13,7 @@ dict2xml>=1.6.1
 requests[socks]
 tenQ @ git+https://github.com/magenta-aps/10Q.git@0.7.0
 paramiko==3.5.1
-django-debug-toolbar
+django-debug-toolbar==3.8.1
 django_mitid_auth @ git+https://github.com/magenta-aps/gl-django-login.git@1.4.0
 django-session-timeout @ git+https://github.com/Lapeth/django-session-timeout@master
 pysaml2==7.5.0

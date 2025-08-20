@@ -419,7 +419,7 @@ SAML = {
 
 
 def show_toolbar(request):
-    return False
+    return strtobool(os.environ.get("SHOW_DEBUG_TOOLBAR", "False"))
 
 
 DEBUG_TOOLBAR_CONFIG = {
