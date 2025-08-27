@@ -138,7 +138,17 @@ Unittest:
     - name: postgres:13
       alias: ressourcerenter-db
   script:
-    - cd /app && python manage.py test
+    - cd /app
+    - coverage run manage.py test --parallel
+    - coverage combine
+    - coverage report --show-missing --fail-under=50
+    - coverage xml
+  coverage: '/^TOTAL.+?(\d+\%)$/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: /app/coverage.xml
 
 Django check:
   <<: *test-default
