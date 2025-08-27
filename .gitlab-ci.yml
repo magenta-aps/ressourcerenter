@@ -96,19 +96,12 @@ Generate documentation:
 
 # Test stage
 ############
-.test-default:
+.test-default: &test-default
   stage: test
   dependencies: []
-
-Unittest:
-  extends:
-    - .test-default
-  needs:
-    - Build
   image: ${IMAGE_SHA}
-  services:
-    - name: postgres:13
-      alias: ressourcerenter-db
+  needs:
+    - Build  # from docker-build.v1.yml
   variables:
     SECRET_KEY: e$s6@0(hs5ja79-&!l7vt^onoe4h^*bv_e4hj&wt5^8*&x76-$
     TIMEZONE: Europe/Copenhagen
@@ -138,8 +131,19 @@ Unittest:
     SAML_CONTACT_SUPPORT_EMAIL: test@example.com
     SKIP_IDP_METADATA: "true"
     GENERATE_DB_DOCUMENTATION: "false"
+
+Unittest:
+  <<: *test-default
+  services:
+    - name: postgres:13
+      alias: ressourcerenter-db
   script:
     - cd /app && python manage.py test
+
+Django check:
+  <<: *test-default
+  script:
+    - cd /app && python manage.py check administration indberetning
 
 # Release stage
 ###############
