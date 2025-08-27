@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: 2025 Magenta ApS <info@magenta.dk>
+#
+# SPDX-License-Identifier: MPL-2.0
+
+[run]
+relative_files = True
+branch = True
+source = .
+omit =
+    */manage.py
+    */project/*
+    */apps.py
+    */urls.py
+    */tests.py
+    */__init__.py
+    */migrations/*
+    */tests/*
+    */mitid_test/*
+    */management/commands/*
+parallel = true
+concurrency = multiprocessing
