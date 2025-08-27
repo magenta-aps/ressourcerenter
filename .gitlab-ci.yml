@@ -140,7 +140,6 @@ Unittest:
   script:
     - cd /app
     - coverage run manage.py test --parallel
-    - coverage combine
     - coverage report --show-missing --fail-under=50
     - coverage xml
   coverage: '/^TOTAL.+?(\d+\%)$/'
