@@ -29,7 +29,8 @@ if [ "$CREATE_DUMMY_USERS" = true ]; then
 fi
 if [ "$TEST" = true ]; then
   echo 'running tests!'
-  python manage.py test
+  coverage run manage.py test
+  coverage report --show-missing --fail-under=50
 fi
 if [ "$SAMPLE_DATA" = true ]; then
   echo "Generating sample data"
