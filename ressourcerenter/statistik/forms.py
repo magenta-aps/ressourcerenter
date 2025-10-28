@@ -1,5 +1,4 @@
-from administration.models import FiskeArt, Afgiftsperiode
-from administration.models import ProduktType
+from administration.models import Afgiftsperiode, FiskeArt, ProduktType
 from django import forms
 from django.db.models import Q
 from django.utils.translation import gettext as _

@@ -1,13 +1,16 @@
-from administration.models import Afgiftsperiode
-from administration.models import BeregningsModel2021
-from administration.models import FiskeArt
-from administration.models import ProduktType
-from administration.models import SkemaType
 from datetime import date
 from decimal import Decimal
+
+from administration.models import (
+    Afgiftsperiode,
+    BeregningsModel2021,
+    FiskeArt,
+    ProduktType,
+    SkemaType,
+)
 from django.test import TestCase
-from indberetning.models import IndberetningLinje
-from indberetning.models import Virksomhed, Indberetning
+from indberetning.models import Indberetning, IndberetningLinje, Virksomhed
+
 from statistik.forms import StatistikForm
 from statistik.views import StatistikView
 
@@ -253,8 +256,26 @@ class StatistikTestCase(TestCase):
             fiskeart_eksport=FiskeArt.objects.get(navn_dk="Hellefisk").uuid,
             fiskeart_indhandling=FiskeArt.objects.get(navn_dk="Hellefisk").uuid,
         )
-        self.assertEqual(resultat[0], {'År': '2022', 'Kvartal': '1. kvartal', 'Fiskeart (eksport)': '', 'Fiskeart (indhandling)': 'Hellefisk', 'Levende vægt tons': Decimal('2.00')})
-        self.assertEqual(resultat[1], {'År': '2022', 'Kvartal': '1. kvartal', 'Fiskeart (eksport)': 'Hellefisk', 'Fiskeart (indhandling)': '', 'Levende vægt tons': Decimal('0.22')})
+        self.assertEqual(
+            resultat[0],
+            {
+                "År": "2022",
+                "Kvartal": "1. kvartal",
+                "Fiskeart (eksport)": "",
+                "Fiskeart (indhandling)": "Hellefisk",
+                "Levende vægt tons": Decimal("2.00"),
+            },
+        )
+        self.assertEqual(
+            resultat[1],
+            {
+                "År": "2022",
+                "Kvartal": "1. kvartal",
+                "Fiskeart (eksport)": "Hellefisk",
+                "Fiskeart (indhandling)": "",
+                "Levende vægt tons": Decimal("0.22"),
+            },
+        )
 
         # Indhandlingslinjen har bonus, forvent nulstilling af vægt
         resultat = self.get_form_result(
@@ -262,5 +283,23 @@ class StatistikTestCase(TestCase):
             fiskeart_eksport=FiskeArt.objects.get(navn_dk="Hellefisk").uuid,
             fiskeart_indhandling=FiskeArt.objects.get(navn_dk="Hellefisk").uuid,
         )
-        self.assertEqual(resultat[0], {'År': '2022', 'Kvartal': '1. kvartal', 'Fiskeart (eksport)': '', 'Fiskeart (indhandling)': 'Hellefisk', 'Levende vægt tons': Decimal('0.00')})
-        self.assertEqual(resultat[1], {'År': '2022', 'Kvartal': '1. kvartal', 'Fiskeart (eksport)': 'Hellefisk', 'Fiskeart (indhandling)': '', 'Levende vægt tons': Decimal('0.22')})
+        self.assertEqual(
+            resultat[0],
+            {
+                "År": "2022",
+                "Kvartal": "1. kvartal",
+                "Fiskeart (eksport)": "",
+                "Fiskeart (indhandling)": "Hellefisk",
+                "Levende vægt tons": Decimal("0.00"),
+            },
+        )
+        self.assertEqual(
+            resultat[1],
+            {
+                "År": "2022",
+                "Kvartal": "1. kvartal",
+                "Fiskeart (eksport)": "Hellefisk",
+                "Fiskeart (indhandling)": "",
+                "Levende vægt tons": Decimal("0.22"),
+            },
+        )

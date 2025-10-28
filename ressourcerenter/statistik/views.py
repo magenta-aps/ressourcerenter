@@ -1,11 +1,9 @@
 import json
 from decimal import Decimal
+from functools import lru_cache
 
 from administration.models import Afgiftsperiode, FiskeArt
-from django.db.models import Case, Value, When, F, DecimalField
-from django.db.models import Q
-from django.db.models import Sum
-from django.db.models import TextField
+from django.db.models import Case, DecimalField, F, Q, Sum, TextField, Value, When
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.utils.functional import cached_property
@@ -13,9 +11,8 @@ from django.utils.translation import gettext as _
 from django.views.generic import FormView
 from indberetning.models import IndberetningLinje
 from project.views_mixin import ExcelMixin
-from statistik.forms import StatistikBaseForm
-from statistik.forms import StatistikForm
-from functools import lru_cache
+
+from statistik.forms import StatistikBaseForm, StatistikForm
 
 
 class StatistikBaseView(FormView):
@@ -69,12 +66,16 @@ class StatistikBaseView(FormView):
         if annotate_bonusadjusted:
             qs = qs.annotate(
                 bonusjusteret_produktvægt=Case(
-                    When(bonus__gt=0, then=Value(0)), default=F("produktvægt"), output_field=DecimalField()
+                    When(bonus__gt=0, then=Value(0)),
+                    default=F("produktvægt"),
+                    output_field=DecimalField(),
                 ),
                 bonusjusteret_levende_vægt=Case(
-                    When(bonus__gt=0, then=Value(0)), default=F("levende_vægt"), output_field=DecimalField()
+                    When(bonus__gt=0, then=Value(0)),
+                    default=F("levende_vægt"),
+                    output_field=DecimalField(),
                 ),
-        )
+            )
 
         if cleaned_data["indhandlingssted"]:
             grouping_fields["indhandlingssted"] = "indhandlingssted__navn"
@@ -185,9 +186,17 @@ class StatistikView(ExcelMixin, StatistikBaseView):
 
         enheder = form.cleaned_data["enhed"]
         if "levende_ton" in enheder:
-            annotations["levende_ton"] = Sum("bonusjusteret_levende_vægt") if annotate_bonusadjusted else Sum("levende_vægt")
+            annotations["levende_ton"] = (
+                Sum("bonusjusteret_levende_vægt")
+                if annotate_bonusadjusted
+                else Sum("levende_vægt")
+            )
         if "produkt_ton" in enheder:
-            annotations["produkt_ton"] = Sum("bonusjusteret_produktvægt") if annotate_bonusadjusted else Sum("produktvægt")
+            annotations["produkt_ton"] = (
+                Sum("bonusjusteret_produktvægt")
+                if annotate_bonusadjusted
+                else Sum("produktvægt")
+            )
         if "omsætning_tkr" in enheder:
             annotations["omsætning_tkr"] = Sum("salgspris")
         if "transporttillæg_tkr" in enheder:

@@ -1,7 +1,7 @@
 from django.urls import path
 
 from statistik.apps import StatistikConfig
-from statistik.views import StatistikView, StatistikChoicesView
+from statistik.views import StatistikChoicesView, StatistikView
 
 app_name = StatistikConfig.name
 
