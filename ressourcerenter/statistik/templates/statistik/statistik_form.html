@@ -200,7 +200,6 @@
         }
 
         if ($(field_map['years']).val().length && $(field_map['quarter_starting_month']).val().length) {
-            console.log('sending', $("#statistikform").serialize());
             $.ajax({
                 type: 'POST',
                 url: '{% url "statistik:choices" %}',
