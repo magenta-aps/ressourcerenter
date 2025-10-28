@@ -115,3 +115,10 @@ class StatistikForm(BootstrapForm, StatistikBaseForm):
         ),
         required=True,
     )
+
+    disregard_bonus_reports = forms.BooleanField(
+        label=_("Indberetninger med bonus skal ikke tælles med i vægtfelter"),
+        required=False,
+        initial=False,
+        widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
+    )

@@ -2,7 +2,7 @@ import json
 from decimal import Decimal
 
 from administration.models import Afgiftsperiode, FiskeArt
-from django.db.models import Case, Value, When
+from django.db.models import Case, Value, When, F, DecimalField
 from django.db.models import Q
 from django.db.models import Sum
 from django.db.models import TextField
@@ -30,6 +30,7 @@ class StatistikBaseView(FormView):
         ordering_fields = {}
 
         cleaned_data = form.cleaned_data.copy()
+        annotate_bonusadjusted = cleaned_data["disregard_bonus_reports"]
         if only_fields is not None:
             for field in cleaned_data:
                 if field not in only_fields:
@@ -64,6 +65,15 @@ class StatistikBaseView(FormView):
                 ),  # Values skal matche form.indberetningstype.choices
                 default=Value("Indhandling"),
             )
+        )
+        if annotate_bonusadjusted:
+            qs = qs.annotate(
+                bonusjusteret_produktvægt=Case(
+                    When(bonus__gt=0, then=Value(0)), default=F("produktvægt"), output_field=DecimalField()
+                ),
+                bonusjusteret_levende_vægt=Case(
+                    When(bonus__gt=0, then=Value(0)), default=F("levende_vægt"), output_field=DecimalField()
+                ),
         )
 
         if cleaned_data["indhandlingssted"]:
@@ -167,15 +177,17 @@ class StatistikView(ExcelMixin, StatistikBaseView):
         # ie. the aggregated Sum of the value specified by the unit column,
         # grouped over the identifying columns.
 
+        annotate_bonusadjusted = form.cleaned_data["disregard_bonus_reports"]
+
         qs, grouping_fields, ordering_fields = self.get_queryset(form)
         annotations = {}
         qs = qs.select_related("produkttype", "indberetning", "indhandlingssted")
 
         enheder = form.cleaned_data["enhed"]
         if "levende_ton" in enheder:
-            annotations["levende_ton"] = Sum("levende_vægt")
+            annotations["levende_ton"] = Sum("bonusjusteret_levende_vægt") if annotate_bonusadjusted else Sum("levende_vægt")
         if "produkt_ton" in enheder:
-            annotations["produkt_ton"] = Sum("produktvægt")
+            annotations["produkt_ton"] = Sum("bonusjusteret_produktvægt") if annotate_bonusadjusted else Sum("produktvægt")
         if "omsætning_tkr" in enheder:
             annotations["omsætning_tkr"] = Sum("salgspris")
         if "transporttillæg_tkr" in enheder:
@@ -190,7 +202,6 @@ class StatistikView(ExcelMixin, StatistikBaseView):
         for key, value in grouping_fields.items():
             if key not in ordering_fields:
                 ordering_fields[key] = value
-
         qs = (
             qs.values(*grouping_fields.values())
             .annotate(**annotations)
