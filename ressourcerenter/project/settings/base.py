@@ -15,6 +15,7 @@ import os
 import sys
 from pathlib import Path
 
+
 def strtobool(val, return_value_if_nonbool=False):
     if isinstance(val, bool):
         return val
@@ -29,13 +30,12 @@ def strtobool(val, return_value_if_nonbool=False):
         raise ValueError("invalid truth value %r" % (val,))
 
 
-
 decimal.getcontext().rounding = decimal.ROUND_DOWN
 
 VERSION = os.environ["COMMIT_TAG"]
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = os.environ["SECRET_KEY"]
 DEBUG = strtobool(os.environ.get("DEBUG", "False"))

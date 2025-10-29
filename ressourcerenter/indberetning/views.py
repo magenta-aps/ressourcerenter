@@ -2,38 +2,38 @@ import json
 import mimetypes
 from decimal import Decimal
 
-from administration.models import Afgiftsperiode, SkemaType, FiskeArt, ProduktType
+from administration.models import Afgiftsperiode, FiskeArt, ProduktType, SkemaType
 from django.contrib import messages
 from django.db import IntegrityError
 from django.db.models import Sum, Value
 from django.db.models.query import prefetch_related_objects
 from django.forms import inlineformset_factory
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 from django.views.generic import (
-    RedirectView,
-    ListView,
-    FormView,
-    View,
     DetailView,
+    FormView,
+    ListView,
+    RedirectView,
     UpdateView,
+    View,
 )
 from indberetning.forms import (
-    IndberetningsTypeSelectForm,
-    VirksomhedsAddressForm,
     BilagsFormSet,
+    IndberetningBaseFormset,
+    IndberetningBeregningForm,
+    IndberetningSearchForm,
+    IndberetningsLinjeBeregningForm,
     IndberetningsLinjeSkema1Form,
     IndberetningsLinjeSkema2Form,
     IndberetningsLinjeSkema3Form,
-    IndberetningBeregningForm,
-    IndberetningsLinjeBeregningForm,
-    IndberetningSearchForm,
-    IndberetningBaseFormset,
+    IndberetningsTypeSelectForm,
+    VirksomhedsAddressForm,
 )
-from indberetning.models import Indberetning, Virksomhed, IndberetningLinje, Bilag
+from indberetning.models import Bilag, Indberetning, IndberetningLinje, Virksomhed
 from project.views_mixin import Trunc
 
 

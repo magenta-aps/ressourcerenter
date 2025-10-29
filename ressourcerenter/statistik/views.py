@@ -11,7 +11,6 @@ from django.utils.translation import gettext as _
 from django.views.generic import FormView
 from indberetning.models import IndberetningLinje
 from project.views_mixin import ExcelMixin
-
 from statistik.forms import StatistikBaseForm, StatistikForm
 
 

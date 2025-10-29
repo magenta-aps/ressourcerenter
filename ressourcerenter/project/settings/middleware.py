@@ -18,4 +18,3 @@ MIDDLEWARE = [
 ]
 if not TESTING:
     MIDDLEWARE.append("debug_toolbar.middleware.DebugToolbarMiddleware")
-

@@ -1,78 +1,67 @@
 import mimetypes
-from decimal import Decimal
-
-from django import forms
-from django.conf import settings
-from django.db.models.aggregates import Count
-from django.db.models.query import prefetch_related_objects
-from django.db.models import Sum, Value
-from django.shortcuts import redirect
-from django.contrib import messages
-from django.http import HttpResponseNotFound
-from django.views.generic import RedirectView
-from django.views.generic import TemplateView, ListView, DetailView
-from django.views.generic import CreateView, UpdateView
-from django.views.generic.detail import SingleObjectMixin, BaseDetailView
-from django.views.generic.edit import BaseFormView, DeleteView
-from django.urls import reverse, reverse_lazy
-from django.utils.translation import gettext as _
-from django.utils.functional import cached_property
-from django.http.response import FileResponse, HttpResponse
-from tenQ.writer import G69TransactionWriter
-
-
-from datetime import timedelta
-from tenQ.client import ClientException
 import re
-from os import path
+from datetime import date, timedelta
+from decimal import Decimal
 from itertools import chain
-from datetime import date
+from os import path
 from uuid import uuid4
-from django.core.files import File
-
-from administration.views_mixin import HistoryMixin
-from project.views_mixin import ExcelMixin, GetFormView
 
 from administration.forms import (
     AfgiftsperiodeForm,
-    SatsTabelElementForm,
-    SatsTabelElementFormSet,
-)
-from administration.models import Afgiftsperiode, SatsTabelElement
-
-from administration.forms import FiskeArtForm
-from administration.models import FiskeArt
-
-from administration.forms import ProduktTypeCreateForm, ProduktTypeUpdateForm
-from administration.models import ProduktType
-
-from indberetning.models import Indberetning
-from administration.forms import IndberetningSearchForm
-
-from indberetning.models import IndberetningLinje
-from administration.forms import (
+    BatchSendForm,
+    FakturaForm,
+    FiskeArtForm,
+    G69CodeExportForm,
+    G69KodeForm,
+    IndberetningAfstemForm,
     IndberetningLinjeKommentarForm,
     IndberetningLinjeKommentarFormSet,
+    IndberetningSearchForm,
+    ProduktTypeCreateForm,
+    ProduktTypeUpdateForm,
+    SatsTabelElementForm,
+    SatsTabelElementFormSet,
+    VirksomhedForm,
 )
-from administration.forms import IndberetningAfstemForm
-
-from indberetning.models import Virksomhed
-from indberetning.models import Bilag
-from administration.forms import VirksomhedForm
-
-from administration.models import Faktura, Prisme10QBatch
-from administration.forms import FakturaForm, BatchSendForm
-
-from administration.forms import G69KodeForm
-from administration.models import G69Code
-
-from administration.models import G69CodeExport
-
-from administration.models import g69_export_filepath
-
-from administration.forms import G69CodeExportForm
-
-from project.views_mixin import Trunc
+from administration.models import (
+    Afgiftsperiode,
+    Faktura,
+    FiskeArt,
+    G69Code,
+    G69CodeExport,
+    Prisme10QBatch,
+    ProduktType,
+    SatsTabelElement,
+    g69_export_filepath,
+)
+from administration.views_mixin import HistoryMixin
+from django import forms
+from django.conf import settings
+from django.contrib import messages
+from django.core.files import File
+from django.db.models import Sum, Value
+from django.db.models.aggregates import Count
+from django.db.models.query import prefetch_related_objects
+from django.http import HttpResponseNotFound
+from django.http.response import FileResponse, HttpResponse
+from django.shortcuts import redirect
+from django.urls import reverse, reverse_lazy
+from django.utils.functional import cached_property
+from django.utils.translation import gettext as _
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    ListView,
+    RedirectView,
+    TemplateView,
+    UpdateView,
+)
+from django.views.generic.detail import BaseDetailView, SingleObjectMixin
+from django.views.generic.edit import BaseFormView, DeleteView
+from indberetning.models import Bilag, Indberetning, IndberetningLinje, Virksomhed
+from project.views_mixin import ExcelMixin, GetFormView, Trunc
+from tenQ.client import ClientException
+from tenQ.writer import G69TransactionWriter
 
 
 def floor_decimal(value: Decimal) -> Decimal:

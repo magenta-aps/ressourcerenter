@@ -2,8 +2,7 @@ import os
 import re
 
 from django.urls import reverse_lazy
-
-from ressourcerenter.indberetning.utils import populate_dummy_session
+from indberetning.utils import populate_dummy_session
 from project.settings.base import strtobool
 
 AUTH_PASSWORD_VALIDATORS = [

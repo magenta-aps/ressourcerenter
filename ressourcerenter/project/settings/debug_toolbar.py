@@ -1,8 +1,6 @@
 import os
 
-from project.settings.base import DEBUG
-
-from project.settings.base import strtobool
+from project.settings.base import DEBUG, strtobool
 
 if DEBUG:
     import socket
@@ -12,6 +10,7 @@ if DEBUG:
         "127.0.0.1",
         "10.0.2.2",
     ]
+
 
 def show_toolbar(request):
     return strtobool(os.environ.get("SHOW_DEBUG_TOOLBAR", "False"))

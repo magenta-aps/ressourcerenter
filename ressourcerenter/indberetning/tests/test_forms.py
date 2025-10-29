@@ -1,16 +1,15 @@
 import uuid
 
 from django.test import TestCase, override_settings
-from indberetning.forms import IndberetningsTypeSelectForm
-from indberetning.forms import VirksomhedsAddressForm
-from indberetning.forms import IndberetningsLinjeBeregningForm
-from indberetning.forms import IndberetningsLinjeSkema1Form
-from indberetning.forms import IndberetningsLinjeSkema2Form
-from indberetning.forms import IndberetningsLinjeSkema3Form
-from indberetning.models import Afgiftsperiode
-from indberetning.models import SkemaType
-from indberetning.models import ProduktType
-from indberetning.models import Indhandlingssted
+from indberetning.forms import (
+    IndberetningsLinjeBeregningForm,
+    IndberetningsLinjeSkema1Form,
+    IndberetningsLinjeSkema2Form,
+    IndberetningsLinjeSkema3Form,
+    IndberetningsTypeSelectForm,
+    VirksomhedsAddressForm,
+)
+from indberetning.models import Afgiftsperiode, Indhandlingssted, ProduktType, SkemaType
 
 
 class CompanyContactTestForm(TestCase):

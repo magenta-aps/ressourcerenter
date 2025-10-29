@@ -1,14 +1,15 @@
 import datetime
 import random
-from administration.models import Afgiftsperiode, BeregningsModel2021, SkemaType
 from decimal import Decimal
+
+from administration.models import Afgiftsperiode, BeregningsModel2021, SkemaType
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from indberetning.models import (
     Indberetning,
-    Virksomhed,
     IndberetningLinje,
     Indhandlingssted,
+    Virksomhed,
 )
 
 

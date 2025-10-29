@@ -10,4 +10,3 @@ def populate_dummy_session():
         "cvr": settings.DEFAULT_CVR,
         "organizationname": "Development Organization",
     }
-

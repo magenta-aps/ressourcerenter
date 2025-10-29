@@ -1,15 +1,15 @@
 from django.core.management.base import BaseCommand
 from django.utils.datetime_safe import date, datetime
 from resmockup.models import (
-    FormularFelt,
+    Afgiftsperiode,
+    Afgiftstabel,
+    BeregnetIndberetning,
     BeregningsModelEksempel,
     BeregningsModelPrototype,
-    Afgiftstabel,
-    Afgiftsperiode,
-    Indberetning,
-    BeregnetIndberetning,
-    Indberetter,
     FiskeArt,
+    FormularFelt,
+    Indberetning,
+    Indberetter,
     Kategori,
     SummeretBeregnetIndberetning,
 )

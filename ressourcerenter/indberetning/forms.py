@@ -1,17 +1,25 @@
 from administration.models import Afgiftsperiode, ProduktType, SkemaType
 from django.core.exceptions import ValidationError
-from django.forms import ModelChoiceField, CharField, FileField, BaseInlineFormSet
-from django.forms import ModelForm, modelformset_factory
-from django.forms import Select, Textarea, FileInput
+from django.forms import (
+    BaseInlineFormSet,
+    CharField,
+    FileField,
+    FileInput,
+    ModelChoiceField,
+    ModelForm,
+    Select,
+    Textarea,
+    modelformset_factory,
+)
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from indberetning.models import (
     Bilag,
-    Virksomhed,
-    IndberetningLinje,
-    Navne,
     Indberetning,
+    IndberetningLinje,
     Indhandlingssted,
+    Navne,
+    Virksomhed,
 )
 from project.form_fields import LocalizedDecimalField
 from project.forms_mixin import BootstrapForm

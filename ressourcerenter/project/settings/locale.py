@@ -2,7 +2,6 @@ import os
 
 import django.conf.locale
 from django.utils.translation import gettext_lazy as _
-
 from project.settings.base import BASE_DIR
 
 # Internationalization

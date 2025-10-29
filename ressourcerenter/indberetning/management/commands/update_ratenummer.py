@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
-from indberetning.models import IndberetningLinje
-from indberetning.models import set_ratenummer
+from indberetning.models import IndberetningLinje, set_ratenummer
 
 
 class Command(BaseCommand):
