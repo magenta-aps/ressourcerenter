@@ -218,6 +218,7 @@ LOGIN_WHITELISTED_URLS = [
     re.compile("^/media/"),
     re.compile("^/i18n/"),
     re.compile("^/metrics/"),
+    re.compile("^/__debug__/"),
     "/_ht/",
     LOGIN_TIMEOUT_URL,
     LOGIN_REPEATED_URL,

@@ -1,5 +1,4 @@
-from administration.models import FiskeArt, Afgiftsperiode
-from administration.models import ProduktType
+from administration.models import Afgiftsperiode, FiskeArt, ProduktType
 from django import forms
 from django.db.models import Q
 from django.utils.translation import gettext as _
@@ -114,4 +113,11 @@ class StatistikForm(BootstrapForm, StatistikBaseForm):
             ("afgift_tkr", _("Beregnet afgiftsbetaling, tusinde kr.")),
         ),
         required=True,
+    )
+
+    disregard_bonus_reports = forms.BooleanField(
+        label=_("Indberetninger med bonus skal ikke tælles med i vægtfelter"),
+        required=False,
+        initial=False,
+        widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
     )
