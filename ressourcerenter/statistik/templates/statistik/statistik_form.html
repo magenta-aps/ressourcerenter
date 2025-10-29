@@ -41,6 +41,16 @@
                     {% endfor %}
                 </div>
             </div>
+            {% elif field.field.widget.input_type == 'checkbox' %}
+            <div class="row">
+                <div class="col-12">
+                     <div class="form-check">
+                    {{field}}
+                    <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                     </div>
+                </div>
+            </div>
+            </div>
             {% else %}
             <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
             <div class="row">
@@ -189,7 +199,7 @@
             }
         }
 
-        if ($(field_map['years']).val() && $(field_map['quarter_starting_month']).val()) {
+        if ($(field_map['years']).val().length && $(field_map['quarter_starting_month']).val().length) {
             $.ajax({
                 type: 'POST',
                 url: '{% url "statistik:choices" %}',
