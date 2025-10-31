@@ -6,13 +6,13 @@ ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN mkdir /app &&  \
     mkdir -p /srv/media &&  \
-    mkdir -p /var/cache/aalisakkat && \
+    mkdir -p /var/cache/idp && \
     #gid/uid from salt
     groupadd -g 75090 -r ressourcerenter && \
     groupadd -g 75100 -r certificate_exporter && \
     useradd -u 75090 --no-log-init -r -g ressourcerenter -G certificate_exporter ressourcerenter && \
-    chown ressourcerenter:ressourcerenter /srv/media && \
-    chown ressourcerenter:ressourcerenter /var/cache/aalisakkat && chmod a+w /var/cache/aalisakkat
+    chown -R ressourcerenter:ressourcerenter /srv/media && \
+    chown -R ressourcerenter:ressourcerenter /var/cache/idp
 
 # hadolint ignore=DL3008
 RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt bookworm-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && \
@@ -48,7 +48,7 @@ WORKDIR /app
 RUN django-admin compilemessages
 USER ressourcerenter
 VOLUME /srv/media
-VOLUME /var/cache/aalisakkat
+VOLUME /var/cache/idp
 EXPOSE 8000
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["gunicorn", "--bind=0.0.0.0:8000", "project.wsgi:application", "--workers=4", "--timeout=120","--error-logfile=-", "--access-logfile=-", "--capture-output"]

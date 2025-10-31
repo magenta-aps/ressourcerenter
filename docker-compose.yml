@@ -10,6 +10,7 @@ services:
     command: [ "/input/manual.md", "-V", "geometry:margin=30mm", "-o", "/output/manual.pdf" ]
 
   ressourcerenter-web:
+    user: "75090:1000"
     container_name: ressourcerenter-web
     image: ressourcerenter:latest
     build:
@@ -28,6 +29,7 @@ services:
       - ./data/bilag:/srv/media/bilag
       - ./data/:/app/project/static/media
       - ./dev-environment/cert:/ssl:ro
+      - idp-data:/var/cache/idp:rw
     command: gunicorn --bind=0.0.0.0:8000 project.wsgi:application --reload --workers=1 --access-logfile=- --error-logfile=- --capture-output
     networks:
       - default
@@ -44,6 +46,7 @@ services:
       - database
 
   ressourcerenter-cron:
+    user: "75090:1000"
     container_name: ressourcerenter-cron
     image: ressourcerenter:latest
     depends_on:
@@ -95,6 +98,7 @@ services:
 
 volumes:
   ressourcerenter-postgres-data:
+  idp-data:
 
 networks:
   default:

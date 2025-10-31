@@ -5,14 +5,14 @@ MIGRATE=${MIGRATE:=true}
 TEST=${TEST:=false}
 SAMPLE_DATA=${SAMPLE_DATA:=false}
 CREATE_DUMMY_USERS=${CREATE_DUMMY_USERS:=false}
-SKIP_IDP_METADATA=${SKIP_IDP_METADATA:=false}
+PULL_IDP_METADATA=${SKIP_IDP_METADATA:=false}
 GENERATE_DB_DOCUMENTATION=${GENERATE_DB_DOCUMENTATION:=true}
 
 python manage.py make_messages --all --no-obsolete --add-location file
 python manage.py wait_for_db
 python manage.py createcachetable
 
-if [ "$SKIP_IDP_METADATA" = false ]; then
+if [ "$PULL_IDP_METADATA" = true ]; then
   python manage.py update_mitid_idp_metadata
 fi
 if [ "$MAKE_MIGRATIONS" = true ]; then
