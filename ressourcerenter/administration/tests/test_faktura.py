@@ -106,11 +106,13 @@ class FakturaTestCase(TestCase):
             kode=123,
             opretter=self.user,
             periode=periode,
-            linje=linje,
             opkrævningsdato=Faktura.get_opkrævningsdato(
                 linje.indberetningstidspunkt.date()
             ),
         )
+        linje.faktura = faktura
+        linje.save(update_fields=("faktura",))
+
         self.assertEqual(
             faktura.prismeG69_content(writer),
             "000G6900001000001NORFLYD&10300000&1040000001&11020220321&111241126242040197&112000000100000 &113D&13203&13312345678&153Makrel, 1.kv 2022&2501\r\n"
