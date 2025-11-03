@@ -10,7 +10,6 @@ from administration.models import (
 )
 from django.test import TestCase
 from indberetning.models import Indberetning, IndberetningLinje, Virksomhed
-
 from statistik.forms import StatistikForm
 from statistik.views import StatistikView
 

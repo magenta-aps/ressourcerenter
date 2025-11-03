@@ -47,6 +47,8 @@ COPY ./ressourcerenter /app
 WORKDIR /app
 RUN django-admin compilemessages
 USER ressourcerenter
+# Fix fontcache issue
+ENV XDG_CACHE_HOME=/tmp
 VOLUME /srv/media
 VOLUME /var/cache/aalisakkat
 EXPOSE 8000

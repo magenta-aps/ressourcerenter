@@ -1,17 +1,26 @@
-from administration.models import Afgiftsperiode, ProduktType, SkemaType
-from administration.models import BeregningsModel2021
-from administration.models import G69Code
-from administration.models import G69CodeExport
 from datetime import date, time, timedelta
+from io import BytesIO
+
+from administration.models import (
+    Afgiftsperiode,
+    BeregningsModel2021,
+    G69Code,
+    G69CodeExport,
+    ProduktType,
+    SkemaType,
+)
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.datetime_safe import datetime
 from django.utils.timezone import utc
-from indberetning.models import Indhandlingssted
-from indberetning.models import Virksomhed, Indberetning, IndberetningLinje
-from io import BytesIO
+from indberetning.models import (
+    Indberetning,
+    IndberetningLinje,
+    Indhandlingssted,
+    Virksomhed,
+)
 from openpyxl import load_workbook
 
 

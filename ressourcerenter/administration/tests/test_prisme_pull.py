@@ -1,12 +1,13 @@
-from administration.models import Faktura
-from administration.prisme import Prisme, PrismeSELAccountResponse
 from datetime import date
 from decimal import Decimal
+from unittest.mock import patch
+
+from administration.models import Faktura
+from administration.prisme import Prisme, PrismeSELAccountResponse
 from django.contrib.auth import get_user_model
 from django.core import management
 from django.test import TestCase
 from indberetning.models import Virksomhed
-from unittest.mock import patch
 
 
 def prisme_sel_mock(fakturanummer, bogføringsdato):

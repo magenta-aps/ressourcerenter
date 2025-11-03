@@ -1,16 +1,16 @@
 import logging
 import os
-from administration.models import SkemaType, Afgiftsperiode, ProduktType
+from uuid import uuid4
+
+from administration.models import Afgiftsperiode, ProduktType, SkemaType
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models, IntegrityError
-from django.db.models import Sum, Max
+from django.db import IntegrityError, models
+from django.db.models import Max, Sum
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.utils.translation import gettext as _
-from indberetning.validators import validate_cvr, validate_cpr
-from uuid import uuid4
-
+from indberetning.validators import validate_cpr, validate_cvr
 from project.views_mixin import Trunc
 
 logger = logging.getLogger(__name__)

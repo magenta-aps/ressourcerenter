@@ -1,13 +1,15 @@
 from django.urls import reverse_lazy
-from django.views.generic import FormView, CreateView, ListView
+from django.views.generic import CreateView, FormView, ListView
 from django.views.generic.base import TemplateView
 
 from . import forms
-from .models import Afgiftsperiode
-from .models import BeregningsModelEksempel
-from .models import FiskeArt
-from .models import FormularFelt
-from .models import SummeretBeregnetIndberetning
+from .models import (
+    Afgiftsperiode,
+    BeregningsModelEksempel,
+    FiskeArt,
+    FormularFelt,
+    SummeretBeregnetIndberetning,
+)
 
 
 class RunCalculationView(FormView):

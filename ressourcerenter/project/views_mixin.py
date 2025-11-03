@@ -1,12 +1,13 @@
+import os
+from datetime import date
+from tempfile import NamedTemporaryFile
+
+from django.db.models import Func
 from django.http import HttpResponse
 from django.utils.formats import date_format
 from django.views.generic import FormView
 from openpyxl import Workbook
 from openpyxl.cell import Cell
-from datetime import date
-from tempfile import NamedTemporaryFile
-import os
-from django.db.models import Func
 
 
 class Trunc(Func):

@@ -1,18 +1,27 @@
-from administration.models import Afgiftsperiode, ProduktType, SkemaType, Faktura
-from administration.models import BeregningsModel2021
-from administration.models import FiskeArt
-from administration.models import Prisme10QBatch
 from datetime import date
 from decimal import Decimal
+from unittest.mock import patch
+
+from administration.models import (
+    Afgiftsperiode,
+    BeregningsModel2021,
+    Faktura,
+    FiskeArt,
+    Prisme10QBatch,
+    ProduktType,
+    SkemaType,
+)
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from django.test import TestCase
-from django.test import override_settings
+from django.test import TestCase, override_settings
 from django.urls import reverse
-from indberetning.models import Indhandlingssted
-from indberetning.models import Virksomhed, Indberetning, IndberetningLinje
-from unittest.mock import patch
+from indberetning.models import (
+    Indberetning,
+    IndberetningLinje,
+    Indhandlingssted,
+    Virksomhed,
+)
 
 
 class PrismeTestCase(TestCase):

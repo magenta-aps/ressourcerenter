@@ -1,15 +1,23 @@
-from datetime import date
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 
-from administration.models import Afgiftsperiode, ProduktType, SkemaType, Faktura
-from administration.models import BeregningsModel2021
-from administration.models import FiskeArt
-from administration.models import SatsTabelElement
+from administration.models import (
+    Afgiftsperiode,
+    BeregningsModel2021,
+    Faktura,
+    FiskeArt,
+    ProduktType,
+    SatsTabelElement,
+    SkemaType,
+)
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from indberetning.models import Indhandlingssted
-from indberetning.models import Virksomhed, Indberetning, IndberetningLinje
+from indberetning.models import (
+    Indberetning,
+    IndberetningLinje,
+    Indhandlingssted,
+    Virksomhed,
+)
 from tenQ.writer import G69TransactionWriter
 
 
