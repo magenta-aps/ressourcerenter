@@ -35,7 +35,7 @@ services:
 
   ressourcerenter-db:
     container_name: ressourcerenter-db
-    image: postgres:13
+    image: postgres:16
     env_file:
       - ./dev-environment/ressourcerenter.env
     volumes:

@@ -136,7 +136,7 @@ Generate documentation:
 Unittest:
   <<: *test-default
   services:
-    - name: postgres:13
+    - name: postgres:16
       alias: ressourcerenter-db
   script:
     - cd /app
