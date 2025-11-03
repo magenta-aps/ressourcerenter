@@ -1,11 +1,10 @@
 from decimal import Decimal
 
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils import translation
 from django.utils.formats import get_format
-
 from project.form_fields import LocalizedDecimalField
-from django.core.exceptions import ValidationError
 
 
 class TestLocalizedDecimalField(TestCase):

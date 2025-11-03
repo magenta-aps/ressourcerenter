@@ -3,15 +3,15 @@ from django.views.generic import TemplateView
 from django_mitid_auth.saml.views import AccessDeniedView
 from indberetning.apps import IndberetningConfig
 from indberetning.views import (
-    CreateIndberetningCreateView,
-    IndberetningsListView,
-    SelectIndberetningsType,
-    Frontpage,
-    VirksomhedUpdateView,
-    UpdateIndberetningsView,
     BilagDownloadView,
+    CreateIndberetningCreateView,
+    Frontpage,
     IndberetningCalculateJsonView,
     IndberetningListLinjeView,
+    IndberetningsListView,
+    SelectIndberetningsType,
+    UpdateIndberetningsView,
+    VirksomhedUpdateView,
 )
 
 app_name = IndberetningConfig.name

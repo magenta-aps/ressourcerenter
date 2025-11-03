@@ -1,51 +1,42 @@
 from administration.apps import AdministrationConfig
 from administration.views import (
     AfgiftsperiodeCreateView,
-    AfgiftsperiodeUpdateView,
-    AfgiftsperiodeListView,
     AfgiftsperiodeHistoryView,
+    AfgiftsperiodeListView,
     AfgiftsperiodeSatsTabelUpdateView,
-)
-from administration.views import BilagDownloadView
-from administration.views import FakturaSendView
-from administration.views import (
-    FiskeArtListView,
-    FiskeArtCreateView,
-    FiskeArtUpdateView,
-    FiskeArtHistoryView,
-)
-from administration.views import FrontpageView
-from administration.views import G69ListView, G69CodeExportCreateView, G69DownloadView
-from administration.views import (
-    IndberetningDetailView,
-    IndberetningListView,
-    IndberetningAfstemFormView,
-)
-from administration.views import (
-    IndberetningsLinjeListView,
-    IndberetningListLinjeView,
-    FakturaDetailView,
+    AfgiftsperiodeUpdateView,
+    BilagDownloadView,
     FakturaCreateView,
-)
-from administration.views import PostLoginView
-from administration.views import (
-    ProduktTypeListView,
+    FakturaDeleteView,
+    FakturaDetailView,
+    FakturaSendView,
+    FiskeArtCreateView,
+    FiskeArtHistoryView,
+    FiskeArtListView,
+    FiskeArtUpdateView,
+    FrontpageView,
+    G69CodeExportCreateView,
+    G69DownloadView,
+    G69ListView,
+    IndberetningAfstemFormView,
+    IndberetningDetailView,
+    IndberetningListLinjeView,
+    IndberetningListView,
+    IndberetningsLinjeListView,
+    PostLoginView,
     ProduktTypeCreateView,
-    ProduktTypeUpdateView,
     ProduktTypeHistoryView,
-)
-from administration.views import SatsTabelElementHistoryView
-from administration.views import (
-    VirksomhedListView,
+    ProduktTypeListView,
+    ProduktTypeUpdateView,
+    SatsTabelElementHistoryView,
     VirksomhedCreateView,
-    VirksomhedUpdateView,
-    VirksomhedRepræsentantView,
+    VirksomhedListView,
     VirksomhedRepræsentantStopView,
+    VirksomhedRepræsentantView,
+    VirksomhedUpdateView,
 )
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
-
-from administration.views import FakturaDeleteView
 
 app_name = AdministrationConfig.name
 

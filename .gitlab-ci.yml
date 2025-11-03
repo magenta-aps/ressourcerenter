@@ -131,6 +131,7 @@ Generate documentation:
     SAML_CONTACT_SUPPORT_EMAIL: test@example.com
     SKIP_IDP_METADATA: "true"
     GENERATE_DB_DOCUMENTATION: "false"
+    ALLOWED_HOSTS: '["*"]'
 
 Unittest:
   <<: *test-default

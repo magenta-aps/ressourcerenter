@@ -2,8 +2,14 @@ import datetime
 
 from administration.models import FiskeArt
 from django.test import TestCase
-from indberetning.models import Afgiftsperiode, SkemaType, Indhandlingssted
-from indberetning.models import Indberetning, Virksomhed, IndberetningLinje
+from indberetning.models import (
+    Afgiftsperiode,
+    Indberetning,
+    IndberetningLinje,
+    Indhandlingssted,
+    SkemaType,
+    Virksomhed,
+)
 
 
 class RatenummerTest(TestCase):

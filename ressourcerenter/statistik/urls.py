@@ -1,5 +1,4 @@
 from django.urls import path
-
 from statistik.apps import StatistikConfig
 from statistik.views import StatistikChoicesView, StatistikView
 

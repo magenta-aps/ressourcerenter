@@ -1,18 +1,26 @@
-from administration.models import Afgiftsperiode, SatsTabelElement, BeregningsModel
-from administration.models import Faktura
-from administration.models import FiskeArt
-from administration.models import G69CodeExport
-from administration.models import ProduktType
-from administration.models import SkemaType
 from datetime import date
+
+from administration.models import (
+    Afgiftsperiode,
+    BeregningsModel,
+    Faktura,
+    FiskeArt,
+    G69CodeExport,
+    ProduktType,
+    SatsTabelElement,
+    SkemaType,
+)
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
-from indberetning.models import Indberetning, Indhandlingssted
-from indberetning.models import IndberetningLinje
-from indberetning.models import Virksomhed
+from indberetning.models import (
+    Indberetning,
+    IndberetningLinje,
+    Indhandlingssted,
+    Virksomhed,
+)
 from project.form_fields import DateInput
 from project.forms_mixin import BootstrapForm
 

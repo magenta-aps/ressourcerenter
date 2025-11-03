@@ -1,16 +1,17 @@
-from administration.models import (
-    Afgiftsperiode,
-    SatsTabelElement,
-    ProduktType,
-    BeregningsModel2021,
-    FiskeArt,
-    SkemaType,
-)
 from datetime import date
 from decimal import Decimal
-from django.test import TestCase
-from indberetning.models import Virksomhed, Indberetning, IndberetningLinje
 from uuid import uuid4
+
+from administration.models import (
+    Afgiftsperiode,
+    BeregningsModel2021,
+    FiskeArt,
+    ProduktType,
+    SatsTabelElement,
+    SkemaType,
+)
+from django.test import TestCase
+from indberetning.models import Indberetning, IndberetningLinje, Virksomhed
 
 
 class AfgiftTestCase(TestCase):
