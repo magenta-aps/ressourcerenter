@@ -15,6 +15,12 @@
     <script src="{% static 'js/bootstrap.bundle.min.js' %}" nonce="{{request.csp_nonce}}"></script>
     <script src="{% static 'js/select2.full.min.js' %}" nonce="{{request.csp_nonce}}"></script>
     <script src="{% static 'js/htmx.min.js' %}" nonce="{{request.csp_nonce}}"></script>
+    <script nonce="{{request.csp_nonce}}">
+        htmx.config.selfRequestsOnly = true;
+        htmx.config.allowScriptTags = false;
+        htmx.config.allowEval = false;
+        htmx.config.includeIndicatorStyles = false;
+    </script>
     <title>{% translate 'Indberetning af ressourcerenter' %}</title>
 </head>
 <body>

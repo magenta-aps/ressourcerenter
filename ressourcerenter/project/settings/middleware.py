@@ -1,4 +1,4 @@
-from project.settings.base import TESTING
+from project.settings.base import DEBUG, TESTING
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -16,5 +16,5 @@ MIDDLEWARE = [
     "django_session_timeout.middleware.SessionTimeoutMiddleware",
     "csp.middleware.CSPMiddleware",
 ]
-if not TESTING:
+if DEBUG and not TESTING:
     MIDDLEWARE.append("debug_toolbar.middleware.DebugToolbarMiddleware")

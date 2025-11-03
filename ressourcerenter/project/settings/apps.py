@@ -1,4 +1,4 @@
-from project.settings.base import TESTING
+from project.settings.base import DEBUG, TESTING
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -16,6 +16,7 @@ INSTALLED_APPS = [
     "mitid_test",
     "django_extensions",
     "metrics",
+    "csp",
 ]
-if not TESTING:
+if DEBUG and not TESTING:
     INSTALLED_APPS.append("debug_toolbar")
