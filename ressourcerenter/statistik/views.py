@@ -275,7 +275,7 @@ class StatistikView(ExcelMixin, StatistikBaseView):
 
 
 class StatistikChoicesView(StatistikBaseView):
-    form_class = StatistikBaseForm
+    form_class = StatistikForm
 
     def form_invalid(self, form):
         return HttpResponseBadRequest(json.dumps(dict(form.errors)))
