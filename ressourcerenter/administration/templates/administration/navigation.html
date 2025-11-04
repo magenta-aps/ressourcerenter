@@ -30,11 +30,12 @@
         </form>
     </div>
 
-    <div class="navbar-nav">
-        {% if user.is_authenticated %}
-        <a class="nav-item nav-link" href="{% url 'administration:logout' %}">{% translate 'Log ud' %}</a>
-        {% endif %}
-    </div>
+    {% if user.is_authenticated %}
+    <form action="{% url 'administration:logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-link">{% translate 'Log ud' %}</button>
+    </form>
+    {% endif %}
 </nav>
 <hr class="p-0 m-0">
 <script nonce="{{request.csp_nonce}}">

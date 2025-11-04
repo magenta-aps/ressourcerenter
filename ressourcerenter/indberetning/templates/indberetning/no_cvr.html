@@ -5,5 +5,8 @@
 <p>
     {% translate 'Dette site fungerer kun for logins med et CVR-nummer' %}
 </p>
-<a class="btn btn-primary" href="{% url 'login:logout' %}">{% translate 'Tilbage til login' %}</a>
+<form class="form" action="{% url 'login:logout' %}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">{% translate 'Tilbage til login' %}</button>
+</form>
 {% endblock %}
