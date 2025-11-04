@@ -26,7 +26,7 @@ class StatistikBaseView(FormView):
         ordering_fields = {}
 
         cleaned_data = form.cleaned_data.copy()
-        annotate_bonusadjusted = cleaned_data["disregard_bonus_reports"]
+        annotate_bonusadjusted = cleaned_data.get("disregard_bonus_reports", False)
         if only_fields is not None:
             for field in cleaned_data:
                 if field not in only_fields:
@@ -177,7 +177,7 @@ class StatistikView(ExcelMixin, StatistikBaseView):
         # ie. the aggregated Sum of the value specified by the unit column,
         # grouped over the identifying columns.
 
-        annotate_bonusadjusted = form.cleaned_data["disregard_bonus_reports"]
+        annotate_bonusadjusted = form.cleaned_data.get("disregard_bonus_reports", False)
 
         qs, grouping_fields, ordering_fields = self.get_queryset(form)
         annotations = {}
@@ -275,7 +275,7 @@ class StatistikView(ExcelMixin, StatistikBaseView):
 
 
 class StatistikChoicesView(StatistikBaseView):
-    form_class = StatistikForm
+    form_class = StatistikBaseForm
 
     def form_invalid(self, form):
         return HttpResponseBadRequest(json.dumps(dict(form.errors)))
