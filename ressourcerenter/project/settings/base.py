@@ -32,6 +32,11 @@ DEBUG = strtobool(os.environ.get("DEBUG", "False"))
 TESTING = len(sys.argv) > 1 and sys.argv[1] == "test"
 
 ALLOWED_HOSTS: List[str] = json.loads(os.environ.get("ALLOWED_HOSTS", "[]"))
+CSRF_TRUSTED_ORIGINS = (
+    [f"https://{hostname}" for hostname in ALLOWED_HOSTS]
+    if ALLOWED_HOSTS != ["*"]
+    else []
+)
 
 ROOT_URLCONF = "project.urls"
 

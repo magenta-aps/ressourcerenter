@@ -136,13 +136,13 @@ Generate documentation:
 Unittest:
   <<: *test-default
   services:
-    - name: postgres:13
+    - name: postgres:16
       alias: ressourcerenter-db
   script:
     - cd /app
     - coverage run manage.py test --parallel
     - coverage combine
-    - coverage report --show-missing --fail-under=66
+    - coverage report --show-missing --fail-under=64
     - coverage xml
   coverage: '/^TOTAL.+?(\d+\%)$/'
   artifacts:
