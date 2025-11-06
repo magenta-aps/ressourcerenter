@@ -1,4 +1,4 @@
-from datetime import date, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 from io import BytesIO
 
 from administration.models import (
@@ -13,8 +13,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.test import TestCase
 from django.urls import reverse
-from django.utils.datetime_safe import datetime
-from django.utils.timezone import utc
 from indberetning.models import (
     Indberetning,
     IndberetningLinje,
@@ -221,7 +219,7 @@ class G69KodeTestCase(G69TestCase):
                 indhandlingssted=self.sted,
             )
             linje.indberetningstidspunkt = datetime.combine(
-                self.periode.dato_fra + timedelta(days=40), time(tzinfo=utc)
+                self.periode.dato_fra + timedelta(days=40), time(tzinfo=timezone.utc)
             )
             linje.save(update_fields=["indberetningstidspunkt"])
 

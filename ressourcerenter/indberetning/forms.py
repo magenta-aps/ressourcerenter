@@ -227,11 +227,12 @@ class IndberetningBaseFormset(BaseInlineFormSet):
         )
         existing = []
         # Find navne i eksisterende positive linjer og subforms
-        for linje in self.instance.linjer.all():
-            if not linje.is_negative:
-                existing.append(
-                    {field: getattr(linje, field, None) for field in fields}
-                )
+        if self.instance.pk is not None:
+            for linje in self.instance.linjer.all():
+                if not linje.is_negative:
+                    existing.append(
+                        {field: getattr(linje, field, None) for field in fields}
+                    )
         for form in self.forms:
             if form.is_valid():
                 if not form.is_negative:
@@ -264,7 +265,7 @@ class IndberetningBaseFormset(BaseInlineFormSet):
             "bonus",
         )
         sums = {f: 0 for f in fields}
-        if self.instance:
+        if self.instance.pk is not None:
             for existing_linje in self.instance.linjer.all():
                 for field in fields:
                     value = getattr(existing_linje, field) or 0

@@ -165,7 +165,6 @@ class PrismeTestCase(TestCase):
             kode=123,
             opretter=self.user,
             periode=self.periode,
-            linje=linje,
         )
         linje.faktura = faktura
         linje.save()
@@ -215,7 +214,6 @@ class PrismeTestCase(TestCase):
             kode=123,
             opretter=self.user,
             periode=self.periode,
-            linje=linje,
         )
         linje.faktura = faktura
         linje.save()
