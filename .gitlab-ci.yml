@@ -93,7 +93,13 @@ variables:
 .lint-default:
   stage: lint
   needs: []
-  image: python:3.8
+  image: python:3.12
+
+Lint Commits:
+  extends: .lint:commits
+  interruptible: true
+  variables:
+    CONFIG: '{ extends: [''@commitlint/config-conventional''], ignores: [(message) => message.includes(''suggestion(s)'')], }'
 
 Lint Python:
   extends:
