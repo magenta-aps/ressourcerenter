@@ -1,6 +1,5 @@
 stages:
   - lint
-  - document
   - build
   - test
   - release
@@ -121,11 +120,13 @@ Lint REUSE compliance:
   script:
     - reuse lint
 
-# Documentation stage
+# Build stage
 #####################
 
+# Image build in imported files (docker-build.v1.yml)
+
 Generate documentation:
-  stage: document
+  stage: build
   needs: []
   image:
     name: pandoc/latex
