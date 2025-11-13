@@ -1,9 +1,9 @@
 stages:
   - lint
-  - document
   - build
   - test
   - release
+  - docs
   - configure
   - deploy
 
@@ -35,23 +35,71 @@ include:
     file:
       - '/gitlab-ci-templates/common/rules.v1.yml'
       - '/gitlab-ci-templates/common/saltbert.v1.yml'
-      - '/gitlab-ci-templates/common/config-updater-meta.v1.yml'
       - '/gitlab-ci-templates/common/docker-build.v1.yml'
+      - '/gitlab-ci-templates/common/config-updater-meta.v1.yml'
+      - "/gitlab-ci-templates/common/conventional-commits-meta.v1.yml"
+      - "/gitlab-ci-templates/common/conventional-commits-changelog-meta.v1.yml"
+
+
+.releaserc:
+  before_script:
+    - |
+      cat <<EOF > .releaserc.yaml
+      branches:
+        - master
+      tagFormat: "\${version}-rc1"
+      plugins:
+        - - "@semantic-release/commit-analyzer"
+          - preset: angular
+            releaseRules:
+              - type: chore
+                scope: deps-dev
+                release: patch
+              - type: chore
+                scope: deps
+                release: patch
+              - type: build
+                scope: deps-dev
+                release: patch
+              - type: build
+                scope: deps
+                release: patch
+        - "@semantic-release/release-notes-generator"
+        - "@semantic-release/changelog"
+        - - "@semantic-release/gitlab"
+          - assets:
+              - path: CHANGELOG.md
+                label: Changelog
+      EOF
 
 
 variables:
+  # Project variables
+  RELEASE_REGISTRY: docker.io
+  RELEASE_REGISTRY_IMAGE: index.docker.io/magentaaps/beskaeftigelsesfradrag
+
   IMAGE_SHA: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
   IMAGE_DEV: magentaaps/ressourcerenter:dev
   IMAGE_TAG: magentaaps/ressourcerenter:${CI_COMMIT_TAG}
+
+  VERSION: PIPELINE
+
   DOCKERFILE: $CI_PROJECT_DIR/docker/Dockerfile
 
 
 # Lint stage
 #############
+
 .lint-default:
   stage: lint
   needs: []
-  image: python:3.8
+  image: python:3.12
+
+Lint Commits:
+  extends: .lint:commits
+  interruptible: true
+  variables:
+    CONFIG: '{ extends: [''@commitlint/config-conventional''], ignores: [(message) => message.includes(''suggestion(s)'')], }'
 
 Lint Python:
   extends:
@@ -78,11 +126,13 @@ Lint REUSE compliance:
   script:
     - reuse lint
 
-# Documentation stage
+# Build stage
 #####################
 
+# Image build in imported files (docker-build.v1.yml)
+
 Generate documentation:
-  stage: document
+  stage: build
   needs: []
   image:
     name: pandoc/latex
@@ -96,6 +146,7 @@ Generate documentation:
 
 # Test stage
 ############
+
 .test-default: &test-default
   stage: test
   dependencies: []
@@ -178,8 +229,21 @@ Release image:
       "docker://${IMAGE_TAG}"
 
 
-# Deploy stage
-##############
+Release Semantic commit:
+  extends: .release:semantic-commit
+
+Release Generate changelog:
+  extends: .release:generate-changelog
+
+Docs Export changelog:
+  extends:
+    - .rules:semver-all
+    - .docs:export-changelog
+  variables:
+    CHANGELOG_EXTRA_FLAGS: "--merge-prerelease"
+
+# Configure stage
+#################
 
 Configure test:
   stage: configure
@@ -202,6 +266,8 @@ Configure production:
     # Matches routing in config-updater/config_updater/ressourcerenter/main.py in salt repo
     ENDPOINT: ressourcerenter/salt/update-production
 
+# Deploy stage
+##############
 
 Deploy test:
   stage: deploy
