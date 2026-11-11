@@ -10,6 +10,7 @@ services:
     command: [ "/input/manual.md", "-V", "geometry:margin=30mm", "-o", "/output/manual.pdf" ]
 
   ressourcerenter-web:
+    user: "75090:1000"  # Override in docker-compose.override.yml if your local user is different
     container_name: ressourcerenter-web
     image: ressourcerenter:latest
     build:
