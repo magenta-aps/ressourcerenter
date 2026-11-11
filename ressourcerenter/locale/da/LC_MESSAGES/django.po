@@ -1042,8 +1042,8 @@ msgstr ""
 
 #: project/settings/locale.py
 msgid "Danish"
-msgstr ""
+msgstr "Dansk"
 
 #: project/settings/locale.py
 msgid "Greenlandic"
-msgstr ""
+msgstr "Grønlandsk"
